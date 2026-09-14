@@ -1,0 +1,140 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Light. Applies whenever the root element lacks the dark class. */
+:root {
+  --radius: 0.5rem;
+  --background: #f3f5f7;
+  --foreground: #31363c;
+  --card: #e9ecef;
+  --card-foreground: #31363c;
+  --popover: #e9ecef;
+  --popover-foreground: #31363c;
+  --primary: #0969da;
+  --primary-foreground: #ffffff;
+  --secondary: #dde1e6;
+  --secondary-foreground: #505861;
+  --muted: #e9ecef;
+  --muted-foreground: #505861;
+  --accent: #dde1e6;
+  --accent-foreground: #1f2328;
+  --destructive: #cf222e;
+  --border: #cfd5db;
+  --input: #afb8c1;
+  --ring: #0969da;
+  --sidebar: #e9ecef;
+  --sidebar-foreground: #31363c;
+  --sidebar-primary: #0969da;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #dde1e6;
+  --sidebar-accent-foreground: #1f2328;
+  --sidebar-border: #cfd5db;
+  --sidebar-ring: #0969da;
+  /* custom tokens */
+  --strong-foreground: #1f2328;
+  --subtle-foreground: #656d76;
+  --faint-foreground: #818b95;
+  --selection: #cfe6fa;
+  --stripe: #e6e9ed;
+  --status: #0969da;
+  --status-foreground: #ffffff;
+  --success: #1a7f37;
+  --warning: #9a6700;
+}
+
+/* Dark ("Dimmed") */
+.dark {
+  --background: #22272e;
+  --foreground: #adbac7;
+  --card: #2d333b;
+  --card-foreground: #adbac7;
+  --popover: #2d333b;
+  --popover-foreground: #adbac7;
+  --primary: #6cb6ff;
+  --primary-foreground: #22272e;
+  --secondary: #373e47;
+  --secondary-foreground: #9aa7b4;
+  --muted: #2d333b;
+  --muted-foreground: #9aa7b4;
+  --accent: #373e47;
+  --accent-foreground: #cdd9e5;
+  --destructive: #f47067;
+  --border: #3d444d;
+  --input: #545d68;
+  --ring: #6cb6ff;
+  --sidebar: #2d333b;
+  --sidebar-foreground: #adbac7;
+  --sidebar-primary: #6cb6ff;
+  --sidebar-primary-foreground: #22272e;
+  --sidebar-accent: #373e47;
+  --sidebar-accent-foreground: #cdd9e5;
+  --sidebar-border: #3d444d;
+  --sidebar-ring: #6cb6ff;
+  --strong-foreground: #cdd9e5;
+  --subtle-foreground: #8491a0;
+  --faint-foreground: #687480;
+  --selection: #274872;
+  --stripe: #2b3139;
+  --status: #255ab2;
+  --status-foreground: #e6edf3;
+  --success: #6bc46d;
+  --warning: #daaa3f;
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-strong-foreground: var(--strong-foreground);
+  --color-subtle-foreground: var(--subtle-foreground);
+  --color-faint-foreground: var(--faint-foreground);
+  --color-selection: var(--selection);
+  --color-stripe: var(--stripe);
+  --color-status: var(--status);
+  --color-status-foreground: var(--status-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
