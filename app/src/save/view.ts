@@ -46,6 +46,8 @@ export type ColumnId = keyof typeof en.columns;
 export interface Table {
   id: string;
   section: SectionId;
+  /** Tab name when the section holds several tables. */
+  tab?: string;
   columns: ColumnId[];
   rows: Row[];
 }
@@ -114,9 +116,11 @@ const table = (
   section: SectionId,
   columns: ColumnId[],
   rows: Cell[][],
+  tab?: string,
 ): Table => ({
   id,
   section,
+  tab,
   columns,
   rows: rows.map((cells, i) => ({ id: `${id}:${i}`, cells })),
 });
@@ -239,72 +243,64 @@ export function buildView(save: Save): SaveView {
       ]),
     ),
     table(
+      "quests:side",
       "quests",
-      "quests",
-      [
-        "quest",
-        "type",
-        "accepted",
-        "completed",
-        "clears",
-        "perfectGrade",
-        "lastCleared",
-      ],
-      [
-        ...readSideQuests(units).map((q): Cell[] => [
-          q.id,
-          "side",
-          q.accepted,
-          q.completed,
-          undefined,
-          undefined,
-          undefined,
-        ]),
-        ...readCounterQuests(units).map((q): Cell[] => [
-          q.id,
-          "counter",
-          undefined,
-          undefined,
-          q.clears,
-          q.perfectGrade,
-          q.lastCleared?.toISOString().slice(0, 10),
-        ]),
-      ],
+      ["quest", "accepted", "completed"],
+      readSideQuests(units).map((q) => [q.id, q.accepted, q.completed]),
+      "side",
     ),
     table(
+      "quests:counter",
+      "quests",
+      ["quest", "clears", "perfectGrade", "lastCleared"],
+      readCounterQuests(units).map((q) => [
+        q.id,
+        q.clears,
+        q.perfectGrade,
+        q.lastCleared?.toISOString().slice(0, 10),
+      ]),
+      "counter",
+    ),
+    table(
+      "journal:archive",
       "journal",
+      ["entry", "unlocked", "viewed"],
+      readArchives(units).map((e) => [
+        keyCell("archive", e.key),
+        e.obtained,
+        e.viewed,
+      ]),
+      "archive",
+    ),
+    table(
+      "journal:glossary",
       "journal",
-      ["entry", "category", "unlocked", "viewed", "paragraphs"],
-      [
-        ...readArchives(units).map((e): Cell[] => [
-          keyCell("archive", e.key),
-          "archive",
-          e.obtained,
-          e.viewed,
-          undefined,
-        ]),
-        ...readGlossary(units).map((e): Cell[] => [
-          keyCell("glossary", e.key),
-          "glossary",
-          e.listed,
-          e.viewed,
-          e.paragraphs,
-        ]),
-        ...readTips(units).map((e): Cell[] => [
-          keyCell("tip", e.key),
-          "tip",
-          e.listed,
-          e.viewed,
-          undefined,
-        ]),
-        ...readMusic(units).map((e): Cell[] => [
-          keyCell("music", e.key),
-          "music",
-          e.listed,
-          e.viewed,
-          undefined,
-        ]),
-      ],
+      ["entry", "unlocked", "viewed", "paragraphs"],
+      readGlossary(units).map((e) => [
+        keyCell("glossary", e.key),
+        e.listed,
+        e.viewed,
+        e.paragraphs,
+      ]),
+      "glossary",
+    ),
+    table(
+      "journal:tip",
+      "journal",
+      ["entry", "unlocked", "viewed"],
+      readTips(units).map((e) => [keyCell("tip", e.key), e.listed, e.viewed]),
+      "tip",
+    ),
+    table(
+      "journal:music",
+      "journal",
+      ["entry", "unlocked", "viewed"],
+      readMusic(units).map((e) => [
+        keyCell("music", e.key),
+        e.listed,
+        e.viewed,
+      ]),
+      "music",
     ),
     table(
       "trophies",

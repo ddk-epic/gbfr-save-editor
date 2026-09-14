@@ -25,8 +25,12 @@ describe.skipIf(!hasSave)("buildView", () => {
       "wrightstones",
       "summons",
       "curios",
-      "quests",
-      "journal",
+      "quests:side",
+      "quests:counter",
+      "journal:archive",
+      "journal:glossary",
+      "journal:tip",
+      "journal:music",
       "trophies",
     ]);
   });

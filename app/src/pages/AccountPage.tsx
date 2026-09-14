@@ -26,10 +26,11 @@ export function AccountPage({
   onRoot: () => void;
 }) {
   const { t } = useTranslation();
-  const toggle = (id: string) => {
+  const sections: string[] = tables.map((table) => table.section);
+  const toggle = (section: string) => {
     const next = new Set(open);
-    if (next.has(id)) next.delete(id);
-    else next.add(id);
+    if (next.has(section)) next.delete(section);
+    else next.add(section);
     setOpen(next);
   };
 
@@ -41,15 +42,9 @@ export function AccountPage({
         onRoot={onRoot}
         actions={
           <ExpandCollapseActions
-            onExpandAll={() =>
-              setOpen(new Set([...open, ...tables.map((t) => t.id)]))
-            }
+            onExpandAll={() => setOpen(new Set([...open, ...sections]))}
             onCollapseAll={() =>
-              setOpen(
-                new Set(
-                  [...open].filter((id) => !tables.some((t) => t.id === id)),
-                ),
-              )
+              setOpen(new Set([...open].filter((s) => !sections.includes(s))))
             }
           />
         }
@@ -58,8 +53,8 @@ export function AccountPage({
       </PageTop>
       <CollapsibleTables
         tables={tables}
-        isOpen={(table) => open.has(table.id)}
-        onToggle={(table) => toggle(table.id)}
+        isOpen={(section) => open.has(section)}
+        onToggle={toggle}
         selection={selection}
         onSelect={onSelect}
       />

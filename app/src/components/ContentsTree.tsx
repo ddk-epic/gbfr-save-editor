@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGameText } from "../game-text";
 import type { Page } from "../navigation";
-import type { SaveView } from "../save/view";
+import type { SaveView, SectionId } from "../save/view";
 
 type Tab = "account" | "characters";
 
@@ -18,13 +18,13 @@ export function ContentsTree({
   view,
   page,
   onPage,
-  onTable,
+  onSection,
 }: {
   view: SaveView | undefined;
   page: Page;
   onPage: (page: Page) => void;
-  /** Open a table's section on the account or a character page. */
-  onTable: (page: Page, tableId: string) => void;
+  /** Open a section on the account or a character page. */
+  onSection: (page: Page, section: SectionId) => void;
 }) {
   const { t } = useTranslation();
   const gt = useGameText();
@@ -55,13 +55,15 @@ export function ContentsTree({
             />
           </div>
           {tab === "account" &&
-            view.account.map((table) => (
-              <Link
-                key={table.id}
-                label={t(`sections.${table.section}`)}
-                onClick={() => onTable("account", table.id)}
-              />
-            ))}
+            [...new Set(view.account.map((table) => table.section))].map(
+              (section) => (
+                <Link
+                  key={section}
+                  label={t(`sections.${section}`)}
+                  onClick={() => onSection("account", section)}
+                />
+              ),
+            )}
           {tab === "characters" &&
             view.characters.map((c) => (
               <Link
