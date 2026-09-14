@@ -69,7 +69,7 @@ export function ValidationMenu({
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section>
-      <h2 className="mb-2 text-[11px] tracking-widest text-subtle-foreground uppercase">
+      <h2 className="mb-2 text-[12px] tracking-widest text-subtle-foreground uppercase">
         {title}
       </h2>
       {children}

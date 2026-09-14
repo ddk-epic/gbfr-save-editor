@@ -58,7 +58,7 @@ export function StatusBar({
   return (
     <Bar
       gutter={gutter}
-      className="bg-status py-0.5 text-[12px] text-status-foreground"
+      className="bg-status py-0.5 text-[13px] text-status-foreground"
     >
       {view ? (
         <>

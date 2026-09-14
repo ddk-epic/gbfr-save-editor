@@ -59,7 +59,7 @@ export function App() {
     : undefined;
 
   return (
-    <div className="flex h-screen flex-col bg-background font-mono text-[13px] text-foreground">
+    <div className="flex h-screen flex-col bg-background font-mono text-[14px] text-foreground">
       <input
         ref={fileInput}
         type="file"

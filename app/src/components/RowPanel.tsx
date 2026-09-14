@@ -16,7 +16,7 @@ export function RowPanel({
       {selected ? (
         <>
           <div className="mb-2 flex items-baseline gap-2">
-            <span className="text-[11px] tracking-widest text-subtle-foreground uppercase">
+            <span className="text-[12px] tracking-widest text-subtle-foreground uppercase">
               {t("rowPanel.row")}
             </span>
             <span className="text-strong-foreground">
@@ -31,8 +31,8 @@ export function RowPanel({
               const cell = selected.row.cells[i];
               const keys = cellKeys(cell);
               return (
-                <div key={column} className="flex flex-col gap-1 text-sm">
-                  <span className="text-xs tracking-wide text-subtle-foreground uppercase">
+                <div key={column} className="flex flex-col gap-1 text-[14px]">
+                  <span className="text-[13px] tracking-wide text-subtle-foreground uppercase">
                     {t(`columns.${column}`)}
                   </span>
                   <span className="flex items-center gap-1.5 text-foreground">
@@ -40,7 +40,7 @@ export function RowPanel({
                     {renderCell(cell)}
                   </span>
                   {keys && (
-                    <span className="text-xs text-faint-foreground">
+                    <span className="text-[13px] text-faint-foreground">
                       {keys}
                     </span>
                   )}
