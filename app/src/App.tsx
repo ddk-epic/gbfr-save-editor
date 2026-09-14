@@ -35,6 +35,7 @@ export function App() {
     setSave(result.save);
     setLoadError(undefined);
     setSelection(undefined);
+    setPage("account");
   };
   const closeFile = () => {
     setSave(undefined);
