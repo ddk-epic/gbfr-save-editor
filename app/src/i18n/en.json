@@ -37,7 +37,7 @@
     "collapseAll": "collapse all"
   },
   "character": {
-    "title": "{{key}} · Lv {{level}}"
+    "title": "{{name}} · Lv {{level}}"
   },
   "table": {
     "empty": "Nothing stored.",
@@ -113,7 +113,8 @@
     "curio": "curio",
     "reward": "reward",
     "quest": "quest",
-    "kind": "kind",
+    "type": "type",
+    "category": "category",
     "accepted": "accepted",
     "completed": "completed",
     "clears": "clears",

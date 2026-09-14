@@ -1,4 +1,6 @@
+import { isNPC, isUnused } from "gbfr-save-editor";
 import { useTranslation } from "react-i18next";
+import { useGameText } from "../game-text";
 import type { Page } from "../navigation";
 import type { SaveView } from "../save/view";
 import type en from "../i18n/en.json";
@@ -18,6 +20,7 @@ export function ContentsTree({
   onTable: (page: Page, tableId: string) => void;
 }) {
   const { t } = useTranslation();
+  const gt = useGameText();
   const character = page.startsWith("char:") ? page.slice(5) : undefined;
   return (
     <nav className="sticky top-0 h-fit space-y-4 py-6 text-sidebar-foreground">
@@ -51,7 +54,9 @@ export function ContentsTree({
               <div key={c.key}>
                 <Link
                   indent={1}
-                  label={c.key}
+                  label={gt("character", c.key) ?? c.key}
+                  title={c.key}
+                  disabled={isNPC(c.key) || isUnused(c.key)}
                   active={character === c.key}
                   onClick={() => onPage(`char:${c.key}`)}
                 />
@@ -98,24 +103,32 @@ function Heading({
 
 function Link({
   label,
+  title,
   active,
+  disabled,
   onClick,
   indent = 0,
 }: {
   label: string;
+  title?: string;
   active?: boolean;
+  disabled?: boolean;
   onClick: () => void;
   indent?: 0 | 1 | 2;
 }) {
   return (
     <button
       onClick={onClick}
+      title={title}
+      disabled={disabled}
       className={`flex w-full items-center py-0.5 text-left ${["", "pl-3", "pl-6"][indent]} ${
         active
           ? "text-sidebar-primary"
-          : indent === 2
-            ? "text-subtle-foreground hover:text-sidebar-accent-foreground"
-            : "text-muted-foreground hover:text-sidebar-accent-foreground"
+          : disabled
+            ? "cursor-default text-faint-foreground"
+            : indent === 2
+              ? "text-subtle-foreground hover:text-sidebar-accent-foreground"
+              : "text-muted-foreground hover:text-sidebar-accent-foreground"
       }`}
     >
       <span className="truncate">{label}</span>
