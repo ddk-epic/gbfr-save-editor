@@ -7,11 +7,11 @@ const SRC = path.resolve(import.meta.dirname, "src");
 
 /**
  * Layer of a module path under src, without extension. Edit: the edit entry,
- * session/, data/rules/, and any edit or rules file. Catalog: the catalog entry
- * and catalog/. Everything else is read.
+ * session/, data/rules/, and any edit or rules file. Language: the language
+ * entry and language/. Everything else is read.
  */
 function layerOf(rel) {
-  if (/^catalog(\/|$)/.test(rel)) return "catalog";
+  if (/^language(\/|$)/.test(rel)) return "language";
   if (/^(edit$|session\/|data\/rules\/)|(^|\/)(edit|rules)$/.test(rel))
     return "edit";
   return "read";
@@ -21,7 +21,7 @@ function layerOf(rel) {
 const ALLOWED = {
   read: ["read"],
   edit: ["read", "edit"],
-  catalog: ["read", "catalog"],
+  language: ["read", "language"],
 };
 
 const layers = {
@@ -106,7 +106,7 @@ export default tseslint.config(
       ],
     },
   },
-  // Read, edit and catalog layers, matching the package entries.
+  // Read, edit and language layers, matching the package entries.
   {
     files: ["src/**"],
     plugins: { layers },
