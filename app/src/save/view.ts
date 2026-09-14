@@ -1,5 +1,7 @@
 import {
   characterOrder,
+  compareSigils,
+  itemOrder,
   readArchives,
   readCharacterData,
   readCounterQuests,
@@ -142,33 +144,42 @@ export function buildView(save: Save): SaveView {
       [["quests cleared", profile.questsCleared]],
     ),
     table(
+      "currency",
+      "currency",
+      ["item", "count"],
+      [
+        ["rupies", inventory.rupies],
+        ["mastery points", inventory.masteryPoints],
+      ],
+    ),
+    table(
       "items",
       "items",
       ["item", "count", "wishList", "new"],
-      [
-        ["rupies", inventory.rupies, undefined, undefined],
-        ["mastery points", inventory.masteryPoints, undefined, undefined],
-        ...[...inventory.items].map(([key, count]): Cell[] => [
+      [...inventory.items]
+        .sort(([a], [b]) => itemOrder(a) - itemOrder(b))
+        .map(([key, count]): Cell[] => [
           keyCell("item", key),
           count,
           wished.has(key),
           unseen.has(key),
         ]),
-      ],
     ),
     table(
       "sigils",
       "sigils",
       ["slot", "sigil", "level", "primary", "secondary", "locked", "new"],
-      [...inventory.sigils].map(([slot, s]) => [
-        slot,
-        keyCell("sigil", s.key),
-        s.level,
-        trait(s.primaryTrait),
-        trait(s.secondaryTrait),
-        s.locked,
-        !s.seen,
-      ]),
+      [...inventory.sigils]
+        .sort(([slotA, a], [slotB, b]) => compareSigils(a, b) || slotA - slotB)
+        .map(([slot, s]) => [
+          slot,
+          keyCell("sigil", s.key),
+          s.level,
+          keyCell("trait", s.primaryTrait?.key),
+          keyCell("trait", s.secondaryTrait?.key),
+          s.locked,
+          !s.seen,
+        ]),
     ),
     table(
       "weapons",
@@ -231,10 +242,9 @@ export function buildView(save: Save): SaveView {
     table(
       "curios",
       "curios",
-      ["index", "curio", "type", "reward"],
+      ["index", "type", "reward"],
       inventory.curios.map((c, i) => [
         i + 1,
-        keyCell("item", c.key),
         c.reward?.type,
         c.reward &&
           (c.reward.type === "sigil"
