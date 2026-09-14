@@ -64,8 +64,8 @@ const layers = {
 };
 
 export default tseslint.config(
-  // Unlinted trees, mirroring .gitignore.
-  { ignores: ["node_modules", "tmp"] },
+  // Unlinted trees: .gitignore entries, and app, which has its own config.
+  { ignores: ["node_modules", "tmp", "app"] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
