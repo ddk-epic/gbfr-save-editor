@@ -1,5 +1,6 @@
 import {
   CHARACTER_KEYS,
+  CHARACTER_UI_ORDER,
   FATE_EPISODE_CHARACTERS,
   FATE_EPISODE_KEYS,
   MASTER_LEVEL_MSP,
@@ -33,6 +34,19 @@ import {
   SUMMON_SLOTS,
   UNIT,
 } from "./layout";
+
+/** NP rows: Lyria, Vyrn, Sierokarte, Rolan, Historiath, Zathba. */
+export const isNPC = (character: string) => /^NP\d{4}$/.test(character);
+
+/** Rows no save should use: empty party slots, the LookDev rig, Id's second form. */
+export const isUnused = (character: string) =>
+  /^SLOT\d{2}$/.test(character) ||
+  character === "PL000B" ||
+  character === "PL2000";
+
+/** chara.UIOrder: playable, then NPCs, empty slots and dev rows; unresolved keys last. */
+export const characterOrder = (character: string) =>
+  CHARACTER_UI_ORDER[character] ?? Infinity;
 
 export interface Equipment {
   /** chara.CharId */
