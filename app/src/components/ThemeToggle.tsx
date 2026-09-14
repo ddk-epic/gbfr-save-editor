@@ -1,5 +1,6 @@
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ToolbarButton } from "./ToolbarButton";
 
 const THEMES = [
@@ -9,6 +10,7 @@ const THEMES = [
 ] as const;
 
 export function ThemeToggle() {
+  const { t } = useTranslation();
   const [index, setIndex] = useState(0);
   const theme = THEMES[index]!;
 
@@ -26,9 +28,12 @@ export function ThemeToggle() {
   }, [theme.key]);
 
   return (
-    <ToolbarButton onClick={() => setIndex((index + 1) % THEMES.length)} title="Theme">
+    <ToolbarButton
+      onClick={() => setIndex((index + 1) % THEMES.length)}
+      title={t("toolbar.theme")}
+    >
       <span className="flex w-[9ch] items-center justify-center gap-1">
-        {theme.icon} {theme.key}
+        {theme.icon} {t(`toolbar.themes.${theme.key}`)}
       </span>
     </ToolbarButton>
   );
