@@ -52,10 +52,13 @@ export {
 } from "./domain/journal";
 export { readEarnedTrophies } from "./domain/trophies";
 export {
+  CAPTAINS,
   characterOrder,
   isNPC,
+  isUnchosenCaptain,
   isUnused,
   readCharacterData,
+  type Captain,
   type Character,
   type CharacterData,
   type Equipment,

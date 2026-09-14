@@ -6,6 +6,7 @@ import { hashId } from "../hash/xxhash32-custom";
 export const EMPTY_HASH = hashId("");
 
 export const ID = {
+  CAPTAIN: 1103,
   RUPIES: 1104,
   MASTERY_POINTS: 1112,
   CHARACTER_KEY: 1301,

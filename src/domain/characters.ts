@@ -44,6 +44,19 @@ export const isUnused = (character: string) =>
   character === "PL000B" ||
   character === "PL2000";
 
+/** Gran and Djeeta, in the order 1103 numbers them from 1. */
+export const CAPTAINS = ["PL0000", "PL0100"] as const;
+export type Captain = (typeof CAPTAINS)[number];
+
+/** The captain the save did not pick. Unknown when the save names no captain. */
+export const isUnchosenCaptain = (
+  character: string,
+  captain: Captain | undefined,
+) =>
+  captain !== undefined &&
+  (CAPTAINS as readonly string[]).includes(character) &&
+  character !== captain;
+
 /** chara.UIOrder: playable, then NPCs, empty slots and dev rows; unresolved keys last. */
 export const characterOrder = (character: string) =>
   CHARACTER_UI_ORDER[character] ?? Infinity;
@@ -119,6 +132,8 @@ export interface Loadout extends Equipment {
 }
 
 export interface CharacterData {
+  /** The captain picked at the start, undefined when 1103 holds neither. */
+  captain: Captain | undefined;
   /** Every character's level and current equipment, in save order. */
   characters: Character[];
   /** Current party: chara.CharId per slot, undefined when empty. */
@@ -364,5 +379,9 @@ export function readCharacterData(units: UnitStore): CharacterData {
       loadouts.push({ ...equipment, name: readName(units, unitId) });
   }
 
-  return { characters, party, summons, loadouts };
+  const captainNumber = units.values(ID.CAPTAIN, 0, "int")?.[0];
+  const captain =
+    captainNumber === undefined ? undefined : CAPTAINS[captainNumber - 1];
+
+  return { captain, characters, party, summons, loadouts };
 }
