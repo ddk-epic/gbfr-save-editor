@@ -61,7 +61,8 @@
   },
   "sections": {
     "profile": "Profile",
-    "items": "Currency and items",
+    "currency": "Currency",
+    "items": "Items",
     "sigils": "Sigils",
     "weapons": "Weapons",
     "wrightstones": "Wrightstones",

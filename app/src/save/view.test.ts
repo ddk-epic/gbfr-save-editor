@@ -19,6 +19,7 @@ describe.skipIf(!hasSave)("buildView", () => {
   it("lists every account domain", () => {
     expect(view.account.map((t) => t.id)).toEqual([
       "profile",
+      "currency",
       "items",
       "sigils",
       "weapons",
