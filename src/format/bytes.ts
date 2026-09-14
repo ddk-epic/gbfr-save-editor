@@ -16,9 +16,13 @@ export class ByteReader {
 
   check(at: number, size: number, what: string): void {
     if (!Number.isInteger(at) || at < 0 || at + size > this.length) {
-      throw new SaveFormatError(
-        `${what} at 0x${at.toString(16)} (${size} B) is outside 0x${this.length.toString(16)} B`,
-      );
+      throw new SaveFormatError({
+        code: "outOfBounds",
+        what,
+        at,
+        size,
+        length: this.length,
+      });
     }
   }
 
@@ -71,7 +75,7 @@ export class ByteReader {
   u64Number(at: number, what: string): number {
     const value = this.u64(at);
     if (value > BigInt(Number.MAX_SAFE_INTEGER)) {
-      throw new SaveFormatError(`${what} 0x${value.toString(16)} is too large`);
+      throw new SaveFormatError({ code: "tooLarge", what, value });
     }
     return Number(value);
   }

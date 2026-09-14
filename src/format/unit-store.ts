@@ -16,14 +16,19 @@ export class UnitStore {
         this.byIdType.set(unit.idType, group);
       }
       if (group.valueType !== unit.valueType) {
-        throw new SaveFormatError(
-          `IDType ${unit.idType} is stored as both ${group.valueType} and ${unit.valueType}`,
-        );
+        throw new SaveFormatError({
+          code: "mixedValueType",
+          idType: unit.idType,
+          first: group.valueType,
+          second: unit.valueType,
+        });
       }
       if (group.units.has(unit.unitId)) {
-        throw new SaveFormatError(
-          `IDType ${unit.idType} UnitID ${unit.unitId} appears twice`,
-        );
+        throw new SaveFormatError({
+          code: "duplicateUnit",
+          idType: unit.idType,
+          unitId: unit.unitId,
+        });
       }
       group.units.set(unit.unitId, unit);
     }
@@ -57,9 +62,12 @@ export class UnitStore {
     const unit = this.get(idType, unitId);
     if (!unit) return undefined;
     if (unit.valueType !== valueType) {
-      throw new SaveFormatError(
-        `IDType ${idType} is ${unit.valueType}, not ${valueType}`,
-      );
+      throw new SaveFormatError({
+        code: "wrongValueType",
+        idType,
+        expected: valueType,
+        actual: unit.valueType,
+      });
     }
     return unit.values as ValueOf[T][];
   }

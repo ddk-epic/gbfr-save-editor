@@ -15,7 +15,7 @@ const archives = readArchives(save.slotData.units);
 
 `readContainer` in `src/format/container.ts` reads the 0x34 byte header. It holds the main and sub versions, the Steam ID, and the offset and size of SystemData and SlotData. It cuts both sections out of the file. The last 0x14 bytes of SlotData are a footer that gives the offset and byte count of the ten xxHash64 checksums. `readContainer` reads the checksums and trims them off, so `slotData` ends at the FlatBuffer. `save-checksum.md` lists the hashed ranges.
 
-Every offset and size gets checked against the file. A section out of bounds or a footer that does not line up throws `SaveFormatError`.
+Every offset and size gets checked against the file. A section out of bounds or a footer that does not line up throws `SaveFormatError`. Its `issue` holds a `code` naming the failed check and that check's parameters, such as `{ code: "outOfBounds", what: "SlotData", at, size, length }`, so callers phrase the reason in their own language. The library holds no text for them; the message is the code and its parameters.
 
 ### FlatBuffer
 

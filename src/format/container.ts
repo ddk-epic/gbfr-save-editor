@@ -49,9 +49,10 @@ export function readContainer(bytes: Uint8Array): SaveContainer {
   reader.check(header.systemDataOffset, header.systemDataSize, "SystemData");
   reader.check(header.slotDataOffset, header.slotDataSize, "SlotData");
   if (header.slotDataSize < FOOTER_SIZE) {
-    throw new SaveFormatError(
-      `SlotData size 0x${header.slotDataSize.toString(16)} has no room for the footer`,
-    );
+    throw new SaveFormatError({
+      code: "noFooterRoom",
+      slotDataSize: header.slotDataSize,
+    });
   }
 
   const slot = new ByteReader(
@@ -68,9 +69,12 @@ export function readContainer(bytes: Uint8Array): SaveContainer {
     checksumBytes !== CHECKSUM_COUNT * 8 ||
     checksumOffset + checksumBytes !== footerAt
   ) {
-    throw new SaveFormatError(
-      `SlotData footer does not line up: checksums 0x${checksumBytes.toString(16)} B at 0x${checksumOffset.toString(16)}, footer at 0x${footerAt.toString(16)}`,
-    );
+    throw new SaveFormatError({
+      code: "footerMisaligned",
+      checksumOffset,
+      checksumBytes,
+      footerAt,
+    });
   }
 
   const checksums = Array.from({ length: CHECKSUM_COUNT }, (_, i) =>

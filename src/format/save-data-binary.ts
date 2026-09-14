@@ -140,7 +140,7 @@ function readUnit<T extends ValueType>(
 export function decodeSaveDataBinary(bytes: Uint8Array): SaveDataBinary {
   const reader = new ByteReader(bytes);
   if (reader.length < 4) {
-    throw new SaveFormatError("SaveDataBinary is shorter than its root offset");
+    throw new SaveFormatError({ code: "flatBufferTooShort" });
   }
   const root = deref(reader, 0);
 

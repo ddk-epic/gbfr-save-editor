@@ -1,4 +1,8 @@
-export { SaveFormatError } from "./errors";
+export {
+  SaveFormatError,
+  type SaveFormatCode,
+  type SaveFormatIssue,
+} from "./errors";
 export {
   FILE_SIZE,
   readContainer,
