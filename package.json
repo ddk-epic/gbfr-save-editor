@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "gen:data": "tsx scripts/gen-data.ts"
+    "gen:data": "tsx scripts/gen-data.ts",
+    "dev": "pnpm --filter gbfr-save-editor-app dev"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
