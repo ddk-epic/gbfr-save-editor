@@ -1,31 +1,55 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  Fragment,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { useTranslation } from "react-i18next";
-import { isUnresolved, type Cell, type Table } from "../save/view";
+import { useGameText } from "../game-text";
+import { keyCells, type Cell, type Table } from "../save/view";
 
 const ROW_BATCH = 200;
 const VISIBLE_ROWS = 25;
 
 const TABLE_MAX_HEIGHT = `calc(${VISIBLE_ROWS + 1} * 1.5em + ${VISIBLE_ROWS} * 0.25rem + 0.5rem)`;
 
-/** Formats cells for the current language. */
-export function useFormatCell() {
+/** Renders cells for the current language: key cells by game text, the raw key faint when it has none. */
+export function useRenderCell() {
   const { t, i18n } = useTranslation();
+  const gt = useGameText();
   return useMemo(() => {
     const number = new Intl.NumberFormat(i18n.language);
     const yes = t("table.yes");
     const no = t("table.no");
-    return (cell: Cell) =>
-      cell === undefined
-        ? "—"
-        : typeof cell === "boolean"
-          ? cell
-            ? yes
-            : no
-          : typeof cell === "number"
-            ? number.format(cell)
-            : cell;
-  }, [t, i18n.language]);
+    return (cell: Cell): ReactNode => {
+      if (cell === undefined) return "—";
+      if (typeof cell === "boolean") return cell ? yes : no;
+      if (typeof cell === "number") return number.format(cell);
+      if (typeof cell === "string") return cell;
+      const separator = "separator" in cell ? cell.separator : "";
+      return keyCells(cell).map((k, i) => {
+        const text = gt(k.text, k.key);
+        return (
+          <Fragment key={i}>
+            {i > 0 && separator}
+            <span className={text === undefined ? "text-faint-foreground" : ""}>
+              {text ?? k.key}
+            </span>
+            {k.level !== undefined && ` Lv ${k.level}`}
+          </Fragment>
+        );
+      });
+    };
+  }, [t, i18n.language, gt]);
 }
+
+/** The archive keys behind a cell, for a tooltip; undefined for plain values. */
+export const cellKeys = (cell: Cell) =>
+  keyCells(cell)
+    .map((k) => k.key)
+    .join(", ") || undefined;
 
 export function DataTable({
   table,
@@ -37,7 +61,7 @@ export function DataTable({
   onSelect: (rowId: string) => void;
 }) {
   const { t } = useTranslation();
-  const formatCell = useFormatCell();
+  const renderCell = useRenderCell();
   const [shown, setShown] = useState({ tableId: table.id, limit: ROW_BATCH });
   const limit = shown.tableId === table.id ? shown.limit : ROW_BATCH;
   const hasMore = table.rows.length > limit;
@@ -90,9 +114,10 @@ export function DataTable({
               {row.cells.map((cell, i) => (
                 <td
                   key={i}
-                  className={`px-3 py-0.5 whitespace-nowrap ${isUnresolved(cell) ? "text-faint-foreground" : ""} ${typeof cell === "number" ? "text-right tabular-nums" : ""}`}
+                  title={cellKeys(cell)}
+                  className={`px-3 py-0.5 whitespace-nowrap ${typeof cell === "number" ? "text-right tabular-nums" : ""}`}
                 >
-                  {formatCell(cell)}
+                  {renderCell(cell)}
                 </td>
               ))}
             </tr>

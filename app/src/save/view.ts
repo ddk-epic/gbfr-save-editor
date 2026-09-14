@@ -1,4 +1,5 @@
 import {
+  characterOrder,
   readArchives,
   readCharacterData,
   readCounterQuests,
@@ -13,9 +14,23 @@ import {
   type Save,
   type Trait,
 } from "gbfr-save-editor";
+import type { GameTextTable } from "../game-text";
 import type en from "../i18n/en.json";
 
-export type Cell = string | number | boolean | undefined;
+/** An archive key gt() names at render, with an optional "Lv" suffix. */
+export interface KeyCell {
+  text: GameTextTable;
+  key: string;
+  level?: number;
+}
+
+/** Key cells shown in one cell, joined by `separator`. */
+export interface KeyList {
+  keys: KeyCell[];
+  separator: string;
+}
+
+export type Cell = string | number | boolean | undefined | KeyCell | KeyList;
 
 export interface Row {
   id: string;
@@ -50,11 +65,47 @@ export interface SaveView {
   unresolved: number;
 }
 
-/** True for a key the tables could not resolve, shown as "#" and 8 hex digits. */
-export const isUnresolved = (cell: Cell) =>
-  typeof cell === "string" && /^#[0-9a-f]{8}$/.test(cell);
+/** Key cells of a cell, none for plain values. */
+export const keyCells = (cell: Cell): KeyCell[] =>
+  typeof cell !== "object" ? [] : "keys" in cell ? cell.keys : [cell];
 
-const trait = (t: Trait | undefined) => t && `${t.key} Lv ${t.level}`;
+/** True for a key the tables could not resolve, shown as "#" and 8 hex digits. */
+const isUnresolvedKey = (key: string) => /^#[0-9a-f]{8}$/.test(key);
+
+const isUnresolved = (cell: Cell) =>
+  keyCells(cell).some((k) => isUnresolvedKey(k.key));
+
+const keyCell = (
+  text: GameTextTable,
+  key: string | undefined,
+  level?: number,
+): KeyCell | undefined =>
+  key === undefined ? undefined : { text, key, level };
+
+/** Key cells for the defined keys, undefined when there are none. */
+const keyList = (
+  text: GameTextTable,
+  keys: (string | undefined)[],
+): KeyList | undefined => {
+  const cells = keys.flatMap((key) =>
+    key === undefined ? [] : [{ text, key }],
+  );
+  return cells.length ? { keys: cells, separator: ", " } : undefined;
+};
+
+const trait = (t: Trait | undefined) => t && keyCell("trait", t.key, t.level);
+
+const traitList = (traits: Trait[]): KeyList | undefined =>
+  traits.length
+    ? {
+        keys: traits.map((t) => ({
+          text: "trait",
+          key: t.key,
+          level: t.level,
+        })),
+        separator: " / ",
+      }
+    : undefined;
 
 const table = (
   id: string,
@@ -92,7 +143,7 @@ export function buildView(save: Save): SaveView {
         ["rupies", inventory.rupies, undefined, undefined],
         ["mastery points", inventory.masteryPoints, undefined, undefined],
         ...[...inventory.items].map(([key, count]): Cell[] => [
-          key,
+          keyCell("item", key),
           count,
           wished.has(key),
           unseen.has(key),
@@ -105,7 +156,7 @@ export function buildView(save: Save): SaveView {
       ["slot", "sigil", "level", "primary", "secondary", "locked", "new"],
       [...inventory.sigils].map(([slot, s]) => [
         slot,
-        s.key,
+        keyCell("sigil", s.key),
         s.level,
         trait(s.primaryTrait),
         trait(s.secondaryTrait),
@@ -131,14 +182,14 @@ export function buildView(save: Save): SaveView {
       ],
       [...inventory.weapons].map(([slot, w]) => [
         slot,
-        w.key,
+        keyCell("weapon", w.key),
         w.uncap,
         w.plus,
         w.awakening,
         w.transcendence,
-        w.traits.filter(Boolean).join(", ") || undefined,
-        w.wrightstone?.traits.map(trait).join(" / "),
-        w.appearance,
+        keyList("trait", w.traits),
+        w.wrightstone && traitList(w.wrightstone.traits),
+        keyCell("weapon", w.appearance),
         w.questsUsed,
         !w.seen,
       ]),
@@ -149,7 +200,7 @@ export function buildView(save: Save): SaveView {
       ["slot", "wrightstone", "main", "sub1", "sub2", "locked", "new"],
       [...inventory.wrightstones].map(([slot, w]) => [
         slot,
-        w.key,
+        keyCell("item", w.key),
         trait(w.traits[0]),
         trait(w.traits[1]),
         trait(w.traits[2]),
@@ -163,9 +214,10 @@ export function buildView(save: Save): SaveView {
       ["id", "summon", "trait", "equipBonus", "equippedOnce", "new"],
       [...inventory.summons].map(([id, s]) => [
         id,
-        s.key,
+        keyCell("summon", s.key),
         trait(s.trait),
-        s.equipBonus && `${s.equipBonus.key} Lv ${s.equipBonus.level + 1}`,
+        s.equipBonus &&
+          keyCell("summonBonus", s.equipBonus.key, s.equipBonus.level + 1),
         s.everEquipped,
         !s.seen,
       ]),
@@ -173,14 +225,15 @@ export function buildView(save: Save): SaveView {
     table(
       "curios",
       "curios",
-      ["index", "curio", "reward"],
+      ["index", "curio", "type", "reward"],
       inventory.curios.map((c, i) => [
         i + 1,
-        c.key,
+        keyCell("item", c.key),
+        c.reward?.type,
         c.reward &&
-          (c.reward.kind === "sigil"
-            ? `sigil ${c.reward.key} Lv ${c.reward.level}`
-            : `${c.reward.kind} ${c.reward.key}`),
+          (c.reward.type === "sigil"
+            ? keyCell("sigil", c.reward.key, c.reward.level)
+            : keyCell("item", c.reward.key)),
       ]),
     ),
     table(
@@ -188,7 +241,7 @@ export function buildView(save: Save): SaveView {
       "quests",
       [
         "quest",
-        "kind",
+        "type",
         "accepted",
         "completed",
         "clears",
@@ -219,31 +272,31 @@ export function buildView(save: Save): SaveView {
     table(
       "journal",
       "journal",
-      ["entry", "kind", "unlocked", "viewed", "paragraphs"],
+      ["entry", "category", "unlocked", "viewed", "paragraphs"],
       [
         ...readArchives(units).map((e): Cell[] => [
-          e.key,
+          keyCell("archive", e.key),
           "archive",
           e.obtained,
           e.viewed,
           undefined,
         ]),
         ...readGlossary(units).map((e): Cell[] => [
-          e.key,
+          keyCell("glossary", e.key),
           "glossary",
           e.listed,
           e.viewed,
           e.paragraphs,
         ]),
         ...readTips(units).map((e): Cell[] => [
-          e.key,
+          keyCell("tip", e.key),
           "tip",
           e.listed,
           e.viewed,
           undefined,
         ]),
         ...readMusic(units).map((e): Cell[] => [
-          e.key,
+          keyCell("music", e.key),
           "music",
           e.listed,
           e.viewed,
@@ -261,75 +314,77 @@ export function buildView(save: Save): SaveView {
 
   const equipmentRow = (label: string, e: Equipment): Cell[] => [
     label,
-    e.weapon?.key,
+    keyCell("weapon", e.weapon?.key),
     `${e.sigils.filter(Boolean).length}/${e.sigils.length}`,
-    e.sigils
-      .filter((s) => s !== undefined)
-      .map((s) => s.key)
-      .join(", ") || undefined,
-    e.skills.filter(Boolean).join(", ") || undefined,
+    keyList(
+      "sigil",
+      e.sigils.map((s) => s?.key),
+    ),
+    keyList("skill", e.skills),
   ];
 
-  const characters = data.characters.map((c): CharacterView => ({
-    key: c.character,
-    level: c.level,
-    tables: [
-      table(
-        `${c.character}:progress`,
-        "progress",
-        ["entry", "value", "completed"],
-        [
-          ["level", c.level, undefined],
-          ["xp", c.xp, undefined],
-          ["base HP", c.baseHp, undefined],
-          ["base ATK", c.baseAttack, undefined],
-          ["quests used", c.questsUsed, undefined],
-          ["master level", c.masterLevel, undefined],
-          ["master XP", c.masterXp, undefined],
-          ...c.fateEpisodes.map((f): Cell[] => [
-            f.key,
-            "fate episode",
-            f.completed,
-          ]),
-        ],
-      ),
-      table(
-        `${c.character}:masteries`,
-        "masteries",
-        ["entry", "detail", "value"],
-        [
-          ...Object.entries(c.masteries).map(([section, m]): Cell[] => [
-            section,
-            `${m.taken}/${m.total} nodes`,
-            `${m.msp} MSP`,
-          ]),
-          ...c.overMasteries.map((o, i): Cell[] => [
-            `over-mastery ${i + 1}`,
-            o?.key,
-            o && `Lv ${o.level}`,
-          ]),
-          ...c.masterTraits.map((t): Cell[] => [
-            t.style,
-            t.key,
-            t.position === undefined
-              ? `${t.rank} perk`
-              : `${t.rank} #${t.position}`,
-          ]),
-        ],
-      ),
-      table(
-        `${c.character}:equipment`,
-        "equipment",
-        ["loadout", "weapon", "sigilSlots", "sigils", "skills"],
-        [
-          equipmentRow("current", c),
-          ...data.loadouts
-            .filter((l) => l.character === c.character)
-            .map((l) => equipmentRow(l.name, l)),
-        ],
-      ),
-    ],
-  }));
+  const characters = [...data.characters]
+    .sort((a, b) => characterOrder(a.character) - characterOrder(b.character))
+    .map((c): CharacterView => ({
+      key: c.character,
+      level: c.level,
+      tables: [
+        table(
+          `${c.character}:progress`,
+          "progress",
+          ["entry", "value", "completed"],
+          [
+            ["level", c.level, undefined],
+            ["xp", c.xp, undefined],
+            ["base HP", c.baseHp, undefined],
+            ["base ATK", c.baseAttack, undefined],
+            ["quests used", c.questsUsed, undefined],
+            ["master level", c.masterLevel, undefined],
+            ["master XP", c.masterXp, undefined],
+            ...c.fateEpisodes.map((f): Cell[] => [
+              keyCell("fateEpisode", f.key),
+              "fate episode",
+              f.completed,
+            ]),
+          ],
+        ),
+        table(
+          `${c.character}:masteries`,
+          "masteries",
+          ["entry", "detail", "value"],
+          [
+            ...Object.entries(c.masteries).map(([section, m]): Cell[] => [
+              section,
+              `${m.taken}/${m.total} nodes`,
+              `${m.msp} MSP`,
+            ]),
+            ...c.overMasteries.map((o, i): Cell[] => [
+              `over-mastery ${i + 1}`,
+              keyCell("mastery", o?.key),
+              o && `Lv ${o.level}`,
+            ]),
+            ...c.masterTraits.map((t): Cell[] => [
+              t.style,
+              keyCell("masterTrait", t.key),
+              t.position === undefined
+                ? `${t.rank} perk`
+                : `${t.rank} #${t.position}`,
+            ]),
+          ],
+        ),
+        table(
+          `${c.character}:equipment`,
+          "equipment",
+          ["loadout", "weapon", "sigilSlots", "sigils", "skills"],
+          [
+            equipmentRow("current", c),
+            ...data.loadouts
+              .filter((l) => l.character === c.character)
+              .map((l) => equipmentRow(l.name, l)),
+          ],
+        ),
+      ],
+    }));
 
   const unresolved = [...account, ...characters.flatMap((c) => c.tables)]
     .flatMap((t) => t.rows)

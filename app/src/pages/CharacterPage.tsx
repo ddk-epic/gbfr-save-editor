@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { DataTable } from "../components/DataTable";
+import { useGameText } from "../game-text";
 import { PageTop } from "../components/PageTop";
 import { RowPanel } from "../components/RowPanel";
 import { sectionId, type Selection } from "../navigation";
@@ -19,12 +20,14 @@ export function CharacterPage({
   onRoot: () => void;
 }) {
   const { t } = useTranslation();
+  const gt = useGameText();
+  const name = gt("character", character.key) ?? character.key;
   return (
     <>
       <PageTop
-        crumbs={[fileName, t("contents.characters"), character.key]}
+        crumbs={[fileName, t("contents.characters"), name]}
         title={t("character.title", {
-          key: character.key,
+          name,
           level: character.level,
         })}
         onRoot={onRoot}
