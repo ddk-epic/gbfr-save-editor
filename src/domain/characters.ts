@@ -213,9 +213,11 @@ function readMasteries(
     ladder.forEach((node, index) => {
       if (!(bits & (1 << index))) return;
       if (!node)
-        throw new SaveFormatError(
-          `masteries ${base + i}: bit ${index} set on an unused index`,
-        );
+        throw new SaveFormatError({
+          code: "unusedMasteryBit",
+          unitId: base + i,
+          bit: index,
+        });
       const [section, msp] = node;
       const sectionProgress =
         progress[
@@ -247,9 +249,11 @@ function readOverMasteries(
     const bits = units.values(ID.OVER_MASTERY_LEVEL, base + i, "int")?.[0] ?? 0;
     const level = Math.log2(bits) + 1;
     if (!Number.isInteger(level))
-      throw new SaveFormatError(
-        `over-mastery ${base + i}: level bits ${bits} are not a single bit`,
-      );
+      throw new SaveFormatError({
+        code: "overMasteryLevel",
+        unitId: base + i,
+        bits,
+      });
     return { key, level };
   });
 }
