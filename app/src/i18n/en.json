@@ -1,0 +1,147 @@
+{
+  "app": {
+    "name": "gbfr-save-editor",
+    "noFile": "no file"
+  },
+  "toolbar": {
+    "open": "open",
+    "close": "close",
+    "theme": "Theme",
+    "themes": {
+      "dark": "dark",
+      "light": "light",
+      "system": "system"
+    }
+  },
+  "status": {
+    "slotVersion": "slot data v{{version}}",
+    "characters_one": "{{count}} character",
+    "characters_other": "{{count}} characters",
+    "unresolved_one": "{{count}} unresolved key",
+    "unresolved_other": "{{count}} unresolved keys",
+    "readOnly": "read-only"
+  },
+  "contents": {
+    "welcome": "Welcome",
+    "account": "Account",
+    "characters": "Characters",
+    "empty": "Load a save to browse it."
+  },
+  "welcome": {
+    "title": "Granblue Fantasy: Relink save editor",
+    "drop": "Drop SaveData1.dat here, or click to choose it",
+    "news": "What's new"
+  },
+  "account": {
+    "expandAll": "expand all",
+    "collapseAll": "collapse all"
+  },
+  "character": {
+    "title": "{{key}} · Lv {{level}}"
+  },
+  "table": {
+    "empty": "Nothing stored.",
+    "yes": "yes",
+    "no": "no"
+  },
+  "rowPanel": {
+    "row": "Row",
+    "readOnly": "Read-only until editing ships.",
+    "empty": "No row selected. Click a row below to see it here."
+  },
+  "validation": {
+    "rejectChecks": "Reject checks",
+    "rejectPassed": "header, section bounds, footer, both FlatBuffers decode",
+    "warnings": "Warnings",
+    "unresolved_one": "{{count}} key missing from the key tables, shown as # and hex",
+    "unresolved_other": "{{count}} keys missing from the key tables, shown as # and hex",
+    "none": "none",
+    "legality": "Legality",
+    "legalityPending": "Checked once editing arrives. Nothing is verified yet."
+  },
+  "sections": {
+    "profile": "Profile",
+    "items": "Currency and items",
+    "sigils": "Sigils",
+    "weapons": "Weapons",
+    "wrightstones": "Wrightstones",
+    "summons": "Summons",
+    "curios": "Curios",
+    "quests": "Quests",
+    "journal": "Journal",
+    "trophies": "Trophies",
+    "progress": "Level and fate episodes",
+    "masteries": "Masteries, over-masteries and master traits",
+    "equipment": "Equipment and loadouts"
+  },
+  "sectionsShort": {
+    "progress": "Level",
+    "masteries": "Masteries",
+    "equipment": "Equipment"
+  },
+  "columns": {
+    "field": "field",
+    "value": "value",
+    "item": "item",
+    "count": "count",
+    "wishList": "wish list",
+    "new": "new",
+    "slot": "slot",
+    "sigil": "sigil",
+    "level": "level",
+    "primary": "primary",
+    "secondary": "secondary",
+    "locked": "locked",
+    "weapon": "weapon",
+    "uncap": "uncap",
+    "plus": "plus",
+    "awakening": "awakening",
+    "transcendence": "transcendence",
+    "traits": "traits",
+    "wrightstone": "wrightstone",
+    "appearance": "appearance",
+    "questsUsed": "quests used",
+    "main": "main",
+    "sub1": "sub 1",
+    "sub2": "sub 2",
+    "id": "id",
+    "summon": "summon",
+    "trait": "trait",
+    "equipBonus": "equip bonus",
+    "equippedOnce": "equipped once",
+    "index": "#",
+    "curio": "curio",
+    "reward": "reward",
+    "quest": "quest",
+    "kind": "kind",
+    "accepted": "accepted",
+    "completed": "completed",
+    "clears": "clears",
+    "perfectGrade": "S++",
+    "lastCleared": "last cleared",
+    "entry": "entry",
+    "unlocked": "unlocked",
+    "viewed": "viewed",
+    "paragraphs": "paragraphs",
+    "earnedTrophy": "earned trophy",
+    "detail": "detail",
+    "loadout": "loadout",
+    "sigilSlots": "sigil slots",
+    "sigils": "sigils",
+    "skills": "skills"
+  },
+  "loadErrors": {
+    "rejected": "Rejected: {{reason}}",
+    "outOfBounds": "{{what}} at {{at}} ({{size}} B) is outside {{length}} B",
+    "tooLarge": "{{what}} {{value}} is too large",
+    "noFooterRoom": "SlotData size {{size}} has no room for the footer",
+    "footerMisaligned": "SlotData footer does not line up: checksums {{bytes}} B at {{offset}}, footer at {{footer}}",
+    "flatBufferTooShort": "SaveDataBinary is shorter than its root offset",
+    "mixedValueType": "IDType {{idType}} is stored as both {{first}} and {{second}}",
+    "duplicateUnit": "IDType {{idType}} UnitID {{unitId}} appears twice",
+    "wrongValueType": "IDType {{idType}} is {{actual}}, not {{expected}}",
+    "unusedMasteryBit": "masteries {{unitId}}: bit {{bit}} set on an unused index",
+    "overMasteryLevel": "over-mastery {{unitId}}: level bits {{bits}} are not a single bit",
+    "unexpected": "the file could not be read"
+  }
+}

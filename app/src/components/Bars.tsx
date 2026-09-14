@@ -1,40 +1,81 @@
 import { FileBox } from "lucide-react";
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import type { SaveView } from "../save/view";
 
 /** Full-width bars whose content lines up with the page column. */
-function Bar({ gutter, className, children }: { gutter: number; className: string; children: ReactNode }) {
+function Bar({
+  gutter,
+  className,
+  children,
+}: {
+  gutter: number;
+  className: string;
+  children: ReactNode;
+}) {
   return (
     <div className={className} style={{ paddingInline: gutter }}>
-      <div className="mx-auto flex max-w-6xl items-center gap-3 px-6">{children}</div>
+      <div className="mx-auto flex max-w-6xl items-center gap-3 px-6">
+        {children}
+      </div>
     </div>
   );
 }
 
-export function TitleBar({ gutter, fileName, children }: { gutter: number; fileName: string | undefined; children: ReactNode }) {
+export function TitleBar({
+  gutter,
+  fileName,
+  children,
+}: {
+  gutter: number;
+  fileName: string | undefined;
+  children: ReactNode;
+}) {
+  const { t } = useTranslation();
   return (
-    <Bar gutter={gutter} className="border-b border-border bg-card py-1.5 text-card-foreground">
+    <Bar
+      gutter={gutter}
+      className="border-b border-border bg-card py-1.5 text-card-foreground"
+    >
       <FileBox size={15} className="text-primary" />
-      <span className="text-strong-foreground">gbfr-save-editor</span>
-      <span className="text-subtle-foreground">— {fileName ?? "no file"}</span>
+      <span className="text-strong-foreground">{t("app.name")}</span>
+      <span className="text-subtle-foreground">
+        — {fileName ?? t("app.noFile")}
+      </span>
       <div className="ml-auto flex gap-1">{children}</div>
     </Bar>
   );
 }
 
-export function StatusBar({ gutter, view }: { gutter: number; view: SaveView | undefined }) {
+export function StatusBar({
+  gutter,
+  view,
+}: {
+  gutter: number;
+  view: SaveView | undefined;
+}) {
+  const { t } = useTranslation();
   return (
-    <Bar gutter={gutter} className="bg-status py-0.5 text-[12px] text-status-foreground">
+    <Bar
+      gutter={gutter}
+      className="bg-status py-0.5 text-[12px] text-status-foreground"
+    >
       {view ? (
         <>
-          <span>slot data v{view.slotVersion ?? "?"}</span>
-          <span>{view.characters.length} characters</span>
-          <span className={view.unresolved ? "font-bold" : ""}>{view.unresolved} unresolved keys</span>
+          <span>
+            {t("status.slotVersion", { version: view.slotVersion ?? "?" })}
+          </span>
+          <span>
+            {t("status.characters", { count: view.characters.length })}
+          </span>
+          <span className={view.unresolved ? "font-bold" : ""}>
+            {t("status.unresolved", { count: view.unresolved })}
+          </span>
         </>
       ) : (
-        <span>no file</span>
+        <span>{t("app.noFile")}</span>
       )}
-      <span className="ml-auto">read-only</span>
+      <span className="ml-auto">{t("status.readOnly")}</span>
     </Bar>
   );
 }
