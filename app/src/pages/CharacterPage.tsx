@@ -59,8 +59,8 @@ export function CharacterPage({
       </PageTop>
       <CollapsibleTables
         tables={character.tables}
-        isOpen={(table) => open.has(table.section)}
-        onToggle={(table) => toggle(table.section)}
+        isOpen={(section) => open.has(section)}
+        onToggle={toggle}
         selection={selection}
         onSelect={onSelect}
       />

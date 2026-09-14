@@ -11,6 +11,7 @@ import { AccountPage } from "./pages/AccountPage";
 import { CharacterPage } from "./pages/CharacterPage";
 import { WelcomePage } from "./pages/WelcomePage";
 import { loadSave, type LoadedSave, type LoadError } from "./save/load";
+import type { SectionId } from "./save/view";
 import { useScrollGutter } from "./useScrollGutter";
 
 export function App() {
@@ -51,10 +52,10 @@ export function App() {
     if (next !== page) setSelection(undefined);
     setPage(next);
   };
-  const goToTable = (next: Page, tableId: string) => {
-    if (next === "account") setOpen((o) => new Set(o).add(tableId));
+  const goToSection = (next: Page, section: SectionId) => {
+    setOpen((o) => new Set(o).add(section));
     go(next);
-    scrollToSection(tableId);
+    scrollToSection(section);
   };
 
   const character = page.startsWith("char:")
@@ -107,7 +108,7 @@ export function App() {
             view={view}
             page={page}
             onPage={go}
-            onTable={goToTable}
+            onSection={goToSection}
           />
           <main className="min-w-0 pb-16">
             {page === "welcome" && (
