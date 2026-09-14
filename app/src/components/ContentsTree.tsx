@@ -1,11 +1,18 @@
 import { isNPC, isUnused } from "gbfr-save-editor";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGameText } from "../game-text";
 import type { Page } from "../navigation";
 import type { SaveView } from "../save/view";
-import type en from "../i18n/en.json";
 
-type CharacterSection = keyof typeof en.sectionsShort;
+type Tab = "account" | "characters";
+
+const tabOf = (page: Page): Tab | undefined =>
+  page === "account"
+    ? "account"
+    : page.startsWith("char:")
+      ? "characters"
+      : undefined;
 
 export function ContentsTree({
   view,
@@ -22,59 +29,51 @@ export function ContentsTree({
   const { t } = useTranslation();
   const gt = useGameText();
   const character = page.startsWith("char:") ? page.slice(5) : undefined;
+
+  const [tab, setTab] = useState<Tab>(tabOf(page) ?? "account");
+  const [prevPage, setPrevPage] = useState(page);
+  if (page !== prevPage) {
+    setPrevPage(page);
+    const next = tabOf(page);
+    if (next) setTab(next);
+  }
+
   return (
     <nav className="sticky top-0 h-fit space-y-4 py-6 text-sidebar-foreground">
-      <Link
-        label={t("contents.welcome")}
-        active={page === "welcome"}
-        onClick={() => onPage("welcome")}
-      />
       {view ? (
-        <>
-          <div>
-            <Heading
+        <div>
+          <div className="mb-2 flex border-b border-sidebar-border">
+            <TabButton
               label={t("contents.account")}
-              active={page === "account"}
-              onClick={() => onPage("account")}
+              active={tab === "account"}
+              onClick={() => setTab("account")}
             />
-            {view.account.map((table) => (
+            <TabButton
+              label={t("contents.characters")}
+              active={tab === "characters"}
+              onClick={() => setTab("characters")}
+            />
+          </div>
+          {tab === "account" &&
+            view.account.map((table) => (
               <Link
                 key={table.id}
-                indent={1}
                 label={t(`sections.${table.section}`)}
                 onClick={() => onTable("account", table.id)}
               />
             ))}
-          </div>
-          <div>
-            <div className="mb-1 text-[12px] tracking-widest text-subtle-foreground uppercase">
-              {t("contents.characters")}
-            </div>
-            {view.characters.map((c) => (
-              <div key={c.key}>
-                <Link
-                  indent={1}
-                  label={gt("character", c.key) ?? c.key}
-                  title={c.key}
-                  disabled={isNPC(c.key) || isUnused(c.key)}
-                  active={character === c.key}
-                  onClick={() => onPage(`char:${c.key}`)}
-                />
-                {character === c.key &&
-                  c.tables.map((table) => (
-                    <Link
-                      key={table.id}
-                      indent={2}
-                      label={t(
-                        `sectionsShort.${table.section as CharacterSection}`,
-                      )}
-                      onClick={() => onTable(`char:${c.key}`, table.id)}
-                    />
-                  ))}
-              </div>
+          {tab === "characters" &&
+            view.characters.map((c) => (
+              <Link
+                key={c.key}
+                label={gt("character", c.key) ?? c.key}
+                title={c.key}
+                disabled={isNPC(c.key) || isUnused(c.key)}
+                active={character === c.key}
+                onClick={() => onPage(`char:${c.key}`)}
+              />
             ))}
-          </div>
-        </>
+        </div>
       ) : (
         <p className="text-faint-foreground">{t("contents.empty")}</p>
       )}
@@ -82,7 +81,7 @@ export function ContentsTree({
   );
 }
 
-function Heading({
+function TabButton({
   label,
   active,
   onClick,
@@ -94,7 +93,7 @@ function Heading({
   return (
     <button
       onClick={onClick}
-      className={`mb-1 block text-[12px] tracking-widest uppercase ${active ? "text-sidebar-primary" : "text-subtle-foreground hover:text-sidebar-foreground"}`}
+      className={`-mb-px flex-1 border-b-2 pb-1 text-center text-[12px] tracking-wider uppercase ${active ? "border-sidebar-primary text-sidebar-primary" : "border-transparent text-subtle-foreground hover:text-sidebar-foreground"}`}
     >
       {label}
     </button>
@@ -107,28 +106,24 @@ function Link({
   active,
   disabled,
   onClick,
-  indent = 0,
 }: {
   label: string;
   title?: string;
   active?: boolean;
   disabled?: boolean;
   onClick: () => void;
-  indent?: 0 | 1 | 2;
 }) {
   return (
     <button
       onClick={onClick}
       title={title}
       disabled={disabled}
-      className={`flex w-full items-center py-0.5 text-left ${["", "pl-3", "pl-6"][indent]} ${
+      className={`flex w-full items-center pb-0.5 text-left ${
         active
           ? "text-sidebar-primary"
           : disabled
             ? "cursor-default text-faint-foreground"
-            : indent === 2
-              ? "text-subtle-foreground hover:text-sidebar-accent-foreground"
-              : "text-muted-foreground hover:text-sidebar-accent-foreground"
+            : "text-muted-foreground hover:text-sidebar-accent-foreground"
       }`}
     >
       <span className="truncate">{label}</span>

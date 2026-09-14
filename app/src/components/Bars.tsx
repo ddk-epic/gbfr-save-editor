@@ -25,10 +25,12 @@ function Bar({
 export function TitleBar({
   gutter,
   fileName,
+  onHome,
   children,
 }: {
   gutter: number;
   fileName: string | undefined;
+  onHome: () => void;
   children: ReactNode;
 }) {
   const { t } = useTranslation();
@@ -37,8 +39,13 @@ export function TitleBar({
       gutter={gutter}
       className="border-b border-border bg-card py-1.5 text-card-foreground"
     >
-      <FileBox size={15} className="text-primary" />
-      <span className="text-strong-foreground">{t("app.name")}</span>
+      <button
+        onClick={onHome}
+        className="flex items-center gap-3 text-strong-foreground hover:text-primary"
+      >
+        <FileBox size={15} className="text-primary" />
+        {t("app.name")}
+      </button>
       <span className="text-subtle-foreground">
         — {fileName ?? t("app.noFile")}
       </span>
