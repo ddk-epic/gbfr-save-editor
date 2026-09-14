@@ -1,10 +1,14 @@
-// Generates the src/data/ tables (hash -> key per archive table, masteries, master traits).
-// pnpm gen:data [tables.sqlite]
-import { writeFileSync } from "node:fs";
+// Generates the src/data/ tables (hash -> key per archive table, masteries, master traits)
+// and src/data/text/ (key -> game text per language).
+// pnpm gen:data [tables.sqlite] [text dir]
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import { hashId } from "../src/hash/xxhash32-custom";
 
-const [dbPath = "../gbfr-extract/tables.sqlite"] = process.argv.slice(2);
+const [
+  dbPath = "../gbfr-extract/tables.sqlite",
+  textDir = "../gbfr-extract/system/table/text",
+] = process.argv.slice(2);
 
 type DataFile =
   | "characters"
@@ -268,6 +272,136 @@ ${characterBlocks.join("\n")}
 console.log(
   `MASTERY_NODES: ${nodeCount} nodes for ${nodes.size} characters, ${gaps} unused indices`,
 );
+
+// Game text: gt() table -> query returning (key, text_id), the key domain
+// returns and its .msg id. Unk* columns keep the extractor's names.
+const GAME_TEXT = {
+  character: `select CharId key, 'TXT_' || CharId text_id from chara`,
+  weapon: `select Key key, Name text_id from weapon`,
+  sigil: `select Key key, Name text_id from gem`,
+  trait: `select Key key, Name text_id from skill`,
+  // Unk5 is the name, Unk6 its _CG copy, Unk7 the info text.
+  skill: `select Key key, Unk5 text_id from ability`,
+  item: `select Key key, ItemName text_id from item`,
+  mastery: `select Key key, FullName text_id from limit_bonus_param`,
+  // Unk18 names only the style perks, Unk19 is the explanation.
+  masterTrait: `select Key key, Unk18 text_id from skillboard_effect`,
+  summon: `select s.Key key, p.SummonName text_id from summon s join summon_param p on p.Key = s.SummonParamId`,
+  summonBonus: `select Key key, Name text_id from summon_base_param`,
+  fateEpisode: `select Key key, FateMissionTitle text_id from fate_episode`,
+  archive: `select Key key, NoteTitle text_id from story_note_archive`,
+  glossary: `select Key key, Key text_id from story_note_wordlist`,
+  // Unk18 is the title on character tips; tutorial tips title elsewhere.
+  tip: `select TutorialWindowIdUnlockRequirement key, Unk18 text_id from story_note_tips`,
+  music: `select Key key, MusicTitle text_id from story_note_bgm`,
+} satisfies Record<string, string>;
+
+/** Output language -> .msg folder. */
+const TEXT_LANGUAGES = { en: "en", ja: "jp" };
+
+/** Decodes the MessagePack subset the .msg files use. */
+function decodeMsgPack(buf: Buffer): unknown {
+  let p = 0;
+  const str = (n: number) => buf.toString("utf8", p, (p += n));
+  const arr = (n: number) => Array.from({ length: n }, read);
+  const map = (n: number) => {
+    const obj: Record<string, unknown> = {};
+    for (let i = 0; i < n; i++) obj[read() as string] = read();
+    return obj;
+  };
+  function read(): unknown {
+    const tag = buf[p++]!;
+    if (tag < 0x80) return tag;
+    if (tag >= 0xe0) return tag - 0x100;
+    if (tag < 0x90) return map(tag & 0x0f);
+    if (tag < 0xa0) return arr(tag & 0x0f);
+    if (tag < 0xc0) return str(tag & 0x1f);
+    const at = p;
+    switch (tag) {
+      case 0xc0:
+        return null;
+      case 0xc2:
+        return false;
+      case 0xc3:
+        return true;
+      case 0xcc:
+        return buf[p++];
+      case 0xcd:
+        return ((p += 2), buf.readUInt16BE(at));
+      case 0xce:
+        return ((p += 4), buf.readUInt32BE(at));
+      case 0xd0:
+        return ((p += 1), buf.readInt8(at));
+      case 0xd1:
+        return ((p += 2), buf.readInt16BE(at));
+      case 0xd2:
+        return ((p += 4), buf.readInt32BE(at));
+      case 0xd9:
+        return str(buf[p++]!);
+      case 0xda:
+        return ((p += 2), str(buf.readUInt16BE(at)));
+      case 0xdb:
+        return ((p += 4), str(buf.readUInt32BE(at)));
+      case 0xdc:
+        return ((p += 2), arr(buf.readUInt16BE(at)));
+      case 0xdd:
+        return ((p += 4), arr(buf.readUInt32BE(at)));
+      case 0xde:
+        return ((p += 2), map(buf.readUInt16BE(at)));
+      case 0xdf:
+        return ((p += 4), map(buf.readUInt32BE(at)));
+    }
+    throw new Error(`msgpack: tag 0x${tag.toString(16)} at ${at - 1}`);
+  }
+  return read();
+}
+
+type MsgRow = {
+  column_: { id_hash_: string; subid_hash_: string; text_: string };
+};
+
+/** Text id -> text for one language, preferring the row without a subid. */
+function loadMsg(folder: string): Map<string, string> {
+  const dir = `${textDir}/${folder}`;
+  const texts = new Map<string, string>();
+  for (const file of readdirSync(dir)) {
+    if (!file.endsWith(".msg") || file.endsWith("_tag.msg")) continue;
+    const { rows_ } = decodeMsgPack(readFileSync(`${dir}/${file}`)) as {
+      rows_: MsgRow[];
+    };
+    for (const { column_: c } of rows_)
+      if (!c.subid_hash_ || !texts.has(c.id_hash_))
+        texts.set(c.id_hash_, c.text_);
+  }
+  return texts;
+}
+
+mkdirSync(new URL("../src/data/text/", import.meta.url), { recursive: true });
+for (const [lang, folder] of Object.entries(TEXT_LANGUAGES)) {
+  const msg = loadMsg(folder);
+  const out: Record<string, Record<string, string>> = {};
+  const counts: string[] = [];
+  for (const [table, sql] of Object.entries(GAME_TEXT)) {
+    const rows = db.prepare(sql).all() as { key: unknown; text_id: unknown }[];
+    const keys = new Set<string>();
+    const texts = new Map<string, string>();
+    for (const { key, text_id } of rows) {
+      if (typeof key !== "string" || key === "") continue;
+      keys.add(key);
+      const text = typeof text_id === "string" ? msg.get(text_id) : undefined;
+      if (text && !texts.has(key)) texts.set(key, text);
+    }
+    out[table] = Object.fromEntries(
+      [...texts].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)),
+    );
+    counts.push(`${table} ${texts.size}/${keys.size}`);
+  }
+  writeFileSync(
+    new URL(`../src/data/text/${lang}.json`, import.meta.url),
+    `${JSON.stringify(out, null, 2)}\n`,
+  );
+  console.log(`text ${lang}: ${counts.join(", ")}`);
+}
 
 for (const [file, fileBlocks] of blocks) {
   const out = new URL(`../src/data/${file}.ts`, import.meta.url);
