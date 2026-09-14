@@ -21,6 +21,8 @@ export { UnitStore } from "./format/unit-store";
 export { readSave, type Save, type SaveSection } from "./format/read-save";
 export { hashId } from "./hash/xxhash32-custom";
 export {
+  itemOrder,
+  compareSigils,
   readInventory,
   type Curio,
   type CurioReward,
