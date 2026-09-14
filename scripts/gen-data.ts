@@ -158,6 +158,21 @@ ${episodes.sort().join("\n")}
 };`,
 );
 
+// Menu order: playable 0-102, NPCs 500+, empty slots 1000+, dev rows 2000+.
+const uiOrder = (
+  db.prepare("select CharId, UIOrder from chara").all() as {
+    CharId: string;
+    UIOrder: number;
+  }[]
+).map(({ CharId, UIOrder }) => `  ${CharId}: ${UIOrder},`);
+emit(
+  "characters",
+  `/** chara.UIOrder by chara.CharId. */
+export const CHARACTER_UI_ORDER: Readonly<Record<string, number>> = {
+${uiOrder.sort().join("\n")}
+};`,
+);
+
 // Row n is the MSP a character has spent on master levels at master level n.
 const masterMsp = (
   db.prepare("select TotalMSP from chara_master_exp").all() as {

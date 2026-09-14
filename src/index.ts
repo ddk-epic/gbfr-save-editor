@@ -52,6 +52,9 @@ export {
 } from "./domain/journal";
 export { readEarnedTrophies } from "./domain/trophies";
 export {
+  characterOrder,
+  isNPC,
+  isUnused,
   readCharacterData,
   type Character,
   type CharacterData,
