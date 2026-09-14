@@ -6,7 +6,11 @@ import prettier from "eslint-config-prettier";
 const APP = import.meta.dirname;
 
 /** The library's package entries, the only way into it. */
-const ENTRIES = ["gbfr-save-editor", "gbfr-save-editor/edit", "gbfr-save-editor/catalog"];
+const ENTRIES = [
+  "gbfr-save-editor",
+  "gbfr-save-editor/edit",
+  "gbfr-save-editor/language",
+];
 
 const boundary = {
   rules: {
