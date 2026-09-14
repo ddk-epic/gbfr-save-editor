@@ -10,6 +10,7 @@ import {
   readProfile,
   readSideQuests,
   readTips,
+  type Captain,
   type Equipment,
   type Save,
   type Trait,
@@ -59,6 +60,7 @@ export interface CharacterView {
 export interface SaveView {
   account: Table[];
   characters: CharacterView[];
+  captain: Captain | undefined;
   /** SlotData VersionMaybe. */
   slotVersion: number | undefined;
   /** Cells holding a hash the key tables could not resolve. */
@@ -393,6 +395,7 @@ export function buildView(save: Save): SaveView {
   return {
     account,
     characters,
+    captain: data.captain,
     slotVersion: save.slotData.version,
     unresolved,
   };

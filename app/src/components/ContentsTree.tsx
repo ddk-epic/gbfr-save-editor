@@ -1,4 +1,4 @@
-import { isNPC, isUnused } from "gbfr-save-editor";
+import { isNPC, isUnchosenCaptain, isUnused } from "gbfr-save-editor";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGameText } from "../game-text";
@@ -68,7 +68,11 @@ export function ContentsTree({
                 key={c.key}
                 label={gt("character", c.key) ?? c.key}
                 title={c.key}
-                disabled={isNPC(c.key) || isUnused(c.key)}
+                disabled={
+                  isNPC(c.key) ||
+                  isUnused(c.key) ||
+                  isUnchosenCaptain(c.key, view.captain)
+                }
                 active={character === c.key}
                 onClick={() => onPage(`char:${c.key}`)}
               />
@@ -118,7 +122,7 @@ function Link({
       onClick={onClick}
       title={title}
       disabled={disabled}
-      className={`flex w-full items-center pb-0.5 text-left ${
+      className={`flex w-full items-center pt-px pb-0.5 text-left ${
         active
           ? "text-sidebar-primary"
           : disabled
