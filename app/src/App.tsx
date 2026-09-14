@@ -18,7 +18,10 @@ export function App() {
   const [save, setSave] = useState<LoadedSave>();
   const [loadError, setLoadError] = useState<LoadError>();
   const [page, setPage] = useState<Page>("welcome");
-  const [open, setOpen] = useState<Set<string>>(() => new Set(["sigils"]));
+  // Open sections by section id, shared by the account and every character.
+  const [open, setOpen] = useState<Set<string>>(
+    () => new Set(["sigils", "progress", "masteries", "equipment"]),
+  );
   const [selection, setSelection] = useState<Selection>();
   const [validationOpen, setValidationOpen] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -72,7 +75,11 @@ export function App() {
         }}
       />
 
-      <TitleBar gutter={gutter} fileName={save?.fileName}>
+      <TitleBar
+        gutter={gutter}
+        fileName={save?.fileName}
+        onHome={() => go("welcome")}
+      >
         {view && (
           <ValidationMenu
             view={view}
@@ -95,7 +102,7 @@ export function App() {
         ref={scrollRef}
         className="min-h-0 flex-1 overflow-y-auto scrollbar-gutter-both"
       >
-        <div className="mx-auto grid max-w-6xl grid-cols-[190px_1fr] gap-8 px-6">
+        <div className="mx-auto grid max-w-6xl grid-cols-[172px_1fr] gap-8 px-6">
           <ContentsTree
             view={view}
             page={page}
@@ -125,6 +132,8 @@ export function App() {
               <CharacterPage
                 fileName={save.fileName}
                 character={character}
+                open={open}
+                setOpen={setOpen}
                 selection={selection}
                 onSelect={setSelection}
                 onRoot={() => go("welcome")}

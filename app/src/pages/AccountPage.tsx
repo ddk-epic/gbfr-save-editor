@@ -1,9 +1,11 @@
-import { ChevronDown, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { DataTable } from "../components/DataTable";
+import {
+  CollapsibleTables,
+  ExpandCollapseActions,
+} from "../components/CollapsibleTables";
 import { PageTop } from "../components/PageTop";
 import { RowPanel } from "../components/RowPanel";
-import { sectionId, type Selection } from "../navigation";
+import type { Selection } from "../navigation";
 import type { Table } from "../save/view";
 
 export function AccountPage({
@@ -38,65 +40,29 @@ export function AccountPage({
         title={t("contents.account")}
         onRoot={onRoot}
         actions={
-          <>
-            <button
-              className="text-subtle-foreground hover:text-strong-foreground"
-              onClick={() => setOpen(new Set(tables.map((t) => t.id)))}
-            >
-              {t("account.expandAll")}
-            </button>
-            <button
-              className="text-subtle-foreground hover:text-strong-foreground"
-              onClick={() => setOpen(new Set())}
-            >
-              {t("account.collapseAll")}
-            </button>
-          </>
+          <ExpandCollapseActions
+            onExpandAll={() =>
+              setOpen(new Set([...open, ...tables.map((t) => t.id)]))
+            }
+            onCollapseAll={() =>
+              setOpen(
+                new Set(
+                  [...open].filter((id) => !tables.some((t) => t.id === id)),
+                ),
+              )
+            }
+          />
         }
       >
         <RowPanel selected={selection} />
       </PageTop>
-      <div className="divide-y divide-border border-b border-border">
-        {tables.map((table) => {
-          const isOpen = open.has(table.id);
-          return (
-            <section
-              key={table.id}
-              id={sectionId(table.id)}
-              className="scroll-mt-72"
-            >
-              <button
-                onClick={() => toggle(table.id)}
-                className="flex w-full items-center gap-2 py-2 text-left hover:bg-muted"
-              >
-                {isOpen ? (
-                  <ChevronDown size={14} />
-                ) : (
-                  <ChevronRight size={14} />
-                )}
-                <span className="text-strong-foreground">
-                  {t(`sections.${table.section}`)}
-                </span>
-                <span className="text-faint-foreground">
-                  {table.rows.length}
-                </span>
-              </button>
-              {isOpen && (
-                <DataTable
-                  table={table}
-                  selectedRowId={selection?.row.id}
-                  onSelect={(rowId) =>
-                    onSelect({
-                      table,
-                      row: table.rows.find((r) => r.id === rowId)!,
-                    })
-                  }
-                />
-              )}
-            </section>
-          );
-        })}
-      </div>
+      <CollapsibleTables
+        tables={tables}
+        isOpen={(table) => open.has(table.id)}
+        onToggle={(table) => toggle(table.id)}
+        selection={selection}
+        onSelect={onSelect}
+      />
     </>
   );
 }
