@@ -1,0 +1,56 @@
+import { CHARACTER_KEYS, FATE_EPISODE_KEYS } from "../data/characters";
+import { ITEM_KEYS } from "../data/items";
+import {
+  ARCHIVE_KEYS,
+  GLOSSARY_KEYS,
+  MUSIC_KEYS,
+  TIP_KEYS,
+} from "../data/journal";
+import { SKILLBOARD_EFFECT_KEYS } from "../data/master-traits";
+import { LIMIT_BONUS_PARAM_KEYS } from "../data/masteries";
+import { GEM_KEYS, SKILL_KEYS } from "../data/sigils";
+import { ABILITY_KEYS } from "../data/skills";
+import { SUMMON_BASE_PARAM_KEYS, SUMMON_KEYS } from "../data/summons";
+import { WEAPON_KEYS } from "../data/weapons";
+import { EMPTY_HASH } from "./layout";
+
+const TABLE_NAMES = new Map<Readonly<Record<number, string>>, string>([
+  [CHARACTER_KEYS, "chara"],
+  [WEAPON_KEYS, "weapon"],
+  [GEM_KEYS, "gem"],
+  [SKILL_KEYS, "skill"],
+  [ABILITY_KEYS, "ability"],
+  [ITEM_KEYS, "item"],
+  [LIMIT_BONUS_PARAM_KEYS, "limit_bonus_param"],
+  [SKILLBOARD_EFFECT_KEYS, "skillboard_effect"],
+  [SUMMON_KEYS, "summon"],
+  [SUMMON_BASE_PARAM_KEYS, "summon_base_param"],
+  [FATE_EPISODE_KEYS, "fate_episode"],
+  [ARCHIVE_KEYS, "story_note_archive"],
+  [GLOSSARY_KEYS, "story_note_wordlist"],
+  [TIP_KEYS, "story_note_tips"],
+  [MUSIC_KEYS, "story_note_bgm"],
+]);
+
+const warned = new Set<string>();
+
+/** Archive key for a hash, "#" + 8 hex digits when the table has none, undefined when empty. */
+export function keyOf(
+  table: Readonly<Record<number, string>>,
+  hash: number | undefined,
+): string | undefined {
+  if (hash === undefined || hash === EMPTY_HASH) return undefined;
+  const key = table[hash];
+  if (key !== undefined) return key;
+
+  const unresolved = `#${hash.toString(16).padStart(8, "0")}`;
+  const tableName = TABLE_NAMES.get(table) ?? "unknown";
+  // Once per hash, so a missing key surfaces without flooding the console.
+  if (!warned.has(`${tableName}${unresolved}`)) {
+    warned.add(`${tableName}${unresolved}`);
+    console.warn(
+      `gbfr-save-editor: hash ${unresolved} not in the ${tableName} table, run pnpm gen:data or check the extract`,
+    );
+  }
+  return unresolved;
+}
