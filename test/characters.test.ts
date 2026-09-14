@@ -278,11 +278,11 @@ describe.skipIf(!hasSave)("readCharacterData", () => {
     // Berserker V+, Glass Cannon V+, Berserker Echo+ Lv15, Grand Refinium I,
     // Stamina V+ ... Stronghold V+, Celestial Ventus V+, Stun Power V+.
     expect(curios.slice(0, 5).map((c) => c.reward)).toEqual([
-      { kind: "sigil", key: "GEEN_154_24", level: 0 },
-      { kind: "sigil", key: "GEEN_158_24", level: 0 },
-      { kind: "sigil", key: "GEEN_233_24", level: 15 },
-      { kind: "material", key: "0EB683CD" },
-      { kind: "sigil", key: "GEEN_006_24", level: 0 },
+      { type: "sigil", key: "GEEN_154_24", level: 0 },
+      { type: "sigil", key: "GEEN_158_24", level: 0 },
+      { type: "sigil", key: "GEEN_233_24", level: 15 },
+      { type: "material", key: "0EB683CD" },
+      { type: "sigil", key: "GEEN_006_24", level: 0 },
     ]);
     expect(curios.slice(-3).map((c) => c.reward?.key)).toEqual([
       "GEEN_144_24",
@@ -291,9 +291,9 @@ describe.skipIf(!hasSave)("readCharacterData", () => {
     ]);
     // Silver Wolf Trefoil first appears at curio 67, shown at 64 once the
     // repeated materials before it stack.
-    expect(curios[67]?.reward).toEqual({ kind: "material", key: "6E13E372" });
+    expect(curios[67]?.reward).toEqual({ type: "material", key: "6E13E372" });
     expect(curios[286]?.reward).toEqual({
-      kind: "wrightstone",
+      type: "wrightstone",
       key: "ITEM_25_0020",
     });
   });

@@ -76,9 +76,9 @@ export interface InventoryWrightstone extends Wrightstone {
 
 /** A curio's reward, rolled when the curio is found. */
 export type CurioReward =
-  | { kind: "material"; /** item.Key */ key: string }
-  | { kind: "sigil"; /** gem.Key */ key: string; level: number }
-  | { kind: "wrightstone"; /** item.Key */ key: string };
+  | { type: "material"; /** item.Key */ key: string }
+  | { type: "sigil"; /** gem.Key */ key: string; level: number }
+  | { type: "wrightstone"; /** item.Key */ key: string };
 
 export interface Curio {
   /** item.Key of the curio tier, ITEM_19_0001-0004. */
@@ -261,11 +261,11 @@ function readCurioReward(
       if (key === undefined) continue;
       const level =
         units.values(ID.CURIO_REWARD_LEVEL, unitId, "int")?.[0] ?? 0;
-      return { kind: "sigil", key, level };
+      return { type: "sigil", key, level };
     }
     const key = keyOf(ITEM_KEYS, hash);
     if (key === undefined) continue;
-    return { kind: entry === 3 ? "wrightstone" : "material", key };
+    return { type: entry === 3 ? "wrightstone" : "material", key };
   }
   return undefined;
 }
