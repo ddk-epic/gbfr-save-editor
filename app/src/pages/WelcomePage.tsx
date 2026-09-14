@@ -52,7 +52,7 @@ export function WelcomePage({
           )}
         </div>
         <div>
-          <h2 className="mb-3 text-[11px] tracking-widest text-subtle-foreground uppercase">
+          <h2 className="mb-3 text-[12px] tracking-widest text-subtle-foreground uppercase">
             {t("welcome.news")}
           </h2>
           <ul className="space-y-4">

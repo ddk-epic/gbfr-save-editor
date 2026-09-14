@@ -47,7 +47,7 @@ export function ContentsTree({
             ))}
           </div>
           <div>
-            <div className="mb-1 text-[11px] tracking-widest text-subtle-foreground uppercase">
+            <div className="mb-1 text-[12px] tracking-widest text-subtle-foreground uppercase">
               {t("contents.characters")}
             </div>
             {view.characters.map((c) => (
@@ -94,7 +94,7 @@ function Heading({
   return (
     <button
       onClick={onClick}
-      className={`mb-1 block text-[11px] tracking-widest uppercase ${active ? "text-sidebar-primary" : "text-subtle-foreground hover:text-sidebar-foreground"}`}
+      className={`mb-1 block text-[12px] tracking-widest uppercase ${active ? "text-sidebar-primary" : "text-subtle-foreground hover:text-sidebar-foreground"}`}
     >
       {label}
     </button>
