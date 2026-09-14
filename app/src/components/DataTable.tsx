@@ -1,6 +1,11 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { isUnresolved, type Cell, type Table } from "../save/view";
+
+const ROW_BATCH = 200;
+const VISIBLE_ROWS = 25;
+
+const TABLE_MAX_HEIGHT = `calc(${VISIBLE_ROWS + 1} * 1.5em + ${VISIBLE_ROWS} * 0.25rem + 0.5rem)`;
 
 /** Formats cells for the current language. */
 export function useFormatCell() {
@@ -33,12 +38,37 @@ export function DataTable({
 }) {
   const { t } = useTranslation();
   const formatCell = useFormatCell();
+  const [shown, setShown] = useState({ tableId: table.id, limit: ROW_BATCH });
+  const limit = shown.tableId === table.id ? shown.limit : ROW_BATCH;
+  const hasMore = table.rows.length > limit;
+  const scroller = useRef<HTMLDivElement>(null);
+  const sentinel = useRef<HTMLDivElement>(null);
+
+  // Sentinel re-created after each batch.
+  useEffect(() => {
+    const el = sentinel.current;
+    if (!el || !hasMore) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting)
+          setShown({ tableId: table.id, limit: limit + ROW_BATCH });
+      },
+      { root: scroller.current, rootMargin: "400px 0px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [table.id, limit, hasMore]);
+
   if (!table.rows.length)
     return <p className="py-2 text-faint-foreground">{t("table.empty")}</p>;
   return (
-    <div className="overflow-x-auto pb-2">
+    <div
+      ref={scroller}
+      className="mb-2 overflow-auto"
+      style={{ maxHeight: TABLE_MAX_HEIGHT }}
+    >
       <table className="w-full">
-        <thead>
+        <thead className="sticky top-0 bg-background">
           <tr className="text-left text-subtle-foreground">
             {table.columns.map((column) => (
               <th
@@ -51,7 +81,7 @@ export function DataTable({
           </tr>
         </thead>
         <tbody>
-          {table.rows.map((row) => (
+          {table.rows.slice(0, limit).map((row) => (
             <tr
               key={row.id}
               onClick={() => onSelect(row.id)}
@@ -69,6 +99,7 @@ export function DataTable({
           ))}
         </tbody>
       </table>
+      {hasMore && <div ref={sentinel} className="h-px" />}
     </div>
   );
 }
