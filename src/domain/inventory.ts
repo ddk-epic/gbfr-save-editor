@@ -1,5 +1,9 @@
-import { ITEM_KEYS } from "../data/items";
-import { GEM_KEYS, SKILL_KEYS } from "../data/sigils";
+import { ITEM_KEYS, ITEM_SORT_ORDER } from "../data/items";
+import {
+  GEM_KEYS,
+  SKILL_KEYS,
+  TRAIT_INVENTORY_SORT_ORDER,
+} from "../data/sigils";
 import { ABILITY_KEYS } from "../data/skills";
 import { SUMMON_BASE_PARAM_KEYS, SUMMON_KEYS } from "../data/summons";
 import { WEAPON_KEYS } from "../data/weapons";
@@ -38,6 +42,17 @@ export interface Sigil {
   /** False while the game marks the sigil as new. */
   seen: boolean;
 }
+
+/** item.SortOrder, the inventory's item order; unresolved keys last. */
+export const itemOrder = (key: string) => ITEM_SORT_ORDER[key] ?? Infinity;
+
+const traitOrder = (trait: Trait | undefined) =>
+  (trait && TRAIT_INVENTORY_SORT_ORDER[trait.key]) ?? Infinity;
+
+/** Inventory order: skill.InventorySortOrder of the first trait, then of the second. */
+export const compareSigils = (a: Sigil, b: Sigil) =>
+  traitOrder(a.primaryTrait) - traitOrder(b.primaryTrait) ||
+  traitOrder(a.secondaryTrait) - traitOrder(b.secondaryTrait);
 
 export interface Wrightstone {
   /** item.Key */

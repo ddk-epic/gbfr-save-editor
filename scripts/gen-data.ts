@@ -173,6 +173,29 @@ ${uiOrder.sort().join("\n")}
 };`,
 );
 
+// Inventory order: items by item.SortOrder, sigils by trait's skill.InventorySortOrder.
+for (const [file, name, table, column] of [
+  ["items", "ITEM_SORT_ORDER", "item", "SortOrder"],
+  ["sigils", "TRAIT_INVENTORY_SORT_ORDER", "skill", "InventorySortOrder"],
+] as const) {
+  const rows = (
+    db
+      .prepare(`select Key, "${column}" as sortOrder from "${table}"`)
+      .all() as {
+      Key: string;
+      sortOrder: number;
+    }[]
+  ).map(({ Key, sortOrder }) => `  ${JSON.stringify(Key)}: ${sortOrder},`);
+  emit(
+    file,
+    `/** ${table}.${column} by ${table}.Key. */
+export const ${name}: Readonly<Record<string, number>> = {
+${rows.sort().join("\n")}
+};`,
+  );
+  console.log(`${name}: ${rows.length} keys`);
+}
+
 // Row n is the MSP a character has spent on master levels at master level n.
 const masterMsp = (
   db.prepare("select TotalMSP from chara_master_exp").all() as {
