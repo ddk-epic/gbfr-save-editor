@@ -6,7 +6,7 @@
   "packageManager": "pnpm@10.33.2",
   "exports": {
     ".": "./src/index.ts",
-    "./text/*": "./src/data/text/*.json"
+    "./language": "./src/language.ts"
   },
   "scripts": {
     "test": "vitest",
