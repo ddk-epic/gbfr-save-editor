@@ -13,13 +13,23 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "gen:data": "tsx scripts/gen-data.ts",
-    "dev": "pnpm --filter gbfr-save-editor-app dev"
+    "dev": "pnpm --filter gbfr-save-editor-app dev",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix --max-warnings 0",
+      "prettier --write"
+    ],
+    "*.{js,jsx,css,md}": "prettier --write"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/node": "^22.20.1",
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "prettier": "^3.9.6",
     "tsx": "^4.23.13",
     "typescript": "^6.0.3",

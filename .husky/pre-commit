@@ -1,0 +1,5 @@
+pnpm exec lint-staged
+if git ls-files '*.ts' '*.tsx' | grep -q .; then
+  pnpm exec tsc --noEmit
+  pnpm --filter gbfr-save-editor-app exec tsc --noEmit
+fi
