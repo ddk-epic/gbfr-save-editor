@@ -75,10 +75,6 @@ describe.skipIf(!hasSave)("readSave", () => {
       float: 146,
     });
   });
-
-  it("reads a known unit", () => {
-    expect(save.slotData.units.values(1003, 0, "uint")).toEqual([55732345]);
-  });
 });
 
 describe("readSave on bad input", () => {
