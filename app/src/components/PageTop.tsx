@@ -15,7 +15,10 @@ export function PageTop({
   children?: ReactNode;
 }) {
   return (
-    <div className="sticky top-0 z-10 -mx-3 border-b border-border bg-background/95 px-3 pb-3 backdrop-blur">
+    <div
+      data-page-top
+      className="sticky top-0 z-100 -mx-3 border-b border-border bg-background px-3 pb-3"
+    >
       <div className="flex gap-1.5 pt-6 text-[13px] text-subtle-foreground">
         {crumbs.map((crumb, i) => (
           <span key={i} className="flex gap-1.5">
