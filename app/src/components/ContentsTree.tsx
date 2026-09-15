@@ -99,7 +99,7 @@ function TabButton({
   return (
     <button
       onClick={onClick}
-      className={`-mb-px flex-1 border-b-2 pb-1 text-center text-[12px] tracking-wider uppercase ${active ? "border-sidebar-primary text-sidebar-primary" : "border-transparent text-subtle-foreground hover:text-sidebar-foreground"}`}
+      className={`-mb-px flex-1 border-b-2 pb-1 text-center text-[12px] tracking-wider uppercase ${active ? "border-sidebar-primary text-sidebar-primary" : "border-transparent text-subtle-foreground hover:border-white/40 hover:text-sidebar-foreground"}`}
     >
       {label}
     </button>

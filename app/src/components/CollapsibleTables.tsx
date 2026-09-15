@@ -106,12 +106,12 @@ function Section({
   const [tabName, setTabName] = useState(tabs.keys().next().value!);
   const shown = tabs.get(tabName) ?? tabs.values().next().value!;
   const tabBar = tabs.size > 1 && (
-    <div className="flex w-full gap-4 border-b border-border">
+    <div className="flex w-full border-b border-border">
       {[...tabs].map(([tab, group]) => (
         <button
           key={tab}
           onClick={() => setTabName(tab)}
-          className={`-mb-px border-b-2 pb-1 ${group === shown ? "border-primary text-primary" : "border-transparent text-subtle-foreground hover:text-strong-foreground"}`}
+          className={`-mb-px border-b-2 px-3 pb-1 first:pl-0 ${group === shown ? "border-primary text-primary" : "border-transparent text-subtle-foreground hover:border-white/40 hover:text-strong-foreground"}`}
         >
           {tab}{" "}
           <span className="text-faint-foreground">
