@@ -411,7 +411,7 @@ export function buildView(save: Save): SaveView {
       tables: [
         table(
           `${c.character}:level`,
-          "level",
+          "stats",
           ["field", "value"],
           [
             ["level", c.level],
@@ -425,7 +425,7 @@ export function buildView(save: Save): SaveView {
         ),
         table(
           `${c.character}:fateEpisodes`,
-          "fateEpisodes",
+          "stats",
           ["episode", "completed"],
           c.fateEpisodes.map((f) => [
             keyCell("fateEpisode", f.key),

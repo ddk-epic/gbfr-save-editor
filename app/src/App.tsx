@@ -24,8 +24,7 @@ export function App() {
     () =>
       new Set([
         "sigils",
-        "level",
-        "fateEpisodes",
+        "stats",
         "masteries",
         "overMasteries",
         "masterTraits",
