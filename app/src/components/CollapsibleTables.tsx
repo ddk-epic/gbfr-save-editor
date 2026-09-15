@@ -12,6 +12,7 @@ export function CollapsibleTables({
   onToggle,
   selection,
   onSelect,
+  before,
   children,
 }: {
   tables: Table[];
@@ -19,6 +20,8 @@ export function CollapsibleTables({
   onToggle: (section: SectionId) => void;
   selection: Selection | undefined;
   onSelect: (selection: Selection) => void;
+  /** Sections with their own layout, before the table sections. */
+  before?: ReactNode;
   /** Sections with their own layout, after the table sections. */
   children?: ReactNode;
 }) {
@@ -30,6 +33,7 @@ export function CollapsibleTables({
     ]);
   return (
     <div className="divide-y divide-border border-b border-border">
+      {before}
       {[...sections].map(([section, tabs]) => (
         <Section
           key={section}

@@ -4,12 +4,13 @@ import {
   CollapsibleTables,
   ExpandCollapseActions,
 } from "../components/CollapsibleTables";
+import { DataTable, TableLabel } from "../components/DataTable";
 import { EquipmentSets } from "../components/EquipmentSets";
 import { useGameText } from "../game-text";
 import { PageTop } from "../components/PageTop";
 import { RowPanel } from "../components/RowPanel";
 import type { Selection } from "../navigation";
-import type { CharacterView } from "../save/view";
+import type { CharacterView, Table } from "../save/view";
 
 export function CharacterPage({
   fileName,
@@ -31,8 +32,13 @@ export function CharacterPage({
   const { t } = useTranslation();
   const gt = useGameText();
   const name = gt("character", character.key) ?? character.key;
+  const [level, fateEpisodes] = character.tables.filter(
+    (table) => table.section === "stats",
+  );
+  const tables = character.tables.filter((table) => table.section !== "stats");
   const sections: string[] = [
-    ...character.tables.map((table) => table.section),
+    "stats",
+    ...tables.map((table) => table.section),
     "equipment",
   ];
   const toggle = (section: string) => {
@@ -41,6 +47,16 @@ export function CharacterPage({
     else next.add(section);
     setOpen(next);
   };
+  const tableOf = (label: string, table: Table) => (
+    <DataTable
+      table={table}
+      heading={<TableLabel>{label}</TableLabel>}
+      selectedRowId={selection?.row.id}
+      onSelect={(rowId) =>
+        onSelect({ table, row: table.rows.find((r) => r.id === rowId)! })
+      }
+    />
+  );
 
   return (
     <>
@@ -63,11 +79,26 @@ export function CharacterPage({
         <RowPanel selected={selection} />
       </PageTop>
       <CollapsibleTables
-        tables={character.tables}
+        tables={tables}
         isOpen={(section) => open.has(section)}
         onToggle={toggle}
         selection={selection}
         onSelect={onSelect}
+        before={
+          <CollapsibleSection
+            section="stats"
+            count={level!.rows.length + fateEpisodes!.rows.length}
+            open={open.has("stats")}
+            onToggle={() => toggle("stats")}
+          >
+            <div className="grid gap-4 pb-1 sm:grid-cols-2">
+              <div className="min-w-0">{tableOf(t("stats.level"), level!)}</div>
+              <div className="min-w-0">
+                {tableOf(t("stats.fateEpisodes"), fateEpisodes!)}
+              </div>
+            </div>
+          </CollapsibleSection>
+        }
       >
         <CollapsibleSection
           section="equipment"

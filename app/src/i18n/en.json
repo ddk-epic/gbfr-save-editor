@@ -39,6 +39,10 @@
   "character": {
     "title": "{{name}} · Lv {{level}}"
   },
+  "stats": {
+    "level": "Level",
+    "fateEpisodes": "Fate episodes"
+  },
   "equipment": {
     "loadout": "Loadout",
     "equipped": "Equipped",
@@ -79,16 +83,14 @@
     "quests": "Quests",
     "journal": "Journal",
     "trophies": "Trophies",
-    "level": "Level",
-    "fateEpisodes": "Fate episodes",
+    "stats": "Stats",
     "masteries": "Masteries",
     "overMasteries": "Over-masteries",
     "masterTraits": "Master traits",
     "equipment": "Equipment and loadouts"
   },
   "sectionsShort": {
-    "level": "Level",
-    "fateEpisodes": "Fate episodes",
+    "stats": "Stats",
     "masteries": "Masteries",
     "overMasteries": "Over-masteries",
     "masterTraits": "Master traits",
