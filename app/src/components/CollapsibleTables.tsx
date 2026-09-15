@@ -12,12 +12,15 @@ export function CollapsibleTables({
   onToggle,
   selection,
   onSelect,
+  children,
 }: {
   tables: Table[];
   isOpen: (section: SectionId) => boolean;
   onToggle: (section: SectionId) => void;
   selection: Selection | undefined;
   onSelect: (selection: Selection) => void;
+  /** Sections with their own layout, after the table sections. */
+  children?: ReactNode;
 }) {
   const sections = new Map<SectionId, Table[]>();
   for (const table of tables)
@@ -38,6 +41,7 @@ export function CollapsibleTables({
           onSelect={onSelect}
         />
       ))}
+      {children}
     </div>
   );
 }
