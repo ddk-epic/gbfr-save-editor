@@ -173,13 +173,8 @@ export function buildView(save: Save): SaveView {
       "profile",
       "profile",
       ["field", "value"],
-      [["quests cleared", profile.questsCleared]],
-    ),
-    table(
-      "currency",
-      "currency",
-      ["item", "count"],
       [
+        ["quests cleared", profile.questsCleared],
         ["rupies", inventory.rupies],
         ["mastery points", inventory.masteryPoints],
       ],
