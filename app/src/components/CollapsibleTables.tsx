@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { sectionId, type Selection } from "../navigation";
 import type { SectionId, Table } from "../save/view";
@@ -42,6 +42,38 @@ export function CollapsibleTables({
   );
 }
 
+/** A section that opens and closes by its header. */
+export function CollapsibleSection({
+  section,
+  count,
+  open,
+  onToggle,
+  children,
+}: {
+  section: SectionId;
+  count: number;
+  open: boolean;
+  onToggle: () => void;
+  children: ReactNode;
+}) {
+  const { t } = useTranslation();
+  return (
+    <section id={sectionId(section)}>
+      <button
+        onClick={onToggle}
+        className="flex w-full items-center gap-2 py-2 text-left hover:bg-muted"
+      >
+        {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+        <span className="text-strong-foreground">
+          {t(`sections.${section}`)}
+        </span>
+        <span className="text-faint-foreground">{count}</span>
+      </button>
+      {open && <div className="pb-2">{children}</div>}
+    </section>
+  );
+}
+
 function Section({
   section,
   tabs,
@@ -57,50 +89,44 @@ function Section({
   selection: Selection | undefined;
   onSelect: (selection: Selection) => void;
 }) {
-  const { t } = useTranslation();
   const [tabId, setTabId] = useState(tabs[0]!.id);
   const table = tabs.find((tab) => tab.id === tabId) ?? tabs[0]!;
   return (
-    <section id={sectionId(section)}>
-      <button
-        onClick={onToggle}
-        className="flex w-full items-center gap-2 py-2 text-left hover:bg-muted"
-      >
-        {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-        <span className="text-strong-foreground">
-          {t(`sections.${section}`)}
-        </span>
-        <span className="text-faint-foreground">
-          {tabs.reduce((n, tab) => n + tab.rows.length, 0)}
-        </span>
-      </button>
-      {open && tabs.length > 1 && (
-        <div className="mb-1 flex gap-4 border-b border-border">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setTabId(tab.id)}
-              className={`-mb-px border-b-2 pb-1 ${tab.id === table.id ? "border-primary text-primary" : "border-transparent text-subtle-foreground hover:text-strong-foreground"}`}
-            >
-              {tab.tab}{" "}
-              <span className="text-faint-foreground">{tab.rows.length}</span>
-            </button>
-          ))}
-        </div>
-      )}
-      {open && (
-        <DataTable
-          table={table}
-          selectedRowId={selection?.row.id}
-          onSelect={(rowId) =>
-            onSelect({
-              table,
-              row: table.rows.find((r) => r.id === rowId)!,
-            })
-          }
-        />
-      )}
-    </section>
+    <CollapsibleSection
+      section={section}
+      count={tabs.reduce((n, tab) => n + tab.rows.length, 0)}
+      open={open}
+      onToggle={onToggle}
+    >
+      <DataTable
+        table={table}
+        heading={
+          tabs.length > 1 && (
+            <div className="flex w-full gap-4 border-b border-border">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setTabId(tab.id)}
+                  className={`-mb-px border-b-2 pb-1 ${tab.id === table.id ? "border-primary text-primary" : "border-transparent text-subtle-foreground hover:text-strong-foreground"}`}
+                >
+                  {tab.tab}{" "}
+                  <span className="text-faint-foreground">
+                    {tab.rows.length}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )
+        }
+        selectedRowId={selection?.row.id}
+        onSelect={(rowId) =>
+          onSelect({
+            table,
+            row: table.rows.find((r) => r.id === rowId)!,
+          })
+        }
+      />
+    </CollapsibleSection>
   );
 }
 

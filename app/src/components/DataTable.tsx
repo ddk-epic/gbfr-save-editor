@@ -16,6 +16,12 @@ const VISIBLE_ROWS = 25;
 
 const TABLE_MAX_HEIGHT = `calc(${VISIBLE_ROWS} * 1.5em + ${VISIBLE_ROWS} * 0.25rem)`;
 
+/**
+ * Heading, gap and column header span exactly 3 rows (row 1.5em + 0.25rem,
+ * header 1.5em + 0.5rem + 2px border), so rows of side-by-side tables line up.
+ */
+export const HEADING_HEIGHT = "calc(3em + 0.25rem - 2px)";
+
 /** Renders cells for the current language: key cells by game text, the raw key faint when it has none. */
 export function useRenderCell() {
   const { t, i18n } = useTranslation();
@@ -56,10 +62,13 @@ export function DataTable({
   table,
   selectedRowId,
   onSelect,
+  heading,
 }: {
   table: Table;
   selectedRowId: string | undefined;
   onSelect: (rowId: string) => void;
+  /** Label or tabs above the column header, in a block 3 rows tall with it; none when omitted. */
+  heading?: ReactNode;
 }) {
   const { t } = useTranslation();
   const renderCell = useRenderCell();
@@ -105,10 +114,21 @@ export function DataTable({
     return () => observer.disconnect();
   }, []);
 
+  const headingBlock = heading && (
+    <div className="flex items-end pb-1" style={{ height: HEADING_HEIGHT }}>
+      {heading}
+    </div>
+  );
   if (!table.rows.length)
-    return <p className="py-2 text-faint-foreground">{t("table.empty")}</p>;
+    return (
+      <>
+        {headingBlock}
+        <p className="py-0.5 text-faint-foreground">{t("table.empty")}</p>
+      </>
+    );
   return (
-    <div className="mb-2 bg-card/50">
+    <div>
+      {headingBlock}
       <div
         ref={header}
         className="relative z-10 overflow-hidden border-b-2 border-primary bg-secondary shadow-[0_2px_4px_-2px_rgb(0_0_0/0.25)]"
@@ -138,7 +158,7 @@ export function DataTable({
       </div>
       <div
         ref={scroller}
-        className="overflow-auto"
+        className="overflow-auto bg-card/50"
         style={{ maxHeight: TABLE_MAX_HEIGHT }}
         onScroll={(e) => {
           if (header.current)
