@@ -39,7 +39,7 @@ export function PageTop({
       </div>
       <div className="flex items-baseline gap-4 pt-1">
         <h1 className="text-lg text-strong-foreground">{title}</h1>
-        {actions}
+        {actions && <div className="ml-auto flex gap-4">{actions}</div>}
       </div>
       {children && <div className="pt-3">{children}</div>}
     </div>
