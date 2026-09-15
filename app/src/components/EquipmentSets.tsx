@@ -1,13 +1,7 @@
 import { useTranslation } from "react-i18next";
 import type { Selection } from "../navigation";
 import type { EquipmentSetView, Table } from "../save/view";
-import { DataTable, HEADING_HEIGHT } from "./DataTable";
-
-const Label = ({ children }: { children: string }) => (
-  <span className="text-[12px] tracking-widest text-subtle-foreground uppercase">
-    {children}
-  </span>
-);
+import { DataTable, HEADING_HEIGHT, TableLabel } from "./DataTable";
 
 /** The equipped set, then each loadout: skills and sigils left, weapon and wrightstone right. */
 export function EquipmentSets({
@@ -23,7 +17,7 @@ export function EquipmentSets({
   const tableOf = (label: string, table: Table) => (
     <DataTable
       table={table}
-      heading={<Label>{label}</Label>}
+      heading={<TableLabel>{label}</TableLabel>}
       selectedRowId={selection?.row.id}
       onSelect={(rowId) =>
         onSelect({ table, row: table.rows.find((r) => r.id === rowId)! })
@@ -42,7 +36,7 @@ export function EquipmentSets({
                     className="flex items-end pb-1"
                     style={{ height: HEADING_HEIGHT }}
                   >
-                    <Label>{t("equipment.loadout")}</Label>
+                    <TableLabel>{t("equipment.loadout")}</TableLabel>
                   </div>
                   <h3 className="text-strong-foreground">
                     {set.name ?? t("equipment.equipped")}
