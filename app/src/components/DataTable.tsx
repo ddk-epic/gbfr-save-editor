@@ -45,11 +45,29 @@ export function useRenderCell() {
       const separator = "separator" in cell ? cell.separator : "";
       return keyCells(cell).map((k, i) => {
         const text = gt(k.text, k.key);
+        const values = k.values;
         return (
           <Fragment key={i}>
             {i > 0 && separator}
             <span className={text === undefined ? "text-faint-foreground" : ""}>
-              {text ?? k.key}
+              {text === undefined
+                ? k.key
+                : values
+                  ? text
+                      // <d>…<d> marks the transcendence bonus; dropped without one.
+                      .replace(/<d>(.*?)<d>/g, (_, part: string) =>
+                        /\{(\d+)\}/
+                          .exec(part)
+                          ?.slice(1)
+                          .every((n) => values[Number(n)] !== undefined)
+                          ? part
+                          : "",
+                      )
+                      .replace(/\{(\d+)\}/g, (_, n: string) =>
+                        number.format(values[Number(n)] ?? 0),
+                      )
+                      .replace(/\s+/g, " ")
+                  : text}
             </span>
             {k.level !== undefined && ` Lv ${k.level}`}
           </Fragment>
