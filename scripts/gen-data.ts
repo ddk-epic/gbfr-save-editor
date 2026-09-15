@@ -221,7 +221,9 @@ const SECTIONS = [
 ] as const;
 /** T1-6 transcendence rows, which the T7 rows replace. */
 const REPLACED_TRANSCENDENCE = SECTIONS.length;
-const nodes = new Map<string, Map<number, [number, number][]>>();
+const nodes = new Map<string, Map<number, [number, number, number][]>>();
+/** limit_bonus key hash -> key. */
+const bonusKeys = new Map<number, string>();
 let nodeCount = 0;
 let gaps = 0;
 for (const tree of [
@@ -232,13 +234,14 @@ for (const tree of [
 ]) {
   const rows = db
     .prepare(
-      `select CharaId, LimitBonusId, LimitBonusParamIndex, MspCost, DiffSeparatorMaybe, ReqWepTranscensionLevel from "${tree}"`,
+      `select CharaId, LimitBonusId, LimitBonusParamIndex, MspCost, NodeGridLocation, DiffSeparatorMaybe, ReqWepTranscensionLevel from "${tree}"`,
     )
     .all() as {
     CharaId: string;
     LimitBonusId: string;
     LimitBonusParamIndex: number;
     MspCost: number;
+    NodeGridLocation: number;
     DiffSeparatorMaybe: number;
     ReqWepTranscensionLevel: number;
   }[];
@@ -258,6 +261,7 @@ for (const tree of [
     const hash = UNNAMED_KEY.test(row.LimitBonusId)
       ? parseInt(row.LimitBonusId, 16)
       : hashId(row.LimitBonusId);
+    bonusKeys.set(hash, row.LimitBonusId);
     let byBonus = nodes.get(row.CharaId);
     if (!byBonus) nodes.set(row.CharaId, (byBonus = new Map()));
     const ladder = byBonus.get(hash) ?? [];
@@ -266,10 +270,63 @@ for (const tree of [
       throw new Error(
         `${tree}: ${row.CharaId} ${row.LimitBonusId} index ${row.LimitBonusParamIndex} twice`,
       );
-    ladder[row.LimitBonusParamIndex] = [section, row.MspCost];
+    ladder[row.LimitBonusParamIndex] = [
+      section,
+      row.MspCost,
+      row.NodeGridLocation,
+    ];
     nodeCount++;
   }
 }
+
+// Node effects: limit_bonus ParamId1-3 name up to three limit_bonus_param
+// effects, each filling {0} of its own format text with Lv{n}Value at
+// LimitBonusParamIndex n - 1. T7 transcendence texts read {0} from Lv9Value,
+// the T1-6 value, and the <d> bonus {1} from Lv10Value.
+const bonusParams = new Map<string, string[]>();
+for (const row of db
+  .prepare(`select Key, ParamId1, ParamId2, ParamId3 from limit_bonus`)
+  .all() as Record<string, string>[]) {
+  const params = [row.ParamId1, row.ParamId2, row.ParamId3].filter(
+    (param): param is string => !!param,
+  );
+  const known = bonusParams.get(row.Key!);
+  if (known && known.join() !== params.join())
+    throw new Error(`limit_bonus ${row.Key} twice with other params`);
+  bonusParams.set(row.Key!, params);
+}
+const paramValues = new Map<string, number[]>();
+for (const row of db.prepare(`select * from limit_bonus_param`).all() as Record<
+  string,
+  number | string
+>[]) {
+  // Stun Power (DisplayNumberMultiplier 3) is stored at a tenth of its display.
+  const scale = row.DisplayNumberMultiplier === 3 ? 10 : 1;
+  paramValues.set(
+    row.Key as string,
+    Array.from(
+      { length: 10 },
+      (_, i) =>
+        Math.round((row[`Lv${i + 1}Value`] as number) * scale * 1000) / 1000,
+    ),
+  );
+}
+const usedParams = new Set<string>();
+const bonusBlock = [...bonusKeys]
+  .sort(([a], [b]) => a - b)
+  .map(([hash, key]) => {
+    const params = (bonusParams.get(key) ?? []).filter((param) =>
+      paramValues.has(param),
+    );
+    params.forEach((param) => usedParams.add(param));
+    return `  0x${hash.toString(16).padStart(8, "0")}: ${JSON.stringify([key, ...params])},`;
+  });
+const paramBlock = [...usedParams]
+  .sort()
+  .map(
+    (param) =>
+      `  ${JSON.stringify(param)}: ${JSON.stringify(paramValues.get(param))},`,
+  );
 const characterBlocks = [...nodes]
   .sort(([a], [b]) => a.localeCompare(b))
   .map(([chara, byBonus]) => {
@@ -280,7 +337,7 @@ const characterBlocks = [...nodes]
         if (ladder.length > 8)
           throw new Error(`${chara} #${hash.toString(16)}: index past 7`);
         const cells = Array.from(ladder, (node) =>
-          node ? `[${node[0]}, ${node[1]}]` : "null",
+          node ? `[${node.join(", ")}]` : "null",
         );
         gaps += cells.filter((cell) => cell === "null").length;
         return `    0x${hash.toString(16).padStart(8, "0")}: [${cells.join(", ")}],`;
@@ -296,15 +353,28 @@ export const REPLACED_TRANSCENDENCE = ${REPLACED_TRANSCENDENCE};
 
 /**
  * ap_tree_* nodes, ${nodeCount} rows: chara.CharId -> limit_bonus key hash ->
- * [section index, MspCost] per LimitBonusParamIndex, null for an unused index.
+ * [section index, MspCost, NodeGridLocation] per LimitBonusParamIndex, null
+ * for an unused index.
  */
 export const MASTERY_NODES: Readonly<
   Record<
     string,
-    Readonly<Record<number, readonly (readonly [number, number] | null)[]>>
+    Readonly<
+      Record<number, readonly (readonly [number, number, number] | null)[]>
+    >
   >
 > = {
 ${characterBlocks.join("\n")}
+};
+
+/** limit_bonus key hash -> [limit_bonus.Key, ...limit_bonus_param keys of ParamId1-3]. */
+export const MASTERY_BONUSES: Readonly<Record<number, readonly string[]>> = {
+${bonusBlock.join("\n")}
+};
+
+/** limit_bonus_param.Key -> Lv1Value-Lv10Value as displayed, for the params mastery nodes use. */
+export const MASTERY_PARAM_VALUES: Readonly<Record<string, readonly number[]>> = {
+${paramBlock.join("\n")}
 };`,
 );
 console.log(
@@ -322,6 +392,9 @@ const GAME_TEXT = {
   skill: `select Key key, Unk5 text_id from ability`,
   item: `select Key key, ItemName text_id from item`,
   mastery: `select Key key, FullName text_id from limit_bonus_param`,
+  masteryNode: `select Key key, NodeTitle text_id from limit_bonus`,
+  // Unique bonuses keep their format in FormatText1, the rest in NameFormat.
+  masteryEffect: `select Key key, coalesce(nullif(FormatText1, ''), NameFormat) text_id from limit_bonus_param`,
   // Unk18 names only the style perks, Unk19 is the explanation.
   masterTrait: `select Key key, Unk18 text_id from skillboard_effect`,
   summon: `select s.Key key, p.SummonName text_id from summon s join summon_param p on p.Key = s.SummonParamId`,
