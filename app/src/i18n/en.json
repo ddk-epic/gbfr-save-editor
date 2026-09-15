@@ -43,6 +43,10 @@
     "level": "Level",
     "fateEpisodes": "Fate episodes"
   },
+  "tables": {
+    "summary": "Summary",
+    "overMasteries": "Over-masteries"
+  },
   "equipment": {
     "loadout": "Loadout",
     "equipped": "Equipped",
@@ -85,14 +89,12 @@
     "trophies": "Trophies",
     "stats": "Stats",
     "masteries": "Masteries",
-    "overMasteries": "Over-masteries",
     "masterTraits": "Master traits",
     "equipment": "Equipment and loadouts"
   },
   "sectionsShort": {
     "stats": "Stats",
     "masteries": "Masteries",
-    "overMasteries": "Over-masteries",
     "masterTraits": "Master traits",
     "equipment": "Equipment"
   },
@@ -146,7 +148,7 @@
     "tree": "tree",
     "nodes": "nodes",
     "msp": "MSP",
-    "mastery": "mastery",
+    "bonus": "bonus",
     "style": "style",
     "masterTrait": "master trait",
     "rank": "rank",

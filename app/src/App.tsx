@@ -22,14 +22,7 @@ export function App() {
   // Open sections by section id, shared by the account and every character.
   const [open, setOpen] = useState<Set<string>>(
     () =>
-      new Set([
-        "sigils",
-        "stats",
-        "masteries",
-        "overMasteries",
-        "masterTraits",
-        "equipment",
-      ]),
+      new Set(["sigils", "stats", "masteries", "masterTraits", "equipment"]),
   );
   const [selection, setSelection] = useState<Selection>();
   const [validationOpen, setValidationOpen] = useState(false);

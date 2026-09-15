@@ -3,9 +3,9 @@ import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { sectionId, type Selection } from "../navigation";
 import type { SectionId, Table } from "../save/view";
-import { DataTable } from "./DataTable";
+import { DataTable, TableLabel } from "./DataTable";
 
-/** Tables as sections that open and close by their header; tables sharing a section are its tabs. */
+/** Tables as sections that open and close by their header; tables sharing a section are its tabs, tables sharing a tab its halves. */
 export function CollapsibleTables({
   tables,
   isOpen,
@@ -34,11 +34,11 @@ export function CollapsibleTables({
   return (
     <div className="divide-y divide-border border-b border-border">
       {before}
-      {[...sections].map(([section, tabs]) => (
+      {[...sections].map(([section, group]) => (
         <Section
           key={section}
           section={section}
-          tabs={tabs}
+          tables={group}
           open={isOpen(section)}
           onToggle={() => onToggle(section)}
           selection={selection}
@@ -84,57 +84,83 @@ export function CollapsibleSection({
 
 function Section({
   section,
-  tabs,
+  tables,
   open,
   onToggle,
   selection,
   onSelect,
 }: {
   section: SectionId;
-  tabs: Table[];
+  tables: Table[];
   open: boolean;
   onToggle: () => void;
   selection: Selection | undefined;
   onSelect: (selection: Selection) => void;
 }) {
-  const [tabId, setTabId] = useState(tabs[0]!.id);
-  const table = tabs.find((tab) => tab.id === tabId) ?? tabs[0]!;
+  const { t } = useTranslation();
+  const tabs = new Map<string, Table[]>();
+  for (const table of tables) {
+    const tab = table.tab ?? table.id;
+    tabs.set(tab, [...(tabs.get(tab) ?? []), table]);
+  }
+  const [tabName, setTabName] = useState(tabs.keys().next().value!);
+  const shown = tabs.get(tabName) ?? tabs.values().next().value!;
+  const tabBar = tabs.size > 1 && (
+    <div className="flex w-full gap-4 border-b border-border">
+      {[...tabs].map(([tab, group]) => (
+        <button
+          key={tab}
+          onClick={() => setTabName(tab)}
+          className={`-mb-px border-b-2 pb-1 ${group === shown ? "border-primary text-primary" : "border-transparent text-subtle-foreground hover:text-strong-foreground"}`}
+        >
+          {tab}{" "}
+          <span className="text-faint-foreground">
+            {group.reduce((n, table) => n + table.rows.length, 0)}
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+  const tableOf = (table: Table, heading: ReactNode) => (
+    <DataTable
+      table={table}
+      flush
+      heading={heading}
+      selectedRowId={selection?.row.id}
+      onSelect={(rowId) =>
+        onSelect({
+          table,
+          row: table.rows.find((r) => r.id === rowId)!,
+        })
+      }
+    />
+  );
   return (
     <CollapsibleSection
       section={section}
-      count={tabs.reduce((n, tab) => n + tab.rows.length, 0)}
+      count={tables.reduce((n, table) => n + table.rows.length, 0)}
       open={open}
       onToggle={onToggle}
     >
-      <DataTable
-        table={table}
-        flush
-        heading={
-          tabs.length > 1 && (
-            <div className="flex w-full gap-4 border-b border-border">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setTabId(tab.id)}
-                  className={`-mb-px border-b-2 pb-1 ${tab.id === table.id ? "border-primary text-primary" : "border-transparent text-subtle-foreground hover:text-strong-foreground"}`}
-                >
-                  {tab.tab}{" "}
-                  <span className="text-faint-foreground">
-                    {tab.rows.length}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )
-        }
-        selectedRowId={selection?.row.id}
-        onSelect={(rowId) =>
-          onSelect({
-            table,
-            row: table.rows.find((r) => r.id === rowId)!,
-          })
-        }
-      />
+      {shown.length === 1 ? (
+        tableOf(shown[0]!, tabBar)
+      ) : (
+        <>
+          {tabBar && <div className="flex items-end pb-1">{tabBar}</div>}
+          <div className="grid gap-4 pb-1 sm:grid-cols-2">
+            {shown.map((table) => (
+              <div key={table.id} className="min-w-0">
+                {tableOf(
+                  table,
+                  table.label && (
+                    <TableLabel>{t(`tables.${table.label}`)}</TableLabel>
+                  ),
+                )}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </CollapsibleSection>
   );
 }
