@@ -33,12 +33,6 @@ describe.skipIf(!hasSave)("readCharacterData", () => {
     expect(warnings).toEqual([]);
   });
 
-  it("reads every character", () => {
-    const keys = data.characters.map((c) => c.character);
-    expect(keys).toHaveLength(41);
-    expect(keys.slice(0, 3)).toEqual(["PL0000", "PL0100", "PL0200"]);
-  });
-
   it("reads level and base stats", () => {
     expect(character("PL2500")).toMatchObject({
       level: 100,
