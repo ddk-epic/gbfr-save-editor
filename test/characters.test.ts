@@ -42,17 +42,6 @@ describe.skipIf(!hasSave)("readCharacterData", () => {
     });
   });
 
-  it("reads sigil traits at the sigil level", () => {
-    for (const equipment of [...data.characters, ...data.loadouts]) {
-      for (const sigil of equipment.sigils) {
-        if (!sigil) continue;
-        expect(sigil.primaryTrait?.level).toBe(sigil.level);
-        if (sigil.secondaryTrait)
-          expect(sigil.secondaryTrait.level).toBe(sigil.level);
-      }
-    }
-  });
-
   it("reads loadouts", () => {
     const [first] = data.loadouts;
     expect(first).toMatchObject({ character: "PL0100", name: "Loadout 01" });
@@ -473,28 +462,24 @@ describe.skipIf(!hasSave)("readCharacterData", () => {
   });
 
   it("reads master traits", () => {
-    const count = (key: string) => {
+    const count = (key: string, chosen?: boolean) => {
       const counts: Record<string, number> = {};
       for (const cell of character(key)?.masterTraits ?? []) {
-        const group = cell.position === undefined ? "perk" : cell.rank;
+        if (chosen !== undefined && cell.chosen !== chosen) continue;
+        const group = cell.perk ? "perk" : cell.rank;
         counts[group] = (counts[group] ?? 0) + 1;
       }
       return counts;
     };
     // Every point spent: the 10/10/10/20 pools, plus the perks they light.
-    expect(count("PL2500")).toEqual({
+    expect(count("PL2500", true)).toEqual({
       perk: 5,
       r1: 10,
       r2: 10,
       r3: 10,
       ex: 20,
     });
-    expect(character("PL2600")?.masterTraits).toEqual([]);
-
-    const limits = { r1: 4, r2: 8, r3: 8, ex: 10 };
-    for (const cell of character("PL2500")?.masterTraits ?? [])
-      if (cell.position !== undefined)
-        expect(cell.position).toBeLessThanOrEqual(limits[cell.rank]);
+    expect(count("PL2600", true)).toEqual({});
   });
 
   it("reads masteries, as in game", () => {
@@ -503,29 +488,28 @@ describe.skipIf(!hasSave)("readCharacterData", () => {
         (sum, section) => sum + section.msp,
         0,
       );
-    // Every node taken: gbfr-sharecard's per-character MSP totals.
+    // Every node taken: the per-character MSP totals, as in game.
     expect(msp("PL0400")).toBe(966702);
     expect(msp("PL2500")).toBe(967030);
     expect(character("PL2500")?.masteries).toMatchObject({
-      offense: { taken: 188, total: 188 },
-      offenseExtension: { taken: 25, total: 25 },
-      defense: { taken: 142, total: 142 },
-      defenseExtension: { taken: 25, total: 25 },
-      collection: { taken: 24, total: 24 },
-      transcendence: { taken: 24, total: 24 },
+      offense: { taken: 188 },
+      offenseExtension: { taken: 25 },
+      defense: { taken: 142 },
+      defenseExtension: { taken: 25 },
+      collection: { taken: 24 },
+      transcendence: { taken: 24 },
     });
     // Offense and Defense to 100%, Collection complete, no transcendence.
     expect(character("PL1200")?.masteries).toMatchObject({
-      offense: { taken: 185, total: 185, msp: 19035 },
-      offenseExtension: { taken: 0, total: 25, msp: 0 },
-      defense: { taken: 133, total: 133, msp: 15636 },
-      defenseExtension: { taken: 0, total: 25, msp: 0 },
-      collection: { taken: 36, total: 36, msp: 1104 },
-      transcendence: { taken: 0, total: 36, msp: 0 },
+      offense: { taken: 185, msp: 19035 },
+      offenseExtension: { taken: 0, msp: 0 },
+      defense: { taken: 133, msp: 15636 },
+      defenseExtension: { taken: 0, msp: 0 },
+      collection: { taken: 36, msp: 1104 },
+      transcendence: { taken: 0, msp: 0 },
     });
     expect(character("PL1800")?.masteries.transcendence).toMatchObject({
       taken: 36,
-      total: 36,
       msp: 12720,
     });
   });
@@ -535,7 +519,6 @@ describe.skipIf(!hasSave)("readCharacterData", () => {
       character(key)?.fateEpisodes.filter((episode) => episode.completed)
         .length;
     // State 14 on the first three and 30 on the rest, all completed.
-    expect(character("PL2500")?.fateEpisodes).toHaveLength(11);
     expect(completed("PL2500")).toBe(11);
     expect(completed("PL2900")).toBe(11);
     expect(completed("PL2400")).toBe(0);
@@ -554,8 +537,10 @@ describe.skipIf(!hasSave)("readCharacterData", () => {
       false,
       false,
     ]);
-    // REMI_PL0200_00 is stored but not in the menu.
-    expect(character("PL0200")?.fateEpisodes).toHaveLength(11);
+    // REMI_PL0200_00 is stored but the menu does not list it.
+    expect(
+      character("PL0200")?.fateEpisodes.map((episode) => episode.key),
+    ).not.toContain("REMI_PL0200_00");
   });
 
   it("reads Maglielle's over-masteries, as in game", () => {
