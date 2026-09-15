@@ -51,6 +51,7 @@ export function CharacterPage({
     <DataTable
       table={table}
       heading={<TableLabel>{label}</TableLabel>}
+      flush
       selectedRowId={selection?.row.id}
       onSelect={(rowId) =>
         onSelect({ table, row: table.rows.find((r) => r.id === rowId)! })

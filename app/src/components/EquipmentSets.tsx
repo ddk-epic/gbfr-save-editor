@@ -14,10 +14,11 @@ export function EquipmentSets({
   onSelect: (selection: Selection) => void;
 }) {
   const { t } = useTranslation();
-  const tableOf = (label: string, table: Table) => (
+  const tableOf = (label: string, table: Table, flush = false) => (
     <DataTable
       table={table}
       heading={<TableLabel>{label}</TableLabel>}
+      flush={flush}
       selectedRowId={selection?.row.id}
       onSelect={(rowId) =>
         onSelect({ table, row: table.rows.find((r) => r.id === rowId)! })
@@ -26,7 +27,7 @@ export function EquipmentSets({
   );
   return (
     <div className="space-y-4 pb-3">
-      {sets.map((set) => (
+      {sets.map((set, i) => (
         <div key={set.id}>
           <div className="grid gap-4 lg:grid-cols-3">
             <div className="min-w-0 lg:col-span-2">
@@ -34,7 +35,7 @@ export function EquipmentSets({
                 <div className="min-w-0">
                   <div
                     className="flex items-end pb-1"
-                    style={{ height: HEADING_HEIGHT }}
+                    style={i === 0 ? undefined : { height: HEADING_HEIGHT }}
                   >
                     <TableLabel>{t("equipment.loadout")}</TableLabel>
                   </div>
@@ -43,13 +44,13 @@ export function EquipmentSets({
                   </h3>
                 </div>
                 <div className="min-w-0">
-                  {tableOf(t("equipment.skills"), set.skills)}
+                  {tableOf(t("equipment.skills"), set.skills, i === 0)}
                 </div>
               </div>
               {tableOf(t("equipment.sigils"), set.sigils)}
             </div>
             <div className="min-w-0">
-              {tableOf(t("equipment.weapon"), set.weapon)}
+              {tableOf(t("equipment.weapon"), set.weapon, i === 0)}
               {tableOf(t("equipment.wrightstone"), set.wrightstone)}
             </div>
           </div>

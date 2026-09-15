@@ -108,6 +108,7 @@ function Section({
     >
       <DataTable
         table={table}
+        flush
         heading={
           tabs.length > 1 && (
             <div className="flex w-full gap-4 border-b border-border">
