@@ -137,6 +137,12 @@ const traitList = (traits: Trait[]): KeyList | undefined =>
       }
     : undefined;
 
+const MASTER_TRAIT_TABS: Record<string, string> = {
+  SB_DEF: "insight",
+  SB_ATK: "essence",
+  SB_LIMIT: "crux",
+};
+
 const table = (
   id: string,
   section: SectionId,
@@ -487,16 +493,24 @@ export function buildView(save: Save): SaveView {
             section,
           ),
         ),
-        table(
-          `${c.character}:masterTraits`,
-          "masterTraits",
-          ["style", "masterTrait", "rank", "position"],
-          c.masterTraits.map((t) => [
-            t.style,
-            keyCell("masterTrait", t.key),
-            t.rank,
-            t.position ?? "perk",
-          ]),
+        ...Object.entries(MASTER_TRAIT_TABS).map(([style, tab]) =>
+          table(
+            `${c.character}:masterTraits:${tab}`,
+            "masterTraits",
+            ["rank", "trait", "chosen"],
+            c.masterTraits
+              .filter((t) => t.style === style)
+              .map((t): Cell[] => [
+                t.perk ? `${t.rank} perk` : t.rank,
+                {
+                  text: "masterTrait",
+                  key: t.key,
+                  values: t.values.map((v, i) => v * (t.valueScales[i] ?? 1)),
+                },
+                t.chosen,
+              ]),
+            tab,
+          ),
         ),
       ],
       equipment: [
