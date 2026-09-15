@@ -67,6 +67,8 @@ export {
   type FateEpisode,
   type Loadout,
   type MasterTrait,
+  type MasteryEffect,
+  type MasteryNode,
   type MasteryProgress,
   type MasterySection,
   type OverMastery,

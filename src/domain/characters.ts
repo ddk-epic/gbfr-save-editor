@@ -11,7 +11,9 @@ import {
 } from "../data/master-traits";
 import {
   LIMIT_BONUS_PARAM_KEYS,
+  MASTERY_BONUSES,
   MASTERY_NODES,
+  MASTERY_PARAM_VALUES,
   MASTERY_SECTIONS,
   REPLACED_TRANSCENDENCE,
 } from "../data/masteries";
@@ -90,6 +92,26 @@ export interface MasterTrait {
 
 export type MasterySection = (typeof MASTERY_SECTIONS)[number];
 
+export interface MasteryNode {
+  /** limit_bonus.Key */
+  key: string;
+  /** ap_tree NodeGridLocation. */
+  grid: number;
+  msp: number;
+  taken: boolean;
+  /** limit_bonus_param effects of the node, each with its value as displayed. */
+  params: MasteryEffect[];
+}
+
+export interface MasteryEffect {
+  /** limit_bonus_param.Key */
+  key: string;
+  /** Lv{n}Value at LimitBonusParamIndex n - 1; the T1-6 value (Lv9Value) on T7 transcendence. */
+  value: number;
+  /** T7 transcendence bonus over the T1-6 value (Lv10Value), shown as <d>+{1}<d>. */
+  bonus?: number;
+}
+
 export interface MasteryProgress {
   /** Nodes taken. */
   taken: number;
@@ -97,6 +119,8 @@ export interface MasteryProgress {
   total: number;
   /** MspCost of the nodes taken. */
   msp: number;
+  /** The section's nodes by grid location; T1-6 transcendence rows only when taken. */
+  nodes: MasteryNode[];
 }
 
 export interface FateEpisode {
@@ -217,20 +241,16 @@ function readMasteries(
   character: string,
 ): Record<MasterySection, MasteryProgress> {
   const progress = Object.fromEntries(
-    MASTERY_SECTIONS.map((section) => [
+    MASTERY_SECTIONS.map((section): [MasterySection, MasteryProgress] => [
       section,
-      { taken: 0, total: 0, msp: 0 },
+      { taken: 0, total: 0, msp: 0, nodes: [] },
     ]),
   ) as Record<MasterySection, MasteryProgress>;
   const nodes = MASTERY_NODES[character];
   if (!nodes) return progress;
 
-  for (const ladder of Object.values(nodes))
-    for (const node of ladder)
-      if (node && node[0] !== REPLACED_TRANSCENDENCE)
-        progress[MASTERY_SECTIONS[node[0]]!].total++;
-
   const base = progressBase(characterUnitId);
+  const takenBits = new Map<number, number>();
   for (let i = 0; i < UNIT.CHARACTER_PROGRESS_ENTRIES; i++) {
     const hash = units.values(ID.PROGRESS_KEY, base + i, "uint")?.[0];
     const ladder = hash === undefined ? undefined : nodes[hash];
@@ -240,26 +260,52 @@ function readMasteries(
     const bits =
       (units.values(ID.PROGRESS_VALUE, base + i, "int")?.[0] ?? 0) & 0xff;
     ladder.forEach((node, index) => {
-      if (!(bits & (1 << index))) return;
-      if (!node)
+      if (bits & (1 << index) && !node)
         throw new SaveFormatError({
           code: "unusedMasteryBit",
           unitId: base + i,
           bit: index,
         });
-      const [section, msp] = node;
+    });
+    takenBits.set(hash!, bits);
+  }
+
+  for (const [hash, ladder] of Object.entries(nodes)) {
+    const [key, ...params] = MASTERY_BONUSES[Number(hash)]!;
+    const bits = takenBits.get(Number(hash)) ?? 0;
+    ladder.forEach((node, index) => {
+      if (!node) return;
+      const [section, msp, grid] = node;
+      const taken = !!(bits & (1 << index));
+      const replaced = section === REPLACED_TRANSCENDENCE;
+      if (replaced && !taken) return;
       const sectionProgress =
         progress[
           MASTERY_SECTIONS[
-            section === REPLACED_TRANSCENDENCE
-              ? MASTERY_SECTIONS.indexOf("transcendence")
-              : section
+            replaced ? MASTERY_SECTIONS.indexOf("transcendence") : section
           ]!
         ];
-      sectionProgress.taken++;
-      sectionProgress.msp += msp;
+      if (!replaced) sectionProgress.total++;
+      if (taken) {
+        sectionProgress.taken++;
+        sectionProgress.msp += msp;
+      }
+      sectionProgress.nodes.push({
+        key: key!,
+        grid,
+        msp,
+        taken,
+        params: params.map((param): MasteryEffect => {
+          const values = MASTERY_PARAM_VALUES[param]!;
+          return section === MASTERY_SECTIONS.indexOf("transcendence")
+            ? { key: param, value: values[8]!, bonus: values[9]! }
+            : { key: param, value: values[index]! };
+        }),
+      });
     });
   }
+  for (const sectionProgress of Object.values(progress))
+    sectionProgress.nodes.sort((a, b) => a.grid - b.grid);
   return progress;
 }
 

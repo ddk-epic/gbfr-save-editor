@@ -515,7 +515,7 @@ describe.skipIf(!hasSave)("readCharacterData", () => {
       transcendence: { taken: 24, total: 24 },
     });
     // Offense and Defense to 100%, Collection complete, no transcendence.
-    expect(character("PL1200")?.masteries).toEqual({
+    expect(character("PL1200")?.masteries).toMatchObject({
       offense: { taken: 185, total: 185, msp: 19035 },
       offenseExtension: { taken: 0, total: 25, msp: 0 },
       defense: { taken: 133, total: 133, msp: 15636 },
@@ -523,7 +523,7 @@ describe.skipIf(!hasSave)("readCharacterData", () => {
       collection: { taken: 36, total: 36, msp: 1104 },
       transcendence: { taken: 0, total: 36, msp: 0 },
     });
-    expect(character("PL1800")?.masteries.transcendence).toEqual({
+    expect(character("PL1800")?.masteries.transcendence).toMatchObject({
       taken: 36,
       total: 36,
       msp: 12720,
