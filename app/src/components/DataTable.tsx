@@ -12,7 +12,7 @@ import { useGameText } from "../game-text";
 import { keyCells, type Cell, type Table } from "../save/view";
 
 const ROW_BATCH = 200;
-const VISIBLE_ROWS = 25;
+const VISIBLE_ROWS = 20;
 
 const TABLE_MAX_HEIGHT = `calc(${VISIBLE_ROWS} * 1.5em + ${VISIBLE_ROWS} * 0.25rem)`;
 
@@ -205,7 +205,7 @@ export function DataTable({
               {table.columns.map((column) => (
                 <th
                   key={column}
-                  className="invisible h-0 px-3 py-0 font-bold leading-[0] whitespace-nowrap"
+                  className="invisible h-0 px-3 py-0 font-bold leading-0 whitespace-nowrap"
                 >
                   {t(`columns.${column}`)}
                 </th>
