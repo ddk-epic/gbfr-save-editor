@@ -1,5 +1,6 @@
 import {
   Fragment,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -13,7 +14,7 @@ import { keyCells, type Cell, type Table } from "../save/view";
 const ROW_BATCH = 200;
 const VISIBLE_ROWS = 25;
 
-const TABLE_MAX_HEIGHT = `calc(${VISIBLE_ROWS + 1} * 1.5em + ${VISIBLE_ROWS} * 0.25rem + 0.5rem)`;
+const TABLE_MAX_HEIGHT = `calc(${VISIBLE_ROWS} * 1.5em + ${VISIBLE_ROWS} * 0.25rem)`;
 
 /** Renders cells for the current language: key cells by game text, the raw key faint when it has none. */
 export function useRenderCell() {
@@ -83,48 +84,103 @@ export function DataTable({
     return () => observer.disconnect();
   }, [table.id, limit, hasMore]);
 
+  // The header lives outside the scroller so the scrollbar stops at the body;
+  // its cols copy the widths of a hidden header row inside the body table.
+  const header = useRef<HTMLDivElement>(null);
+  const headerTable = useRef<HTMLTableElement>(null);
+  const syncWidths = useCallback((row: HTMLTableRowElement) => {
+    const observer = new ResizeObserver(() => {
+      const target = headerTable.current;
+      if (!target) return;
+      const cols = target.querySelectorAll("col");
+      let total = 0;
+      [...row.cells].forEach((cell, i) => {
+        const width = cell.getBoundingClientRect().width;
+        total += width;
+        if (cols[i]) cols[i].style.width = `${width}px`;
+      });
+      target.style.width = `${total}px`;
+    });
+    for (const cell of row.cells) observer.observe(cell);
+    return () => observer.disconnect();
+  }, []);
+
   if (!table.rows.length)
     return <p className="py-2 text-faint-foreground">{t("table.empty")}</p>;
   return (
-    <div
-      ref={scroller}
-      className="mb-2 overflow-auto"
-      style={{ maxHeight: TABLE_MAX_HEIGHT }}
-    >
-      <table className="w-full">
-        <thead className="sticky top-0 bg-background">
-          <tr className="text-left text-subtle-foreground">
+    <div className="mb-2 bg-card/50">
+      <div
+        ref={header}
+        className="relative z-10 overflow-hidden border-b-2 border-primary bg-secondary shadow-[0_2px_4px_-2px_rgb(0_0_0/0.25)]"
+      >
+        <table
+          ref={headerTable}
+          className="table-fixed border-separate border-spacing-0"
+        >
+          <colgroup>
             {table.columns.map((column) => (
-              <th
-                key={column}
-                className="px-3 py-1 font-normal whitespace-nowrap"
-              >
-                {t(`columns.${column}`)}
-              </th>
+              <col key={column} />
             ))}
-          </tr>
-        </thead>
-        <tbody>
-          {table.rows.slice(0, limit).map((row) => (
-            <tr
-              key={row.id}
-              onClick={() => onSelect(row.id)}
-              className={`cursor-pointer ${row.id === selectedRowId ? "bg-selection text-strong-foreground" : "odd:bg-stripe hover:bg-accent hover:text-accent-foreground"}`}
-            >
-              {row.cells.map((cell, i) => (
-                <td
-                  key={i}
-                  title={cellKeys(cell)}
-                  className={`px-3 py-0.5 whitespace-nowrap ${typeof cell === "number" ? "text-right tabular-nums" : ""}`}
+          </colgroup>
+          <thead>
+            <tr className="text-left">
+              {table.columns.map((column) => (
+                <th
+                  key={column}
+                  className="px-3 py-1 font-bold whitespace-nowrap text-strong-foreground"
                 >
-                  {renderCell(cell)}
-                </td>
+                  {t(`columns.${column}`)}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-      {hasMore && <div ref={sentinel} className="h-px" />}
+          </thead>
+        </table>
+      </div>
+      <div
+        ref={scroller}
+        className="overflow-auto"
+        style={{ maxHeight: TABLE_MAX_HEIGHT }}
+        onScroll={(e) => {
+          if (header.current)
+            header.current.scrollLeft = e.currentTarget.scrollLeft;
+        }}
+      >
+        <table className="w-full border-separate border-spacing-0">
+          <thead aria-hidden>
+            {/* Keyed by table so a new column set gets a fresh observer. */}
+            <tr key={table.id} ref={syncWidths}>
+              {table.columns.map((column) => (
+                <th
+                  key={column}
+                  className="invisible h-0 px-3 py-0 font-bold leading-[0] whitespace-nowrap"
+                >
+                  {t(`columns.${column}`)}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {table.rows.slice(0, limit).map((row) => (
+              <tr
+                key={row.id}
+                onClick={() => onSelect(row.id)}
+                className={`cursor-pointer ${row.id === selectedRowId ? "bg-selection text-strong-foreground" : "even:bg-card hover:bg-accent hover:text-accent-foreground"}`}
+              >
+                {row.cells.map((cell, i) => (
+                  <td
+                    key={i}
+                    title={cellKeys(cell)}
+                    className={`px-3 py-0.5 whitespace-nowrap ${typeof cell === "number" ? "text-right tabular-nums" : ""}`}
+                  >
+                    {renderCell(cell)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {hasMore && <div ref={sentinel} className="h-px" />}
+      </div>
     </div>
   );
 }
