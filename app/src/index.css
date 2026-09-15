@@ -36,7 +36,6 @@
   --subtle-foreground: #656d76;
   --faint-foreground: #818b95;
   --selection: #cfe6fa;
-  --stripe: #e6e9ed;
   --status: #0969da;
   --status-foreground: #ffffff;
   --success: #1a7f37;
@@ -75,7 +74,6 @@
   --subtle-foreground: #8491a0;
   --faint-foreground: #687480;
   --selection: #274872;
-  --stripe: #2b3139;
   --status: #255ab2;
   --status-foreground: #e6edf3;
   --success: #6bc46d;
@@ -117,7 +115,6 @@
   --color-subtle-foreground: var(--subtle-foreground);
   --color-faint-foreground: var(--faint-foreground);
   --color-selection: var(--selection);
-  --color-stripe: var(--stripe);
   --color-status: var(--status);
   --color-status-foreground: var(--status-foreground);
   --color-success: var(--success);
