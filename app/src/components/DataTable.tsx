@@ -22,6 +22,13 @@ const TABLE_MAX_HEIGHT = `calc(${VISIBLE_ROWS} * 1.5em + ${VISIBLE_ROWS} * 0.25r
  */
 export const HEADING_HEIGHT = "calc(3em + 0.25rem - 2px)";
 
+/** A small uppercase label for a table heading. */
+export const TableLabel = ({ children }: { children: string }) => (
+  <span className="text-[12px] tracking-widest text-subtle-foreground uppercase">
+    {children}
+  </span>
+);
+
 /** Renders cells for the current language: key cells by game text, the raw key faint when it has none. */
 export function useRenderCell() {
   const { t, i18n } = useTranslation();
