@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { readSave } from "gbfr-save-editor";
 import { describe, expect, it, vi } from "vitest";
-import { buildView } from "./view";
+import { buildView, equipmentSetTables } from "./view";
 
 const SAVE_PATH =
   process.env.GBFR_SAVE ??
@@ -19,7 +19,10 @@ describe.skipIf(!hasSave)("buildView", () => {
   it("gives every row one cell per column", () => {
     for (const table of [
       ...view.account,
-      ...view.characters.flatMap((c) => c.tables),
+      ...view.characters.flatMap((c) => [
+        ...c.tables,
+        ...c.equipment.flatMap(equipmentSetTables),
+      ]),
     ])
       for (const row of table.rows)
         expect(row.cells, `${table.id} ${row.id}`).toHaveLength(

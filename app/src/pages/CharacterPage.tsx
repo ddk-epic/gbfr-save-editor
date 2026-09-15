@@ -1,8 +1,10 @@
 import { useTranslation } from "react-i18next";
 import {
+  CollapsibleSection,
   CollapsibleTables,
   ExpandCollapseActions,
 } from "../components/CollapsibleTables";
+import { EquipmentSets } from "../components/EquipmentSets";
 import { useGameText } from "../game-text";
 import { PageTop } from "../components/PageTop";
 import { RowPanel } from "../components/RowPanel";
@@ -29,7 +31,10 @@ export function CharacterPage({
   const { t } = useTranslation();
   const gt = useGameText();
   const name = gt("character", character.key) ?? character.key;
-  const sections: string[] = character.tables.map((table) => table.section);
+  const sections: string[] = [
+    ...character.tables.map((table) => table.section),
+    "equipment",
+  ];
   const toggle = (section: string) => {
     const next = new Set(open);
     if (next.has(section)) next.delete(section);
@@ -63,7 +68,20 @@ export function CharacterPage({
         onToggle={toggle}
         selection={selection}
         onSelect={onSelect}
-      />
+      >
+        <CollapsibleSection
+          section="equipment"
+          count={character.equipment.length}
+          open={open.has("equipment")}
+          onToggle={() => toggle("equipment")}
+        >
+          <EquipmentSets
+            sets={character.equipment}
+            selection={selection}
+            onSelect={onSelect}
+          />
+        </CollapsibleSection>
+      </CollapsibleTables>
     </>
   );
 }

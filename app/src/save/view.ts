@@ -54,11 +54,30 @@ export interface Table {
   rows: Row[];
 }
 
+/** The equipped set or one loadout: skills and sigils on the left, weapon on the right. */
+export interface EquipmentSetView {
+  id: string;
+  /** Loadout name, undefined for what the character has equipped. */
+  name: string | undefined;
+  weapon: Table;
+  wrightstone: Table;
+  skills: Table;
+  sigils: Table;
+}
+
+export const equipmentSetTables = (set: EquipmentSetView): Table[] => [
+  set.weapon,
+  set.wrightstone,
+  set.skills,
+  set.sigils,
+];
+
 export interface CharacterView {
   /** chara.CharId */
   key: string;
   level: number;
   tables: Table[];
+  equipment: EquipmentSetView[];
 }
 
 export interface SaveView {
@@ -320,16 +339,69 @@ export function buildView(save: Save): SaveView {
     ),
   ];
 
-  const equipmentRow = (label: string, e: Equipment): Cell[] => [
-    label,
-    keyCell("weapon", e.weapon?.key),
-    `${e.sigils.filter(Boolean).length}/${e.sigils.length}`,
-    keyList(
-      "sigil",
-      e.sigils.map((s) => s?.key),
-    ),
-    keyList("skill", e.skills),
-  ];
+  const equipmentSet = (
+    id: string,
+    name: string | undefined,
+    e: Equipment,
+  ): EquipmentSetView => {
+    const w = e.weapon;
+    return {
+      id,
+      name,
+      weapon: table(
+        `${id}:weapon`,
+        "equipment",
+        ["field", "value"],
+        w
+          ? [
+              ["weapon", keyCell("weapon", w.key)],
+              ["appearance", keyCell("weapon", w.appearance)],
+              ["xp", w.xp],
+              ["uncap", w.uncap],
+              ["plus", w.plus],
+              ["awakening", w.awakening],
+              ["transcendence", w.transcendence],
+              ...w.traits.map((key, i): Cell[] => [
+                `trait ${i + 1}`,
+                keyCell("trait", key),
+              ]),
+              ["quests used", w.questsUsed],
+            ]
+          : [],
+      ),
+      wrightstone: table(
+        `${id}:wrightstone`,
+        "equipment",
+        ["field", "value"],
+        [
+          ["wrightstone", keyCell("item", w?.wrightstone?.key)],
+          ["main", trait(w?.wrightstone?.traits[0])],
+          ["sub 1", trait(w?.wrightstone?.traits[1])],
+          ["sub 2", trait(w?.wrightstone?.traits[2])],
+        ],
+      ),
+      skills: table(
+        `${id}:skills`,
+        "equipment",
+        ["slot", "skill"],
+        e.skills.map((key, i) => [i + 1, keyCell("skill", key)]),
+      ),
+      sigils: table(
+        `${id}:sigils`,
+        "equipment",
+        ["slot", "sigil", "level", "primary", "secondary", "locked", "new"],
+        e.sigils.map((s, i) => [
+          i + 1,
+          keyCell("sigil", s?.key),
+          s?.level,
+          keyCell("trait", s?.primaryTrait?.key),
+          keyCell("trait", s?.secondaryTrait?.key),
+          s?.locked,
+          s && !s.seen,
+        ]),
+      ),
+    };
+  };
 
   const characters = [...data.characters]
     .sort((a, b) => characterOrder(a.character) - characterOrder(b.character))
@@ -391,21 +463,24 @@ export function buildView(save: Save): SaveView {
             t.position ?? "perk",
           ]),
         ),
-        table(
-          `${c.character}:equipment`,
-          "equipment",
-          ["loadout", "weapon", "sigilSlots", "sigils", "skills"],
-          [
-            equipmentRow("current", c),
-            ...data.loadouts
-              .filter((l) => l.character === c.character)
-              .map((l) => equipmentRow(l.name, l)),
-          ],
-        ),
+      ],
+      equipment: [
+        equipmentSet(`${c.character}:equipped`, undefined, c),
+        ...data.loadouts
+          .filter((l) => l.character === c.character)
+          .map((l, i) =>
+            equipmentSet(`${c.character}:loadout:${i}`, l.name, l),
+          ),
       ],
     }));
 
-  const unresolved = [...account, ...characters.flatMap((c) => c.tables)]
+  const unresolved = [
+    ...account,
+    ...characters.flatMap((c) => [
+      ...c.tables,
+      ...c.equipment.flatMap(equipmentSetTables),
+    ]),
+  ]
     .flatMap((t) => t.rows)
     .reduce((n, r) => n + r.cells.filter(isUnresolved).length, 0);
 

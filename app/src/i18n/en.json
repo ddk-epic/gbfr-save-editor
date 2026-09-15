@@ -39,6 +39,14 @@
   "character": {
     "title": "{{name}} · Lv {{level}}"
   },
+  "equipment": {
+    "loadout": "Loadout",
+    "equipped": "Equipped",
+    "weapon": "Weapon",
+    "wrightstone": "Wrightstone",
+    "skills": "Skills",
+    "sigils": "Sigils"
+  },
   "table": {
     "empty": "Nothing stored.",
     "yes": "yes",
@@ -141,10 +149,7 @@
     "masterTrait": "master trait",
     "rank": "rank",
     "position": "position",
-    "loadout": "loadout",
-    "sigilSlots": "sigil slots",
-    "sigils": "sigils",
-    "skills": "skills"
+    "skill": "skill"
   },
   "loadErrors": {
     "rejected": "Rejected: {{reason}}",
