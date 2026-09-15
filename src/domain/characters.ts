@@ -6,6 +6,8 @@ import {
   MASTER_LEVEL_MSP,
 } from "../data/characters";
 import {
+  MASTER_TRAIT_VALUES,
+  MASTER_TRAIT_VALUE_SCALES,
   SKILLBOARD_CELLS,
   SKILLBOARD_EFFECT_KEYS,
 } from "../data/master-traits";
@@ -86,8 +88,15 @@ export interface MasterTrait {
   /** skillboard_category: SB_DEF Insight, SB_ATK Essence, SB_LIMIT Crux. */
   style: string;
   rank: "r1" | "r2" | "r3" | "ex";
-  /** 1-based among the rank's ordinary cells in save order, undefined on the style perk. */
-  position: number | undefined;
+  /** skillboard_layout Unk30, the cell's place on the board. */
+  order: number;
+  /** A style perk: named at r1, upgraded at r2 and r3. */
+  perk: boolean;
+  chosen: boolean;
+  /** Numbers for {0}-{29} in the trait's text, as the archive stores them. */
+  values: readonly number[];
+  /** What each value is multiplied by to display it, 1 past the list. */
+  valueScales: readonly number[];
 }
 
 export type MasterySection = (typeof MASTERY_SECTIONS)[number];
@@ -201,38 +210,44 @@ function readEquipment(
 const progressBase = (characterUnitId: number) =>
   UNIT.CHARACTER_PROGRESS + (characterUnitId - UNIT.CHARACTER) * 1000;
 
+const MASTER_TRAIT_STYLES = ["SB_DEF", "SB_ATK", "SB_LIMIT"];
+const MASTER_TRAIT_RANKS = ["r1", "r2", "r3", "ex"];
+
+/** Every board cell, by style, rank, perks first, then board order. */
 function readMasterTraits(
   units: UnitStore,
   characterUnitId: number,
 ): MasterTrait[] {
   const base = progressBase(characterUnitId);
-  const positions = new Map<string, number>();
-  const selected: MasterTrait[] = [];
+  const cells: MasterTrait[] = [];
   for (let i = 0; i < UNIT.CHARACTER_PROGRESS_ENTRIES; i++) {
     const hash = units.values(ID.PROGRESS_KEY, base + i, "uint")?.[0];
     const cell = hash === undefined ? undefined : SKILLBOARD_CELLS[hash];
     if (cell === undefined) continue;
-
-    const [style, rank, perk] = cell.split(" ") as [
-      string,
-      MasterTrait["rank"],
-      string | undefined,
-    ];
-    // Perks lead each style, so ordinary cells count from 1 within the rank.
-    let position: number | undefined;
-    if (!perk) {
-      position = (positions.get(`${style} ${rank}`) ?? 0) + 1;
-      positions.set(`${style} ${rank}`, position);
-    }
-    if (units.values(ID.PROGRESS_VALUE, base + i, "int")?.[0] !== 1) continue;
-    selected.push({
-      key: keyOf(SKILLBOARD_EFFECT_KEYS, hash)!,
+    const [style, rank, order, perk] = cell;
+    const key = keyOf(SKILLBOARD_EFFECT_KEYS, hash)!;
+    cells.push({
+      key,
       style,
       rank,
-      position,
+      order,
+      perk,
+      chosen: units.values(ID.PROGRESS_VALUE, base + i, "int")?.[0] === 1,
+      values: MASTER_TRAIT_VALUES[key] ?? [],
+      valueScales: MASTER_TRAIT_VALUE_SCALES[key] ?? [],
     });
   }
-  return selected;
+  const sortKey = (c: MasterTrait) => [
+    MASTER_TRAIT_STYLES.indexOf(c.style),
+    MASTER_TRAIT_RANKS.indexOf(c.rank),
+    c.perk ? 0 : 1,
+    c.order,
+  ];
+  return cells.sort((a, b) => {
+    const [ka, kb] = [sortKey(a), sortKey(b)];
+    const i = ka.findIndex((n, j) => n !== kb[j]);
+    return i === -1 ? 0 : ka[i]! - kb[i]!;
+  });
 }
 
 function readMasteries(
