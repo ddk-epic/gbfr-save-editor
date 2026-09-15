@@ -338,47 +338,58 @@ export function buildView(save: Save): SaveView {
       level: c.level,
       tables: [
         table(
-          `${c.character}:progress`,
-          "progress",
-          ["entry", "value", "completed"],
+          `${c.character}:level`,
+          "level",
+          ["field", "value"],
           [
-            ["level", c.level, undefined],
-            ["xp", c.xp, undefined],
-            ["base HP", c.baseHp, undefined],
-            ["base ATK", c.baseAttack, undefined],
-            ["quests used", c.questsUsed, undefined],
-            ["master level", c.masterLevel, undefined],
-            ["master XP", c.masterXp, undefined],
-            ...c.fateEpisodes.map((f): Cell[] => [
-              keyCell("fateEpisode", f.key),
-              "fate episode",
-              f.completed,
-            ]),
+            ["level", c.level],
+            ["xp", c.xp],
+            ["base HP", c.baseHp],
+            ["base ATK", c.baseAttack],
+            ["quests used", c.questsUsed],
+            ["master level", c.masterLevel],
+            ["master XP", c.masterXp],
           ],
+        ),
+        table(
+          `${c.character}:fateEpisodes`,
+          "fateEpisodes",
+          ["episode", "completed"],
+          c.fateEpisodes.map((f) => [
+            keyCell("fateEpisode", f.key),
+            f.completed,
+          ]),
         ),
         table(
           `${c.character}:masteries`,
           "masteries",
-          ["entry", "detail", "value"],
-          [
-            ...Object.entries(c.masteries).map(([section, m]): Cell[] => [
-              section,
-              `${m.taken}/${m.total} nodes`,
-              `${m.msp} MSP`,
-            ]),
-            ...c.overMasteries.map((o, i): Cell[] => [
-              `over-mastery ${i + 1}`,
-              keyCell("mastery", o?.key),
-              o && `Lv ${o.level}`,
-            ]),
-            ...c.masterTraits.map((t): Cell[] => [
-              t.style,
-              keyCell("masterTrait", t.key),
-              t.position === undefined
-                ? `${t.rank} perk`
-                : `${t.rank} #${t.position}`,
-            ]),
-          ],
+          ["tree", "nodes", "msp"],
+          Object.entries(c.masteries).map(([section, m]) => [
+            section,
+            `${m.taken}/${m.total}`,
+            m.msp,
+          ]),
+        ),
+        table(
+          `${c.character}:overMasteries`,
+          "overMasteries",
+          ["index", "mastery", "level"],
+          c.overMasteries.map((o, i) => [
+            i + 1,
+            keyCell("mastery", o?.key),
+            o?.level,
+          ]),
+        ),
+        table(
+          `${c.character}:masterTraits`,
+          "masterTraits",
+          ["style", "masterTrait", "rank", "position"],
+          c.masterTraits.map((t) => [
+            t.style,
+            keyCell("masterTrait", t.key),
+            t.rank,
+            t.position ?? "perk",
+          ]),
         ),
         table(
           `${c.character}:equipment`,
