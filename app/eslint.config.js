@@ -50,6 +50,9 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    languageOptions: { parserOptions: { tsconfigRootDir: APP } },
+  },
+  {
     plugins: { boundary },
     rules: { "boundary/imports": "error" },
   },
