@@ -53,16 +53,18 @@ export function useRenderCell() {
               {text === undefined
                 ? k.key
                 : values
-                  ? text
-                      // <d>…<d> marks the transcendence bonus; dropped without one.
-                      .replace(/<d>(.*?)<d>/g, (_, part: string) =>
-                        /\{(\d+)\}/
-                          .exec(part)
-                          ?.slice(1)
-                          .every((n) => values[Number(n)] !== undefined)
-                          ? part
-                          : "",
-                      )
+                  ? (k.text === "masteryEffect"
+                      ? // <d>…<d> marks the transcendence bonus; dropped without one.
+                        text.replace(/<d>(.*?)<d>/g, (_, part: string) =>
+                          /\{(\d+)\}/
+                            .exec(part)
+                            ?.slice(1)
+                            .every((n) => values[Number(n)] !== undefined)
+                            ? part
+                            : "",
+                        )
+                      : text
+                    )
                       .replace(/\{(\d+)\}/g, (_, n: string) =>
                         number.format(values[Number(n)] ?? 0),
                       )

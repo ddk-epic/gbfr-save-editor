@@ -149,14 +149,12 @@
     "nodes": "nodes",
     "msp": "MSP",
     "bonus": "bonus",
-    "style": "style",
-    "masterTrait": "master trait",
     "rank": "rank",
-    "position": "position",
     "skill": "skill",
     "node": "node",
     "effect": "effect",
-    "taken": "taken"
+    "taken": "taken",
+    "chosen": "chosen"
   },
   "loadErrors": {
     "rejected": "Rejected: {{reason}}",
