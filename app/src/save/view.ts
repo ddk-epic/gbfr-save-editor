@@ -112,30 +112,7 @@ const keyCell = (
 ): KeyCell | undefined =>
   key === undefined ? undefined : { text, key, level };
 
-/** Key cells for the defined keys, undefined when there are none. */
-const keyList = (
-  text: GameTextTable,
-  keys: (string | undefined)[],
-): KeyList | undefined => {
-  const cells = keys.flatMap((key) =>
-    key === undefined ? [] : [{ text, key }],
-  );
-  return cells.length ? { keys: cells, separator: ", " } : undefined;
-};
-
 const trait = (t: Trait | undefined) => t && keyCell("trait", t.key, t.level);
-
-const traitList = (traits: Trait[]): KeyList | undefined =>
-  traits.length
-    ? {
-        keys: traits.map((t) => ({
-          text: "trait",
-          key: t.key,
-          level: t.level,
-        })),
-        separator: " / ",
-      }
-    : undefined;
 
 const MASTER_TRAIT_TABS: Record<string, string> = {
   SB_DEF: "insight",
@@ -218,9 +195,6 @@ export function buildView(save: Save): SaveView {
         "plus",
         "awakening",
         "transcendence",
-        "traits",
-        "wrightstone",
-        "appearance",
         "questsUsed",
         "new",
       ],
@@ -231,9 +205,6 @@ export function buildView(save: Save): SaveView {
         w.plus,
         w.awakening,
         w.transcendence,
-        keyList("trait", w.traits),
-        w.wrightstone && traitList(w.wrightstone.traits),
-        keyCell("weapon", w.appearance),
         w.questsUsed,
         !w.seen,
       ]),
