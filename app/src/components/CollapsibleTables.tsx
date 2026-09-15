@@ -61,7 +61,7 @@ function Section({
   const [tabId, setTabId] = useState(tabs[0]!.id);
   const table = tabs.find((tab) => tab.id === tabId) ?? tabs[0]!;
   return (
-    <section id={sectionId(section)} className="scroll-mt-72">
+    <section id={sectionId(section)}>
       <button
         onClick={onToggle}
         className="flex w-full items-center gap-2 py-2 text-left hover:bg-muted"
