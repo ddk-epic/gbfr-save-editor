@@ -70,12 +70,15 @@ export function DataTable({
   selectedRowId,
   onSelect,
   heading,
+  flush,
 }: {
   table: Table;
   selectedRowId: string | undefined;
   onSelect: (rowId: string) => void;
   /** Label or tabs above the column header, in a block 3 rows tall with it; none when omitted. */
   heading?: ReactNode;
+  /** The heading at its own height, for a table right under an accordion header. */
+  flush?: boolean;
 }) {
   const { t } = useTranslation();
   const renderCell = useRenderCell();
@@ -122,7 +125,10 @@ export function DataTable({
   }, []);
 
   const headingBlock = heading && (
-    <div className="flex items-end pb-1" style={{ height: HEADING_HEIGHT }}>
+    <div
+      className="flex items-end pb-1"
+      style={flush ? undefined : { height: HEADING_HEIGHT }}
+    >
       {heading}
     </div>
   );
