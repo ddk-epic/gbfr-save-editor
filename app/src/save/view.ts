@@ -25,6 +25,8 @@ export interface KeyCell {
   text: GameTextTable;
   key: string;
   level?: number;
+  /** Numbers for the text's {0}, {1}… placeholders. */
+  values?: number[];
 }
 
 /** Key cells shown in one cell, joined by `separator`. */
@@ -441,6 +443,31 @@ export function buildView(save: Save): SaveView {
             `${m.taken}/${m.total}`,
             m.msp,
           ]),
+          "all",
+        ),
+        ...Object.entries(c.masteries).map(([section, m]) =>
+          table(
+            `${c.character}:masteries:${section}`,
+            "masteries",
+            ["node", "effect", "msp", "taken"],
+            m.nodes.map((n): Cell[] => [
+              keyCell("masteryNode", n.key),
+              n.params.length
+                ? {
+                    keys: n.params.map((p) => ({
+                      text: "masteryEffect",
+                      key: p.key,
+                      values:
+                        p.bonus === undefined ? [p.value] : [p.value, p.bonus],
+                    })),
+                    separator: " / ",
+                  }
+                : undefined,
+              n.msp,
+              n.taken,
+            ]),
+            section,
+          ),
         ),
         table(
           `${c.character}:overMasteries`,

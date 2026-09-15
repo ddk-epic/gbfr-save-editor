@@ -151,7 +151,10 @@
     "masterTrait": "master trait",
     "rank": "rank",
     "position": "position",
-    "skill": "skill"
+    "skill": "skill",
+    "node": "node",
+    "effect": "effect",
+    "taken": "taken"
   },
   "loadErrors": {
     "rejected": "Rejected: {{reason}}",
