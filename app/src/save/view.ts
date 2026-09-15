@@ -46,12 +46,15 @@ export interface Row {
 /** Message keys under `sections` and `columns`. */
 export type SectionId = keyof typeof en.sections;
 export type ColumnId = keyof typeof en.columns;
+export type TableLabelId = keyof typeof en.tables;
 
 export interface Table {
   id: string;
   section: SectionId;
-  /** Tab name when the section holds several tables. */
+  /** Tab name when the section holds several tables; tables sharing a tab sit side by side. */
   tab?: string;
+  /** Label above the table when it shares its tab. */
+  label?: TableLabelId;
   columns: ColumnId[];
   rows: Row[];
 }
@@ -140,10 +143,12 @@ const table = (
   columns: ColumnId[],
   rows: Cell[][],
   tab?: string,
+  label?: TableLabelId,
 ): Table => ({
   id,
   section,
   tab,
+  label,
   columns,
   rows: rows.map((cells, i) => ({ id: `${id}:${i}`, cells })),
 });
@@ -444,6 +449,19 @@ export function buildView(save: Save): SaveView {
             m.msp,
           ]),
           "all",
+          "summary",
+        ),
+        table(
+          `${c.character}:overMasteries`,
+          "masteries",
+          ["index", "bonus", "level"],
+          c.overMasteries.map((o, i) => [
+            i + 1,
+            keyCell("mastery", o?.key),
+            o?.level,
+          ]),
+          "all",
+          "overMasteries",
         ),
         ...Object.entries(c.masteries).map(([section, m]) =>
           table(
@@ -468,16 +486,6 @@ export function buildView(save: Save): SaveView {
             ]),
             section,
           ),
-        ),
-        table(
-          `${c.character}:overMasteries`,
-          "overMasteries",
-          ["index", "mastery", "level"],
-          c.overMasteries.map((o, i) => [
-            i + 1,
-            keyCell("mastery", o?.key),
-            o?.level,
-          ]),
         ),
         table(
           `${c.character}:masterTraits`,
