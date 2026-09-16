@@ -111,7 +111,7 @@ export function App() {
             onPage={go}
             onSection={goToSection}
           />
-          <main className="min-w-0 pb-16">
+          <main className="min-w-0 pb-[60vh]">
             {page === "welcome" && (
               <WelcomePage
                 loadError={loadError}
