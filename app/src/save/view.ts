@@ -12,7 +12,9 @@ import {
   readProfile,
   readSideQuests,
   readTips,
+  QUEST_DIFFICULTIES,
   type Captain,
+  type CounterQuest,
   type Curio,
   type Equipment,
   type Save,
@@ -132,6 +134,28 @@ const trait = (t: Trait | undefined) => t && keyCell("trait", t.key, t.level);
 /** A curio's reward when it is a sigil, for the columns only sigils fill. */
 const sigilReward = (c: Curio) =>
   c.reward?.type === "sigil" ? c.reward : undefined;
+
+const counterQuestTables = (quests: CounterQuest[]): Table[] =>
+  [...QUEST_DIFFICULTIES, undefined]
+    .map((difficulty) => ({
+      difficulty,
+      quests: quests.filter((q) => q.difficulty === difficulty),
+    }))
+    .filter(({ quests }) => quests.length)
+    .map(({ difficulty, quests }) =>
+      table(
+        `quests:${difficulty ?? "other"}`,
+        "quests",
+        ["quest", "clears", "perfectGrade", "lastCleared"],
+        quests.map((q) => [
+          keyCell("quest", q.id),
+          q.clears,
+          q.perfectGrade,
+          q.lastCleared?.toISOString().slice(0, 10),
+        ]),
+        difficulty ?? "other",
+      ),
+    );
 
 const MASTER_TRAIT_TABS: Record<string, string> = {
   SB_DEF: "insight",
@@ -285,24 +309,16 @@ export function buildView(save: Save): SaveView {
         c.reward && "seed" in c.reward ? c.reward.seed : undefined,
       ]),
     ),
+    ...counterQuestTables(readCounterQuests(units)),
     table(
-      "quests:side",
-      "quests",
+      "sideQuests",
+      "sideQuests",
       ["quest", "accepted", "completed"],
-      readSideQuests(units).map((q) => [q.id, q.accepted, q.completed]),
-      "side",
-    ),
-    table(
-      "quests:counter",
-      "quests",
-      ["quest", "clears", "perfectGrade", "lastCleared"],
-      readCounterQuests(units).map((q) => [
-        q.id,
-        q.clears,
-        q.perfectGrade,
-        q.lastCleared?.toISOString().slice(0, 10),
+      readSideQuests(units).map((q) => [
+        keyCell("quest", q.id),
+        q.accepted,
+        q.completed,
       ]),
-      "counter",
     ),
     table(
       "journal:archive",

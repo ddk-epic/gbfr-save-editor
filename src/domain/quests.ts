@@ -7,10 +7,27 @@ export interface SideQuest {
   accepted: boolean;
   completed: boolean;
 }
+export const QUEST_DIFFICULTIES = [
+  "easy",
+  "normal",
+  "hard",
+  "very hard",
+  "extreme",
+  "maniac",
+  "proud",
+  "chaos",
+  "chaos+",
+  "chaos++",
+  "infinity",
+] as const;
+
+export type QuestDifficulty = (typeof QUEST_DIFFICULTIES)[number];
 
 export interface CounterQuest {
   /** Quest id as the quest_* tables spell it, 8 hex digits. */
   id: string;
+  /** Difficulty from the id's fifth digit, 1 Easy to B Infinity. */
+  difficulty: QuestDifficulty | undefined;
   clears: number;
   /** An S++ (5 star) clear earned. */
   perfectGrade: boolean;
@@ -48,8 +65,10 @@ export function readCounterQuests(units: UnitStore): CounterQuest[] {
   ids.forEach((id, i) => {
     if (!id) return;
     const time = times[i] ?? 0;
+    const key = questId(id);
     quests.push({
-      id: questId(id),
+      id: key,
+      difficulty: QUEST_DIFFICULTIES[parseInt(key[4]!, 16) - 1],
       clears: clears[i] ?? 0,
       perfectGrade: ((flags[i] ?? 0) & QUEST_PERFECT_GRADE) !== 0,
       lastCleared: time ? new Date(time * 1000) : undefined,

@@ -37,9 +37,11 @@ export {
 } from "./domain/inventory";
 export { readProfile, type Profile } from "./domain/profile";
 export {
+  QUEST_DIFFICULTIES,
   readCounterQuests,
   readSideQuests,
   type CounterQuest,
+  type QuestDifficulty,
   type SideQuest,
 } from "./domain/quests";
 export {
