@@ -497,6 +497,8 @@ const GAME_TEXT = {
   // Unk18 is the title on character tips; tutorial tips title elsewhere.
   tip: `select TutorialWindowIdUnlockRequirement key, Unk18 text_id from story_note_tips`,
   music: `select Key key, MusicTitle text_id from story_note_bgm`,
+  // A quest title is TXT_QR_ and the quest id without its leading "00".
+  quest: `select Key key, 'TXT_QR_' || substr(Key, 3) text_id from quest_baseinfo_ex_data`,
 } satisfies Record<string, string>;
 
 /** Output language -> .msg folder. */
