@@ -42,6 +42,8 @@ export function useRenderCell() {
       if (typeof cell === "boolean") return cell ? yes : no;
       if (typeof cell === "number") return number.format(cell);
       if (typeof cell === "string") return cell;
+      if ("unknown" in cell)
+        return <span className="italic">{t("table.unknown")}</span>;
       const separator = "separator" in cell ? cell.separator : "";
       return keyCells(cell).map((k, i) => {
         const text = gt(k.text, k.key);

@@ -36,7 +36,15 @@ export interface KeyList {
   separator: string;
 }
 
-export type Cell = string | number | boolean | undefined | KeyCell | KeyList;
+/** A value the save does not hold, shown in italics rather than as empty. */
+export interface UnknownCell {
+  unknown: true;
+}
+
+export const unknownCell: UnknownCell = { unknown: true };
+
+export type Cell =
+  string | number | boolean | undefined | KeyCell | KeyList | UnknownCell;
 
 export interface Row {
   id: string;
@@ -98,7 +106,13 @@ export interface SaveView {
 
 /** Key cells of a cell, none for plain values. */
 export const keyCells = (cell: Cell): KeyCell[] =>
-  typeof cell !== "object" ? [] : "keys" in cell ? cell.keys : [cell];
+  typeof cell !== "object"
+    ? []
+    : "keys" in cell
+      ? cell.keys
+      : "unknown" in cell
+        ? []
+        : [cell];
 
 /** True for a key the tables could not resolve, shown as "#" and 8 hex digits. */
 const isUnresolvedKey = (key: string) => /^#[0-9a-f]{8}$/.test(key);
@@ -264,9 +278,10 @@ export function buildView(save: Save): SaveView {
           (c.reward.type === "sigil"
             ? keyCell("sigil", c.reward.key, c.reward.level)
             : keyCell("item", c.reward.key)),
-        // The second trait is rolled at appraisal, so the column stays empty.
         keyCell("trait", sigilReward(c)?.traits[0]),
-        keyCell("trait", sigilReward(c)?.traits[1]),
+        // The save does not hold the second trait.
+        sigilReward(c) &&
+          (keyCell("trait", sigilReward(c)?.traits[1]) ?? unknownCell),
         c.reward && "seed" in c.reward ? c.reward.seed : undefined,
       ]),
     ),
