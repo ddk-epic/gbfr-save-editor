@@ -38,10 +38,14 @@ export {
 export { readProfile, type Profile } from "./domain/profile";
 export {
   QUEST_DIFFICULTIES,
+  QUEST_GRADES,
+  questOrder,
+  questPower,
   readCounterQuests,
   readSideQuests,
   type CounterQuest,
   type QuestDifficulty,
+  type QuestGrade,
   type SideQuest,
 } from "./domain/quests";
 export {

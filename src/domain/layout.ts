@@ -116,8 +116,6 @@ export const UNIT = {
 
 /** Reward entries per curio, CURIO_REWARD_KEY at curio unit * 100 + entry. */
 export const CURIO_REWARD_ENTRIES = 5;
-/** Bit of COUNTER_QUEST_FLAGS set once an S++ clear is earned. */
-export const QUEST_PERFECT_GRADE = 1;
 /** Bits of ARCHIVE_FLAGS: the document is obtained, and seen in the journal list. */
 export const ARCHIVE_OBTAINED = 1;
 export const ARCHIVE_VIEWED = 2;

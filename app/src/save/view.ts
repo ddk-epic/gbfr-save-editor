@@ -2,6 +2,8 @@ import {
   characterOrder,
   compareSigils,
   itemOrder,
+  questOrder,
+  questPower,
   readArchives,
   readCharacterData,
   readCounterQuests,
@@ -139,18 +141,24 @@ const counterQuestTables = (quests: CounterQuest[]): Table[] =>
   [...QUEST_DIFFICULTIES, undefined]
     .map((difficulty) => ({
       difficulty,
-      quests: quests.filter((q) => q.difficulty === difficulty),
+      // Ids the counter never fills sort last, and are left out entirely.
+      quests: quests
+        .filter(
+          (q) => q.difficulty === difficulty && questOrder(q.id) !== Infinity,
+        )
+        .sort((a, b) => questOrder(a.id) - questOrder(b.id)),
     }))
     .filter(({ quests }) => quests.length)
     .map(({ difficulty, quests }) =>
       table(
         `quests:${difficulty ?? "other"}`,
         "quests",
-        ["quest", "clears", "perfectGrade", "lastCleared"],
+        ["quest", "pwr", "clears", "grade", "lastCleared"],
         quests.map((q) => [
           keyCell("quest", q.id),
-          q.clears,
-          q.perfectGrade,
+          questPower(q.id),
+          q.clears || undefined,
+          q.grade,
           q.lastCleared?.toISOString().slice(0, 10),
         ]),
         difficulty ?? "other",

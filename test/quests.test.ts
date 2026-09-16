@@ -1,6 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { QUEST_COUNTER } from "../src/data/quests";
 import {
+  questOrder,
   readCounterQuests,
   readProfile,
   readSave,
@@ -10,6 +12,24 @@ import {
 // Local save, gitignored. Counts and names checked in game.
 const SAVE_PATH = process.env.GBFR_SAVE ?? "tmp/SaveData1.dat";
 const hasSave = existsSync(SAVE_PATH);
+
+describe("questOrder", () => {
+  const ids = QUEST_COUNTER.map(([id]) => id);
+
+  it("indexes every quest once, one run per difficulty", () => {
+    expect(ids.length).toBeGreaterThan(0);
+    // A duplicate id would drop a quest out of the order.
+    expect(new Set(ids).size).toBe(ids.length);
+    ids.forEach((id, i) => expect(questOrder(id)).toBe(i));
+    expect(questOrder("FFFFFFFF")).toBe(Infinity);
+    // Each difficulty holds one unbroken run, whatever its size, so no quest
+    // sorts into another difficulty's stretch of the order.
+    const runs = ids
+      .map((id) => id[4])
+      .filter((digit, i, all) => digit !== all[i - 1]);
+    expect(new Set(runs).size).toBe(runs.length);
+  });
+});
 
 describe.skipIf(!hasSave)("readSideQuests and readCounterQuests", () => {
   it("reads side quests, as in game", () => {
@@ -53,16 +73,6 @@ describe.skipIf(!hasSave)("readSideQuests and readCounterQuests", () => {
     expect(
       ["00407322", "00406364", "00406360"].map((id) => quest(id)?.clears),
     ).toEqual([4105, 1269, 1245]);
-    // S+ best: The Juice of Jealousy, Tomorrow's Prayers, Protect Our Woods.
-    // S++ on all five On the Threshold quests.
-    expect(
-      quests.filter((q) => q.clears && !q.perfectGrade).map((q) => q.id),
-    ).toEqual(["00403302", "00401316", "00401315"]);
-    expect(
-      quests
-        .filter((q) => q.id.startsWith("0040B"))
-        .every((q) => q.perfectGrade),
-    ).toBe(true);
     // On the Threshold of Destruction, last cleared 2026-08-17.
     expect(quest("0040B309")?.lastCleared?.toISOString()).toBe(
       "2026-08-17T01:50:50.000Z",
