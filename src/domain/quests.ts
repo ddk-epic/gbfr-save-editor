@@ -1,5 +1,15 @@
+import { QUEST_COUNTER } from "../data/quests";
 import type { UnitStore } from "../format/unit-store";
-import { ID, QUEST_PERFECT_GRADE } from "./layout";
+import { ID } from "./layout";
+
+const QUEST_POSITIONS = new Map(QUEST_COUNTER.map(([id], i) => [id, i]));
+const QUEST_POWERS = new Map(QUEST_COUNTER);
+
+/** The quest counter's own order within a difficulty; unlisted quests last. */
+export const questOrder = (id: string) => QUEST_POSITIONS.get(id) ?? Infinity;
+
+/** PWR the counter advises for a quest, undefined for an id it never fills. */
+export const questPower = (id: string) => QUEST_POWERS.get(id);
 
 export interface SideQuest {
   /** Quest id as the quest_* tables spell it, 8 hex digits. */
@@ -23,14 +33,19 @@ export const QUEST_DIFFICULTIES = [
 
 export type QuestDifficulty = (typeof QUEST_DIFFICULTIES)[number];
 
+/** A best grade counter for quests; a quest never cleared holds 7. */
+export const QUEST_GRADES = ["C", "B", "A", "S", "S+", "S++"] as const;
+
+export type QuestGrade = (typeof QUEST_GRADES)[number];
+
 export interface CounterQuest {
   /** Quest id as the quest_* tables spell it, 8 hex digits. */
   id: string;
   /** Difficulty from the id's fifth digit, 1 Easy to B Infinity. */
   difficulty: QuestDifficulty | undefined;
   clears: number;
-  /** An S++ (5 star) clear earned. */
-  perfectGrade: boolean;
+  /** Best grade earned, undefined until the quest is cleared. */
+  grade: QuestGrade | undefined;
   /** Recorded since 2.0.0, undefined before. */
   lastCleared: Date | undefined;
 }
@@ -66,11 +81,12 @@ export function readCounterQuests(units: UnitStore): CounterQuest[] {
     if (!id) return;
     const time = times[i] ?? 0;
     const key = questId(id);
+    const cleared = (clears[i] ?? 0) > 0;
     quests.push({
       id: key,
       difficulty: QUEST_DIFFICULTIES[parseInt(key[4]!, 16) - 1],
       clears: clears[i] ?? 0,
-      perfectGrade: ((flags[i] ?? 0) & QUEST_PERFECT_GRADE) !== 0,
+      grade: cleared ? QUEST_GRADES[flags[i] ?? -1] : undefined,
       lastCleared: time ? new Date(time * 1000) : undefined,
     });
   });
