@@ -1,6 +1,7 @@
 import { ITEM_KEYS, ITEM_SORT_ORDER } from "../data/items";
 import {
   GEM_KEYS,
+  GEM_TRAITS,
   SKILL_KEYS,
   TRAIT_INVENTORY_SORT_ORDER,
 } from "../data/sigils";
@@ -92,12 +93,24 @@ export interface InventoryWrightstone extends Wrightstone {
 /** A curio's reward, rolled when the curio is found. */
 export type CurioReward =
   | { type: "material"; /** item.Key */ key: string }
-  | { type: "sigil"; /** gem.Key */ key: string; level: number }
-  | { type: "wrightstone"; /** item.Key */ key: string };
+  | {
+      type: "sigil";
+      /** gem.Key */ key: string;
+      level: number;
+      /** The sigil's own traits, skill.Key of gem.SkillId1 then SkillId2. */
+      traits: string[];
+      /** Seed of the trait the sigil rolls at appraisal, 0 on a gem with two. */
+      seed: number;
+    }
+  | { type: "wrightstone"; /** item.Key */ key: string; seed: number };
 
 export interface Curio {
   /** item.Key of the curio tier, ITEM_19_0001-0004. */
   key: string;
+  /** 1-4, the tier in the item.Key; undefined when the key is unresolved. */
+  tier: number | undefined;
+  /** Its number in the order curios were found, counting up across the save. */
+  serial: number;
   reward: CurioReward | undefined;
 }
 
@@ -271,16 +284,25 @@ function readCurioReward(
   for (let entry = 0; entry < CURIO_REWARD_ENTRIES; entry++) {
     const unitId = curioUnit * 100 + entry;
     const hash = first(units, ID.CURIO_REWARD_KEY, unitId);
+    const seed = first(units, ID.CURIO_REWARD_SEED, unitId) ?? 0;
     if (entry === 1) {
       const key = keyOf(GEM_KEYS, hash);
       if (key === undefined) continue;
       const level =
         units.values(ID.CURIO_REWARD_LEVEL, unitId, "int")?.[0] ?? 0;
-      return { type: "sigil", key, level };
+      return {
+        type: "sigil",
+        key,
+        level,
+        traits: [...(GEM_TRAITS[key] ?? [])],
+        seed,
+      };
     }
     const key = keyOf(ITEM_KEYS, hash);
     if (key === undefined) continue;
-    return { type: entry === 3 ? "wrightstone" : "material", key };
+    return entry === 3
+      ? { type: "wrightstone", key, seed }
+      : { type: "material", key };
   }
   return undefined;
 }
@@ -290,7 +312,13 @@ function readCurios(units: UnitStore): Curio[] {
   for (const unit of units.ofIdType(ID.CURIO_KEY)) {
     const key = keyOf(ITEM_KEYS, (unit.values as number[])[0]);
     if (key === undefined) continue;
-    curios.push({ key, reward: readCurioReward(units, unit.unitId) });
+    const tier = /^ITEM_19_000(\d)$/.exec(key)?.[1];
+    curios.push({
+      key,
+      tier: tier === undefined ? undefined : Number(tier),
+      serial: first(units, ID.CURIO_SERIAL, unit.unitId) ?? 0,
+      reward: readCurioReward(units, unit.unitId),
+    });
   }
   return curios;
 }

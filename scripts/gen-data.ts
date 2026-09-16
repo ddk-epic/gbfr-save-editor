@@ -265,6 +265,29 @@ ${rows.sort().join("\n")}
   console.log(`${name}: ${rows.length} keys`);
 }
 
+// A sigil's own traits: SkillId1, and SkillId2 on the sigils that carry two.
+// A gem without a SkillId2 rolls its second trait, SkillTypeLotIdForRandom2ndSkill.
+const gemTraits = (
+  db.prepare("select Key, SkillId1, SkillId2 from gem").all() as {
+    Key: string;
+    SkillId1: string;
+    SkillId2: string;
+  }[]
+)
+  .filter(({ SkillId1 }) => SkillId1 !== "")
+  .map(
+    ({ Key, SkillId1, SkillId2 }) =>
+      `  ${JSON.stringify(Key)}: ${JSON.stringify(SkillId2 === "" ? [SkillId1] : [SkillId1, SkillId2])},`,
+  );
+emit(
+  "sigils",
+  `/** skill.Key of a sigil's own traits by gem.Key, SkillId1 then SkillId2. */
+export const GEM_TRAITS: Readonly<Record<string, readonly string[]>> = {
+${gemTraits.sort().join("\n")}
+};`,
+);
+console.log(`GEM_TRAITS: ${gemTraits.length} gems`);
+
 // Row n is the MSP a character has spent on master levels at master level n.
 const masterMsp = (
   db.prepare("select TotalMSP from chara_master_exp").all() as {
