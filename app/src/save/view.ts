@@ -13,6 +13,7 @@ import {
   readSideQuests,
   readTips,
   type Captain,
+  type Curio,
   type Equipment,
   type Save,
   type Trait,
@@ -113,6 +114,10 @@ const keyCell = (
   key === undefined ? undefined : { text, key, level };
 
 const trait = (t: Trait | undefined) => t && keyCell("trait", t.key, t.level);
+
+/** A curio's reward when it is a sigil, for the columns only sigils fill. */
+const sigilReward = (c: Curio) =>
+  c.reward?.type === "sigil" ? c.reward : undefined;
 
 const MASTER_TRAIT_TABS: Record<string, string> = {
   SB_DEF: "insight",
@@ -240,14 +245,29 @@ export function buildView(save: Save): SaveView {
     table(
       "curios",
       "curios",
-      ["index", "type", "reward"],
+      [
+        "index",
+        "tier",
+        "serial",
+        "type",
+        "reward",
+        "primary",
+        "secondary",
+        "seed",
+      ],
       inventory.curios.map((c, i) => [
         i + 1,
+        c.tier,
+        c.serial,
         c.reward?.type,
         c.reward &&
           (c.reward.type === "sigil"
             ? keyCell("sigil", c.reward.key, c.reward.level)
             : keyCell("item", c.reward.key)),
+        // The second trait is rolled at appraisal, so the column stays empty.
+        keyCell("trait", sigilReward(c)?.traits[0]),
+        keyCell("trait", sigilReward(c)?.traits[1]),
+        c.reward && "seed" in c.reward ? c.reward.seed : undefined,
       ]),
     ),
     table(

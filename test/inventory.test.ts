@@ -158,13 +158,33 @@ describe.skipIf(!hasSave)("readInventory", () => {
     expect(curios).toHaveLength(308);
     // Berserker V+, Glass Cannon V+, Berserker Echo+ Lv15, Grand Refinium I,
     // Stamina V+ ... Stronghold V+, Celestial Ventus V+, Stun Power V+.
+    const sigil = (
+      key: string,
+      level: number,
+      trait: string,
+      seed: number,
+    ) => ({
+      type: "sigil",
+      key,
+      level,
+      traits: [trait],
+      seed,
+    });
     expect(curios.slice(0, 5).map((c) => c.reward)).toEqual([
-      { type: "sigil", key: "GEEN_154_24", level: 0 },
-      { type: "sigil", key: "GEEN_158_24", level: 0 },
-      { type: "sigil", key: "GEEN_233_24", level: 15 },
+      sigil("GEEN_154_24", 0, "SKILL_154_00", 1828417378),
+      sigil("GEEN_158_24", 0, "SKILL_158_00", 3022663574),
+      sigil("GEEN_233_24", 15, "SKILL_233_00", 1628797413),
       { type: "material", key: "0EB683CD" },
-      { type: "sigil", key: "GEEN_006_24", level: 0 },
+      sigil("GEEN_006_24", 0, "SKILL_006_00", 4169356646),
     ]);
+    // Tier 1-4 and the number the curio was found at; 2001 holds the newest.
+    expect(curios.slice(0, 4).map((c) => [c.tier, c.serial])).toEqual([
+      [4, 16376],
+      [3, 16377],
+      [1, 16378],
+      [3, 16379],
+    ]);
+    expect(curios.at(-1)?.serial).toBe(16683);
     expect(curios.slice(-3).map((c) => c.reward?.key)).toEqual([
       "GEEN_144_24",
       "9300FADB",
@@ -176,6 +196,7 @@ describe.skipIf(!hasSave)("readInventory", () => {
     expect(curios[286]?.reward).toEqual({
       type: "wrightstone",
       key: "ITEM_25_0020",
+      seed: expect.any(Number),
     });
   });
 });
