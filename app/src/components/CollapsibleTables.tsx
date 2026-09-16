@@ -111,7 +111,7 @@ function Section({
         <button
           key={tab}
           onClick={() => setTabName(tab)}
-          className={`-mb-px border-b-2 px-3 pb-1 first:pl-0 ${group === shown ? "border-primary text-primary" : "border-transparent text-subtle-foreground hover:border-white/40 hover:text-strong-foreground"}`}
+          className={`-mb-px border-b-2 px-[min(0.75rem,1%)] pb-1 whitespace-nowrap ${group === shown ? "border-primary text-primary" : "border-transparent text-subtle-foreground hover:border-white/40 hover:text-strong-foreground"}`}
         >
           {tab}{" "}
           <span className="text-faint-foreground">
