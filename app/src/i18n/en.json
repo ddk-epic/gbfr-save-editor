@@ -58,7 +58,8 @@
   "table": {
     "empty": "Nothing stored.",
     "yes": "yes",
-    "no": "no"
+    "no": "no",
+    "unknown": "unknown"
   },
   "rowPanel": {
     "row": "Row",
