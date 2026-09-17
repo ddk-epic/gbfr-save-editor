@@ -82,6 +82,8 @@ export const ID = {
   TIP_FLAGS: 8702,
   MUSIC_KEY: 8301,
   MUSIC_FLAGS: 8302,
+  CONFLUX_AURA_KEY: 9601,
+  CONFLUX_AURA_FLAGS: 9602,
   CURIO_REWARD_KEY: 1901,
   CURIO_REWARD_SEED: 1903,
   CURIO_REWARD_LEVEL: 1904,
@@ -148,6 +150,12 @@ export const UNIT = {
    */
   CHARACTER_PROGRESS: 10000000,
   CHARACTER_PROGRESS_ENTRIES: 400,
+  /** Resonance tree, one PROGRESS_KEY/PROGRESS_VALUE entry per distinct bonus. */
+  CONFLUX_TREE: 0,
+  CONFLUX_TREE_ENTRIES: 200,
+  /** Aura collection, CONFLUX_AURA_KEY and CONFLUX_AURA_FLAGS. */
+  CONFLUX_AURA: 0,
+  CONFLUX_AURA_COUNT: 300,
   /** Trait lists: TRAIT + owner * 100 + index. */
   TRAIT: 120000000,
   TRAIT_OWNER_WEAPON: 100000,
@@ -185,5 +193,8 @@ export const SUMMON_SLOTS = 4;
 /** Bits of SUMMON_FLAGS: equipped at least once, and seen, clearing the new mark. */
 export const SUMMON_EVER_EQUIPPED = 1;
 export const SUMMON_SEEN = 2;
+/** Bits of CONFLUX_AURA_FLAGS: obtained, and seen, clearing the new mark. */
+export const CONFLUX_AURA_OBTAINED = 1;
+export const CONFLUX_AURA_SEEN = 2;
 export const OVER_MASTERY_LINES = 4;
 export const WEAPON_TRAIT_SLOTS = 5;
