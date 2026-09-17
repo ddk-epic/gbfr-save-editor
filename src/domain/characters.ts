@@ -332,11 +332,12 @@ function readOverMasteries(
   return Array.from({ length: OVER_MASTERY_LINES }, (_, i) => {
     const key = keyOf(
       LIMIT_BONUS_PARAM_KEYS,
-      units.values(ID.OVER_MASTERY_KEY, base + i, "uint")?.[0],
+      units.values(ID.CHARACTER_OVER_MASTERY_KEY, base + i, "uint")?.[0],
     );
     if (key === undefined) return undefined;
     // The level is stored as one bit: level n is 1 << (n - 1).
-    const bits = units.values(ID.OVER_MASTERY_LEVEL, base + i, "int")?.[0] ?? 0;
+    const bits =
+      units.values(ID.CHARACTER_OVER_MASTERY_LEVEL, base + i, "int")?.[0] ?? 0;
     const level = Math.log2(bits) + 1;
     if (!Number.isInteger(level))
       throw new SaveFormatError({
@@ -404,8 +405,8 @@ export function readCharacterData(units: UnitStore): CharacterData {
       baseAttack: int(ID.CHARACTER_BASE_ATTACK),
       questsUsed:
         units.values(ID.CHARACTER_QUESTS_USED, unitId, "uint")?.[0] ?? 0,
-      masterXp: int(ID.MASTER_XP),
-      masterLevel: masterLevelOf(int(ID.MASTER_XP)),
+      masterXp: int(ID.CHARACTER_MASTER_XP),
+      masterLevel: masterLevelOf(int(ID.CHARACTER_MASTER_XP)),
       overMasteries: readOverMasteries(units, unitId),
       masterTraits: readMasterTraits(units, unitId),
       masteries: readMasteries(units, unitId, equipment.character),
@@ -440,7 +441,7 @@ export function readCharacterData(units: UnitStore): CharacterData {
       loadouts.push({ ...equipment, name: readName(units, unitId) });
   }
 
-  const captainNumber = units.values(ID.CAPTAIN, 0, "int")?.[0];
+  const captainNumber = units.values(ID.USER_CAPTAIN, 0, "int")?.[0];
   const captain =
     captainNumber === undefined ? undefined : CAPTAINS[captainNumber - 1];
 

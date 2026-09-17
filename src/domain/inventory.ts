@@ -392,8 +392,8 @@ function readSummons(units: UnitStore): Map<number, Summon> {
 export function readInventory(units: UnitStore): Inventory {
   const int = (idType: number) => units.values(idType, 0, "int")?.[0] ?? 0;
   return {
-    rupies: int(ID.RUPIES),
-    masteryPoints: int(ID.MASTERY_POINTS),
+    rupies: int(ID.USER_RUPIES),
+    masteryPoints: int(ID.USER_MASTERY_POINTS),
     items: readItems(units),
     wishList: readItemsFlagged(
       units,

@@ -21,7 +21,7 @@ The SlotData FlatBuffer is followed by ten u64 xxHash64 checksums, then a u64 ch
 
 The table is `SaveGameFile.HashSectionInfos` in GBFRDataTools.SaveFile.
 
-Only one of the ten is valid. Unit 1003, `SAVEDATA_HASHSEED`, selects it as `value % 10`. The other nine hold stale values from earlier saves, and the game ignores them. A writer recomputes the hash at the selected index and leaves the rest alone. The approach comes from xcier/GBFR-Save-Editor, `gbfr_editor/core/gbfr_save.py`, which updates only that index and warns that updating all ten makes a file look less like a game-written save.
+Only one of the ten is valid. Unit 1003, `SAVE_HASHSEED`, selects it as `value % 10`. The other nine hold stale values from earlier saves, and the game ignores them. A writer recomputes the hash at the selected index and leaves the rest alone. The approach comes from xcier/GBFR-Save-Editor, `gbfr_editor/core/gbfr_save.py`, which updates only that index and warns that updating all ten makes a file look less like a game-written save.
 
 ## Evidence
 
