@@ -38,8 +38,8 @@ export function CharacterPage({
   const tables = character.tables.filter((table) => table.section !== "stats");
   const sections: string[] = [
     "stats",
+    "gear",
     ...tables.map((table) => table.section),
-    "equipment",
   ];
   const toggle = (section: string) => {
     const next = new Set(open);
@@ -83,34 +83,37 @@ export function CharacterPage({
         selection={selection}
         onSelect={onSelect}
         before={
-          <CollapsibleSection
-            section="stats"
-            count={level!.rows.length + fateEpisodes!.rows.length}
-            open={open.has("stats")}
-            onToggle={() => toggle("stats")}
-          >
-            <div className="grid gap-4 pb-1 sm:grid-cols-2">
-              <div className="min-w-0">{tableOf(t("stats.level"), level!)}</div>
-              <div className="min-w-0">
-                {tableOf(t("stats.fateEpisodes"), fateEpisodes!)}
+          <>
+            <CollapsibleSection
+              section="stats"
+              count={level!.rows.length + fateEpisodes!.rows.length}
+              open={open.has("stats")}
+              onToggle={() => toggle("stats")}
+            >
+              <div className="grid gap-4 pb-1 sm:grid-cols-2">
+                <div className="min-w-0">
+                  {tableOf(t("stats.level"), level!)}
+                </div>
+                <div className="min-w-0">
+                  {tableOf(t("stats.fateEpisodes"), fateEpisodes!)}
+                </div>
               </div>
-            </div>
-          </CollapsibleSection>
+            </CollapsibleSection>
+            <CollapsibleSection
+              section="gear"
+              count={character.equipment.length}
+              open={open.has("gear")}
+              onToggle={() => toggle("gear")}
+            >
+              <EquipmentSets
+                sets={character.equipment}
+                selection={selection}
+                onSelect={onSelect}
+              />
+            </CollapsibleSection>
+          </>
         }
-      >
-        <CollapsibleSection
-          section="equipment"
-          count={character.equipment.length}
-          open={open.has("equipment")}
-          onToggle={() => toggle("equipment")}
-        >
-          <EquipmentSets
-            sets={character.equipment}
-            selection={selection}
-            onSelect={onSelect}
-          />
-        </CollapsibleSection>
-      </CollapsibleTables>
+      />
     </>
   );
 }
