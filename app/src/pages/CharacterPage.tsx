@@ -63,10 +63,7 @@ export function CharacterPage({
     <>
       <PageTop
         crumbs={[fileName, t("contents.characters"), name]}
-        title={t("character.title", {
-          name,
-          level: character.level,
-        })}
+        title={name}
         onRoot={onRoot}
         actions={
           <ExpandCollapseActions
