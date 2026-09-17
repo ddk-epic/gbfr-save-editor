@@ -9,7 +9,7 @@ import {
   readSideQuests,
 } from "../src/index";
 
-// Local save, gitignored. Counts and names checked in game.
+// Local save, gitignored. Any save works: these hold at every point of progress.
 const SAVE_PATH = process.env.GBFR_SAVE ?? "tmp/SaveData1.dat";
 const hasSave = existsSync(SAVE_PATH);
 
@@ -32,51 +32,34 @@ describe("questOrder", () => {
 });
 
 describe.skipIf(!hasSave)("readSideQuests and readCounterQuests", () => {
-  it("reads side quests, as in game", () => {
-    const units = readSave(readFileSync(SAVE_PATH)).slotData.units;
+  const units = hasSave
+    ? readSave(readFileSync(SAVE_PATH)).slotData.units
+    : (undefined as never);
+
+  it("reads side quests once each", () => {
     const quests = readSideQuests(units);
-    expect(quests).toHaveLength(151);
-    // The game lists 141 accepted, 139 completed. Futureproof Trading and
-    // Presentproof Investing are completed repeat quests, hidden until
-    // accepted again.
-    const repeats = ["00204106", "00204107"];
-    const listed = quests.filter((q) => q.accepted && !repeats.includes(q.id));
-    expect(listed).toHaveLength(141);
-    expect(listed.filter((q) => q.completed)).toHaveLength(139);
-    // Underway: Eureka! They Do Exist! and Chasing Rumors: Red Tri-Stars.
-    expect(listed.filter((q) => !q.completed).map((q) => q.id)).toEqual([
-      "00290101",
-      "00240121",
-    ]);
-    expect(
-      quests.filter((q) => repeats.includes(q.id)).map((q) => q.completed),
-    ).toEqual([true, true]);
-    // Save the Crustaceans and its 14 sequels, all completed.
-    expect(
-      quests.filter((q) => /^0029000|^0029001|^00200001$/.test(q.id)),
-    ).toSatisfy(
-      (list: typeof quests) =>
-        list.length === 15 && list.every((q) => q.completed),
-    );
+    expect(quests.length).toBeGreaterThan(0);
+    expect(new Set(quests.map((q) => q.id)).size).toBe(quests.length);
+    // A quest is only completable once accepted.
+    expect(quests.filter((q) => q.completed && !q.accepted)).toEqual([]);
   });
 
-  it("reads quest counter quests, as in game", () => {
-    const units = readSave(readFileSync(SAVE_PATH)).slotData.units;
+  it("reads counter quest clears, summing to the profile", () => {
     const quests = readCounterQuests(units);
-    const quest = (id: string) => quests.find((q) => q.id === id);
-    expect(quests).toHaveLength(203);
-    // Clears sum to quests cleared on the profile.
+    expect(quests.length).toBeGreaterThan(0);
+    expect(new Set(quests.map((q) => q.id)).size).toBe(quests.length);
+    // The profile counts the same clears from a different unit, so a misread
+    // clear count or a quest read twice breaks the sum.
     expect(quests.reduce((sum, q) => sum + q.clears, 0)).toBe(
       readProfile(units).questsCleared,
     );
-    // Lock Horns, Throw a Smith a Bone, I See a Grim Vision.
-    expect(
-      ["00407322", "00406364", "00406360"].map((id) => quest(id)?.clears),
-    ).toEqual([4105, 1269, 1245]);
-    // On the Threshold of Destruction, last cleared 2026-08-17.
-    expect(quest("0040B309")?.lastCleared?.toISOString()).toBe(
-      "2026-08-17T01:50:50.000Z",
-    );
-    expect(quest("00406360")?.lastCleared).toBeUndefined();
+    // A last-cleared date needs a clear behind it, and dates decode into the
+    // window between the game's release and now.
+    const release = Date.parse("2024-02-01");
+    for (const quest of quests.filter((q) => q.lastCleared)) {
+      expect(quest.clears, quest.id).toBeGreaterThan(0);
+      expect(Number(quest.lastCleared), quest.id).toBeGreaterThan(release);
+      expect(Number(quest.lastCleared), quest.id).toBeLessThan(Date.now());
+    }
   });
 });
