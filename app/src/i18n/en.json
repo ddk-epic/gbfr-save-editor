@@ -88,13 +88,13 @@
     "stats": "Stats",
     "masteries": "Masteries",
     "masterTraits": "Master traits",
-    "equipment": "Equipment and loadouts"
+    "gear": "Gear"
   },
   "sectionsShort": {
     "stats": "Stats",
     "masteries": "Masteries",
     "masterTraits": "Master traits",
-    "equipment": "Equipment"
+    "gear": "Gear"
   },
   "columns": {
     "field": "field",

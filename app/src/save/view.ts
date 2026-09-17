@@ -553,7 +553,7 @@ export function buildView(save: Save): SaveView {
       name,
       weapon: table(
         `${id}:weapon`,
-        "equipment",
+        "gear",
         ["field", "value"],
         w
           ? [
@@ -574,7 +574,7 @@ export function buildView(save: Save): SaveView {
       ),
       wrightstone: table(
         `${id}:wrightstone`,
-        "equipment",
+        "gear",
         ["field", "value"],
         [
           ["wrightstone", keyCell("item", w?.wrightstone?.key)],
@@ -585,13 +585,13 @@ export function buildView(save: Save): SaveView {
       ),
       skills: table(
         `${id}:skills`,
-        "equipment",
+        "gear",
         ["slot", "skill"],
         e.skills.map((key, i) => [i + 1, keyCell("skill", key)]),
       ),
       sigils: table(
         `${id}:sigils`,
-        "equipment",
+        "gear",
         ["slot", "sigil", "level", "primary", "secondary", "locked", "new"],
         e.sigils.map((s, i) => [
           i + 1,
