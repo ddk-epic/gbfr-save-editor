@@ -22,12 +22,15 @@ export { readSave, type Save, type SaveSection } from "./format/read-save";
 export { hashId } from "./hash/xxhash32-custom";
 export {
   itemOrder,
+  itemTab,
+  ITEM_TABS,
   compareSigils,
   readInventory,
   type Curio,
   type CurioReward,
   type EquipBonus,
   type Inventory,
+  type ItemTab,
   type InventoryWrightstone,
   type Sigil,
   type Summon,

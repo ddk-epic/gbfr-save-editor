@@ -2,6 +2,7 @@ import {
   characterOrder,
   compareSigils,
   itemOrder,
+  itemTab,
   questOrder,
   questPower,
   readArchives,
@@ -17,6 +18,7 @@ import {
   readTips,
   readTrophies,
   QUEST_DIFFICULTIES,
+  ITEM_TABS,
   TROPHY_TABS,
   type Captain,
   type CounterQuest,
@@ -24,6 +26,7 @@ import {
   type Equipment,
   type Save,
   type FieldNoteCategory,
+  type ItemTab,
   type Trait,
   type Trophy,
   type TrophyTab,
@@ -183,6 +186,39 @@ const FIELD_NOTE_TEXT: Record<
   wrightstones: ["fieldNoteWrightstone", "4"],
 };
 
+/** Tab names of the item menu tabs. */
+const ITEM_TAB_NAMES: Record<ItemTab, string> = {
+  treasures: "treasures",
+  keyItems: "key items",
+};
+
+/** One table per item menu tab in item.SortOrder. */
+const itemTables = (
+  items: Map<string, number>,
+  wished: Set<string>,
+  unseen: Set<string>,
+): Table[] =>
+  ITEM_TABS.map((tab) =>
+    table(
+      `items:${tab}`,
+      "items",
+      // The wish list takes materials only.
+      tab === "treasures"
+        ? ["item", "count", "wishList", "new"]
+        : ["item", "count", "new"],
+      [...items]
+        .filter(([key]) => itemTab(key) === tab)
+        .sort(([a], [b]) => itemOrder(a) - itemOrder(b))
+        .map(([key, count]): Cell[] => [
+          keyCell("item", key),
+          count,
+          ...(tab === "treasures" ? [wished.has(key)] : []),
+          unseen.has(key),
+        ]),
+      ITEM_TAB_NAMES[tab],
+    ),
+  );
+
 /** Tab names of the trophy tabs. */
 const TROPHY_TAB_NAMES: Record<TrophyTab, string> = {
   story: "story & quest",
@@ -261,19 +297,7 @@ export function buildView(save: Save): SaveView {
         ["mastery points", inventory.masteryPoints],
       ],
     ),
-    table(
-      "items",
-      "items",
-      ["item", "count", "wishList", "new"],
-      [...inventory.items]
-        .sort(([a], [b]) => itemOrder(a) - itemOrder(b))
-        .map(([key, count]): Cell[] => [
-          keyCell("item", key),
-          count,
-          wished.has(key),
-          unseen.has(key),
-        ]),
-    ),
+    ...itemTables(inventory.items, wished, unseen),
     table(
       "sigils",
       "sigils",
