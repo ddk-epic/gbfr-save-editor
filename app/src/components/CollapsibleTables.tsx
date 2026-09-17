@@ -1,7 +1,7 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { sectionId, type Selection } from "../navigation";
+import { scrollPageTop, sectionId, type Selection } from "../navigation";
 import type { SectionId, Table } from "../save/view";
 import { DataTable, TableLabel } from "./DataTable";
 
@@ -184,7 +184,10 @@ export function ExpandCollapseActions({
       </button>
       <button
         className="text-subtle-foreground hover:text-strong-foreground"
-        onClick={onCollapseAll}
+        onClick={() => {
+          onCollapseAll();
+          scrollPageTop();
+        }}
       >
         {t("tables.collapseAll")}
       </button>
