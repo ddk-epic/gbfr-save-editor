@@ -1,5 +1,5 @@
 import { FolderOpen, X } from "lucide-react";
-import { useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StatusBar, TitleBar } from "./components/Bars";
 import { ContentsTree } from "./components/ContentsTree";
@@ -21,12 +21,19 @@ export function App() {
   const [page, setPage] = useState<Page>("welcome");
   // Open sections by section id, shared by the save and every character.
   const [open, setOpen] = useState<Set<string>>(
-    () => new Set(["profile", "stats"]),
+    () => new Set(["profile", "stats", "gear"]),
   );
   const [selection, setSelection] = useState<Selection>();
   const [validationOpen, setValidationOpen] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
   const [scrollRef, gutter] = useScrollGutter<HTMLDivElement>();
+  // Scroll position by page, so each page keeps its own; cleared per save.
+  const scrollTops = useRef(new Map<Page, number>());
+
+  useLayoutEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollTop = scrollTops.current.get(page) ?? 0;
+  }, [page, save, scrollRef]);
 
   const view = save?.view;
 
@@ -36,12 +43,14 @@ export function App() {
       setLoadError(result.error);
       return;
     }
+    scrollTops.current.clear();
     setSave(result.save);
     setLoadError(undefined);
     setSelection(undefined);
     setPage("save");
   };
   const closeFile = () => {
+    scrollTops.current.clear();
     setSave(undefined);
     setSelection(undefined);
     setValidationOpen(false);
@@ -50,6 +59,7 @@ export function App() {
   const go = (next: Page) => {
     // The row panel belongs to a page; leaving the page clears it.
     if (next !== page) setSelection(undefined);
+    scrollTops.current.set(page, scrollRef.current?.scrollTop ?? 0);
     setPage(next);
   };
   const goToSection = (next: Page, section: SectionId) => {
