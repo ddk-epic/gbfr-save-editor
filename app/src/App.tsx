@@ -111,6 +111,7 @@ export function App() {
 
       <div
         ref={scrollRef}
+        data-page-scroll
         className="min-h-0 flex-1 overflow-y-auto scrollbar-gutter-both"
       >
         <div className="mx-auto grid max-w-6xl grid-cols-[172px_1fr] gap-8 px-6">

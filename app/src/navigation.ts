@@ -14,6 +14,12 @@ export function scrollToSection(section: string) {
   });
 }
 
+export function scrollPageTop() {
+  document
+    .querySelector<HTMLElement>("[data-page-scroll]")
+    ?.scrollTo({ top: 0 });
+}
+
 export interface Selection {
   table: Table;
   row: Row;
