@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { readInventory, readSave } from "../src/index";
+import { itemTab, readInventory, readSave } from "../src/index";
 
 // Local save, gitignored. Any save works: these hold at every point of progress.
 const SAVE_PATH = process.env.GBFR_SAVE ?? "tmp/SaveData1.dat";
@@ -21,6 +21,18 @@ describe.skipIf(!hasSave)("readInventory", () => {
     expect(unseenItems.filter((key) => !items.has(key))).toEqual([]);
     expect(wishList.length).toBeLessThanOrEqual(20);
     expect(new Set(wishList).size).toBe(wishList.length);
+  });
+
+  it("sorts items into the treasures and key items tabs", () => {
+    const keys = [...inventory.items.keys()];
+    const tabbed = (tab: string) => keys.filter((key) => itemTab(key) === tab);
+    // The save keeps a unit for every item row, the 62 at SortOrder 2000-2134 included.
+    expect(tabbed("keyItems")).toHaveLength(62);
+    expect(tabbed("treasures").length).toBeGreaterThan(0);
+    // Wish list items are all materials.
+    expect(
+      inventory.wishList.filter((key) => itemTab(key) !== "treasures"),
+    ).toEqual([]);
   });
 
   it("reads wrightstones with up to three traits, strongest first", () => {

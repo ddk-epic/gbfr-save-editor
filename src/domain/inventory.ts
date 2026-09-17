@@ -47,6 +47,19 @@ export interface Sigil {
 /** item.SortOrder, the inventory's item order; unresolved keys last. */
 export const itemOrder = (key: string) => ITEM_SORT_ORDER[key] ?? Infinity;
 
+/** Tabs of the item menu. Sigils, weapons, wrightstones, summons and curios have their own menus. */
+export const ITEM_TABS = ["treasures", "keyItems"] as const;
+export type ItemTab = (typeof ITEM_TABS)[number];
+
+/** The item menu tab listing an item, by item.SortOrder */
+export function itemTab(key: string): ItemTab | undefined {
+  const order = ITEM_SORT_ORDER[key];
+  if (order === undefined) return undefined;
+  if (order >= 100 && order <= 922) return "treasures";
+  if (order >= 2000 && order < 3000) return "keyItems";
+  return undefined;
+}
+
 const traitOrder = (trait: Trait | undefined) =>
   (trait && TRAIT_INVENTORY_SORT_ORDER[trait.key]) ?? Infinity;
 
