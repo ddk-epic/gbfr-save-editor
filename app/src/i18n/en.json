@@ -36,9 +36,6 @@
     "expandAll": "expand all",
     "collapseAll": "collapse all"
   },
-  "character": {
-    "title": "{{name}} · Lv {{level}}"
-  },
   "stats": {
     "level": "Level",
     "fateEpisodes": "Fate episodes"
