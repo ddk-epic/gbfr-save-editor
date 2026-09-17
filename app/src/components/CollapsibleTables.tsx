@@ -180,13 +180,13 @@ export function ExpandCollapseActions({
         className="text-subtle-foreground hover:text-strong-foreground"
         onClick={onExpandAll}
       >
-        {t("account.expandAll")}
+        {t("tables.expandAll")}
       </button>
       <button
         className="text-subtle-foreground hover:text-strong-foreground"
         onClick={onCollapseAll}
       >
-        {t("account.collapseAll")}
+        {t("tables.collapseAll")}
       </button>
     </>
   );

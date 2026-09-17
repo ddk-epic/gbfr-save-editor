@@ -7,7 +7,7 @@ import { ThemeToggle } from "./components/ThemeToggle";
 import { ToolbarButton } from "./components/ToolbarButton";
 import { ValidationMenu } from "./components/ValidationMenu";
 import { scrollToSection, type Page, type Selection } from "./navigation";
-import { AccountPage } from "./pages/AccountPage";
+import { SavePage } from "./pages/SavePage";
 import { CharacterPage } from "./pages/CharacterPage";
 import { WelcomePage } from "./pages/WelcomePage";
 import { loadSave, type LoadedSave, type LoadError } from "./save/load";
@@ -19,7 +19,7 @@ export function App() {
   const [save, setSave] = useState<LoadedSave>();
   const [loadError, setLoadError] = useState<LoadError>();
   const [page, setPage] = useState<Page>("welcome");
-  // Open sections by section id, shared by the account and every character.
+  // Open sections by section id, shared by the save and every character.
   const [open, setOpen] = useState<Set<string>>(
     () =>
       new Set(["sigils", "stats", "masteries", "masterTraits", "equipment"]),
@@ -40,7 +40,7 @@ export function App() {
     setSave(result.save);
     setLoadError(undefined);
     setSelection(undefined);
-    setPage("account");
+    setPage("save");
   };
   const closeFile = () => {
     setSave(undefined);
@@ -119,10 +119,10 @@ export function App() {
                 onFile={(file) => void openFile(file)}
               />
             )}
-            {save && page === "account" && (
-              <AccountPage
+            {save && page === "save" && (
+              <SavePage
                 fileName={save.fileName}
-                tables={save.view.account}
+                tables={save.view.shared}
                 open={open}
                 setOpen={setOpen}
                 selection={selection}

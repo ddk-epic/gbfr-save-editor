@@ -18,7 +18,7 @@ describe.skipIf(!hasSave)("buildView", () => {
 
   it("gives every row one cell per column", () => {
     for (const table of [
-      ...view.account,
+      ...view.shared,
       ...view.characters.flatMap((c) => [
         ...c.tables,
         ...c.equipment.flatMap(equipmentSetTables),

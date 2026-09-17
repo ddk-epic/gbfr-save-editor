@@ -112,7 +112,7 @@ export interface CharacterView {
 }
 
 export interface SaveView {
-  account: Table[];
+  shared: Table[];
   characters: CharacterView[];
   captain: Captain | undefined;
   /** SlotData VersionMaybe. */
@@ -339,7 +339,7 @@ export function buildView(save: Save): SaveView {
   const unseen = new Set(inventory.unseenItems);
   const wished = new Set(inventory.wishList);
 
-  const account: Table[] = [
+  const shared: Table[] = [
     table(
       "profile",
       "profile",
@@ -714,7 +714,7 @@ export function buildView(save: Save): SaveView {
     }));
 
   const unresolved = [
-    ...account,
+    ...shared,
     ...characters.flatMap((c) => [
       ...c.tables,
       ...c.equipment.flatMap(equipmentSetTables),
@@ -724,7 +724,7 @@ export function buildView(save: Save): SaveView {
     .reduce((n, r) => n + r.cells.filter(isUnresolved).length, 0);
 
   return {
-    account,
+    shared,
     characters,
     captain: data.captain,
     slotVersion: save.slotData.version,
