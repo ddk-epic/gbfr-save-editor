@@ -20,6 +20,7 @@ type DataFile =
   | "items"
   | "summons"
   | "journal"
+  | "trophies"
   | "quests";
 
 /** Export name -> output file, table and key column. */
@@ -516,6 +517,8 @@ const GAME_TEXT = {
   music: `select Key key, MusicTitle text_id from story_note_bgm`,
   // A quest title is TXT_QR_ and the quest id without its leading "00".
   quest: `select Key key, 'TXT_QR_' || substr(Key, 3) text_id from quest_baseinfo_ex_data`,
+  trophy: `select cast(Key as text) key, Name text_id from badge`,
+  trophyDescription: `select cast(Key as text) key, Description text_id from badge`,
 } satisfies Record<string, string>;
 
 /** Output language -> .msg folder. */
@@ -603,6 +606,8 @@ mkdirSync(new URL("../src/data/text/", import.meta.url), { recursive: true });
 let questNames: Record<string, string> = {};
 /** Main story entry titles in en, for the comments on the story order. */
 let storyNames: Record<string, string> = {};
+/** Trophy names in en, for the comments on the trophy list. */
+let trophyNames: Record<string, string> = {};
 for (const [lang, folder] of Object.entries(TEXT_LANGUAGES)) {
   const msg = loadMsg(folder);
   const out: Record<string, Record<string, string>> = {};
@@ -639,6 +644,7 @@ for (const [lang, folder] of Object.entries(TEXT_LANGUAGES)) {
   if (lang === "en") {
     questNames = out.quest ?? {};
     storyNames = out.story ?? {};
+    trophyNames = out.trophy ?? {};
   }
 }
 
@@ -705,6 +711,81 @@ ${keyList(fieldNoteTreasure)}
 );
 console.log(
   `FIELD_NOTE_WEAPONS: ${fieldNoteWeapons.length}, FIELD_NOTE_TREASURE: ${fieldNoteTreasure.length}`,
+);
+
+// Trophies: every `badge` row in SortOrder order, the order the journal lists.
+// No column names the tab. Each tab is a contiguous SortOrder block, base game
+// first and Endless Ragnarok after, so the tabs are cut at the first SortOrder
+// of each block. The blocks are in research/save-units.md.
+const TROPHY_TABS = [
+  "story",
+  "character",
+  "battle",
+  "gear",
+  "conflux",
+  "summons",
+  "other",
+] as const;
+const TROPHY_TAB_STARTS: [
+  sortOrder: number,
+  tab: (typeof TROPHY_TABS)[number],
+][] = [
+  [0, "story"],
+  [134, "character"],
+  [354, "battle"],
+  [514, "gear"],
+  [645, "other"],
+  [819, "story"],
+  [876, "character"],
+  [1160, "battle"],
+  [1207, "gear"],
+  [1428, "conflux"],
+  [1534, "summons"],
+  [1568, "other"],
+];
+const DLC_START = 819;
+const badges = db
+  .prepare(
+    "select Key, SortOrder, IsEndlessRagnarok as dlc, ReqQuantity from badge order by SortOrder, Key",
+  )
+  .all() as {
+  Key: number;
+  SortOrder: number;
+  dlc: number;
+  ReqQuantity: number;
+}[];
+for (const b of badges)
+  if (b.SortOrder >= DLC_START !== (b.dlc === 1))
+    throw new Error(
+      `badge ${b.Key}: SortOrder ${b.SortOrder} and IsEndlessRagnarok ${b.dlc} disagree`,
+    );
+const trophyTab = (sortOrder: number) =>
+  [...TROPHY_TAB_STARTS].reverse().find(([start]) => start <= sortOrder)![1];
+emit(
+  "trophies",
+  `/** The journal's trophy tabs, base game and Endless Ragnarok together. */
+export const TROPHY_TABS = ${JSON.stringify(TROPHY_TABS)} as const;
+
+export type TrophyTab = (typeof TROPHY_TABS)[number];
+
+/** \`badge\` rows in SortOrder order: Key, tab, IsEndlessRagnarok, and ReqQuantity, the
+ * {0} of the descriptions that have one. ${badges.length} rows. */
+export const TROPHIES: readonly (readonly [
+  key: number,
+  tab: TrophyTab,
+  dlc: boolean,
+  quantity: number,
+])[] = [
+${badges
+  .map(
+    (b) =>
+      `  [${b.Key}, "${trophyTab(b.SortOrder)}", ${b.dlc === 1}, ${b.ReqQuantity}], // ${trophyNames[b.Key] ?? "(unnamed)"}`,
+  )
+  .join("\n")}
+];`,
+);
+console.log(
+  `TROPHIES: ${badges.length} rows, ${badges.filter((b) => b.dlc).length} Endless Ragnarok`,
 );
 
 // Quest counter list: every quest whose row carries a counter flag, in the

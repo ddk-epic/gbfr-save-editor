@@ -7,7 +7,6 @@ import {
   readArchives,
   readCharacterData,
   readCounterQuests,
-  readEarnedTrophies,
   readFieldNotes,
   readGlossary,
   readInventory,
@@ -16,7 +15,9 @@ import {
   readProfile,
   readSideQuests,
   readTips,
+  readTrophies,
   QUEST_DIFFICULTIES,
+  TROPHY_TABS,
   type Captain,
   type CounterQuest,
   type Curio,
@@ -24,6 +25,8 @@ import {
   type Save,
   type FieldNoteCategory,
   type Trait,
+  type Trophy,
+  type TrophyTab,
 } from "gbfr-save-editor";
 import type { GameTextTable } from "../game-text";
 import type en from "../i18n/en.json";
@@ -179,6 +182,42 @@ const FIELD_NOTE_TEXT: Record<
   treasure: ["item", "3"],
   wrightstones: ["fieldNoteWrightstone", "4"],
 };
+
+/** Tab names of the trophy tabs. */
+const TROPHY_TAB_NAMES: Record<TrophyTab, string> = {
+  story: "story & quest",
+  character: "character",
+  battle: "battle",
+  gear: "gear",
+  conflux: "conflux",
+  summons: "summons",
+  other: "other",
+};
+
+/** One table per trophy tab, base game and DLC together in journal order. */
+const trophyTables = (trophies: Trophy[]): Table[] =>
+  TROPHY_TABS.map((tab) =>
+    table(
+      `trophies:${tab}`,
+      "trophies",
+      ["trophy", "description", "dlc", "earned", "viewed"],
+      trophies
+        .filter((t) => t.tab === tab)
+        .map((t) => [
+          keyCell("trophy", String(t.key)),
+          {
+            text: "trophyDescription",
+            key: String(t.key),
+            values: t.quantity === undefined ? undefined : [t.quantity],
+          },
+          // A key the table lacks has no known origin.
+          t.dlc ?? unknownCell,
+          t.earned,
+          t.viewed,
+        ]),
+      TROPHY_TAB_NAMES[tab],
+    ),
+  );
 
 const MASTER_TRAIT_TABS: Record<string, string> = {
   SB_DEF: "insight",
@@ -411,12 +450,7 @@ export function buildView(save: Save): SaveView {
       ]),
       "music",
     ),
-    table(
-      "trophies",
-      "trophies",
-      ["earnedTrophy"],
-      readEarnedTrophies(units).map((key) => [key]),
-    ),
+    ...trophyTables(readTrophies(units)),
   ];
 
   const equipmentSet = (
