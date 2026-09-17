@@ -31,12 +31,29 @@ export function ContentsTree({
   const character = page.startsWith("char:") ? page.slice(5) : undefined;
 
   const [tab, setTab] = useState<Tab>(tabOf(page) ?? "save");
+  // The character page last shown, reopened by the characters tab.
+  const [lastCharacter, setLastCharacter] = useState<Page>();
   const [prevPage, setPrevPage] = useState(page);
   if (page !== prevPage) {
     setPrevPage(page);
     const next = tabOf(page);
     if (next) setTab(next);
+    if (next === "characters") setLastCharacter(page);
   }
+  const [prevView, setPrevView] = useState(view);
+  if (view !== prevView) {
+    setPrevView(view);
+    setLastCharacter(undefined);
+  }
+
+  const isDisabled = (key: string) =>
+    isNPC(key) || isUnused(key) || isUnchosenCaptain(key, view?.captain);
+  const openCharacters = () => {
+    const first = view?.characters.find((c) => !isDisabled(c.key));
+    const next = lastCharacter ?? (first && `char:${first.key}`);
+    if (next) onPage(next);
+    else setTab("characters");
+  };
 
   return (
     <nav className="sticky top-0 h-fit space-y-4 py-6 text-sidebar-foreground">
@@ -46,12 +63,12 @@ export function ContentsTree({
             <TabButton
               label={t("contents.save")}
               active={tab === "save"}
-              onClick={() => setTab("save")}
+              onClick={() => onPage("save")}
             />
             <TabButton
               label={t("contents.characters")}
               active={tab === "characters"}
-              onClick={() => setTab("characters")}
+              onClick={openCharacters}
             />
           </div>
           {tab === "save" &&
@@ -70,11 +87,7 @@ export function ContentsTree({
                 key={c.key}
                 label={gt("character", c.key) ?? c.key}
                 title={c.key}
-                disabled={
-                  isNPC(c.key) ||
-                  isUnused(c.key) ||
-                  isUnchosenCaptain(c.key, view.captain)
-                }
+                disabled={isDisabled(c.key)}
                 active={character === c.key}
                 onClick={() => onPage(`char:${c.key}`)}
               />
