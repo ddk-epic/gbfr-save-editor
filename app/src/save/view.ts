@@ -74,6 +74,9 @@ export type SectionId = keyof typeof en.sections;
 export type ColumnId = keyof typeof en.columns;
 export type TableLabelId = keyof typeof en.tables;
 
+/** A column and its width in letters. */
+export type Column = [id: ColumnId, width: number];
+
 export interface Table {
   id: string;
   section: SectionId;
@@ -81,9 +84,15 @@ export interface Table {
   tab?: string;
   /** Label above the table when it shares its tab. */
   label?: TableLabelId;
-  columns: ColumnId[];
+  /** Each column with its width in letters on a wide screen, padding aside. */
+  columns: Column[];
+  /** The column that also takes the width the others leave. */
+  stretch: ColumnId;
   rows: Row[];
 }
+
+/** A column shrinks down to this share of its width, rounded up, before the table scrolls. */
+export const SHRINK_FACTOR = 0.5;
 
 /** The equipped set or one loadout: skills and sigils on the left, weapon on the right. */
 export interface EquipmentSetView {
@@ -166,7 +175,13 @@ const counterQuestTables = (quests: CounterQuest[]): Table[] =>
       table(
         `quests:${difficulty ?? "other"}`,
         "quests",
-        ["quest", "pwr", "clears", "grade", "lastCleared"],
+        [
+          ["quest", 48],
+          ["pwr", 6],
+          ["clears", 6],
+          ["grade", 5],
+          ["lastCleared", 12],
+        ],
         quests.map((q) => [
           keyCell("quest", q.id),
           questPower(q.id),
@@ -174,7 +189,7 @@ const counterQuestTables = (quests: CounterQuest[]): Table[] =>
           q.grade,
           q.lastCleared?.toISOString().slice(0, 10),
         ]),
-        difficulty ?? "other",
+        { stretch: "quest", tab: difficulty ?? "other" },
       ),
     );
 
@@ -208,8 +223,17 @@ const itemTables = (
       "items",
       // The wish list takes materials only.
       tab === "treasures"
-        ? ["item", "count", "wishList", "new"]
-        : ["item", "count", "new"],
+        ? [
+            ["item", 48],
+            ["count", 5],
+            ["wishList", 6],
+            ["new", 5],
+          ]
+        : [
+            ["item", 48],
+            ["count", 5],
+            ["new", 5],
+          ],
       [...items]
         .filter(([key]) => itemTab(key) === tab)
         .sort(([a], [b]) => itemOrder(a) - itemOrder(b))
@@ -219,7 +243,7 @@ const itemTables = (
           ...(tab === "treasures" ? [wished.has(key)] : []),
           unseen.has(key),
         ]),
-      ITEM_TAB_NAMES[tab],
+      { stretch: "item", tab: ITEM_TAB_NAMES[tab] },
     ),
   );
 
@@ -240,7 +264,13 @@ const trophyTables = (trophies: Trophy[]): Table[] =>
     table(
       `trophies:${tab}`,
       "trophies",
-      ["trophy", "description", "dlc", "earned", "viewed"],
+      [
+        ["trophy", 36],
+        ["description", 60],
+        ["dlc", 5],
+        ["earned", 6],
+        ["viewed", 6],
+      ],
       trophies
         .filter((t) => t.tab === tab)
         .map((t) => [
@@ -255,7 +285,7 @@ const trophyTables = (trophies: Trophy[]): Table[] =>
           t.earned,
           t.viewed,
         ]),
-      TROPHY_TAB_NAMES[tab],
+      { stretch: "description", tab: TROPHY_TAB_NAMES[tab] },
     ),
   );
 
@@ -264,7 +294,12 @@ const confluxTables = (conflux: Conflux): Table[] => [
   table(
     "conflux:resonance",
     "conflux",
-    ["node", "effect", "cost", "taken"],
+    [
+      ["node", 30],
+      ["effect", 60],
+      ["cost", 5],
+      ["taken", 5],
+    ],
     conflux.resonance.map((n): Cell[] => [
       keyCell("masteryNode", n.key),
       n.effects.length
@@ -280,12 +315,17 @@ const confluxTables = (conflux: Conflux): Table[] => [
       n.cost,
       n.taken,
     ]),
-    "resonance",
+    { stretch: "effect", tab: "resonance" },
   ),
   table(
     "conflux:auras",
     "conflux",
-    ["aura", "category", "obtained", "new"],
+    [
+      ["aura", 36],
+      ["category", 36],
+      ["obtained", 6],
+      ["new", 5],
+    ],
     conflux.auras.map((a): Cell[] => [
       keyCell("aura", a.key),
       // A key the table lacks has no known category.
@@ -295,7 +335,7 @@ const confluxTables = (conflux: Conflux): Table[] => [
       a.obtained,
       a.obtained && !a.seen,
     ]),
-    "aura collection",
+    { stretch: "aura", tab: "aura collection" },
   ),
 ];
 
@@ -314,18 +354,22 @@ const MASTER_TRAIT_TABS: Record<string, string> = {
 const table = (
   id: string,
   section: SectionId,
-  columns: ColumnId[],
+  columns: Column[],
   rows: Cell[][],
-  tab?: string,
-  label?: TableLabelId,
-): Table => ({
-  id,
-  section,
-  tab,
-  label,
-  columns,
-  rows: rows.map((cells, i) => ({ id: `${id}:${i}`, cells })),
-});
+  { stretch, tab, label }: Pick<Table, "stretch" | "tab" | "label">,
+): Table => {
+  if (!columns.some(([id]) => id === stretch))
+    throw new Error(`${id}: stretch column ${stretch} is not a column`);
+  return {
+    id,
+    section,
+    tab,
+    label,
+    columns,
+    stretch,
+    rows: rows.map((cells, i) => ({ id: `${id}:${i}`, cells })),
+  };
+};
 
 /** Every domain the reader knows, as tables. */
 export function buildView(save: Save): SaveView {
@@ -343,7 +387,10 @@ export function buildView(save: Save): SaveView {
     table(
       "profile",
       "profile",
-      ["field", "value"],
+      [
+        ["field", 36],
+        ["value", 18],
+      ],
       [
         ["player name", user.playerName],
         ["captain", keyCell("character", data.captain) ?? unknownCell],
@@ -360,12 +407,21 @@ export function buildView(save: Save): SaveView {
         ["slot version", user.slotVersion],
         ["feature version", user.featureVersion],
       ],
+      { stretch: "field" },
     ),
     ...itemTables(inventory.items, wished, unseen),
     table(
       "sigils",
       "sigils",
-      ["slot", "sigil", "level", "primary", "secondary", "locked", "new"],
+      [
+        ["slot", 7],
+        ["sigil", 40],
+        ["level", 5],
+        ["primary", 36],
+        ["secondary", 36],
+        ["locked", 6],
+        ["new", 5],
+      ],
       [...inventory.sigils]
         .sort(([slotA, a], [slotB, b]) => compareSigils(a, b) || slotA - slotB)
         .map(([slot, s]) => [
@@ -377,19 +433,20 @@ export function buildView(save: Save): SaveView {
           s.locked,
           !s.seen,
         ]),
+      { stretch: "sigil" },
     ),
     table(
       "weapons",
       "weapons",
       [
-        "slot",
-        "weapon",
-        "uncap",
-        "plus",
-        "awakening",
-        "transcendence",
-        "questsUsed",
-        "new",
+        ["slot", 4],
+        ["weapon", 48],
+        ["uncap", 5],
+        ["plus", 4],
+        ["awakening", 6],
+        ["transcendence", 6],
+        ["questsUsed", 8],
+        ["new", 5],
       ],
       [...inventory.weapons].map(([slot, w]) => [
         slot,
@@ -401,11 +458,20 @@ export function buildView(save: Save): SaveView {
         w.questsUsed,
         !w.seen,
       ]),
+      { stretch: "weapon" },
     ),
     table(
       "wrightstones",
       "wrightstones",
-      ["slot", "wrightstone", "main", "sub1", "sub2", "locked", "new"],
+      [
+        ["slot", 7],
+        ["wrightstone", 48],
+        ["main", 36],
+        ["sub1", 36],
+        ["sub2", 36],
+        ["locked", 6],
+        ["new", 5],
+      ],
       [...inventory.wrightstones].map(([slot, w]) => [
         slot,
         keyCell("item", w.key),
@@ -415,11 +481,19 @@ export function buildView(save: Save): SaveView {
         w.locked,
         !w.seen,
       ]),
+      { stretch: "wrightstone" },
     ),
     table(
       "summons",
       "summons",
-      ["id", "summon", "trait", "equipBonus", "equippedOnce", "new"],
+      [
+        ["id", 4],
+        ["summon", 36],
+        ["trait", 36],
+        ["equipBonus", 36],
+        ["equippedOnce", 7],
+        ["new", 5],
+      ],
       [...inventory.summons].map(([id, s]) => [
         id,
         keyCell("summon", s.key),
@@ -429,19 +503,20 @@ export function buildView(save: Save): SaveView {
         s.everEquipped,
         !s.seen,
       ]),
+      { stretch: "summon" },
     ),
     table(
       "curios",
       "curios",
       [
-        "index",
-        "tier",
-        "serial",
-        "type",
-        "reward",
-        "primary",
-        "secondary",
-        "seed",
+        ["index", 3],
+        ["tier", 4],
+        ["serial", 7],
+        ["type", 12],
+        ["reward", 60],
+        ["primary", 36],
+        ["secondary", 30],
+        ["seed", 13],
       ],
       inventory.curios.map((c, i) => [
         i + 1,
@@ -458,35 +533,51 @@ export function buildView(save: Save): SaveView {
           (keyCell("trait", sigilReward(c)?.traits[1]) ?? unknownCell),
         c.reward && "seed" in c.reward ? c.reward.seed : undefined,
       ]),
+      { stretch: "reward" },
     ),
     ...confluxTables(conflux),
     ...counterQuestTables(readCounterQuests(units)),
     table(
       "sideQuests",
       "sideQuests",
-      ["quest", "accepted", "completed"],
+      [
+        ["quest", 60],
+        ["accepted", 10],
+        ["completed", 10],
+      ],
       readSideQuests(units).map((q) => [
         keyCell("quest", q.id),
         q.accepted,
         q.completed,
       ]),
+      { stretch: "quest" },
     ),
     table(
       "journal:story",
       "journal",
-      ["entry", "chapter", "unlocked", "viewed"],
+      [
+        ["entry", 60],
+        ["chapter", 36],
+        ["unlocked", 8],
+        ["viewed", 6],
+      ],
       readMainStory(units).map((e) => [
         keyCell("story", e.key),
         keyCell("storyChapter", String(e.chapter)),
         e.unlocked,
         e.viewed,
       ]),
-      "main story",
+      { stretch: "entry", tab: "main story" },
     ),
     table(
       "journal:fieldNotes",
       "journal",
-      ["entry", "category", "unlocked", "viewed"],
+      [
+        ["entry", 60],
+        ["category", 36],
+        ["unlocked", 8],
+        ["viewed", 6],
+      ],
       readFieldNotes(units).map((e) => {
         const [text, category] = FIELD_NOTE_TEXT[e.category];
         return [
@@ -497,47 +588,63 @@ export function buildView(save: Save): SaveView {
           e.viewed ?? unknownCell,
         ];
       }),
-      "field notes",
+      { stretch: "entry", tab: "field notes" },
     ),
     table(
       "journal:archive",
       "journal",
-      ["entry", "unlocked", "viewed"],
+      [
+        ["entry", 60],
+        ["unlocked", 6],
+        ["viewed", 6],
+      ],
       readArchives(units).map((e) => [
         keyCell("archive", e.key),
         e.unlocked,
         e.viewed,
       ]),
-      "archive",
+      { stretch: "entry", tab: "archive" },
     ),
     table(
       "journal:glossary",
       "journal",
-      ["entry", "unlocked", "viewed"],
+      [
+        ["entry", 60],
+        ["unlocked", 6],
+        ["viewed", 6],
+      ],
       readGlossary(units).map((e) => [
         keyCell("glossary", e.key),
         e.unlocked,
         e.viewed,
       ]),
-      "glossary",
+      { stretch: "entry", tab: "glossary" },
     ),
     table(
       "journal:tip",
       "journal",
-      ["entry", "unlocked", "viewed"],
+      [
+        ["entry", 60],
+        ["unlocked", 6],
+        ["viewed", 6],
+      ],
       readTips(units).map((e) => [keyCell("tip", e.key), e.unlocked, e.viewed]),
-      "tip",
+      { stretch: "entry", tab: "tip" },
     ),
     table(
       "journal:music",
       "journal",
-      ["entry", "unlocked", "viewed"],
+      [
+        ["entry", 60],
+        ["unlocked", 6],
+        ["viewed", 6],
+      ],
       readMusic(units).map((e) => [
         keyCell("music", e.key),
         e.unlocked,
         e.viewed,
       ]),
-      "music",
+      { stretch: "entry", tab: "music" },
     ),
     ...trophyTables(readTrophies(units)),
   ];
@@ -554,7 +661,10 @@ export function buildView(save: Save): SaveView {
       weapon: table(
         `${id}:weapon`,
         "gear",
-        ["field", "value"],
+        [
+          ["field", 12],
+          ["value", 30],
+        ],
         w
           ? [
               ["weapon", keyCell("weapon", w.key)],
@@ -571,28 +681,45 @@ export function buildView(save: Save): SaveView {
               ["quests used", w.questsUsed],
             ]
           : [],
+        { stretch: "value" },
       ),
       wrightstone: table(
         `${id}:wrightstone`,
         "gear",
-        ["field", "value"],
+        [
+          ["field", 12],
+          ["value", 30],
+        ],
         [
           ["wrightstone", keyCell("item", w?.wrightstone?.key)],
           ["main", trait(w?.wrightstone?.traits[0])],
           ["sub 1", trait(w?.wrightstone?.traits[1])],
           ["sub 2", trait(w?.wrightstone?.traits[2])],
         ],
+        { stretch: "value" },
       ),
       skills: table(
         `${id}:skills`,
         "gear",
-        ["slot", "skill"],
+        [
+          ["slot", 4],
+          ["skill", 40],
+        ],
         e.skills.map((key, i) => [i + 1, keyCell("skill", key)]),
+        { stretch: "skill" },
       ),
       sigils: table(
         `${id}:sigils`,
         "gear",
-        ["slot", "sigil", "level", "primary", "secondary", "locked", "new"],
+        [
+          ["slot", 4],
+          ["sigil", 36],
+          ["level", 6],
+          ["primary", 32],
+          ["secondary", 32],
+          ["locked", 6],
+          ["new", 3],
+        ],
         e.sigils.map((s, i) => [
           i + 1,
           keyCell("sigil", s?.key),
@@ -602,6 +729,7 @@ export function buildView(save: Save): SaveView {
           s?.locked,
           s && !s.seen,
         ]),
+        { stretch: "sigil" },
       ),
     };
   };
@@ -615,7 +743,10 @@ export function buildView(save: Save): SaveView {
         table(
           `${c.character}:level`,
           "stats",
-          ["field", "value"],
+          [
+            ["field", 32],
+            ["value", 14],
+          ],
           [
             ["level", c.level],
             ["xp", c.xp],
@@ -625,45 +756,61 @@ export function buildView(save: Save): SaveView {
             ["master level", c.masterLevel],
             ["master XP", c.masterXp],
           ],
+          { stretch: "field" },
         ),
         table(
           `${c.character}:fateEpisodes`,
           "stats",
-          ["episode", "completed"],
+          [
+            ["episode", 40],
+            ["completed", 10],
+          ],
           c.fateEpisodes.map((f) => [
             keyCell("fateEpisode", f.key),
             f.completed,
           ]),
+          { stretch: "episode" },
         ),
         table(
           `${c.character}:masteries`,
           "masteries",
-          ["tree", "nodes", "msp"],
+          [
+            ["tree", 20],
+            ["nodes", 10],
+            ["msp", 8],
+          ],
           Object.entries(c.masteries).map(([section, m]) => [
             section,
             `${m.taken}/${m.total}`,
             m.msp,
           ]),
-          "all",
-          "summary",
+          { stretch: "tree", tab: "all", label: "summary" },
         ),
         table(
           `${c.character}:overMasteries`,
           "masteries",
-          ["index", "bonus", "level"],
+          [
+            ["index", 4],
+            ["bonus", 40],
+            ["level", 5],
+          ],
           c.overMasteries.map((o, i) => [
             i + 1,
             keyCell("mastery", o?.key),
             o?.level,
           ]),
-          "all",
-          "overMasteries",
+          { stretch: "bonus", tab: "all", label: "overMasteries" },
         ),
         ...Object.entries(c.masteries).map(([section, m]) =>
           table(
             `${c.character}:masteries:${section}`,
             "masteries",
-            ["node", "effect", "msp", "taken"],
+            [
+              ["node", 32],
+              ["effect", 60],
+              ["msp", 6],
+              ["taken", 5],
+            ],
             m.nodes.map((n): Cell[] => [
               keyCell("masteryNode", n.key),
               n.params.length
@@ -680,14 +827,18 @@ export function buildView(save: Save): SaveView {
               n.msp,
               n.taken,
             ]),
-            section,
+            { stretch: "effect", tab: section },
           ),
         ),
         ...Object.entries(MASTER_TRAIT_TABS).map(([style, tab]) =>
           table(
             `${c.character}:masterTraits:${tab}`,
             "masterTraits",
-            ["rank", "trait", "chosen"],
+            [
+              ["rank", 10],
+              ["trait", 36],
+              ["chosen", 6],
+            ],
             c.masterTraits
               .filter((t) => t.style === style)
               .map((t): Cell[] => [
@@ -699,7 +850,7 @@ export function buildView(save: Save): SaveView {
                 },
                 t.chosen,
               ]),
-            tab,
+            { stretch: "trait", tab },
           ),
         ),
       ],

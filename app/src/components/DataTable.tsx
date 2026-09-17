@@ -1,6 +1,5 @@
 import {
   Fragment,
-  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -9,7 +8,13 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { useGameText } from "../game-text";
-import { keyCells, type Cell, type Table } from "../save/view";
+import {
+  SHRINK_FACTOR,
+  keyCells,
+  type Cell,
+  type ColumnId,
+  type Table,
+} from "../save/view";
 
 const ROW_BATCH = 200;
 const VISIBLE_ROWS = 20;
@@ -21,6 +26,25 @@ const TABLE_MAX_HEIGHT = `calc(${VISIBLE_ROWS} * 1.5em + ${VISIBLE_ROWS} * 0.25r
  * header 1.5em + 0.5rem + 2px border), so rows of side-by-side tables line up.
  */
 export const HEADING_HEIGHT = "calc(3em + 0.25rem - 2px)";
+
+/** Horizontal padding of a cell, both sides together. */
+const CELL_PADDING = "1.5rem";
+
+const width = (letters: number) => `calc(${letters}ch + ${CELL_PADDING})`;
+
+/** Grid columns: letter-defined column width with a stretch column taking the remaining width. */
+const columnLayout = (table: Table) => {
+  const floors: number[] = [];
+  const tracks = table.columns.map(([column, letters]) => {
+    const floor = Math.ceil(letters * SHRINK_FACTOR);
+    floors.push(floor);
+    return `minmax(${width(floor)}, ${column === table.stretch ? "1fr" : width(letters)})`;
+  });
+  return {
+    gridTemplateColumns: tracks.join(" "),
+    minWidth: `calc(${floors.reduce((a, b) => a + b, 0)}ch + ${table.columns.length} * ${CELL_PADDING})`,
+  };
+};
 
 /** A small uppercase label for a table heading. */
 export const TableLabel = ({ children }: { children: string }) => (
@@ -125,26 +149,23 @@ export function DataTable({
     return () => observer.disconnect();
   }, [table.id, limit, hasMore]);
 
-  // The header lives outside the scroller so the scrollbar stops at the body;
-  // its cols copy the widths of a hidden header row inside the body table.
+  // The header sits outside the scroller, so it matches the body's width by
+  // padding for the vertical scrollbar while one shows.
   const header = useRef<HTMLDivElement>(null);
-  const headerTable = useRef<HTMLTableElement>(null);
-  const syncWidths = useCallback((row: HTMLTableRowElement) => {
-    const observer = new ResizeObserver(() => {
-      const target = headerTable.current;
-      if (!target) return;
-      const cols = target.querySelectorAll("col");
-      let total = 0;
-      [...row.cells].forEach((cell, i) => {
-        const width = cell.getBoundingClientRect().width;
-        total += width;
-        if (cols[i]) cols[i].style.width = `${width}px`;
-      });
-      target.style.width = `${total}px`;
-    });
-    for (const cell of row.cells) observer.observe(cell);
+  const rowGroup = useRef<HTMLDivElement>(null);
+  const [scrollbar, setScrollbar] = useState(0);
+  useEffect(() => {
+    const el = scroller.current;
+    if (!el) return;
+    const observer = new ResizeObserver(() =>
+      setScrollbar(el.offsetWidth - el.clientWidth),
+    );
+    observer.observe(el);
+    if (rowGroup.current) observer.observe(rowGroup.current);
     return () => observer.disconnect();
-  }, []);
+  }, [table.rows.length]);
+  const layout = useMemo(() => columnLayout(table), [table]);
+  const label = (column: ColumnId) => t(`columns.${column}`);
 
   const headingBlock = heading && (
     <div
@@ -162,34 +183,26 @@ export function DataTable({
       </>
     );
   return (
-    <div>
+    <div role="table">
       {headingBlock}
       <div
         ref={header}
+        role="rowgroup"
+        style={{ paddingRight: scrollbar }}
         className="relative z-10 overflow-hidden border-b-2 border-primary bg-secondary shadow-[0_2px_4px_-2px_rgb(0_0_0/0.25)]"
       >
-        <table
-          ref={headerTable}
-          className="table-fixed border-separate border-spacing-0"
-        >
-          <colgroup>
-            {table.columns.map((column) => (
-              <col key={column} />
-            ))}
-          </colgroup>
-          <thead>
-            <tr className="text-left">
-              {table.columns.map((column) => (
-                <th
-                  key={column}
-                  className="px-3 py-1 font-bold whitespace-nowrap text-strong-foreground"
-                >
-                  {t(`columns.${column}`)}
-                </th>
-              ))}
-            </tr>
-          </thead>
-        </table>
+        <div role="row" className="grid text-left" style={layout}>
+          {table.columns.map(([column]) => (
+            <div
+              key={column}
+              role="columnheader"
+              title={label(column)}
+              className="truncate px-3 py-1 font-bold text-strong-foreground"
+            >
+              {label(column)}
+            </div>
+          ))}
+        </div>
       </div>
       <div
         ref={scroller}
@@ -200,40 +213,28 @@ export function DataTable({
             header.current.scrollLeft = e.currentTarget.scrollLeft;
         }}
       >
-        <table className="w-full border-separate border-spacing-0">
-          <thead aria-hidden>
-            {/* Keyed by table so a new column set gets a fresh observer. */}
-            <tr key={table.id} ref={syncWidths}>
-              {table.columns.map((column) => (
-                <th
-                  key={column}
-                  className="invisible h-0 px-3 py-0 font-bold leading-0 whitespace-nowrap"
+        <div ref={rowGroup} role="rowgroup">
+          {table.rows.slice(0, limit).map((row) => (
+            <div
+              key={row.id}
+              role="row"
+              onClick={() => onSelect(row.id)}
+              style={layout}
+              className={`grid cursor-pointer ${row.id === selectedRowId ? "bg-selection text-strong-foreground" : "even:bg-card hover:bg-accent hover:text-accent-foreground"}`}
+            >
+              {row.cells.map((cell, i) => (
+                <div
+                  key={i}
+                  role="cell"
+                  title={cellKeys(cell)}
+                  className={`truncate px-3 py-0.5 ${typeof cell === "number" ? "text-right tabular-nums" : ""}`}
                 >
-                  {t(`columns.${column}`)}
-                </th>
+                  {renderCell(cell)}
+                </div>
               ))}
-            </tr>
-          </thead>
-          <tbody>
-            {table.rows.slice(0, limit).map((row) => (
-              <tr
-                key={row.id}
-                onClick={() => onSelect(row.id)}
-                className={`cursor-pointer ${row.id === selectedRowId ? "bg-selection text-strong-foreground" : "even:bg-card hover:bg-accent hover:text-accent-foreground"}`}
-              >
-                {row.cells.map((cell, i) => (
-                  <td
-                    key={i}
-                    title={cellKeys(cell)}
-                    className={`px-3 py-0.5 whitespace-nowrap ${typeof cell === "number" ? "text-right tabular-nums" : ""}`}
-                  >
-                    {renderCell(cell)}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            </div>
+          ))}
+        </div>
         {hasMore && <div ref={sentinel} className="h-px" />}
       </div>
     </div>
