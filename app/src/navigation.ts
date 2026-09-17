@@ -1,6 +1,6 @@
 import type { Row, Table } from "./save/view";
 
-export type Page = "welcome" | "account" | `char:${string}`;
+export type Page = "welcome" | "save" | `char:${string}`;
 
 export const sectionId = (section: string) => `section-${section}`;
 

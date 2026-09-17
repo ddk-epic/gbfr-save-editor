@@ -8,7 +8,7 @@ import { RowPanel } from "../components/RowPanel";
 import type { Selection } from "../navigation";
 import type { Table } from "../save/view";
 
-export function AccountPage({
+export function SavePage({
   fileName,
   tables,
   open,
@@ -37,8 +37,8 @@ export function AccountPage({
   return (
     <>
       <PageTop
-        crumbs={[fileName, t("contents.account")]}
-        title={t("contents.account")}
+        crumbs={[fileName, t("contents.save")]}
+        title={t("contents.save")}
         onRoot={onRoot}
         actions={
           <ExpandCollapseActions

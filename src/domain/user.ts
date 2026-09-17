@@ -1,7 +1,7 @@
 import type { UnitStore } from "../format/unit-store";
 import { ID } from "./layout";
 
-/** The account-wide SlotData values, 1001-1207. */
+/** The save-wide SlotData values, 1001-1207. */
 export interface User {
   slotVersion: number | undefined;
   featureVersion: number | undefined;

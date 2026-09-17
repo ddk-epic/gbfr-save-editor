@@ -23,7 +23,7 @@
   },
   "contents": {
     "welcome": "Welcome",
-    "account": "Account",
+    "save": "Save",
     "characters": "Characters",
     "empty": "Load a save to browse it."
   },
@@ -32,17 +32,15 @@
     "drop": "Drop SaveData1.dat here, or click to choose it",
     "news": "What's new"
   },
-  "account": {
-    "expandAll": "expand all",
-    "collapseAll": "collapse all"
-  },
   "stats": {
     "level": "Level",
     "fateEpisodes": "Fate episodes"
   },
   "tables": {
     "summary": "Summary",
-    "overMasteries": "Over-masteries"
+    "overMasteries": "Over-masteries",
+    "expandAll": "expand all",
+    "collapseAll": "collapse all"
   },
   "equipment": {
     "loadout": "Loadout {{number}}",

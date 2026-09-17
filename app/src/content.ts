@@ -3,7 +3,7 @@ export const NEWS = [
   {
     date: "2026-09-14",
     title: "Save browser",
-    body: "Load a save and browse every account domain and character. Editing comes next.",
+    body: "Load a save and browse every save domain and character. Editing comes next.",
   },
   {
     date: "2026-09-14",

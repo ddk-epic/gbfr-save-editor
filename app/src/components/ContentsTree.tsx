@@ -5,11 +5,11 @@ import { useGameText } from "../game-text";
 import type { Page } from "../navigation";
 import type { SaveView, SectionId } from "../save/view";
 
-type Tab = "account" | "characters";
+type Tab = "save" | "characters";
 
 const tabOf = (page: Page): Tab | undefined =>
-  page === "account"
-    ? "account"
+  page === "save"
+    ? "save"
     : page.startsWith("char:")
       ? "characters"
       : undefined;
@@ -23,14 +23,14 @@ export function ContentsTree({
   view: SaveView | undefined;
   page: Page;
   onPage: (page: Page) => void;
-  /** Open a section on the account or a character page. */
+  /** Open a section on the save or a character page. */
   onSection: (page: Page, section: SectionId) => void;
 }) {
   const { t } = useTranslation();
   const gt = useGameText();
   const character = page.startsWith("char:") ? page.slice(5) : undefined;
 
-  const [tab, setTab] = useState<Tab>(tabOf(page) ?? "account");
+  const [tab, setTab] = useState<Tab>(tabOf(page) ?? "save");
   const [prevPage, setPrevPage] = useState(page);
   if (page !== prevPage) {
     setPrevPage(page);
@@ -44,9 +44,9 @@ export function ContentsTree({
         <div>
           <div className="mb-2 flex border-b border-sidebar-border">
             <TabButton
-              label={t("contents.account")}
-              active={tab === "account"}
-              onClick={() => setTab("account")}
+              label={t("contents.save")}
+              active={tab === "save"}
+              onClick={() => setTab("save")}
             />
             <TabButton
               label={t("contents.characters")}
@@ -54,13 +54,13 @@ export function ContentsTree({
               onClick={() => setTab("characters")}
             />
           </div>
-          {tab === "account" &&
-            [...new Set(view.account.map((table) => table.section))].map(
+          {tab === "save" &&
+            [...new Set(view.shared.map((table) => table.section))].map(
               (section) => (
                 <Link
                   key={section}
                   label={t(`sections.${section}`)}
-                  onClick={() => onSection("account", section)}
+                  onClick={() => onSection("save", section)}
                 />
               ),
             )}
