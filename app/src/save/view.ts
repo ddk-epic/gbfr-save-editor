@@ -7,6 +7,7 @@ import {
   questPower,
   readArchives,
   readCharacterData,
+  readConflux,
   readCounterQuests,
   readFieldNotes,
   readGlossary,
@@ -21,6 +22,7 @@ import {
   ITEM_TABS,
   TROPHY_TABS,
   type Captain,
+  type Conflux,
   type CounterQuest,
   type Curio,
   type Equipment,
@@ -255,6 +257,46 @@ const trophyTables = (trophies: Trophy[]): Table[] =>
     ),
   );
 
+/** The Resonance tree and the aura collection, one tab each. */
+const confluxTables = (conflux: Conflux): Table[] => [
+  table(
+    "conflux:resonance",
+    "conflux",
+    ["node", "effect", "cost", "taken"],
+    conflux.resonance.map((n): Cell[] => [
+      keyCell("masteryNode", n.key),
+      n.effects.length
+        ? {
+            keys: n.effects.map((e) => ({
+              text: "masteryEffect",
+              key: e.key,
+              values: [e.value],
+            })),
+            separator: " / ",
+          }
+        : undefined,
+      n.cost,
+      n.taken,
+    ]),
+    "resonance",
+  ),
+  table(
+    "conflux:auras",
+    "conflux",
+    ["aura", "category", "obtained", "new"],
+    conflux.auras.map((a): Cell[] => [
+      keyCell("aura", a.key),
+      // A key the table lacks has no known category.
+      a.category === undefined
+        ? unknownCell
+        : keyCell("auraCategory", String(a.category)),
+      a.obtained,
+      a.obtained && !a.seen,
+    ]),
+    "aura collection",
+  ),
+];
+
 const MASTER_TRAIT_TABS: Record<string, string> = {
   SB_DEF: "insight",
   SB_ATK: "essence",
@@ -283,6 +325,7 @@ export function buildView(save: Save): SaveView {
   const inventory = readInventory(units);
   const data = readCharacterData(units);
   const profile = readProfile(units);
+  const conflux = readConflux(units);
   const unseen = new Set(inventory.unseenItems);
   const wished = new Set(inventory.wishList);
 
@@ -295,6 +338,7 @@ export function buildView(save: Save): SaveView {
         ["quests cleared", profile.questsCleared],
         ["rupies", inventory.rupies],
         ["mastery points", inventory.masteryPoints],
+        ["resonance points", conflux.resonancePoints],
       ],
     ),
     ...itemTables(inventory.items, wished, unseen),
@@ -395,6 +439,7 @@ export function buildView(save: Save): SaveView {
         c.reward && "seed" in c.reward ? c.reward.seed : undefined,
       ]),
     ),
+    ...confluxTables(conflux),
     ...counterQuestTables(readCounterQuests(units)),
     table(
       "sideQuests",

@@ -82,6 +82,7 @@
     "wrightstones": "Wrightstones",
     "summons": "Summons",
     "curios": "Curios",
+    "conflux": "Conflux",
     "quests": "Quests",
     "sideQuests": "Side quests",
     "journal": "Journal",
@@ -158,6 +159,9 @@
     "node": "node",
     "effect": "effect",
     "taken": "taken",
+    "cost": "cost",
+    "aura": "aura",
+    "obtained": "obtained",
     "chosen": "chosen"
   },
   "loadErrors": {

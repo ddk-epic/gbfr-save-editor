@@ -40,6 +40,13 @@ export {
 } from "./domain/inventory";
 export { readProfile, type Profile } from "./domain/profile";
 export {
+  readConflux,
+  type Aura,
+  type Conflux,
+  type ResonanceEffect,
+  type ResonanceNode,
+} from "./domain/conflux";
+export {
   QUEST_DIFFICULTIES,
   QUEST_GRADES,
   questOrder,
