@@ -16,8 +16,10 @@ import {
   readMusic,
   readProfile,
   readSideQuests,
+  readSystem,
   readTips,
   readTrophies,
+  readUser,
   QUEST_DIFFICULTIES,
   ITEM_TABS,
   TROPHY_TABS,
@@ -297,6 +299,12 @@ const confluxTables = (conflux: Conflux): Table[] => [
   ),
 ];
 
+/** Seconds as h:mm:ss. */
+const duration = (seconds: number) =>
+  `${Math.floor(seconds / 3600)}:${[(seconds / 60) % 60, seconds % 60]
+    .map((n) => String(Math.floor(n)).padStart(2, "0"))
+    .join(":")}`;
+
 const MASTER_TRAIT_TABS: Record<string, string> = {
   SB_DEF: "insight",
   SB_ATK: "essence",
@@ -326,6 +334,8 @@ export function buildView(save: Save): SaveView {
   const data = readCharacterData(units);
   const profile = readProfile(units);
   const conflux = readConflux(units);
+  const user = readUser(units);
+  const system = readSystem(save.systemData.units);
   const unseen = new Set(inventory.unseenItems);
   const wished = new Set(inventory.wishList);
 
@@ -335,10 +345,20 @@ export function buildView(save: Save): SaveView {
       "profile",
       ["field", "value"],
       [
+        ["player name", user.playerName],
+        ["captain", keyCell("character", data.captain) ?? unknownCell],
+        ["play time", duration(system.playTime)],
+        ["stage", keyCell("stage", user.stage)],
+        ["spot", user.spot || undefined],
+        ["party hp", user.partyHp],
         ["quests cleared", profile.questsCleared],
+        ["commendations", user.commendations],
         ["rupies", inventory.rupies],
         ["mastery points", inventory.masteryPoints],
         ["resonance points", conflux.resonancePoints],
+        ["online status flags", `0x${user.onlineStatusFlags.toString(16)}`],
+        ["slot version", user.slotVersion],
+        ["feature version", user.featureVersion],
       ],
     ),
     ...itemTables(inventory.items, wished, unseen),
