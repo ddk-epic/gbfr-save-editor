@@ -577,6 +577,7 @@ const GAME_TEXT = {
   quest: `select Key key, 'TXT_QR_' || substr(Key, 3) text_id from quest_baseinfo_ex_data`,
   trophy: `select cast(Key as text) key, Name text_id from badge`,
   trophyDescription: `select cast(Key as text) key, Description text_id from badge`,
+  stage: `select PhaseId key, Name text_id from stagename`,
   aura: `select Unk105 key, BuffName text_id from endlessmode_buff`,
   // No table names the categories; the collection's type labels are in category order.
   auraCategory: `select '0' key, 'TXT_KKTN_BFCHIC_TYPE_BREATH' text_id
