@@ -27,7 +27,7 @@ export function RowPanel({
             </span>
           </div>
           <div className="flex flex-wrap gap-x-6 gap-y-3">
-            {selected.table.columns.map((column, i) => {
+            {selected.table.columns.map(([column], i) => {
               const cell = selected.row.cells[i];
               const keys = cellKeys(cell);
               return (
