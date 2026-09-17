@@ -90,6 +90,472 @@ export const ARCHIVE_KEYS: Readonly<Record<number, string>> = {
   0xff648664: "ARC_OTHER_041",
 };
 
+/** story.Key, 324 keys. */
+export const STORY_KEYS: Readonly<Record<number, string>> = {
+  0x00075b97: "in0500",
+  0x003b17b2: "ci5560",
+  0x0098e117: "in0100",
+  0x0112bdee: "in0720",
+  0x024cf7ac: "in1140",
+  0x02736bca: "ci7580",
+  0x029e6516: "in1255",
+  0x0321184e: "tt0002",
+  0x0332f60c: "cw7210",
+  0x0399c79b: "cw7226",
+  0x05067945: "ci3505",
+  0x068308e2: "cw0375",
+  0x06a905f6: "cw0440",
+  0x0771e01d: "ci2620",
+  0x078b6251: "cw7252",
+  0x08896b14: "ci1310",
+  0x09accf5f: "in1020",
+  0x0a32c31d: "cw0910",
+  0x0a7c6211: "ci7560",
+  0x0abc91e2: "cw7240",
+  0x0be476aa: "in1240",
+  0x0c17f56f: "cw1130",
+  0x0c7d9d48: "ci6510",
+  0x0c7f50f5: "cw7270",
+  0x0cca7705: "cw0860",
+  0x0cef2e83: "ct3060",
+  0x0d96baf6: "ct2020",
+  0x0dd5dbe1: "ct2030",
+  0x0e094871: "in0310",
+  0x0e84fcf6: "ci5550",
+  0x0fc81c71: "ct1100",
+  0x1002fdc7: "ci1730",
+  0x1076dad9: "cw0815",
+  0x1143948f: "cn0100",
+  0x117a167f: "ci2540",
+  0x1190ae77: "1190AE77",
+  0x122df024: "ci2580",
+  0x12da66b1: "ct2010",
+  0x12ecf14d: "cm0013",
+  0x13f51027: "cm0020",
+  0x155a36f0: "cw0460",
+  0x15e6ac2f: "cw0410",
+  0x16388c3c: "ci6530",
+  0x17e17425: "ci4520",
+  0x189376c9: "cw1150",
+  0x19f5dd75: "ct9020",
+  0x1bd691d9: "cw0520",
+  0x1d02136d: "ci4630",
+  0x1d5a55ad: "cw0330",
+  0x1d7d38bb: "ct3020",
+  0x1e7c2325: "ct0060",
+  0x1eb86686: "in0110",
+  0x1f674a30: "ci6320",
+  0x20739fae: "ci0060",
+  0x22bfc21f: "in1160",
+  0x22e83fec: "cw7303",
+  0x23611390: "cw0730",
+  0x236fde8e: "ct1070",
+  0x2375d88b: "cw1510",
+  0x26aa3d72: "ci7310",
+  0x284c9b1b: "ci7510",
+  0x29452148: "ct9035",
+  0x2a0531ee: "cw0530",
+  0x2b65eeb7: "ci0030",
+  0x2c3ac058: "ct0040",
+  0x2eb20005: "in0730",
+  0x3028d4bf: "ci1910",
+  0x31b200cc: "cw0845",
+  0x327fc9cd: "cw0130",
+  0x32b50cac: "ci4540",
+  0x32f3a524: "cw0842",
+  0x331aff04: "ct5020",
+  0x3586641d: "cw1110",
+  0x35e9689e: "in1200",
+  0x370d4a21: "cw0360",
+  0x3712470e: "cw0370",
+  0x37fd3cd7: "in1060",
+  0x383b36b1: "cw2055",
+  0x387f7b16: "ci6310",
+  0x38a624da: "cw0540",
+  0x39d1e053: "ct1110",
+  0x3a164e29: "ci3540",
+  0x3ae55f58: "in0510",
+  0x3cc46e0c: "cr9000",
+  0x3d489d04: "ct6040",
+  0x3e22010d: "cw1330",
+  0x3ed47c70: "cid530",
+  0x3f720122: "cta010",
+  0x3fadcfa2: "ct1040",
+  0x401a6245: "cid568",
+  0x4468f692: "ci4570",
+  0x473a203a: "cw0820",
+  0x4775c0b1: "in1080",
+  0x47870170: "in1220",
+  0x487616b8: "cn1400",
+  0x494455d2: "ct9040",
+  0x499a1e6f: "cw8000",
+  0x4c63eaea: "in1120",
+  0x4c7d85e4: "ci6910",
+  0x4d074c86: "cw0450",
+  0x4e8d8860: "cw7246",
+  0x4eb3583f: "cw2005",
+  0x4edebe4b: "cw7262",
+  0x5080a5a5: "cw1710",
+  0x5158d145: "ci9520",
+  0x5295577e: "ci0530",
+  0x532415d6: "cw0853",
+  0x55a15494: "cid561",
+  0x5641eae4: "ci6550",
+  0x566352ad: "cid540",
+  0x56a811b9: "ct7060",
+  0x56c29ea0: "ci5530",
+  0x571fb5a4: "ci2910",
+  0x5802a2af: "cw0110",
+  0x5851e282: "ci3550",
+  0x58905b14: "in1230",
+  0x5969a293: "in0920",
+  0x59977fe6: "ci0040",
+  0x5aad765d: "ct5050",
+  0x5b193477: "cw7250",
+  0x5b729ea0: "cw0840",
+  0x5b9ec7a7: "ci1780",
+  0x5be26081: "cw0852",
+  0x5dec5d5a: "ci0320",
+  0x5f2155e8: "in9000",
+  0x5f83f476: "cw0420",
+  0x61ecb5d7: "cw0380",
+  0x6234cd16: "ci3510",
+  0x62d23d7a: "cw2040",
+  0x62d8c9c5: "cn0200",
+  0x62da041d: "in1000",
+  0x6396cc7f: "6396CC7F",
+  0x63d446fe: "cw7254",
+  0x6514c9ca: "ci1570",
+  0x658fa171: "in1090",
+  0x66bfaa95: "ct5030",
+  0x670569b8: "tt0006",
+  0x674bc095: "in1040",
+  0x68534811: "cw0340",
+  0x68c3a986: "cw1140",
+  0x69e9a14b: "ct3040",
+  0x6b9045be: "ci7550",
+  0x6bbf4ab1: "tt0001",
+  0x6ea53b2d: "cw2030",
+  0x6f6b4730: "in1130",
+  0x6f9a68b6: "in0700",
+  0x6fc230bd: "cw1310",
+  0x70d6e613: "ci5540",
+  0x726bc51a: "ct7040",
+  0x73feb286: "ct6030",
+  0x75032108: "cw1010",
+  0x754a354b: "ci3920",
+  0x76635a83: "ci2550",
+  0x766f4ac4: "cw7264",
+  0x770ecdf1: "cw2020",
+  0x781b631a: "ct1020",
+  0x787600f2: "ci1520",
+  0x7912821e: "cw0510",
+  0x7a04d975: "in0610",
+  0x7b3cbae1: "ci1750",
+  0x7b7da96b: "ct0020",
+  0x7bfcff42: "ct4010",
+  0x7c772b51: "ct3030",
+  0x7d23c5ae: "in0410",
+  0x7e237d51: "cw2015",
+  0x7e2baa15: "cw1020",
+  0x7f59d75c: "cw1410",
+  0x8077778a: "ci0510",
+  0x81d85522: "in0420",
+  0x838b8cc4: "ct0050",
+  0x83de11ca: "in1250",
+  0x86b0644e: "cid562",
+  0x8792df0f: "cw0830",
+  0x8833435c: "ci2610",
+  0x897dd396: "in9010",
+  0x8ac766b4: "tt0003",
+  0x8af7c7d4: "ci7540",
+  0x8bbb7098: "cid563",
+  0x8dc50eac: "in0050",
+  0x8e0b78d4: "in1110",
+  0x8f55033a: "ct0030",
+  0x8fbf36a0: "cw0841",
+  0x9082b1a8: "cw0810",
+  0x909cadc6: "ci7910",
+  0x90ff28f2: "in0060",
+  0x9114fb9f: "ct1050",
+  0x91ae897f: "ci1620",
+  0x933e1455: "ct7020",
+  0x9595f172: "ct8040",
+  0x962b3ae6: "cid531",
+  0x96434c38: "ci0050",
+  0x964461a7: "cw03a0",
+  0x9655a6ba: "in1100",
+  0x96e954c5: "ci8310",
+  0x97263cf3: "ci2560",
+  0x974722d4: "cta040",
+  0x9846d778: "cw0480",
+  0x990253a3: "ci4610",
+  0x99972b43: "ct3080",
+  0x9a50a860: "ci5580",
+  0x9ab5de5c: "cw0320",
+  0x9b8ad4c3: "in1210",
+  0x9daddd2f: "cid564",
+  0x9e5cb948: "ci1760",
+  0x9f0a47f8: "cta030",
+  0x9f2f23e4: "in0910",
+  0xa08ca000: "in1050",
+  0xa0f6e9d8: "in0620",
+  0xa1d7bcb2: "ci4580",
+  0xa23cf2af: "ci9510",
+  0xa2c76491: "cm0015",
+  0xa2f6c39f: "ci8010",
+  0xa3469c77: "ci7570",
+  0xa3ad34d1: "ct1060",
+  0xa3d983fb: "ci1710",
+  0xa43eb135: "cw1120",
+  0xa52d26c4: "cw03b0",
+  0xa542a7f6: "ci0310",
+  0xa6a38d77: "in1190",
+  0xa6b7a128: "cw0843",
+  0xa8c48a87: "ct4030",
+  0xa8fbe436: "cw7100",
+  0xa94803da: "ct7050",
+  0xa9f6a818: "cw0310",
+  0xaa2eacf9: "in0400",
+  0xaa501ba3: "ct4020",
+  0xaad780a0: "ci6540",
+  0xaae6e0b2: "ct9030",
+  0xab024713: "ci4560",
+  0xab0371eb: "in1170",
+  0xace6f372: "cw1210",
+  0xad38a432: "ct8020",
+  0xad9346d2: "in1180",
+  0xae698931: "ct1030",
+  0xaede405d: "ci4620",
+  0xb04446ed: "ci6520",
+  0xb14950a4: "ct8010",
+  0xb4f03e4d: "in1150",
+  0xb5eee6f0: "cw1320",
+  0xb798b520: "ci3910",
+  0xb8cf238e: "cw7223",
+  0xb9315cd4: "cw7230",
+  0xb98648e1: "ci1740",
+  0xba64b114: "ct6060",
+  0xbb5daf17: "ci1530",
+  0xbbcf4e0f: "in1030",
+  0xbce569ba: "cw7260",
+  0xbdb1d34d: "cm0014",
+  0xbdbb5dd8: "in0710",
+  0xbee564d0: "cw7220",
+  0xbfcd2038: "cid560",
+  0xc07e350b: "cw0430",
+  0xc1a9ab2f: "ci1610",
+  0xc3102c05: "ci4600",
+  0xc3df1cbf: "cw7242",
+  0xc4b4a595: "cw0570",
+  0xc4dc97d4: "cw0571",
+  0xc6552f9b: "ct3010",
+  0xc6824143: "cw0710",
+  0xc78dcfde: "cw7256",
+  0xc7fa9f8f: "ci1720",
+  0xc808f6e0: "cw0720",
+  0xc8c23318: "cw0844",
+  0xca457b5d: "ct3050",
+  0xca76e345: "cw0350",
+  0xcb207a16: "cw0850",
+  0xcc51671e: "ci5910",
+  0xce8f211e: "cw7244",
+  0xcfa4850d: "in0070",
+  0xd15ec994: "in1070",
+  0xd338c10a: "in0300",
+  0xd384df6b: "cw0560",
+  0xd3d78713: "ct5040",
+  0xd4051417: "in1215",
+  0xd436b7bc: "D436B7BC",
+  0xd45227af: "ci7530",
+  0xd60d5fdd: "tt0000",
+  0xd74e5730: "ci0520",
+  0xd75ddd39: "in1010",
+  0xd78ab1c4: "ct1010",
+  0xd807f30a: "ct8030",
+  0xd88e6b64: "ci4910",
+  0xda6be000: "ci4550",
+  0xdbf0861c: "cw2060",
+  0xdeee0d04: "ci3520",
+  0xdf087c80: "cn0210",
+  0xdf2d19d5: "cw0210",
+  0xdf4f62ae: "ct6010",
+  0xdfeacc3a: "cid510",
+  0xe0211fbd: "ct1090",
+  0xe2026efc: "ci4510",
+  0xe21468a7: "ci5510",
+  0xe24f8972: "cw7300",
+  0xe29c641b: "ci1580",
+  0xe472f566: "cw0854",
+  0xe6f185f7: "ci6515",
+  0xe80f1ac8: "ct6050",
+  0xea10b5c2: "cw0470",
+  0xea4f9d4b: "in0320",
+  0xec54eae9: "ci2570",
+  0xee1dc8c5: "ct0080",
+  0xef3fc022: "cta020",
+  0xefbf92c1: "ci2530",
+  0xf04e2688: "tt0005",
+  0xf16fd548: "cw0550",
+  0xf19f598e: "cm0012",
+  0xf2e42a13: "cw0851",
+  0xf2e67694: "ct3070",
+  0xf315147f: "cw7248",
+  0xf3183151: "cm0011",
+  0xf51b6def: "tt0004",
+  0xf54e2925: "cw0390",
+  0xf56b32b1: "cw0120",
+  0xf60322ce: "cm0010",
+  0xf67cb8ab: "ct6020",
+  0xf6e123bd: "ci5520",
+  0xf8d53a83: "ci4530",
+  0xf9404ef8: "cid565",
+  0xf952a28a: "cw1721",
+  0xf9ba5084: "cid567",
+  0xf9c4bc9d: "cw2010",
+  0xfa70e271: "ci7520",
+  0xfc691f75: "ct7030",
+  0xff6311d5: "ct0070",
+};
+
+/** story_note_picturebook_chara.Key, 39 keys. */
+export const FIELD_NOTE_CHARACTER_KEYS: Readonly<Record<number, string>> = {
+  0x079df0cc: "PL0300",
+  0x0d21b430: "PL1600",
+  0x0e515648: "NP0100",
+  0x11c33fc2: "NP0200",
+  0x18e2f9f9: "PL0200",
+  0x1bb37ef0: "PL2400",
+  0x22e437e5: "PL0800",
+  0x25d46f4b: "PL2500",
+  0x280dfcc3: "EM8200",
+  0x28a87c8a: "NP0300",
+  0x296471be: "PL2200",
+  0x2a26b1b2: "PL0000",
+  0x2a8e5b37: "EM8300",
+  0x2ebe91d5: "PL0900",
+  0x3529cc90: "NP0000",
+  0x4d0a60c3: "PL0400",
+  0x5dabd00a: "EM7700",
+  0x627bcb0d: "PL1100",
+  0x646c3168: "PL2800",
+  0x718e1a14: "PL2100",
+  0x74dd4c79: "PL2900",
+  0x91cfe990: "EM2400",
+  0x978e4b18: "PL1500",
+  0x9a8af295: "PL2600",
+  0x9b15cfb1: "PL2700",
+  0xa3a3cb2f: "PL1900",
+  0xa4acba76: "PL0100",
+  0xaa66178a: "PL1800",
+  0xbad16e3b: "PL2300",
+  0xbdef7181: "PL1000",
+  0xc3ffd418: "PL0700",
+  0xc8616284: "PL0600",
+  0xd411e557: "NP0600",
+  0xdd7a151e: "PL0500",
+  0xe7053919: "PL1400",
+  0xe9b9cd04: "NP0400",
+  0xf0eb77ef: "PL1700",
+  0xfc6cdf7b: "PL1300",
+  0xfd3be362: "PL1200",
+};
+
+/** story_note_picturebook_enemy.EnemyId, 83 keys. */
+export const FIELD_NOTE_FOE_KEYS: Readonly<Record<number, string>> = {
+  0x00aabe18: "EM0802",
+  0x08b5c7ba: "EM0603",
+  0x0d7f71ff: "EM0201",
+  0x0ee16057: "EM0300",
+  0x19ba4a03: "EM0610",
+  0x19e1ba69: "EM1700",
+  0x1bbf8577: "EM8500",
+  0x20f54a05: "EM7310",
+  0x213247de: "EM1801",
+  0x21a74cd8: "EM0701",
+  0x22363037: "EM1004",
+  0x25f1f63c: "EM0600",
+  0x297e7359: "EM0003",
+  0x2e6314cc: "EM0604",
+  0x33a37bd1: "EM2500",
+  0x3430642c: "EM0005",
+  0x37bafa96: "EM1000",
+  0x3fba2bf9: "EM0000",
+  0x3fd5b90e: "EM1804",
+  0x402e1d5f: "EM1805",
+  0x41c5d4ac: "EM0100",
+  0x447264c8: "EM7300",
+  0x498233ff: "EM2200",
+  0x4bb2cd57: "BA7201",
+  0x4cb9018f: "EM0902",
+  0x4f25288b: "EM1806",
+  0x4f4a302d: "EM1002",
+  0x50222387: "EM0002",
+  0x5be81af9: "EM7110",
+  0x5dabd00a: "EM7700",
+  0x619988af: "EM1100",
+  0x6976f170: "EM1800",
+  0x6b62e6d7: "EM0602",
+  0x702d0126: "EM1303",
+  0x705293e1: "EM0706",
+  0x70c7a922: "EM0601",
+  0x73e6cac4: "EM3100",
+  0x7404aa2b: "EM0801",
+  0x74622483: "BA7200",
+  0x78bfbc4b: "EM0004",
+  0x798cbebb: "EM7501",
+  0x7abf996a: "EM7500",
+  0x7e4740f2: "EM1802",
+  0x7ee6f735: "EM2800",
+  0x80303afc: "EM1005",
+  0x803d76b6: "EM0804",
+  0x8508963c: "EM2600",
+  0x8734c466: "EM1001",
+  0x891e9785: "EM8400",
+  0x89dc7a35: "EM0800",
+  0x92c616af: "EM0102",
+  0x93301df3: "EM7201",
+  0x97dc204e: "EM1500",
+  0x9883e20b: "EM0900",
+  0x99530ada: "EM7600",
+  0x9c6cbe7b: "9C6CBE7B",
+  0x9f28b156: "EM7210",
+  0x9f7b485c: "EM0001",
+  0xa155f6e1: "EM0502",
+  0xa1f7696e: "EM1803",
+  0xa4b505ae: "EM0103",
+  0xa5650509: "EM1600",
+  0xa8a7b24d: "EM7100",
+  0xaa8dd4b1: "EM1900",
+  0xac7e3b9b: "EM7200",
+  0xad7fa52f: "EM0805",
+  0xb267060b: "EM7001",
+  0xbc9bc892: "EM0705",
+  0xc4ed54e9: "EM7211",
+  0xc619e058: "EM0501",
+  0xc6da8864: "EM2700",
+  0xc8ffb06b: "EM0200",
+  0xd113b24b: "EM0500",
+  0xd77291b1: "EM1003",
+  0xd8c3764b: "EM0400",
+  0xda348ed2: "EM1301",
+  0xde872bd5: "EM7400",
+  0xeb8abc57: "EM2510",
+  0xf2d44d51: "EM0605",
+  0xf7f9cfa7: "F7F9CFA7",
+  0xf92c7821: "PL2000",
+  0xfb4f3422: "EM7502",
+  0xfd5e32a9: "EM0101",
+};
+
+/** story_note_picturebook_code.Key, 4 keys. */
+export const FIELD_NOTE_WRIGHTSTONE_KEYS: Readonly<Record<number, string>> = {
+  0x463abc2d: "ITEM_28_0000",
+  0x552d70ed: "ITEM_26_0000",
+  0xbb731907: "ITEM_25_0000",
+  0xcb1e804f: "ITEM_27_0000",
+};
+
 /** story_note_wordlist.Key, 146 keys. */
 export const GLOSSARY_KEYS: Readonly<Record<number, string>> = {
   0x00295e36: "TXT_GLOSSARY_TTL_0113",
@@ -769,3 +1235,757 @@ export const MUSIC_KEYS: Readonly<Record<number, string>> = {
   0xfe2ec12f: "NOTE_BGM_013",
   0xfe5956df: "NOTE_BGM_031",
 };
+
+/** `story` keys in Main Story order, with the `story_note_chapter` key of each, 324 rows. */
+export const STORY_ORDER: readonly (readonly [key: string, chapter: number])[] = [
+  ["tt0000", 0], // Her Name Is Lyria
+  ["tt0001", 0], // Life Link
+  ["tt0002", 0], // The Journey Takes Flight
+  ["tt0003", 0], // Rackam and the Grandcypher
+  ["tt0004", 0], // A Crew Takes Shape
+  ["tt0005", 0], // Downfall of the Erste Empire
+  ["tt0006", 0], // To the Sky Beyond
+  ["1190AE77", 0], // unlisted, Premonition
+  ["6396CC7F", 0], // unlisted, Rendezvous
+  ["D436B7BC", 0], // unlisted, Happenstance
+  ["in0410", 0], // unlisted, What's Behind the Gate?
+  ["in0420", 0], // unlisted, Investigation Complete!
+  ["in1000", 0], // unlisted, More Strangeness Afoot
+  ["in1010", 0], // unlisted, What's Behind the Gate? Part 2
+  ["in1020", 0], // unlisted, Another Investigation Complete!
+  ["in1030", 0], // unlisted, The Survey Begins
+  ["in1040", 0], // unlisted, Aura of the Conflux
+  ["in1050", 0], // unlisted, Delving Deeper into the Conflux
+  ["in1060", 0], // unlisted, Astral Shadow
+  ["in1070", 0], // unlisted, The Silver Wolf Awakens
+  ["in1080", 0], // unlisted, Path to Chaos
+  ["in1090", 0], // unlisted, The Card's Secret
+  ["in1100", 0], // unlisted, Light of Sephira
+  ["in1110", 0], // unlisted, The Survey Continues
+  ["in1120", 0], // unlisted, Deep-Seated Chaos
+  ["in1130", 0], // unlisted, Reviving The Devil
+  ["in1140", 0], // unlisted, The Devil's Desire
+  ["in1150", 0], // unlisted, Into the Sephira Abyss
+  ["in1160", 0], // unlisted, Fediel, the Wedge of Darkness
+  ["in1170", 0], // unlisted, Fall of the Astral
+  ["in1180", 0], // unlisted, My True Self
+  ["in1190", 0], // unlisted, Regicide
+  ["in1200", 0], // unlisted, Mazurka of War
+  ["in1210", 0], // unlisted, Escalating Peril
+  ["in1215", 0], // unlisted, Ragnalia Rises
+  ["in1220", 0], // unlisted, Strategic Retreat
+  ["in1230", 0], // unlisted, New World Pact
+  ["in1240", 0], // unlisted, Evoke Change
+  ["in1250", 0], // unlisted, Emerging from the Black
+  ["in1255", 0], // unlisted, A New Wind
+  ["cm0010", 1], // A Grand Voyage Begins
+  ["ct0020", 1], // Transcending the Grim Basin
+  ["ct0030", 1], // Welcome, Travelers
+  ["cw0110", 1], // A Boundless Question
+  ["cw0120", 1], // Three's a Crowd
+  ["cw0130", 1], // The Grizzled Veteran
+  ["ct0040", 1], // Ruffled Wings
+  ["ct0050", 1], // Free Fall
+  ["ci0510", 1], // unlisted, Wyvern Ambush
+  ["ci0520", 1], // unlisted, Ruffled Wings
+  ["ci0530", 1], // unlisted, Catastrophe
+  ["cn0100", 1], // unlisted, Prologue
+  ["ct0060", 2], // Our Lives Are Linked
+  ["ct0070", 2], // Awakening in New Lands
+  ["ct0080", 2], // Finding Lyria
+  ["cw0210", 2], // Everyone Is Here
+  ["ct1010", 2], // Folca, Windswept Township
+  ["cw0310", 2], // Home of Prosperity
+  ["ct1020", 2], // Everywhere the Cash Flows
+  ["cm0011", 2], // The Skybound Guardian
+  ["cw0320", 2], // Lyria's Guardian
+  ["cm0012", 2], // The Skybound Helmsman
+  ["cw0340", 2], // Helming the Grandcypher
+  ["cm0013", 2], // The Skybound Mage
+  ["cw0330", 2], // When I Grow Up...
+  ["cm0014", 2], // The Skybound Sniper
+  ["cw0350", 2], // Sure-Handed Sniper
+  ["cm0015", 2], // The Skybound Rose
+  ["cw0360", 2], // The Captivating Rose
+  ["cw0370", 2], // The Secret Foodie
+  ["cw0375", 2], // Waiting for the Others
+  ["cw0380", 2], // Lyria's Reflection
+  ["ct1030", 2], // Hello, My Name Is...
+  ["cw0390", 2], // Before the Storm
+  ["cw03a0", 2], // Premonition
+  ["cw03b0", 2], // Trouble in Tempeal
+  ["ct1040", 2], // Leave It to Mr. Fix It!
+  ["ci0030", 2], // unlisted, Awakening in New Lands
+  ["ci0040", 2], // unlisted, A Close Call
+  ["ci0050", 2], // unlisted, Quakadile Ambush
+  ["ci0060", 2], // unlisted, Quakadile Down
+  ["ci0310", 2], // unlisted, For the Horde
+  ["ci0320", 2], // unlisted, Reunion
+  ["cn0200", 2], // unlisted, Our Lives Are Linked
+  ["cn0210", 2], // unlisted, Our Lives Are Linked
+  ["in0050", 2], // unlisted, Everywhere the Cash Flows
+  ["in0060", 2], // unlisted, The Knickknack Shack
+  ["in0070", 2], // unlisted, Folca's Blacksmith
+  ["cw0410", 3], // Winds of Change
+  ["ct1050", 3], // Crestfallen Evacuees
+  ["cw0420", 3], // Please Save Tempeal
+  ["cw0430", 3], // Hallowed Ground
+  ["cw0440", 3], // Hostage Rescue Part 1
+  ["cw0450", 3], // Hostage Rescue Part 2
+  ["cw0460", 3], // Hostage Rescue Part 3
+  ["cw0470", 3], // Hostage Rescue Part 4
+  ["cw0480", 3], // Suppress the Goblins
+  ["ci1520", 3], // unlisted, Please Save Tempeal
+  ["ci1530", 3], // unlisted, Raucous Raiders
+  ["ci1570", 3], // unlisted, On the Run
+  ["ci1580", 3], // unlisted, Three's Company
+  ["ci1610", 3], // unlisted, Zeghard Fortress
+  ["ci1620", 3], // unlisted, The Goblin Bulwark
+  ["in0100", 3], // unlisted, On Patrol
+  ["in0110", 3], // unlisted, Beat the Madbeat
+  ["ct1060", 4], // Primal Beast Furycane
+  ["ct1070", 4], // The Red Ship
+  ["ct1090", 4], // The Pilgrims of Avia
+  ["ct1100", 4], // Nightmare
+  ["cw0510", 4], // No Simple Fix
+  ["ci1310", 4], // unlisted, No Way Forward
+  ["ci1710", 4], // unlisted, Tempestuous Mining Town
+  ["ci1720", 4], // unlisted, The Wind and the Fury
+  ["ci1730", 4], // unlisted, Out of the Frying Pan...
+  ["ci1740", 4], // unlisted, ...And into the Gyre
+  ["ci1750", 4], // unlisted, The Wind Altar
+  ["ci1760", 4], // unlisted, Primal Beast Furycane
+  ["ci1780", 4], // unlisted, The Red Ship
+  ["cid510", 4], // unlisted, An Indomitable Threat
+  ["ct1110", 5], // Resolve
+  ["cw0520", 5], // Katalina's Vow
+  ["cw0530", 5], // Io's Promise
+  ["cw0540", 5], // Rackam's Fire
+  ["cw0550", 5], // Eugen's Regret
+  ["cw0560", 5], // Rosetta's Observation
+  ["cw0570", 5], // Next Stop: Leautagne
+  ["cw0571", 5], // The Grandcypher Reaches New Heights
+  ["ct2010", 5], // Battle over Leautagne
+  ["ct2020", 5], // Gallanza of the Silver Wolf Corps
+  ["ct2030", 5], // A Victor Emerges
+  ["ci1910", 5], // unlisted, In Search of Lyria
+  ["ci2530", 5], // unlisted, You Sunk My Battleship
+  ["ci2540", 5], // unlisted, Hooked on You
+  ["ci2550", 5], // unlisted, Shooting Gallery
+  ["ci2560", 5], // unlisted, You Sunk My Battleship
+  ["ci2570", 5], // unlisted, Return Flight
+  ["ci2580", 5], // unlisted, You Sunk My Battleship
+  ["ci2610", 5], // unlisted, Return Flight
+  ["ci2620", 5], // unlisted, Gallanza of the Silver Wolf Corps
+  ["ci2910", 5], // unlisted, Hunt for the Red Ship
+  ["ct3010", 6], // Mt. Neigelith
+  ["cw0710", 6], // Charging into the Snow
+  ["ct3020", 6], // Avia's Trap
+  ["ct3030", 6], // Enter Historiath
+  ["cw0720", 6], // Navigating the Felfrost
+  ["ct3040", 6], // Shaman of Salvation
+  ["ct3050", 6], // Primal Beast Managarmr
+  ["cw0730", 6], // All Is Not Lost
+  ["ci3505", 6], // unlisted, Charging into the Snow
+  ["ci3510", 6], // unlisted, Stone-Cold Dead
+  ["ci3520", 6], // unlisted, Avia's Trap
+  ["ci3540", 6], // unlisted, An Eye-Opening Experience
+  ["ci3550", 6], // unlisted, Primal Beast Managarmr
+  ["ci3910", 6], // unlisted, Chasing Leads
+  ["cid530", 6], // unlisted, Clashing Blades
+  ["cid531", 6], // unlisted, Clashing Blades
+  ["in0300", 6], // unlisted, Going Down
+  ["in0310", 6], // unlisted, Shaman of Salvation
+  ["in0320", 6], // unlisted, Managarmr Defrosted
+  ["ct3060", 7], // Capital in Bloom
+  ["cw0810", 7], // Sniffing for Clues
+  ["cw0815", 7], // Shady Business
+  ["cw0840", 7], // Non-Trivial Pursuit Part 1
+  ["cw0841", 7], // Non-Trivial Pursuit Part 2
+  ["cw0842", 7], // Non-Trivial Pursuit Part 3
+  ["cw0843", 7], // Non-Trivial Pursuit Part 4
+  ["cw0844", 7], // Non-Trivial Pursuit Part 5
+  ["cw0845", 7], // Purrfect Finish
+  ["cw0850", 7], // Ears to the Ground Part 1
+  ["cw0851", 7], // Ears to the Ground Part 2
+  ["cw0852", 7], // Ears to the Ground Part 3
+  ["cw0853", 7], // Ears to the Ground Part 4
+  ["cw0854", 7], // We're Good Listeners
+  ["ct3070", 7], // Zathba Knows All
+  ["cw0820", 7], // Let's Make a Deal
+  ["cw0860", 7], // Strangeness Afoot
+  ["cw0830", 7], // Relics in the Sand
+  ["ct3080", 7], // Repressed Memories
+  ["ct4010", 7], // Maglielle of the Sword Veil
+  ["ct4020", 7], // Throes of Defeat
+  ["ct4030", 7], // Excavallion, The Towering Primal
+  ["cw0910", 7], // Chasing the Red Ship
+  ["ci3920", 7], // unlisted, Dahli Island
+  ["ci4510", 7], // unlisted, Buried in the Sand
+  ["ci4520", 7], // unlisted, Dig through Time
+  ["ci4530", 7], // unlisted, Start Me Up
+  ["ci4540", 7], // unlisted, Start Me Up
+  ["ci4550", 7], // unlisted, Start Me Up
+  ["ci4560", 7], // unlisted, The Hidden Treasure
+  ["ci4570", 7], // unlisted, Maglielle of the Sword Veil
+  ["ci4580", 7], // unlisted, Sword Dance
+  ["ci4600", 7], // unlisted, Better Late than Never
+  ["ci4610", 7], // unlisted, Shielded by Sand
+  ["ci4620", 7], // unlisted, High-Altitude Combat
+  ["ci4630", 7], // unlisted, Sucker Punch
+  ["ci4910", 7], // unlisted, Next Stop: Fiery Phondam
+  ["cid540", 7], // unlisted, We're Hit
+  ["in0400", 7], // unlisted, The True Face of Danger
+  ["cw1010", 8], // Phondam, the Scarred Isles
+  ["ct5020", 8], // Primal Beast Vulkan Bolla
+  ["ct5030", 8], // Vulkan Bolla's Prisoner
+  ["ct5040", 8], // Avia's Judgment
+  ["cw1020", 8], // Twisted Salvation
+  ["cw1110", 8], // Impending Crisis
+  ["ct5050", 8], // Confession
+  ["cw1120", 8], // An Astral's Determination
+  ["ci5510", 8], // unlisted, Land of Fire
+  ["ci5520", 8], // unlisted, Primal Beast Vulkan Bolla
+  ["ci5530", 8], // unlisted, Breaking Out Lyria
+  ["ci5540", 8], // unlisted, Temporary Truce
+  ["ci5550", 8], // unlisted, A Catalyst of Change
+  ["ci5560", 8], // unlisted, The End of Vulkan Bolla
+  ["ci5580", 8], // unlisted, Confession
+  ["ci5910", 8], // unlisted, Peace in our Skies
+  ["in0500", 8], // unlisted, Phondam, the Scarred Isles
+  ["in0510", 8], // unlisted, Vulkan Bolla's Prisoner
+  ["cw1130", 9], // Your Friendly Neighborhood Merchant
+  ["cw1140", 9], // Zathba's Assessment
+  ["cw1150", 9], // This Means War
+  ["ci6530", 9], // The Terrible Two
+  ["ct6010", 9], // The Shaman's Protector
+  ["cid568", 9], // Dragon Power
+  ["ci6550", 9], // Id's Defeat
+  ["ct6020", 9], // Primal Beast Resurrected
+  ["ct6030", 9], // Loss
+  ["ct6040", 9], // Relink
+  ["ct6050", 9], // Catastrophe's End
+  ["cw1210", 9], // Finally Together
+  ["ct6060", 9], // We All Fall Down
+  ["ci6310", 9], // unlisted, Inquisitor Rook
+  ["ci6320", 9], // unlisted, Reaper Avalan
+  ["ci6510", 9], // unlisted, Capital Chaos
+  ["ci6515", 9], // unlisted, This Means War
+  ["ci6520", 9], // unlisted, Battle Bots
+  ["ci6540", 9], // unlisted, Two Generals with One Stone
+  ["cid560", 9], // unlisted, True Determination
+  ["cid561", 9], // unlisted, True Determination
+  ["cid562", 9], // unlisted, On Even Footing
+  ["cid563", 9], // unlisted, On Even Footing
+  ["cid564", 9], // unlisted, Give No Ground
+  ["cid565", 9], // unlisted, Give No Ground
+  ["cid567", 9], // unlisted, Dragon Power
+  ["in0610", 9], // unlisted, The Shaman's Protector
+  ["cw1310", 10], // Pride and Zeal
+  ["cw1320", 10], // Bitterness and Remorse
+  ["cw1330", 10], // Death Spire
+  ["cw1410", 10], // Let's Fight Together
+  ["ct7020", 10], // Sword of Atonement
+  ["ct7030", 10], // Primeval God Angra Mainyu
+  ["ct7040", 10], // The Power of Connections
+  ["ct7050", 10], // Destruction and Rebirth
+  ["ct7060", 10], // Deceit
+  ["ci6910", 10], // unlisted, This Ends Here
+  ["ci7310", 10], // unlisted, Maglielle Tags In
+  ["ci7510", 10], // unlisted, Evil on the Horizon
+  ["ci7520", 10], // unlisted, Death Spire
+  ["ci7530", 10], // unlisted, Id to the Rescue
+  ["ci7540", 10], // unlisted, Furycane Nihilla Defeated
+  ["ci7550", 10], // unlisted, Managarmr Nihilla Defeated
+  ["ci7560", 10], // unlisted, Vulkan Bolla Nihilla Defeated
+  ["ci7570", 10], // unlisted, Primeval God Angra Mainyu
+  ["ci7580", 10], // unlisted, Forbidden Fusion
+  ["in0620", 10], // unlisted, Rolan's Records
+  ["in0700", 10], // unlisted, Calamity Up on High
+  ["in0710", 10], // unlisted, Furycane Nihilla
+  ["in0720", 10], // unlisted, Managarmr Nihilla
+  ["in0730", 10], // unlisted, Vulkan Bolla Nihilla
+  ["cw1510", 11], // Saving Id
+  ["ct8010", 11], // Wings of Destruction
+  ["ct8020", 11], // Split Personalities
+  ["ct8030", 11], // The Sky Is Our Home
+  ["ct8040", 11], // Gone, but Not Forgotten
+  ["cr9000", 11], // Credits
+  ["cw2005", 11], // Bittersweet Return
+  ["cw2010", 11], // Atonement
+  ["cw2015", 11], // Id's First Gig
+  ["in0910", 11], // The Goblin's Natural Enemy
+  ["cw2020", 11], // Mr. Fix Id
+  ["ci7910", 11], // unlisted, Chasing the Dawn
+  ["ci8010", 11], // unlisted, Wings of Destruction
+  ["ci8310", 11], // unlisted, Dragon's Last Stand
+  ["cn1400", 11], // unlisted, Deceit
+  ["in0920", 11], // unlisted, Got the Job Done
+  ["cw7210", 12], // New Allies
+  ["cw2060", 12], // New Bonds
+  ["cw2030", 12], // Seedhollow Needs You
+  ["cw2040", 12], // Inherit the Spirit
+  ["cw2055", 12], // Where There's a Will, There's a Way
+  ["ct9020", 12], // Once More, Unto the Rift
+  ["ct9030", 12], // There's Nothing He Can't Fix
+  ["ct9035", 12], // Destruction's Fall
+  ["ct9040", 12], // Farewell
+  ["cw7100", 12], // Welcome Home
+  ["ci9510", 12], // unlisted, Double Dragon
+  ["ci9520", 12], // unlisted, There's Nothing He Can't Fix
+  ["cw1710", 13], // I Heard You Like Power
+  ["cw1721", 13], // The Automagod Strikes Back
+  ["cw8000", 13], // The Final Vision
+  ["in9000", 13], // unlisted, A Few Good Crews
+  ["in9010", 13], // unlisted, Branching Out
+  ["cw7220", 14], // Into the Conflux
+  ["cw7223", 14], // Echoes of Scorn
+  ["cta010", 14], // A Trial of Two Eternities
+  ["cw7240", 14], // Ragnalia, the Heralds of Doom
+  ["cw7242", 14], // Becoming Fatebreakers
+  ["cm0020", 14], // Every End Has a Beginning
+  ["cw7300", 14], // My Power Is Yours
+  ["cw7303", 14], // Bursting with Power
+  ["cw7226", 14], // The Stage Is Set
+  ["cta040", 14], // A Strong First Impression
+  ["cw7244", 14], // Fraux's Request
+  ["cw7246", 14], // The Arcarum Primal Beasts
+  ["cw7230", 14], // Chaos Vanquished
+  ["cw7252", 14], // Hidden Gems of Aquila
+  ["cw7254", 14], // Road to Recovery
+  ["cw7248", 14], // 3,000 Leagues in Search of Dyads
+  ["cw7256", 14], // The Perfect Outcome
+  ["cw7250", 14], // Fediel's Test
+  ["cw7260", 14], // Dissonant Skies
+  ["cw7262", 14], // Unintended Consequences
+  ["cw7264", 14], // A Unified Wedge
+  ["cta020", 14], // Omnis Zegalith
+  ["cw7270", 14], // Skyfaring Trailblazers
+  ["cta030", 14], // Endless Memories in the Endless Blue
+];
+
+/** `weapon` keys the Field Notes Weapons category draws from, 163 rows. */
+export const FIELD_NOTE_WEAPONS: readonly string[] = [
+  "WEP_PL0000_01",
+  "WEP_PL0000_02",
+  "WEP_PL0000_03",
+  "WEP_PL0000_04",
+  "WEP_PL0000_05",
+  "WEP_PL0000_06",
+  "WEP_PL0000_10",
+  "WEP_PL0100_01",
+  "WEP_PL0100_02",
+  "WEP_PL0100_03",
+  "WEP_PL0100_04",
+  "WEP_PL0100_05",
+  "WEP_PL0100_06",
+  "WEP_PL0100_10",
+  "WEP_PL0200_01",
+  "WEP_PL0200_02",
+  "WEP_PL0200_03",
+  "WEP_PL0200_04",
+  "WEP_PL0200_05",
+  "WEP_PL0200_06",
+  "WEP_PL0300_01",
+  "WEP_PL0300_02",
+  "WEP_PL0300_03",
+  "WEP_PL0300_04",
+  "WEP_PL0300_05",
+  "WEP_PL0300_06",
+  "WEP_PL0400_01",
+  "WEP_PL0400_02",
+  "WEP_PL0400_03",
+  "WEP_PL0400_04",
+  "WEP_PL0400_05",
+  "WEP_PL0400_06",
+  "WEP_PL0500_01",
+  "WEP_PL0500_02",
+  "WEP_PL0500_03",
+  "WEP_PL0500_04",
+  "WEP_PL0500_05",
+  "WEP_PL0500_06",
+  "WEP_PL0600_01",
+  "WEP_PL0600_02",
+  "WEP_PL0600_03",
+  "WEP_PL0600_04",
+  "WEP_PL0600_05",
+  "WEP_PL0600_06",
+  "WEP_PL0700_01",
+  "WEP_PL0700_02",
+  "WEP_PL0700_03",
+  "WEP_PL0700_04",
+  "WEP_PL0700_05",
+  "WEP_PL0700_06",
+  "WEP_PL0800_01",
+  "WEP_PL0800_02",
+  "WEP_PL0800_03",
+  "WEP_PL0800_04",
+  "WEP_PL0800_05",
+  "WEP_PL0800_06",
+  "WEP_PL0900_01",
+  "WEP_PL0900_02",
+  "WEP_PL0900_03",
+  "WEP_PL0900_04",
+  "WEP_PL0900_05",
+  "WEP_PL0900_06",
+  "WEP_PL1000_01",
+  "WEP_PL1000_02",
+  "WEP_PL1000_03",
+  "WEP_PL1000_04",
+  "WEP_PL1000_05",
+  "WEP_PL1000_06",
+  "WEP_PL1100_01",
+  "WEP_PL1100_02",
+  "WEP_PL1100_03",
+  "WEP_PL1100_04",
+  "WEP_PL1100_05",
+  "WEP_PL1100_06",
+  "WEP_PL1200_01",
+  "WEP_PL1200_02",
+  "WEP_PL1200_03",
+  "WEP_PL1200_04",
+  "WEP_PL1200_05",
+  "WEP_PL1200_06",
+  "WEP_PL1300_01",
+  "WEP_PL1300_02",
+  "WEP_PL1300_03",
+  "WEP_PL1300_04",
+  "WEP_PL1300_05",
+  "WEP_PL1300_06",
+  "WEP_PL1400_01",
+  "WEP_PL1400_02",
+  "WEP_PL1400_03",
+  "WEP_PL1400_04",
+  "WEP_PL1400_05",
+  "WEP_PL1400_06",
+  "WEP_PL1500_01",
+  "WEP_PL1500_02",
+  "WEP_PL1500_03",
+  "WEP_PL1500_04",
+  "WEP_PL1500_05",
+  "WEP_PL1500_06",
+  "WEP_PL1600_01",
+  "WEP_PL1600_02",
+  "WEP_PL1600_03",
+  "WEP_PL1600_04",
+  "WEP_PL1600_05",
+  "WEP_PL1600_06",
+  "WEP_PL1700_01",
+  "WEP_PL1700_02",
+  "WEP_PL1700_03",
+  "WEP_PL1700_04",
+  "WEP_PL1700_05",
+  "WEP_PL1700_06",
+  "WEP_PL1800_01",
+  "WEP_PL1800_02",
+  "WEP_PL1800_03",
+  "WEP_PL1800_04",
+  "WEP_PL1800_05",
+  "WEP_PL1800_06",
+  "2C8681F8",
+  "WEP_PL1900_01",
+  "WEP_PL1900_02",
+  "WEP_PL1900_03",
+  "WEP_PL1900_04",
+  "WEP_PL1900_05",
+  "WEP_PL1900_06",
+  "WEP_PL2100_01",
+  "WEP_PL2100_04",
+  "WEP_PL2100_06",
+  "WEP_PL2100_07",
+  "74D764B7",
+  "WEP_PL2200_01",
+  "WEP_PL2200_04",
+  "WEP_PL2200_07",
+  "1064441E",
+  "WEP_PL2300_01",
+  "WEP_PL2300_04",
+  "WEP_PL2300_07",
+  "10180036",
+  "WEP_PL2400_01",
+  "WEP_PL2400_03",
+  "WEP_PL2400_04",
+  "1CC90CAE",
+  "90F5B18F",
+  "WEP_PL2500_01",
+  "WEP_PL2500_04",
+  "6CFF175C",
+  "78B64E9B",
+  "969CF8C7",
+  "WEP_PL2600_01",
+  "WEP_PL2600_02",
+  "WEP_PL2600_04",
+  "14B3AE92",
+  "3897A020",
+  "6EEA0D21",
+  "WEP_PL2700_01",
+  "WEP_PL2700_02",
+  "WEP_PL2700_04",
+  "6EC326D3",
+  "D5EB1DEE",
+  "WEP_PL2800_01",
+  "WEP_PL2800_04",
+  "1EB2B398",
+  "CDB13688",
+  "WEP_PL2900_01",
+  "WEP_PL2900_04",
+];
+
+/** `item` keys the Field Notes Treasure category draws from, 255 rows in SortOrder order. */
+export const FIELD_NOTE_TREASURE: readonly string[] = [
+  "ITEM_10_0000",
+  "ITEM_10_0001",
+  "ITEM_10_0002",
+  "ITEM_10_0003",
+  "ITEM_14_0010",
+  "ITEM_14_0011",
+  "ITEM_14_0012",
+  "ITEM_14_0013",
+  "ITEM_14_0020",
+  "ITEM_14_0021",
+  "ITEM_14_0022",
+  "C043BAC9",
+  "ITEM_15_0001",
+  "ITEM_15_0002",
+  "ITEM_15_0003",
+  "0EB683CD",
+  "98CDB46F",
+  "64A63FBC",
+  "537CB6D9",
+  "654FA095",
+  "54732298",
+  "1F4BAE8C",
+  "86FB2EE1",
+  "1C195D33",
+  "ITEM_08_0000",
+  "ITEM_30_0000",
+  "20C742DE",
+  "ITEM_14_0000",
+  "8C4FC319",
+  "DF713FA9",
+  "65063E17",
+  "ITEM_11_0000",
+  "ITEM_11_0001",
+  "ITEM_11_0002",
+  "ITEM_12_0000",
+  "ITEM_01_0000",
+  "ITEM_01_0001",
+  "ITEM_01_0002",
+  "ITEM_01_0003",
+  "ITEM_01_0010",
+  "ITEM_01_0011",
+  "ITEM_01_0012",
+  "ITEM_01_0013",
+  "ITEM_01_0020",
+  "ITEM_01_0021",
+  "ITEM_01_0022",
+  "ITEM_01_0023",
+  "ITEM_01_0030",
+  "ITEM_01_0031",
+  "ITEM_01_0032",
+  "ITEM_01_0033",
+  "ITEM_01_0040",
+  "ITEM_01_0041",
+  "ITEM_01_0042",
+  "ITEM_01_0043",
+  "ITEM_01_0050",
+  "ITEM_01_0051",
+  "ITEM_01_0052",
+  "ITEM_01_0053",
+  "ITEM_01_0060",
+  "ITEM_01_0061",
+  "ITEM_01_0062",
+  "ITEM_01_0063",
+  "ITEM_02_0030",
+  "ITEM_02_0031",
+  "ITEM_02_0032",
+  "ITEM_02_0010",
+  "ITEM_02_0011",
+  "ITEM_02_0012",
+  "ITEM_02_0020",
+  "ITEM_02_0021",
+  "ITEM_02_0022",
+  "ITEM_02_0000",
+  "ITEM_02_0001",
+  "ITEM_02_0002",
+  "ITEM_02_0050",
+  "ITEM_02_0051",
+  "ITEM_02_0052",
+  "ITEM_02_0040",
+  "ITEM_02_0041",
+  "ITEM_02_0042",
+  "ITEM_31_0000",
+  "ITEM_31_0001",
+  "ITEM_31_0002",
+  "17F349BA",
+  "ITEM_31_0010",
+  "ITEM_31_0011",
+  "ITEM_31_0012",
+  "6837EFC6",
+  "ITEM_31_0020",
+  "ITEM_31_0021",
+  "ITEM_31_0022",
+  "19871BF3",
+  "ITEM_31_0030",
+  "ITEM_31_0031",
+  "ITEM_31_0032",
+  "0E7CBC8E",
+  "ITEM_31_0040",
+  "ITEM_31_0041",
+  "ITEM_31_0042",
+  "25289584",
+  "ITEM_31_0050",
+  "ITEM_31_0051",
+  "ITEM_31_0052",
+  "7500C5D9",
+  "ITEM_31_0060",
+  "ITEM_31_0061",
+  "ITEM_31_0062",
+  "695EA716",
+  "ITEM_31_0070",
+  "ITEM_31_0071",
+  "ITEM_31_0072",
+  "ITEM_31_0073",
+  "ITEM_31_0074",
+  "ITEM_31_0075",
+  "F7F9A658",
+  "1FCE9159",
+  "ITEM_31_0080",
+  "ITEM_31_0081",
+  "ITEM_31_0082",
+  "D4EE7FC3",
+  "2A5548A9",
+  "ITEM_31_0090",
+  "ITEM_31_0091",
+  "ITEM_31_0092",
+  "381526A4",
+  "ITEM_32_0030",
+  "ITEM_32_0031",
+  "ITEM_32_0040",
+  "ITEM_32_0041",
+  "ITEM_32_0042",
+  "ADFFE24E",
+  "ITEM_32_0043",
+  "F74A6A4D",
+  "ITEM_14_0003",
+  "ITEM_03_0000",
+  "ITEM_03_0001",
+  "ITEM_03_0002",
+  "4A41482C",
+  "ITEM_04_0000",
+  "ITEM_04_0001",
+  "ITEM_04_0002",
+  "B0782428",
+  "ITEM_05_0000",
+  "ITEM_05_0001",
+  "ITEM_05_0002",
+  "ITEM_06_0000",
+  "ITEM_06_0001",
+  "ITEM_06_0002",
+  "35F709E3",
+  "ITEM_07_0000",
+  "ITEM_07_0001",
+  "ITEM_07_0002",
+  "ITEM_32_0060",
+  "ITEM_16_0003",
+  "ITEM_16_0002",
+  "ITEM_16_0004",
+  "831F31FF",
+  "ITEM_32_0070",
+  "ITEM_22_0000",
+  "ITEM_22_0010",
+  "ITEM_22_0020",
+  "ITEM_22_0021",
+  "D0F04D9F",
+  "ITEM_32_0051",
+  "ITEM_22_0030",
+  "ITEM_22_0031",
+  "A2452B7C",
+  "ITEM_32_0052",
+  "ITEM_22_0040",
+  "ITEM_22_0041",
+  "89406DB0",
+  "ITEM_32_0053",
+  "ITEM_22_0050",
+  "ITEM_22_0051",
+  "A1EAD2C2",
+  "ITEM_32_0054",
+  "ITEM_22_0060",
+  "ITEM_22_0061",
+  "882F94A7",
+  "ITEM_32_0055",
+  "ITEM_22_0070",
+  "ITEM_22_0071",
+  "C83F9E36",
+  "ITEM_32_0056",
+  "ITEM_32_0050",
+  "FAF93BCC",
+  "ITEM_09_0000",
+  "ITEM_09_0001",
+  "ITEM_09_0002",
+  "456D2BB3",
+  "ITEM_09_0010",
+  "ITEM_09_0011",
+  "ITEM_09_0012",
+  "6E13E372",
+  "ITEM_09_0020",
+  "ITEM_09_0021",
+  "ITEM_09_0022",
+  "4C21DC42",
+  "ITEM_17_0000",
+  "ITEM_17_0001",
+  "ITEM_17_0010",
+  "ITEM_17_0011",
+  "ITEM_17_0020",
+  "ITEM_17_0021",
+  "ITEM_16_0000",
+  "ITEM_16_0001",
+  "5392DEE6",
+  "68BAFC37",
+  "C1563862",
+  "ITEM_16_0010",
+  "ITEM_16_0011",
+  "ITEM_16_0012",
+  "03A19196",
+  "ITEM_32_0080",
+  "ITEM_32_0081",
+  "ITEM_18_0000",
+  "ITEM_18_0001",
+  "0311B2DE",
+  "ITEM_18_0002",
+  "8D888638",
+  "9A3DC719",
+  "6F38AFE1",
+  "85F40D79",
+  "8A08F64E",
+  "D147A1BA",
+  "05474649",
+  "F7DC6ED9",
+  "FD1DC09A",
+  "25165316",
+  "686F12AD",
+  "53A9D491",
+  "ITEM_34_1000",
+  "ITEM_34_2000",
+  "ITEM_34_3000",
+  "ITEM_34_4000",
+  "ITEM_15_0000",
+  "ITEM_14_0031",
+  "ITEM_14_0032",
+  "ITEM_19_0001",
+  "ITEM_19_0002",
+  "ITEM_19_0003",
+  "ITEM_19_0004",
+  "ITEM_23_0000",
+  "ITEM_23_0001",
+  "ITEM_23_0002",
+  "ITEM_23_0003",
+  "ITEM_23_0006",
+  "ITEM_23_0007",
+  "ITEM_23_0004",
+  "ITEM_23_0005",
+  "ITEM_21_0000",
+  "58FC9B99",
+  "ITEM_14_0050",
+  "ITEM_14_0051",
+];
