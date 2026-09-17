@@ -8,8 +8,10 @@ import {
   readCharacterData,
   readCounterQuests,
   readEarnedTrophies,
+  readFieldNotes,
   readGlossary,
   readInventory,
+  readMainStory,
   readMusic,
   readProfile,
   readSideQuests,
@@ -20,6 +22,7 @@ import {
   type Curio,
   type Equipment,
   type Save,
+  type FieldNoteCategory,
   type Trait,
 } from "gbfr-save-editor";
 import type { GameTextTable } from "../game-text";
@@ -164,6 +167,18 @@ const counterQuestTables = (quests: CounterQuest[]): Table[] =>
         difficulty ?? "other",
       ),
     );
+
+/** gt() table naming each field note category's entries, and its category key. */
+const FIELD_NOTE_TEXT: Record<
+  FieldNoteCategory,
+  readonly [table: GameTextTable, category: string]
+> = {
+  characters: ["fieldNoteCharacter", "0"],
+  foes: ["fieldNoteFoe", "1"],
+  weapons: ["weapon", "2"],
+  treasure: ["item", "3"],
+  wrightstones: ["fieldNoteWrightstone", "4"],
+};
 
 const MASTER_TRAIT_TABS: Record<string, string> = {
   SB_DEF: "insight",
@@ -329,12 +344,40 @@ export function buildView(save: Save): SaveView {
       ]),
     ),
     table(
+      "journal:story",
+      "journal",
+      ["entry", "chapter", "unlocked", "viewed"],
+      readMainStory(units).map((e) => [
+        keyCell("story", e.key),
+        keyCell("storyChapter", String(e.chapter)),
+        e.unlocked,
+        e.viewed,
+      ]),
+      "main story",
+    ),
+    table(
+      "journal:fieldNotes",
+      "journal",
+      ["entry", "category", "unlocked", "viewed"],
+      readFieldNotes(units).map((e) => {
+        const [text, category] = FIELD_NOTE_TEXT[e.category];
+        return [
+          keyCell(text, e.key),
+          keyCell("fieldNoteCategory", category),
+          e.unlocked,
+          // Only Treasure carries a bit for it.
+          e.viewed ?? unknownCell,
+        ];
+      }),
+      "field notes",
+    ),
+    table(
       "journal:archive",
       "journal",
       ["entry", "unlocked", "viewed"],
       readArchives(units).map((e) => [
         keyCell("archive", e.key),
-        e.obtained,
+        e.unlocked,
         e.viewed,
       ]),
       "archive",
@@ -342,12 +385,11 @@ export function buildView(save: Save): SaveView {
     table(
       "journal:glossary",
       "journal",
-      ["entry", "unlocked", "viewed", "paragraphs"],
+      ["entry", "unlocked", "viewed"],
       readGlossary(units).map((e) => [
         keyCell("glossary", e.key),
-        e.listed,
+        e.unlocked,
         e.viewed,
-        e.paragraphs,
       ]),
       "glossary",
     ),
@@ -355,7 +397,7 @@ export function buildView(save: Save): SaveView {
       "journal:tip",
       "journal",
       ["entry", "unlocked", "viewed"],
-      readTips(units).map((e) => [keyCell("tip", e.key), e.listed, e.viewed]),
+      readTips(units).map((e) => [keyCell("tip", e.key), e.unlocked, e.viewed]),
       "tip",
     ),
     table(
@@ -364,7 +406,7 @@ export function buildView(save: Save): SaveView {
       ["entry", "unlocked", "viewed"],
       readMusic(units).map((e) => [
         keyCell("music", e.key),
-        e.listed,
+        e.unlocked,
         e.viewed,
       ]),
       "music",

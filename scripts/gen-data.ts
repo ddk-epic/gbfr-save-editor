@@ -36,6 +36,14 @@ const SOURCES = {
   SUMMON_BASE_PARAM_KEYS: ["summons", "summon_base_param", "Key"],
   FATE_EPISODE_KEYS: ["characters", "fate_episode", "Key"],
   ARCHIVE_KEYS: ["journal", "story_note_archive", "Key"],
+  STORY_KEYS: ["journal", "story", "Key"],
+  FIELD_NOTE_CHARACTER_KEYS: ["journal", "story_note_picturebook_chara", "Key"],
+  FIELD_NOTE_FOE_KEYS: ["journal", "story_note_picturebook_enemy", "EnemyId"],
+  FIELD_NOTE_WRIGHTSTONE_KEYS: [
+    "journal",
+    "story_note_picturebook_code",
+    "Key",
+  ],
   GLOSSARY_KEYS: ["journal", "story_note_wordlist", "Key"],
   TIP_KEYS: ["journal", "story_note_tips", "TutorialWindowIdUnlockRequirement"],
   MUSIC_KEYS: ["journal", "story_note_bgm", "Key"],
@@ -494,6 +502,14 @@ const GAME_TEXT = {
   summonBonus: `select Key key, Name text_id from summon_base_param`,
   fateEpisode: `select Key key, FateMissionTitle text_id from fate_episode`,
   archive: `select Key key, NoteTitle text_id from story_note_archive`,
+  // Unk4 is the entry title, Unk5 its summary; Unk6 and Unk7 repeat both.
+  story: `select Key key, Unk4 text_id from story`,
+  // Note numbers the chapter, "Prologue"; The Story So Far has none.
+  storyChapter: `select cast(Key as text) key, Title text_id, Note prefix_id from story_note_chapter`,
+  fieldNoteCharacter: `select Key key, CharacterName text_id from story_note_picturebook_chara`,
+  fieldNoteFoe: `select EnemyId key, EnemyName text_id from story_note_picturebook_enemy`,
+  fieldNoteWrightstone: `select Key key, ItemName1 text_id from story_note_picturebook_code`,
+  fieldNoteCategory: `select cast(Key as text) key, Name text_id from story_note_picturebook_category`,
   glossary: `select Key key, Key text_id from story_note_wordlist`,
   // Unk18 is the title on character tips; tutorial tips title elsewhere.
   tip: `select TutorialWindowIdUnlockRequirement key, Unk18 text_id from story_note_tips`,
@@ -585,18 +601,29 @@ function loadMsg(folder: string): Map<string, string> {
 mkdirSync(new URL("../src/data/text/", import.meta.url), { recursive: true });
 /** Quest names in en, for the comments on the quest counter list. */
 let questNames: Record<string, string> = {};
+/** Main story entry titles in en, for the comments on the story order. */
+let storyNames: Record<string, string> = {};
 for (const [lang, folder] of Object.entries(TEXT_LANGUAGES)) {
   const msg = loadMsg(folder);
   const out: Record<string, Record<string, string>> = {};
   const counts: string[] = [];
   for (const [table, sql] of Object.entries(GAME_TEXT)) {
-    const rows = db.prepare(sql).all() as { key: unknown; text_id: unknown }[];
+    const rows = db.prepare(sql).all() as {
+      key: unknown;
+      text_id: unknown;
+      prefix_id?: unknown;
+    }[];
     const keys = new Set<string>();
     const texts = new Map<string, string>();
-    for (const { key, text_id } of rows) {
+    for (const { key, text_id, prefix_id } of rows) {
       if (typeof key !== "string" || key === "") continue;
       keys.add(key);
-      const text = typeof text_id === "string" ? msg.get(text_id) : undefined;
+      const body = typeof text_id === "string" ? msg.get(text_id) : undefined;
+      // A query with a prefix_id puts that text first, as the game does with
+      // "Prologue" before "The Forgotten Sky". An empty one drops away.
+      const prefix =
+        typeof prefix_id === "string" ? msg.get(prefix_id) : undefined;
+      const text = body && prefix ? `${prefix} ${body}` : body;
       if (text && !texts.has(key)) texts.set(key, text);
     }
     out[table] = Object.fromEntries(
@@ -609,8 +636,76 @@ for (const [lang, folder] of Object.entries(TEXT_LANGUAGES)) {
     `${JSON.stringify(out, null, 2)}\n`,
   );
   console.log(`text ${lang}: ${counts.join(", ")}`);
-  if (lang === "en") questNames = out.quest ?? {};
+  if (lang === "en") {
+    questNames = out.quest ?? {};
+    storyNames = out.story ?? {};
+  }
 }
+
+// Main Story order: every `story` row by chapter, the rows the chapter lists
+// first in their `Unk12` order, then its in-game events by key. The Story So Far
+// lists its `tt` rows, which carry no position; every other chapter lists the
+// rows with a position.
+const storyRows = db
+  .prepare(
+    "select Key, Unk10 as chapter, Unk12 as pos, Unk13 as kind from story",
+  )
+  .all() as { Key: string; chapter: number; pos: number; kind: number }[];
+const listed = (r: (typeof storyRows)[number]) =>
+  r.chapter === 0 ? r.kind === 2 : r.pos !== 0;
+const storyOrder = [...storyRows].sort(
+  (a, b) =>
+    a.chapter - b.chapter ||
+    Number(listed(b)) - Number(listed(a)) ||
+    a.pos - b.pos ||
+    a.Key.localeCompare(b.Key),
+);
+emit(
+  "journal",
+  `/** \`story\` keys in Main Story order, with the \`story_note_chapter\` key of each, ${storyOrder.length} rows. */
+export const STORY_ORDER: readonly (readonly [key: string, chapter: number])[] = [
+${storyOrder
+  .map(
+    (r) =>
+      `  ["${r.Key}", ${r.chapter}], // ${listed(r) ? "" : "unlisted, "}${storyNames[r.Key] ?? "(unnamed)"}`,
+  )
+  .join("\n")}
+];`,
+);
+
+// The two Field Notes categories with no list of their own in the save. Weapons
+// and Treasure are read off the weapon and item units, so the rows each category
+// covers have to come from the tables. Both lists hold every row the category
+// draws from, the way Characters holds both captains: the Weapons counter of 154
+// then leaves out the captain not picked and the two Apocalypse weapons, and the
+// Treasure counter of 252 shows the 4 Curios as one.
+const fieldNoteWeapons = db
+  .prepare(
+    "select Key, CharaId from weapon where unk52 = 1 and (WeaponId is null or WeaponId = '') order by CharaId, Key",
+  )
+  .all() as { Key: string; CharaId: string }[];
+const fieldNoteTreasure = db
+  .prepare(
+    "select Key from item where SortOrder between 100 and 922 order by SortOrder",
+  )
+  .all() as { Key: string }[];
+const keyList = (rows: { Key: string }[]) =>
+  rows.map((r) => `  ${JSON.stringify(r.Key)},`).join("\n");
+emit(
+  "journal",
+  `/** \`weapon\` keys the Field Notes Weapons category draws from, ${fieldNoteWeapons.length} rows. */
+export const FIELD_NOTE_WEAPONS: readonly string[] = [
+${keyList(fieldNoteWeapons)}
+];
+
+/** \`item\` keys the Field Notes Treasure category draws from, ${fieldNoteTreasure.length} rows in SortOrder order. */
+export const FIELD_NOTE_TREASURE: readonly string[] = [
+${keyList(fieldNoteTreasure)}
+];`,
+);
+console.log(
+  `FIELD_NOTE_WEAPONS: ${fieldNoteWeapons.length}, FIELD_NOTE_TREASURE: ${fieldNoteTreasure.length}`,
+);
 
 // Quest counter list: every quest whose row carries a counter flag, in the
 // order the tables give, difficulty then advised PWR then id. That is close to

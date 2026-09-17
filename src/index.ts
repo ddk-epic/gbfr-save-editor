@@ -50,13 +50,15 @@ export {
 } from "./domain/quests";
 export {
   readArchives,
+  readFieldNotes,
   readGlossary,
+  readMainStory,
   readMusic,
   readTips,
-  type ArchiveEntry,
-  type GlossaryEntry,
-  type MusicEntry,
-  type TipEntry,
+  type FieldNoteCategory,
+  type JournalEntry,
+  type FieldNoteEntry,
+  type StoryEntry,
 } from "./domain/journal";
 export { readEarnedTrophies } from "./domain/trophies";
 export {

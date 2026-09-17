@@ -40,6 +40,16 @@ export const ID = {
   TROPHY_EARNED: 5801,
   ARCHIVE_KEY: 7901,
   ARCHIVE_FLAGS: 7902,
+  STORY_KEY: 8201,
+  STORY_FLAGS: 8202,
+  FIELD_NOTE_CHARACTER_KEY: 8401,
+  FIELD_NOTE_CHARACTER_FLAGS: 8402,
+  FIELD_NOTE_FOE_KEY: 8501,
+  FIELD_NOTE_FOE_FLAGS: 8502,
+  FIELD_NOTE_WRIGHTSTONE_KEY: 8601,
+  FIELD_NOTE_WRIGHTSTONE_FLAGS: 8602,
+  FIELD_NOTE_WEAPON_KEY: 7401,
+  FIELD_NOTE_WEAPON_FLAGS: 7403,
   GLOSSARY_KEY: 8101,
   GLOSSARY_FLAGS: 8102,
   TIP_KEY: 8701,
@@ -116,23 +126,18 @@ export const UNIT = {
 
 /** Reward entries per curio, CURIO_REWARD_KEY at curio unit * 100 + entry. */
 export const CURIO_REWARD_ENTRIES = 5;
-/** Bits of ARCHIVE_FLAGS: the document is obtained, and seen in the journal list. */
-export const ARCHIVE_OBTAINED = 1;
-export const ARCHIVE_VIEWED = 2;
-/** Bits of GLOSSARY_FLAGS: listed, new mark cleared, and bits 2-4 for paragraphs 2-4. */
-export const GLOSSARY_LISTED = 1;
-export const GLOSSARY_VIEWED = 2;
-export const GLOSSARY_PARAGRAPHS_2_TO_4 = 0b11100;
-/** Bits of TIP_FLAGS: listed, and seen in the journal list. */
-export const TIP_LISTED = 1;
-export const TIP_VIEWED = 2;
-/** Bits of MUSIC_FLAGS: listed, and seen in the journal list. */
-export const MUSIC_LISTED = 1;
-export const MUSIC_VIEWED = 2;
+/** Bits every journal list's flags unit uses: ARCHIVE, GLOSSARY, TIP, MUSIC
+ * and STORY_FLAGS alike. Field Notes uses bit 0 too, bit 2 on Weapons. */
+export const JOURNAL_UNLOCKED = 1;
+export const JOURNAL_VIEWED = 2;
+/** The unlocked bit on FIELD_NOTE_WEAPON_FLAGS, a unit the weapon list shares. */
+export const FIELD_NOTE_WEAPON_UNLOCKED = 4;
 /** Bit of ITEM_FLAGS set on an item on the wish list, at most 20. */
 export const ITEM_WISH_LIST = 1;
 /** Bit of ITEM_FLAGS set once the item is seen, clearing its new mark. */
 export const ITEM_SEEN = 8;
+/** Bit of ITEM_FLAGS set once the item has a page in Field Notes Treasure. */
+export const ITEM_FIELD_NOTE = 4;
 /** Bit of ABILITY_FLAGS set once the ability is seen, clearing its new mark. */
 export const ABILITY_SEEN = 8;
 /** Bit of WEAPON_FLAGS set once the weapon is seen in the transwakening menu. */

@@ -2,8 +2,12 @@ import { CHARACTER_KEYS, FATE_EPISODE_KEYS } from "../data/characters";
 import { ITEM_KEYS } from "../data/items";
 import {
   ARCHIVE_KEYS,
+  FIELD_NOTE_CHARACTER_KEYS,
+  FIELD_NOTE_FOE_KEYS,
+  FIELD_NOTE_WRIGHTSTONE_KEYS,
   GLOSSARY_KEYS,
   MUSIC_KEYS,
+  STORY_KEYS,
   TIP_KEYS,
 } from "../data/journal";
 import { SKILLBOARD_EFFECT_KEYS } from "../data/master-traits";
@@ -27,6 +31,13 @@ const TABLE_NAMES = new Map<Readonly<Record<number, string>>, string>([
   [SUMMON_BASE_PARAM_KEYS, "summon_base_param"],
   [FATE_EPISODE_KEYS, "fate_episode"],
   [ARCHIVE_KEYS, "story_note_archive"],
+  [STORY_KEYS, "story"],
+  [FIELD_NOTE_CHARACTER_KEYS, "story_note_picturebook_chara"],
+  [FIELD_NOTE_FOE_KEYS, "story_note_picturebook_enemy"],
+  [FIELD_NOTE_WRIGHTSTONE_KEYS, "story_note_picturebook_code"],
+  // The Weapons and Treasure categories have no story_note_picturebook table.
+  // They are filtered subsets of `weapon` and `item`, so they resolve through
+  // WEAPON_KEYS and ITEM_KEYS.
   [GLOSSARY_KEYS, "story_note_wordlist"],
   [TIP_KEYS, "story_note_tips"],
   [MUSIC_KEYS, "story_note_bgm"],
