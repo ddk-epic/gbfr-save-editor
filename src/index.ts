@@ -60,7 +60,8 @@ export {
   type FieldNoteEntry,
   type StoryEntry,
 } from "./domain/journal";
-export { readEarnedTrophies } from "./domain/trophies";
+export { readTrophies, type Trophy } from "./domain/trophies";
+export { TROPHY_TABS, type TrophyTab } from "./data/trophies";
 export {
   CAPTAINS,
   characterOrder,

@@ -9,6 +9,7 @@ import {
   STORY_KEYS,
   TIP_KEYS,
 } from "../src/data/journal";
+import { TROPHIES } from "../src/data/trophies";
 import {
   readArchives,
   readFieldNotes,
@@ -17,6 +18,8 @@ import {
   readMusic,
   readSave,
   readTips,
+  readTrophies,
+  TROPHY_TABS,
   type JournalEntry,
 } from "../src/index";
 
@@ -71,5 +74,39 @@ describe.skipIf(!hasSave)("the journal", () => {
     expect(
       entries.filter((e) => seen(e) !== (e.category === "treasure")),
     ).toEqual([]);
+  });
+
+  it("reads one trophy per badge, earned or not", () => {
+    const trophies = readTrophies(units);
+    expect(trophies.map((t) => t.key)).toEqual(TROPHIES.map(([key]) => key));
+  });
+
+  it("marks only earned trophies viewed", () => {
+    expect(readTrophies(units).filter((t) => t.viewed && !t.earned)).toEqual(
+      [],
+    );
+  });
+});
+
+describe("the trophy list", () => {
+  it("holds each badge once, base game before Endless Ragnarok", () => {
+    const keys = TROPHIES.map(([key]) => key);
+    expect(new Set(keys).size).toBe(keys.length);
+    const dlc = TROPHIES.map(([, , isDlc]) => isDlc);
+    expect(dlc).toEqual([...dlc].sort((a, b) => Number(a) - Number(b)));
+  });
+
+  it("keeps each tab one block per half, Conflux and Summons DLC only", () => {
+    for (const half of [false, true]) {
+      const tabs = TROPHIES.filter(([, , dlc]) => dlc === half).map(
+        ([, tab]) => tab,
+      );
+      const blocks = tabs.filter((tab, i) => tab !== tabs[i - 1]);
+      expect(blocks).toEqual(
+        half
+          ? [...TROPHY_TABS]
+          : ["story", "character", "battle", "gear", "other"],
+      );
+    }
   });
 });
