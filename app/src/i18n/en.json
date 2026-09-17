@@ -48,7 +48,8 @@
     "overMasteries": "Over-masteries"
   },
   "equipment": {
-    "loadout": "Loadout",
+    "loadout": "Loadout {{number}}",
+    "name": "Name",
     "equipped": "Equipped",
     "weapon": "Weapon",
     "wrightstone": "Wrightstone",
