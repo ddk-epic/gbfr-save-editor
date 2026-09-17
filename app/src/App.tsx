@@ -21,8 +21,7 @@ export function App() {
   const [page, setPage] = useState<Page>("welcome");
   // Open sections by section id, shared by the save and every character.
   const [open, setOpen] = useState<Set<string>>(
-    () =>
-      new Set(["sigils", "stats", "masteries", "masterTraits", "equipment"]),
+    () => new Set(["profile", "stats"]),
   );
   const [selection, setSelection] = useState<Selection>();
   const [validationOpen, setValidationOpen] = useState(false);
