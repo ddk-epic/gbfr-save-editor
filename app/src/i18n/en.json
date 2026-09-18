@@ -5,7 +5,6 @@
   },
   "toolbar": {
     "open": "open",
-    "close": "close",
     "theme": "Theme",
     "themes": {
       "dark": "dark",
