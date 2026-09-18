@@ -1,4 +1,4 @@
-import { FolderOpen, X } from "lucide-react";
+import { FolderOpen } from "lucide-react";
 import { useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StatusBar, TitleBar } from "./components/Bars";
@@ -49,13 +49,6 @@ export function App() {
     setSelection(undefined);
     setPage("save");
   };
-  const closeFile = () => {
-    scrollTops.current.clear();
-    setSave(undefined);
-    setSelection(undefined);
-    setValidationOpen(false);
-    setPage("welcome");
-  };
   const go = (next: Page) => {
     // The row panel belongs to a page; leaving the page clears it.
     if (next !== page) setSelection(undefined);
@@ -101,11 +94,6 @@ export function App() {
         <ToolbarButton onClick={() => fileInput.current?.click()}>
           <FolderOpen size={13} /> {t("toolbar.open")}
         </ToolbarButton>
-        {save && (
-          <ToolbarButton onClick={closeFile}>
-            <X size={13} /> {t("toolbar.close")}
-          </ToolbarButton>
-        )}
         <ThemeToggle />
       </TitleBar>
 
