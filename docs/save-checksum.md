@@ -37,7 +37,7 @@ Expecting all ten to match finds none valid. The rule matches exactly one per sa
 
 ## Enforcement
 
-The game rejects a save whose selected checksum does not match. The flipped save changes sigil flags 2707 at UnitID 30050 from 2 to 0, clearing the seen bit of a Tyranny V+, and keeps the original footer. On load the game shows "Slot 1 contains corrupted data. Restore the data and start the game in this slot?".
+The game rejects a save whose selected checksum does not match. The flipped save changes sigil flags 2707 at entity 30050 from 2 to 0, clearing the seen bit of a Tyranny V+, and keeps the original footer. On load the game shows "Slot 1 contains corrupted data. Restore the data and start the game in this slot?".
 
 The same flipped save with only index 5 recomputed loads with no prompt, and the Tyranny V+ shows the new mark. It differs from the original in the flag byte and the 8 checksum bytes, with 1003 and SystemData unchanged.
 

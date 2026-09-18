@@ -1,48 +1,48 @@
 # Characters
 
-A character is one unit per `chara` row. `readCharacters` in `src/domain/characters.ts` reads it. Master traits, masteries and over-masteries sit in per-character progress units under their own UnitIDs.
+A character is one unit per `chara` row. `readCharacters` in `src/domain/characters.ts` reads it. Master traits, masteries and over-masteries sit in per-character progress units under their own entities.
 
 ## The character unit
 
-Characters occupy 41 UnitIDs, `UNIT.CHARACTER` (10000) to 10040, one per `chara` row. The character index is the UnitID minus 10000. Every save has all 41 units, a new game included.
+Characters occupy 41 entities, `UNIT.CHARACTER` (10000) to 10040, one per `chara` row. The character index is the entity minus 10000. Every save has all 41 units, a new game included.
 
-| IDType | Name                          | Type        | Holds                                                        |
-| ------ | ----------------------------- | ----------- | ------------------------------------------------------------ |
-| 1301   | `CHARACTER_KEY`               | `uint`      | `chara.CharId` hash                                          |
-| 1302   | not named                     | `int`       | Always 0                                                     |
-| 1303   | `CHARACTER_XP`                | `int`       | XP, 8,400,000 at level 100                                   |
-| 1304   | not named                     | `int`       | Always 0                                                     |
-| 1305   | `CHARACTER_FLAGS`             | `uint`      | Flags                                                        |
-| 1307   | not named                     | `int`       |                                                              |
-| 1308   | `CHARACTER_LEVEL`             | `int`       | Level                                                        |
-| 1309   | `CHARACTER_BASE_HP`           | `int`       | Base HP, `chara_status.Hp` at the level                      |
-| 1310   | `CHARACTER_BASE_ATTACK`       | `int`       | Base ATK, `chara_status.Attack` at the level                 |
-| 1311   | not named                     | `int`       | Always 0                                                     |
-| 1312   | `CHARACTER_BASE_STUN`         | `float`     | Base Stun Power, `chara_status.Stun`                         |
-| 1313   | `CHARACTER_BASE_CRIT`         | `int`       | Base Critical Hit Rate, `chara_status.CritRate`              |
-| 1314   | `CHARACTER_QUESTS_USED`       | `uint`      | Number of quests the character was used in                   |
-| 1315   | not named                     | `uint`      | Always the empty hash                                        |
-| 1316   | not named                     | `uint`      |                                                              |
-| 1317   | not named                     | `uint`      |                                                              |
-| 1318   | not named                     | `uint`      | Bitmask, up to 6 bits                                        |
-| 1321   | not named                     | `uint`      | Possibly the highest single hit, unconfirmed                 |
-| 1322   | not named                     | `uint`      | 0 on NPCs, 1 or 3 on playable characters and the `SLOT` rows |
-| 1323   | `CHARACTER_MASTER_XP`         | `int`       | MSP spent on master levels                                   |
-| 1324   | `CHARACTER_DELEGATE_ENLISTED` | `int`       | Probably the times the character was enlisted as a delegate  |
-| 1325   | not named                     | `int`       | Always -1                                                    |
-| 1326   | `CHARACTER_DELEGATE_MESSAGE`  | `byte[241]` | Delegate message, padded with 0                              |
-| 1402   | `EQUIP_WEAPON`                | `uint`      | Weapon slot id                                               |
-| 1403   | `EQUIP_SIGILS`                | `uint[13]`  | Sigil slot ids                                               |
-| 1404   | `EQUIP_SKILLS`                | `uint[4]`   | Skill keys                                                   |
-| 1501   | not named                     | `int`       | Always 0                                                     |
-| 1502   | not named                     | `int`       | 0 or 7                                                       |
-| 1503   | not named                     | `int[2]`    | -1, -1 on characters not recruited                           |
-| 1504   | not named                     | `int[2]`    | 0, 0 or 1, 1                                                 |
+| Attribute | Name                          | Type        | Holds                                                        |
+| --------- | ----------------------------- | ----------- | ------------------------------------------------------------ |
+| 1301      | `CHARACTER_KEY`               | `uint`      | `chara.CharId` hash                                          |
+| 1302      | not named                     | `int`       | Always 0                                                     |
+| 1303      | `CHARACTER_XP`                | `int`       | XP, 8,400,000 at level 100                                   |
+| 1304      | not named                     | `int`       | Always 0                                                     |
+| 1305      | `CHARACTER_FLAGS`             | `uint`      | Flags                                                        |
+| 1307      | not named                     | `int`       |                                                              |
+| 1308      | `CHARACTER_LEVEL`             | `int`       | Level                                                        |
+| 1309      | `CHARACTER_BASE_HP`           | `int`       | Base HP, `chara_status.Hp` at the level                      |
+| 1310      | `CHARACTER_BASE_ATTACK`       | `int`       | Base ATK, `chara_status.Attack` at the level                 |
+| 1311      | not named                     | `int`       | Always 0                                                     |
+| 1312      | `CHARACTER_BASE_STUN`         | `float`     | Base Stun Power, `chara_status.Stun`                         |
+| 1313      | `CHARACTER_BASE_CRIT`         | `int`       | Base Critical Hit Rate, `chara_status.CritRate`              |
+| 1314      | `CHARACTER_QUESTS_USED`       | `uint`      | Number of quests the character was used in                   |
+| 1315      | not named                     | `uint`      | Always the empty hash                                        |
+| 1316      | not named                     | `uint`      |                                                              |
+| 1317      | not named                     | `uint`      |                                                              |
+| 1318      | not named                     | `uint`      | Bitmask, up to 6 bits                                        |
+| 1321      | not named                     | `uint`      | Possibly the highest single hit, unconfirmed                 |
+| 1322      | not named                     | `uint`      | 0 on NPCs, 1 or 3 on playable characters and the `SLOT` rows |
+| 1323      | `CHARACTER_MASTER_XP`         | `int`       | MSP spent on master levels                                   |
+| 1324      | `CHARACTER_DELEGATE_ENLISTED` | `int`       | Probably the times the character was enlisted as a delegate  |
+| 1325      | not named                     | `int`       | Always -1                                                    |
+| 1326      | `CHARACTER_DELEGATE_MESSAGE`  | `byte[241]` | Delegate message, padded with 0                              |
+| 1402      | `EQUIP_WEAPON`                | `uint`      | Weapon slot id                                               |
+| 1403      | `EQUIP_SIGILS`                | `uint[13]`  | Sigil slot ids                                               |
+| 1404      | `EQUIP_SKILLS`                | `uint[4]`   | Skill keys                                                   |
+| 1501      | not named                     | `int`       | Always 0                                                     |
+| 1502      | not named                     | `int`       | 0 or 7                                                       |
+| 1503      | not named                     | `int[2]`    | -1, -1 on characters not recruited                           |
+| 1504      | not named                     | `int[2]`    | 0, 0 or 1, 1                                                 |
 
 - 1309, 1310, 1312 and 1313 are the character's own stats. They leave out gear, fate episodes and masteries, and none of them is the stat the game displays. Characters with no `chara_status` rows hold 0.
 - 1323 equals a `chara_master_exp.TotalMSP` row, and the row index is the master level. 0 reads as master level 1.
 - The delegate is the character set in the Backup Characters menu for other players to enlist. The message is set there after picking one.
-- `weapons.md` and `sigils.md` cover the equipment IDTypes. A character unit holds the character's current gear, apart from its saved loadouts.
+- `weapons.md` and `sigils.md` cover the equipment attributes. A character unit holds the character's current gear, apart from its saved loadouts.
 
 ### Flags
 
@@ -70,14 +70,14 @@ Not every unit is a playable character.
 
 ## Progress units
 
-Per-character progress sits at `CHARACTER_PROGRESS` (10000000) + character index \* 1000 + entry. 1601 and 1602 at UnitIDs 0-199 hold the Resonance tree, which `conflux.md` covers.
+Per-character progress sits at `CHARACTER_PROGRESS` (10000000) + character index \* 1000 + entry. 1601 and 1602 at entities 0-199 hold the Resonance tree, which `conflux.md` covers.
 
-| IDType | Name                           | Type   | Entries | Holds                                                        |
-| ------ | ------------------------------ | ------ | ------- | ------------------------------------------------------------ |
-| 1601   | `PROGRESS_KEY`                 | `uint` | 0-399   | Mastery node `LimitBonusId` or `skillboard_effect.Key`       |
-| 1602   | `PROGRESS_VALUE`               | `int`  | 0-399   | Node bitmask or master trait selection                       |
-| 1606   | `CHARACTER_OVER_MASTERY_KEY`   | `uint` | 0-3     | `limit_bonus_param.Key` of a `MED_EFF_*` stat                |
-| 1607   | `CHARACTER_OVER_MASTERY_LEVEL` | `int`  | 0-3     | Roll level as one bit, level n is `1 << (n-1)`, 0 when empty |
+| Attribute | Name                           | Type   | Entries | Holds                                                        |
+| --------- | ------------------------------ | ------ | ------- | ------------------------------------------------------------ |
+| 1601      | `PROGRESS_KEY`                 | `uint` | 0-399   | Mastery node `LimitBonusId` or `skillboard_effect.Key`       |
+| 1602      | `PROGRESS_VALUE`               | `int`  | 0-399   | Node bitmask or master trait selection                       |
+| 1606      | `CHARACTER_OVER_MASTERY_KEY`   | `uint` | 0-3     | `limit_bonus_param.Key` of a `MED_EFF_*` stat                |
+| 1607      | `CHARACTER_OVER_MASTERY_LEVEL` | `int`  | 0-3     | Roll level as one bit, level n is `1 << (n-1)`, 0 when empty |
 
 ### Masteries
 

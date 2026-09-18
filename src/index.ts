@@ -14,6 +14,8 @@ export {
   decodeSaveDataBinary,
   type SaveDataBinary,
   type SaveUnit,
+  type UnitAttribute,
+  type UnitEntity,
   type ValueOf,
   type ValueType,
 } from "./format/save-data-binary";

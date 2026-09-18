@@ -37,18 +37,18 @@ describe.skipIf(!hasSave)("readSave", () => {
   });
 
   it("decodes every table", () => {
-    // Nothing is left undecoded and no IDType mixes two value types, which is
+    // Nothing is left undecoded and no attribute mixes two value types, which is
     // what a misread length or a wrong field order shows up as.
     for (const section of [save.systemData, save.slotData]) {
-      const idTypes = section.units.idTypes();
-      expect(idTypes.length).toBeGreaterThan(0);
-      for (const id of idTypes) {
-        expect(VALUE_TYPES, `IDType ${id}`).toContain(
+      const attributes = section.units.attributes();
+      expect(attributes.length).toBeGreaterThan(0);
+      for (const id of attributes) {
+        expect(VALUE_TYPES, `attribute ${id}`).toContain(
           section.units.valueTypeOf(id),
         );
         expect(
-          section.units.ofIdType(id).length,
-          `IDType ${id}`,
+          section.units.withAttribute(id).length,
+          `attribute ${id}`,
         ).toBeGreaterThan(0);
       }
     }

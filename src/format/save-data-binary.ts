@@ -30,11 +30,17 @@ export interface ValueOf {
   float: number;
 }
 
+/** The characteristic a unit holds, such as a sigil's level. */
+export type UnitAttribute = number;
+
+/** The thing a unit is about, such as one sigil. Save wide units use 0. */
+export type UnitEntity = number;
+
 export type SaveUnit = {
   [T in ValueType]: {
     valueType: T;
-    idType: number;
-    unitId: number;
+    attribute: UnitAttribute;
+    entity: UnitEntity;
     values: ValueOf[T][];
   };
 }[ValueType];
@@ -64,10 +70,10 @@ const ELEMENTS: {
   float: { size: 4, read: (r, at) => r.f32(at) },
 };
 
-/** Unit table fields. */
-const UNIT_ID_TYPE = 0;
-const UNIT_UNIT_ID = 1;
-const UNIT_VALUE_DATA = 2;
+/** Unit table fields. The schema names them IDType, UnitID and ValueData. */
+const UNIT_ATTRIBUTE = 0;
+const UNIT_ENTITY = 1;
+const UNIT_VALUES = 2;
 /** Root table fields. */
 const ROOT_VERSION = 0;
 const ROOT_FIRST_TABLE = 1;
@@ -110,9 +116,9 @@ function readUnit<T extends ValueType>(
   table: number,
   valueType: T,
 ): SaveUnit {
-  const idTypeAt = fieldAt(reader, table, UNIT_ID_TYPE);
-  const unitIdAt = fieldAt(reader, table, UNIT_UNIT_ID);
-  const valuesAt = fieldAt(reader, table, UNIT_VALUE_DATA);
+  const attributeAt = fieldAt(reader, table, UNIT_ATTRIBUTE);
+  const entityAt = fieldAt(reader, table, UNIT_ENTITY);
+  const valuesAt = fieldAt(reader, table, UNIT_VALUES);
   const element = ELEMENTS[valueType];
 
   const values: ValueOf[T][] = [];
@@ -130,8 +136,8 @@ function readUnit<T extends ValueType>(
 
   return {
     valueType,
-    idType: idTypeAt === undefined ? 0 : reader.u32(idTypeAt),
-    unitId: unitIdAt === undefined ? 0 : reader.u32(unitIdAt),
+    attribute: attributeAt === undefined ? 0 : reader.u32(attributeAt),
+    entity: entityAt === undefined ? 0 : reader.u32(entityAt),
     values,
   } as SaveUnit;
 }

@@ -4,16 +4,16 @@ Conflux is the endless mode added in the Endless Ragnarok DLC. The save holds it
 
 ## Resonance points
 
-`USER_RESONANCE_POINTS` (1116) at UnitID 0 holds the Resonance points, the currency of the Resonance tree. `user-and-system.md` covers the user data.
+`USER_RESONANCE_POINTS` (1116) at entity 0 holds the Resonance points, the currency of the Resonance tree. `user-and-system.md` covers the user data.
 
 ## Resonance tree
 
-The Resonance tree shares its IDTypes with the character progress units and is stored the same way as masteries. It sits at UnitIDs 0-199.
+The Resonance tree shares its attributes with the character progress units and is stored the same way as masteries. It sits at entities 0-199.
 
-| IDType | Name             | Type   | Holds                                       |
-| ------ | ---------------- | ------ | ------------------------------------------- |
-| 1601   | `PROGRESS_KEY`   | `uint` | Bonus of the node, a `limit_bonus.Key` hash |
-| 1602   | `PROGRESS_VALUE` | `int`  | Bitmask of the taken nodes with that bonus  |
+| Attribute | Name             | Type   | Holds                                       |
+| --------- | ---------------- | ------ | ------------------------------------------- |
+| 1601      | `PROGRESS_KEY`   | `uint` | Bonus of the node, a `limit_bonus.Key` hash |
+| 1602      | `PROGRESS_VALUE` | `int`  | Bitmask of the taken nodes with that bonus  |
 
 - `endlessmode_tree` has 62 rows, one per node. Several nodes can grant the same bonus, so the save holds 58 entries at units 0-57, one per distinct `endlessmode_tree.Unk19`, in the order each first appears in the table. Units 58-199 hold the empty hash and 0.
 - Every save has all 58 entries, a new game included.
@@ -38,12 +38,12 @@ A bonus's name and description are the text keys `limit_bonus.NodeTitle` and `li
 
 ## Aura collection
 
-Auras occupy 300 UnitIDs, 0 to 299. Every save holds all 236 `endlessmode_buff` rows at units 0-235, a new game included, but not in table order. Units 236-299 hold the empty hash with flags 0.
+Auras occupy 300 entities, 0 to 299. Every save holds all 236 `endlessmode_buff` rows at units 0-235, a new game included, but not in table order. Units 236-299 hold the empty hash with flags 0.
 
-| IDType | Name                 | Type   | Holds                          |
-| ------ | -------------------- | ------ | ------------------------------ |
-| 9601   | `CONFLUX_AURA_KEY`   | `uint` | `endlessmode_buff.Unk105` hash |
-| 9602   | `CONFLUX_AURA_FLAGS` | `uint` | Flags                          |
+| Attribute | Name                 | Type   | Holds                          |
+| --------- | -------------------- | ------ | ------------------------------ |
+| 9601      | `CONFLUX_AURA_KEY`   | `uint` | `endlessmode_buff.Unk105` hash |
+| 9602      | `CONFLUX_AURA_FLAGS` | `uint` | Flags                          |
 
 The first digit of `endlessmode_buff.Unk1` is the aura's category, and `endlessmode_buff_category` has one row per category.
 
@@ -74,18 +74,18 @@ Every aura with bit 1 has bit 0.
 
 ## Other units
 
-| IDType | Name      | Type     | Holds                                |
-| ------ | --------- | -------- | ------------------------------------ |
-| 9501   | not named | `uint`   | Hash-like                            |
-| 9502   | not named | `int`    |                                      |
-| 9503   | not named | `int`    |                                      |
-| 9504   | not named | `int`    |                                      |
-| 9505   | not named | `ulong`  | Probably a Unix time in milliseconds |
-| 9506   | not named | `short`  |                                      |
-| 9507   | not named | `ubyte`  |                                      |
-| 9508   | not named | `bool`   |                                      |
-| 9509   | not named | `ulong`  | Probably a Unix time in milliseconds |
-| 9510   | not named | `ulong`  | Probably a Unix time in milliseconds |
-| 9511   | not named | `int[2]` |                                      |
+| Attribute | Name      | Type     | Holds                                |
+| --------- | --------- | -------- | ------------------------------------ |
+| 9501      | not named | `uint`   | Hash-like                            |
+| 9502      | not named | `int`    |                                      |
+| 9503      | not named | `int`    |                                      |
+| 9504      | not named | `int`    |                                      |
+| 9505      | not named | `ulong`  | Probably a Unix time in milliseconds |
+| 9506      | not named | `short`  |                                      |
+| 9507      | not named | `ubyte`  |                                      |
+| 9508      | not named | `bool`   |                                      |
+| 9509      | not named | `ulong`  | Probably a Unix time in milliseconds |
+| 9510      | not named | `ulong`  | Probably a Unix time in milliseconds |
+| 9511      | not named | `int[2]` |                                      |
 
-Each has a single unit at UnitID 0.
+Each has a single unit at entity 0.

@@ -22,26 +22,26 @@ export type SaveFormatIssue =
     }
   /** A SaveDataBinary too short to hold its root offset. */
   | { code: "flatBufferTooShort" }
-  /** One IDType stored under two value types. */
+  /** One attribute stored under two value types. */
   | {
       code: "mixedValueType";
-      idType: number;
+      attribute: number;
       first: ValueType;
       second: ValueType;
     }
-  /** One IDType and UnitID stored twice. */
-  | { code: "duplicateUnit"; idType: number; unitId: number }
+  /** One attribute and entity stored twice. */
+  | { code: "duplicateUnit"; attribute: number; entity: number }
   /** A unit read as a value type it is not stored as. */
   | {
       code: "wrongValueType";
-      idType: number;
+      attribute: number;
       expected: ValueType;
       actual: ValueType;
     }
   /** A mastery bit set on a node index the table leaves unused. */
-  | { code: "unusedMasteryBit"; unitId: number; bit: number }
+  | { code: "unusedMasteryBit"; entity: number; bit: number }
   /** An over-mastery level that is not a single bit. */
-  | { code: "overMasteryLevel"; unitId: number; bits: number };
+  | { code: "overMasteryLevel"; entity: number; bits: number };
 
 export type SaveFormatCode = SaveFormatIssue["code"];
 
