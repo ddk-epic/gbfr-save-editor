@@ -35,9 +35,10 @@ export function TitleBar({
 }) {
   const { t } = useTranslation();
   return (
+    // z-200 keeps the bar, and the validation popover in it, above the pages' sticky headers.
     <Bar
       gutter={gutter}
-      className="border-b border-border bg-card py-1.5 text-card-foreground"
+      className="relative z-200 border-b border-border bg-card py-1.5 text-card-foreground"
     >
       <button
         onClick={onHome}
