@@ -14,15 +14,15 @@ import { loadSave, type LoadedSave, type LoadError } from "./save/load";
 import type { SectionId } from "./save/view";
 import { useScrollGutter } from "./useScrollGutter";
 
+const DEFAULT_OPEN = ["profile", "stats", "gear"];
+
 export function App() {
   const { t } = useTranslation();
   const [save, setSave] = useState<LoadedSave>();
   const [loadError, setLoadError] = useState<LoadError>();
   const [page, setPage] = useState<Page>("welcome");
   // Open sections by section id, shared by the save and every character.
-  const [open, setOpen] = useState<Set<string>>(
-    () => new Set(["profile", "stats", "gear"]),
-  );
+  const [open, setOpen] = useState<Set<string>>(() => new Set(DEFAULT_OPEN));
   const [selection, setSelection] = useState<Selection>();
   const [validationOpen, setValidationOpen] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -44,6 +44,7 @@ export function App() {
       return;
     }
     scrollTops.current.clear();
+    setOpen(new Set(DEFAULT_OPEN));
     setSave(result.save);
     setLoadError(undefined);
     setSelection(undefined);
