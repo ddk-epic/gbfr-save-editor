@@ -2,30 +2,30 @@
 
 The inventory spans six unit lists in SlotData. `readInventory` in `src/domain/inventory.ts` reads all of them. The facts below hold in every local save tested, from a new game to endgame.
 
-| List         | IDType of the key | UnitIDs     | Units | Empty entry           |
-| ------------ | ----------------- | ----------- | ----- | --------------------- |
-| Items        | 1801              | 0-499       | 500   | key is the empty hash |
-| Curios       | 2002              | 0-998       | 999   | key is the empty hash |
-| Summons      | 1456              | 0-999       | 1000  | summon id 0           |
-| Sigils       | 2702              | 30000-35099 | 5100  | slot id 0             |
-| Weapons      | 2802              | 40000-40255 | 256   | slot id 0             |
-| Wrightstones | 2102              | 50000-54999 | 5000  | key is the empty hash |
+| List         | Attribute of the key | Entities    | Units | Empty entry           |
+| ------------ | -------------------- | ----------- | ----- | --------------------- |
+| Items        | 1801                 | 0-499       | 500   | key is the empty hash |
+| Curios       | 2002                 | 0-998       | 999   | key is the empty hash |
+| Summons      | 1456                 | 0-999       | 1000  | summon id 0           |
+| Sigils       | 2702                 | 30000-35099 | 5100  | slot id 0             |
+| Weapons      | 2802                 | 40000-40255 | 256   | slot id 0             |
+| Wrightstones | 2102                 | 50000-54999 | 5000  | key is the empty hash |
 
 Every list has its full unit count in every save, a new game included. Curios, summons and weapons in use fill their list from the first unit with no gaps. Sigils and wrightstones in use can have empty units between them.
 
 ## Currencies
 
-Rupies are 1104 and mastery points 1112, each an `int` at UnitID 0. The item rows Rupie, Mastery Point, Conflux Point and Resonance Point (`ItemCategoryId` 10) hold a count of 0.
+Rupies are 1104 and mastery points 1112, each an `int` at entity 0. The item rows Rupie, Mastery Point, Conflux Point and Resonance Point (`ItemCategoryId` 10) hold a count of 0.
 
 ## Items
 
-| IDType | Type   | Holds                      |
-| ------ | ------ | -------------------------- |
-| 1801   | `uint` | `item.Key` hash, one value |
-| 1802   | `int`  | Count                      |
-| 1803   | `uint` | Flags                      |
+| Attribute | Type   | Holds                      |
+| --------- | ------ | -------------------------- |
+| 1801      | `uint` | `item.Key` hash, one value |
+| 1802      | `int`  | Count                      |
+| 1803      | `uint` | Flags                      |
 
-All three IDTypes cover UnitIDs 0-499.
+All three attributes cover entities 0-499.
 
 - Units 0-447 hold the 448 `item` rows, each row exactly once.
 - Units 448-499 hold the empty hash, with count 0 and flags 0.
@@ -74,7 +74,7 @@ Every save holds a unit for each of the 74 wrightstone item rows, a new game inc
 
 ## Curios
 
-A curio's tier is its `item.Key`, `ITEM_19_0001` to `ITEM_19_0004`, in 2002. Its reward sits at UnitID `curio unit * 100 + entry`, entries 0-4.
+A curio's tier is its `item.Key`, `ITEM_19_0001` to `ITEM_19_0004`, in 2002. Its reward sits at entity `curio unit * 100 + entry`, entries 0-4.
 
 Every non-empty 2002 key is one of the four tiers. The Curio item rows do not follow the tiers. `ITEM_19_0001` holds the number of curios in the list, all tiers together. `ITEM_19_0002`, `ITEM_19_0003` and `ITEM_19_0004` hold 0.
 

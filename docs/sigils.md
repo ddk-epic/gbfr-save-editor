@@ -4,24 +4,24 @@ A sigil is one unit in the sigil list plus a two-entry trait list. `readSigils` 
 
 ## The sigil unit
 
-Sigils occupy 5100 UnitIDs, `UNIT.SIGIL` (30000) to 35099. Every save has all 5100 units, a new game included. A slot id of 0 marks an empty entry.
+Sigils occupy 5100 entities, `UNIT.SIGIL` (30000) to 35099. Every save has all 5100 units, a new game included. A slot id of 0 marks an empty entry.
 
-| IDType | Name            | Type   | Holds                                      |
-| ------ | --------------- | ------ | ------------------------------------------ |
-| 2702   | `SIGIL_SLOT_ID` | `uint` | Slot id the equipment units reference      |
-| 2703   | `SIGIL_KEY`     | `uint` | `gem.Key` hash                             |
-| 2704   | `SIGIL_LEVEL`   | `int`  | Level                                      |
-| 2706   | `SIGIL_WORN_BY` | `uint` | Character key of the wearer, or empty hash |
-| 2707   | `SIGIL_FLAGS`   | `uint` | Flags                                      |
+| Attribute | Name            | Type   | Holds                                      |
+| --------- | --------------- | ------ | ------------------------------------------ |
+| 2702      | `SIGIL_SLOT_ID` | `uint` | Slot id the equipment units reference      |
+| 2703      | `SIGIL_KEY`     | `uint` | `gem.Key` hash                             |
+| 2704      | `SIGIL_LEVEL`   | `int`  | Level                                      |
+| 2706      | `SIGIL_WORN_BY` | `uint` | Character key of the wearer, or empty hash |
+| 2707      | `SIGIL_FLAGS`   | `uint` | Flags                                      |
 
-Two more units sit at UnitID 0:
+Two more units sit at entity 0:
 
-| IDType | Type   | Holds                                                         |
-| ------ | ------ | ------------------------------------------------------------- |
-| 2701   | `uint` | `SIGIL_LAST_SLOT_ID`, the highest slot id in use, 0 when none |
-| 2708   | `uint` | Not named                                                     |
+| Attribute | Type   | Holds                                                         |
+| --------- | ------ | ------------------------------------------------------------- |
+| 2701      | `uint` | `SIGIL_LAST_SLOT_ID`, the highest slot id in use, 0 when none |
+| 2708      | `uint` | Not named                                                     |
 
-2708 is one value for the whole save, not a per-sigil field: it exists only at UnitID 0. It holds 0 in a new game and 7 (bits 0, 1 and 2) in the saves that hold sigils, the same in saves with different sigil counts. No save holds any other value, so the meaning of each bit is not known.
+2708 is one value for the whole save, not a per-sigil field: it exists only at entity 0. It holds 0 in a new game and 7 (bits 0, 1 and 2) in the saves that hold sigils, the same in saves with different sigil counts. No save holds any other value, so the meaning of each bit is not known.
 
 - Slot ids are unique. They are not dense: the highest is far above the number of sigils.
 - Sigils in use can have empty units between them.

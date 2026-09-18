@@ -42,7 +42,7 @@ export interface Conflux {
   auras: Aura[];
 }
 
-/** Values of one IDType by the key hash another IDType holds at the same units. */
+/** Values of one attribute by the key hash another attribute holds at the same units. */
 function byKey(
   units: UnitStore,
   keyId: number,

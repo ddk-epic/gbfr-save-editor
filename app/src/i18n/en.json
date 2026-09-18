@@ -168,11 +168,11 @@
     "noFooterRoom": "SlotData size {{size}} has no room for the footer",
     "footerMisaligned": "SlotData footer does not line up: checksums {{bytes}} B at {{offset}}, footer at {{footer}}",
     "flatBufferTooShort": "SaveDataBinary is shorter than its root offset",
-    "mixedValueType": "IDType {{idType}} is stored as both {{first}} and {{second}}",
-    "duplicateUnit": "IDType {{idType}} UnitID {{unitId}} appears twice",
-    "wrongValueType": "IDType {{idType}} is {{actual}}, not {{expected}}",
-    "unusedMasteryBit": "masteries {{unitId}}: bit {{bit}} set on an unused index",
-    "overMasteryLevel": "over-mastery {{unitId}}: level bits {{bits}} are not a single bit",
+    "mixedValueType": "attribute {{attribute}} is stored as both {{first}} and {{second}}",
+    "duplicateUnit": "attribute {{attribute}} entity {{entity}} appears twice",
+    "wrongValueType": "attribute {{attribute}} is {{actual}}, not {{expected}}",
+    "unusedMasteryBit": "masteries {{entity}}: bit {{bit}} set on an unused index",
+    "overMasteryLevel": "over-mastery {{entity}}: level bits {{bits}} are not a single bit",
     "unexpected": "the file could not be read"
   }
 }

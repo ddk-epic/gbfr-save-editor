@@ -40,10 +40,10 @@ function section(
   flagsId: number,
 ): JournalEntry[] {
   const entries: JournalEntry[] = [];
-  for (const unit of units.ofIdType(keyId)) {
+  for (const unit of units.withAttribute(keyId)) {
     const key = keyOf(keys, unit.values[0] as number);
     if (!key) continue;
-    const flags = units.values(flagsId, unit.unitId, "uint")?.[0] ?? 0;
+    const flags = units.values(flagsId, unit.entity, "uint")?.[0] ?? 0;
     entries.push({
       key,
       unlocked: (flags & JOURNAL_UNLOCKED) !== 0,
@@ -112,10 +112,10 @@ function flagsByKey(
   flagsId: number,
 ): Map<string, number> {
   const held = new Map<string, number>();
-  for (const unit of units.ofIdType(keyId)) {
+  for (const unit of units.withAttribute(keyId)) {
     const key = keyOf(keys, unit.values[0] as number);
     if (key)
-      held.set(key, units.values(flagsId, unit.unitId, "uint")?.[0] ?? 0);
+      held.set(key, units.values(flagsId, unit.entity, "uint")?.[0] ?? 0);
   }
   return held;
 }

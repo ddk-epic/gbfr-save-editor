@@ -177,22 +177,22 @@ export interface CharacterData {
   loadouts: Loadout[];
 }
 
-/** Equipment on a unit whose character key is stored under `characterIdType`. */
+/** Equipment on a unit whose character key is stored under `characterAttribute`. */
 function readEquipment(
   units: UnitStore,
   inventory: Inventory,
-  unitId: number,
-  characterIdType: number,
+  entity: number,
+  characterAttribute: number,
 ): Equipment | undefined {
   const character = keyOf(
     CHARACTER_KEYS,
-    units.values(characterIdType, unitId, "uint")?.[0],
+    units.values(characterAttribute, entity, "uint")?.[0],
   );
   if (character === undefined) return undefined;
 
-  const weaponSlot = units.values(ID.EQUIP_WEAPON, unitId, "uint")?.[0];
-  const sigilSlots = units.values(ID.EQUIP_SIGILS, unitId, "uint") ?? [];
-  const skills = units.values(ID.EQUIP_SKILLS, unitId, "uint") ?? [];
+  const weaponSlot = units.values(ID.EQUIP_WEAPON, entity, "uint")?.[0];
+  const sigilSlots = units.values(ID.EQUIP_SIGILS, entity, "uint") ?? [];
+  const skills = units.values(ID.EQUIP_SKILLS, entity, "uint") ?? [];
 
   return {
     character,
@@ -207,8 +207,8 @@ function readEquipment(
   };
 }
 
-const progressBase = (characterUnitId: number) =>
-  UNIT.CHARACTER_PROGRESS + (characterUnitId - UNIT.CHARACTER) * 1000;
+const progressBase = (characterEntity: number) =>
+  UNIT.CHARACTER_PROGRESS + (characterEntity - UNIT.CHARACTER) * 1000;
 
 const MASTER_TRAIT_STYLES = ["SB_DEF", "SB_ATK", "SB_LIMIT"];
 const MASTER_TRAIT_RANKS = ["r1", "r2", "r3", "ex"];
@@ -216,9 +216,9 @@ const MASTER_TRAIT_RANKS = ["r1", "r2", "r3", "ex"];
 /** Every board cell, by style, rank, perks first, then board order. */
 function readMasterTraits(
   units: UnitStore,
-  characterUnitId: number,
+  characterEntity: number,
 ): MasterTrait[] {
-  const base = progressBase(characterUnitId);
+  const base = progressBase(characterEntity);
   const cells: MasterTrait[] = [];
   for (let i = 0; i < UNIT.CHARACTER_PROGRESS_ENTRIES; i++) {
     const hash = units.values(ID.PROGRESS_KEY, base + i, "uint")?.[0];
@@ -252,7 +252,7 @@ function readMasterTraits(
 
 function readMasteries(
   units: UnitStore,
-  characterUnitId: number,
+  characterEntity: number,
   character: string,
 ): Record<MasterySection, MasteryProgress> {
   const progress = Object.fromEntries(
@@ -264,7 +264,7 @@ function readMasteries(
   const nodes = MASTERY_NODES[character];
   if (!nodes) return progress;
 
-  const base = progressBase(characterUnitId);
+  const base = progressBase(characterEntity);
   const takenBits = new Map<number, number>();
   for (let i = 0; i < UNIT.CHARACTER_PROGRESS_ENTRIES; i++) {
     const hash = units.values(ID.PROGRESS_KEY, base + i, "uint")?.[0];
@@ -278,7 +278,7 @@ function readMasteries(
       if (bits & (1 << index) && !node)
         throw new SaveFormatError({
           code: "unusedMasteryBit",
-          unitId: base + i,
+          entity: base + i,
           bit: index,
         });
     });
@@ -326,9 +326,9 @@ function readMasteries(
 
 function readOverMasteries(
   units: UnitStore,
-  characterUnitId: number,
+  characterEntity: number,
 ): (OverMastery | undefined)[] {
-  const base = progressBase(characterUnitId);
+  const base = progressBase(characterEntity);
   return Array.from({ length: OVER_MASTERY_LINES }, (_, i) => {
     const key = keyOf(
       LIMIT_BONUS_PARAM_KEYS,
@@ -342,7 +342,7 @@ function readOverMasteries(
     if (!Number.isInteger(level))
       throw new SaveFormatError({
         code: "overMasteryLevel",
-        unitId: base + i,
+        entity: base + i,
         bits,
       });
     return { key, level };
@@ -364,7 +364,7 @@ const FATE_EPISODE_COMPLETED = 8;
 
 function readFateEpisodes(units: UnitStore): Map<string, FateEpisode[]> {
   const byCharacter = new Map<string, FateEpisode[]>();
-  for (const unit of units.ofIdType(ID.FATE_EPISODE_KEY)) {
+  for (const unit of units.withAttribute(ID.FATE_EPISODE_KEY)) {
     const hash = (unit.values as number[])[0];
     const key = keyOf(FATE_EPISODE_KEYS, hash);
     if (key === undefined) continue;
@@ -372,7 +372,7 @@ function readFateEpisodes(units: UnitStore): Map<string, FateEpisode[]> {
     const character = FATE_EPISODE_CHARACTERS[hash!];
     if (character === undefined) continue;
     const state =
-      units.values(ID.FATE_EPISODE_STATE, unit.unitId, "uint")?.[0] ?? 0;
+      units.values(ID.FATE_EPISODE_STATE, unit.entity, "uint")?.[0] ?? 0;
     const episodes = byCharacter.get(character) ?? [];
     episodes.push({ key, completed: (state & FATE_EPISODE_COMPLETED) !== 0 });
     byCharacter.set(character, episodes);
@@ -380,8 +380,8 @@ function readFateEpisodes(units: UnitStore): Map<string, FateEpisode[]> {
   return byCharacter;
 }
 
-function readName(units: UnitStore, unitId: number): string {
-  const bytes = units.values(ID.LOADOUT_NAME, unitId, "byte") ?? [];
+function readName(units: UnitStore, entity: number): string {
+  const bytes = units.values(ID.LOADOUT_NAME, entity, "byte") ?? [];
   const end = bytes.indexOf(0);
   return String.fromCharCode(...(end === -1 ? bytes : bytes.slice(0, end)));
 }
@@ -392,11 +392,11 @@ export function readCharacterData(units: UnitStore): CharacterData {
   const fateEpisodes = readFateEpisodes(units);
 
   const characters: Character[] = [];
-  for (const { unitId } of units.ofIdType(ID.CHARACTER_KEY)) {
-    const equipment = readEquipment(units, inventory, unitId, ID.CHARACTER_KEY);
+  for (const { entity } of units.withAttribute(ID.CHARACTER_KEY)) {
+    const equipment = readEquipment(units, inventory, entity, ID.CHARACTER_KEY);
     if (!equipment) continue;
-    const int = (idType: number) =>
-      units.values(idType, unitId, "int")?.[0] ?? 0;
+    const int = (attribute: number) =>
+      units.values(attribute, entity, "int")?.[0] ?? 0;
     characters.push({
       ...equipment,
       level: int(ID.CHARACTER_LEVEL),
@@ -404,12 +404,12 @@ export function readCharacterData(units: UnitStore): CharacterData {
       baseHp: int(ID.CHARACTER_BASE_HP),
       baseAttack: int(ID.CHARACTER_BASE_ATTACK),
       questsUsed:
-        units.values(ID.CHARACTER_QUESTS_USED, unitId, "uint")?.[0] ?? 0,
+        units.values(ID.CHARACTER_QUESTS_USED, entity, "uint")?.[0] ?? 0,
       masterXp: int(ID.CHARACTER_MASTER_XP),
       masterLevel: masterLevelOf(int(ID.CHARACTER_MASTER_XP)),
-      overMasteries: readOverMasteries(units, unitId),
-      masterTraits: readMasterTraits(units, unitId),
-      masteries: readMasteries(units, unitId, equipment.character),
+      overMasteries: readOverMasteries(units, entity),
+      masterTraits: readMasterTraits(units, entity),
+      masteries: readMasteries(units, entity, equipment.character),
       fateEpisodes: fateEpisodes.get(equipment.character) ?? [],
     });
   }
@@ -430,15 +430,15 @@ export function readCharacterData(units: UnitStore): CharacterData {
 
   const loadouts: Loadout[] = [];
   for (let i = 0; i < UNIT.LOADOUT_COUNT; i++) {
-    const unitId = UNIT.LOADOUT + i;
+    const entity = UNIT.LOADOUT + i;
     const equipment = readEquipment(
       units,
       inventory,
-      unitId,
+      entity,
       ID.EQUIP_CHARACTER,
     );
     if (equipment)
-      loadouts.push({ ...equipment, name: readName(units, unitId) });
+      loadouts.push({ ...equipment, name: readName(units, entity) });
   }
 
   const captainNumber = units.values(ID.USER_CAPTAIN, 0, "int")?.[0];

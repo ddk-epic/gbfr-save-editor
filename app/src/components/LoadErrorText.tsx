@@ -38,29 +38,29 @@ function reason(
       return t("loadErrors.flatBufferTooShort");
     case "mixedValueType":
       return t("loadErrors.mixedValueType", {
-        idType: error.idType,
+        attribute: error.attribute,
         first: error.first,
         second: error.second,
       });
     case "duplicateUnit":
       return t("loadErrors.duplicateUnit", {
-        idType: error.idType,
-        unitId: error.unitId,
+        attribute: error.attribute,
+        entity: error.entity,
       });
     case "wrongValueType":
       return t("loadErrors.wrongValueType", {
-        idType: error.idType,
+        attribute: error.attribute,
         expected: error.expected,
         actual: error.actual,
       });
     case "unusedMasteryBit":
       return t("loadErrors.unusedMasteryBit", {
-        unitId: error.unitId,
+        entity: error.entity,
         bit: error.bit,
       });
     case "overMasteryLevel":
       return t("loadErrors.overMasteryLevel", {
-        unitId: error.unitId,
+        entity: error.entity,
         bits: error.bits,
       });
     case "unexpected":

@@ -1,4 +1,4 @@
-// SlotData IDTypes and UnitID bases, named as in docs/.
+// SlotData attributes and entity ranges, named as in docs/.
 
 import { hashId } from "../hash/xxhash32-custom";
 

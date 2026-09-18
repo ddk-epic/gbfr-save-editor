@@ -173,36 +173,36 @@ export interface Inventory {
   summons: Map<number, Summon>;
 }
 
-const first = (units: UnitStore, idType: number, unitId: number) =>
-  units.values(idType, unitId, "uint")?.[0];
+const first = (units: UnitStore, attribute: number, entity: number) =>
+  units.values(attribute, entity, "uint")?.[0];
 
 /** Traits stored for one owner, empty entries dropped. */
 function readTraits(units: UnitStore, owner: number): (Trait | undefined)[] {
   const traits: (Trait | undefined)[] = [];
   for (let i = 0; ; i++) {
-    const unitId = UNIT.TRAIT + owner * 100 + i;
-    const hash = first(units, ID.TRAIT_KEY, unitId);
+    const entity = UNIT.TRAIT + owner * 100 + i;
+    const hash = first(units, ID.TRAIT_KEY, entity);
     if (hash === undefined) return traits;
     const key = keyOf(SKILL_KEYS, hash);
-    const level = units.values(ID.TRAIT_LEVEL, unitId, "int")?.[0] ?? 0;
+    const level = units.values(ID.TRAIT_LEVEL, entity, "int")?.[0] ?? 0;
     traits.push(key === undefined ? undefined : { key, level });
   }
 }
 
 function readSigils(units: UnitStore): Map<number, Sigil> {
   const sigils = new Map<number, Sigil>();
-  for (const unit of units.ofIdType(ID.SIGIL_SLOT_ID)) {
+  for (const unit of units.withAttribute(ID.SIGIL_SLOT_ID)) {
     const slotId = (unit.values as number[])[0];
-    const key = keyOf(GEM_KEYS, first(units, ID.SIGIL_KEY, unit.unitId));
+    const key = keyOf(GEM_KEYS, first(units, ID.SIGIL_KEY, unit.entity));
     if (!slotId || key === undefined) continue;
-    const flags = first(units, ID.SIGIL_FLAGS, unit.unitId) ?? 0;
+    const flags = first(units, ID.SIGIL_FLAGS, unit.entity) ?? 0;
     const [primaryTrait, secondaryTrait] = readTraits(
       units,
-      unit.unitId - UNIT.SIGIL,
+      unit.entity - UNIT.SIGIL,
     );
     sigils.set(slotId, {
       key,
-      level: units.values(ID.SIGIL_LEVEL, unit.unitId, "int")?.[0] ?? 0,
+      level: units.values(ID.SIGIL_LEVEL, unit.entity, "int")?.[0] ?? 0,
       primaryTrait,
       secondaryTrait,
       locked: (flags & SIGIL_LOCKED) !== 0,
@@ -214,30 +214,30 @@ function readSigils(units: UnitStore): Map<number, Sigil> {
 
 function readWeapons(units: UnitStore): Map<number, Weapon> {
   const weapons = new Map<number, Weapon>();
-  for (const unit of units.ofIdType(ID.WEAPON_SLOT_ID)) {
+  for (const unit of units.withAttribute(ID.WEAPON_SLOT_ID)) {
     const slotId = (unit.values as number[])[0];
-    const key = keyOf(WEAPON_KEYS, first(units, ID.WEAPON_KEY, unit.unitId));
+    const key = keyOf(WEAPON_KEYS, first(units, ID.WEAPON_KEY, unit.entity));
     if (!slotId || key === undefined) continue;
     const stoneKey = keyOf(
       ITEM_KEYS,
-      first(units, ID.WEAPON_WRIGHTSTONE, unit.unitId),
+      first(units, ID.WEAPON_WRIGHTSTONE, unit.entity),
     );
     const traits = readTraits(
       units,
-      UNIT.TRAIT_OWNER_WEAPON + unit.unitId - UNIT.WEAPON,
+      UNIT.TRAIT_OWNER_WEAPON + unit.entity - UNIT.WEAPON,
     ).filter((trait): trait is Trait => trait !== undefined);
-    const int = (idType: number) =>
-      units.values(idType, unit.unitId, "int")?.[0] ?? 0;
-    const slotTraits = units.values(ID.WEAPON_TRAITS, unit.unitId, "uint");
-    const flags = first(units, ID.WEAPON_FLAGS, unit.unitId) ?? 0;
+    const int = (attribute: number) =>
+      units.values(attribute, unit.entity, "int")?.[0] ?? 0;
+    const slotTraits = units.values(ID.WEAPON_TRAITS, unit.entity, "uint");
+    const flags = first(units, ID.WEAPON_FLAGS, unit.entity) ?? 0;
     weapons.set(slotId, {
       key,
-      xp: first(units, ID.WEAPON_XP, unit.unitId) ?? 0,
+      xp: first(units, ID.WEAPON_XP, unit.entity) ?? 0,
       uncap: int(ID.WEAPON_UNCAP),
       plus: int(ID.WEAPON_PLUS),
       awakening: int(ID.WEAPON_AWAKENING),
       transcendence: int(ID.WEAPON_TRANSCENDENCE),
-      questsUsed: first(units, ID.WEAPON_QUESTS_USED, unit.unitId) ?? 0,
+      questsUsed: first(units, ID.WEAPON_QUESTS_USED, unit.entity) ?? 0,
       traits: Array.from({ length: WEAPON_TRAIT_SLOTS }, (_, i) =>
         keyOf(SKILL_KEYS, slotTraits?.[i]),
       ),
@@ -245,7 +245,7 @@ function readWeapons(units: UnitStore): Map<number, Weapon> {
         stoneKey === undefined ? undefined : { key: stoneKey, traits },
       appearance: keyOf(
         WEAPON_KEYS,
-        first(units, ID.WEAPON_APPEARANCE, unit.unitId),
+        first(units, ID.WEAPON_APPEARANCE, unit.entity),
       ),
       seen: (flags & WEAPON_SEEN) !== 0,
       awakeningSeen: (flags & WEAPON_AWAKENING_SEEN) !== 0,
@@ -256,10 +256,10 @@ function readWeapons(units: UnitStore): Map<number, Weapon> {
 
 function readItems(units: UnitStore): Map<string, number> {
   const items = new Map<string, number>();
-  for (const unit of units.ofIdType(ID.ITEM_KEY)) {
+  for (const unit of units.withAttribute(ID.ITEM_KEY)) {
     const key = keyOf(ITEM_KEYS, (unit.values as number[])[0]);
     if (key === undefined) continue;
-    items.set(key, units.values(ID.ITEM_COUNT, unit.unitId, "int")?.[0] ?? 0);
+    items.set(key, units.values(ID.ITEM_COUNT, unit.entity, "int")?.[0] ?? 0);
   }
   return items;
 }
@@ -270,10 +270,10 @@ function readItemsFlagged(
   match: (flags: number, count: number) => boolean,
 ): string[] {
   const keys: string[] = [];
-  for (const unit of units.ofIdType(ID.ITEM_KEY)) {
+  for (const unit of units.withAttribute(ID.ITEM_KEY)) {
     const key = keyOf(ITEM_KEYS, (unit.values as number[])[0]);
-    const flags = first(units, ID.ITEM_FLAGS, unit.unitId) ?? 0;
-    const count = units.values(ID.ITEM_COUNT, unit.unitId, "int")?.[0] ?? 0;
+    const flags = first(units, ID.ITEM_FLAGS, unit.entity) ?? 0;
+    const count = units.values(ID.ITEM_COUNT, unit.entity, "int")?.[0] ?? 0;
     if (key !== undefined && match(flags, count)) keys.push(key);
   }
   return keys;
@@ -281,9 +281,9 @@ function readItemsFlagged(
 
 function readUnseenAbilities(units: UnitStore): string[] {
   const keys: string[] = [];
-  for (const unit of units.ofIdType(ID.ABILITY_KEY)) {
+  for (const unit of units.withAttribute(ID.ABILITY_KEY)) {
     const key = keyOf(ABILITY_KEYS, (unit.values as number[])[0]);
-    const flags = first(units, ID.ABILITY_FLAGS, unit.unitId) ?? 0;
+    const flags = first(units, ID.ABILITY_FLAGS, unit.entity) ?? 0;
     if (key !== undefined && flags !== 0 && (flags & ABILITY_SEEN) === 0)
       keys.push(key);
   }
@@ -295,14 +295,14 @@ function readCurioReward(
   curioUnit: number,
 ): CurioReward | undefined {
   for (let entry = 0; entry < CURIO_REWARD_ENTRIES; entry++) {
-    const unitId = curioUnit * 100 + entry;
-    const hash = first(units, ID.CURIO_REWARD_KEY, unitId);
-    const seed = first(units, ID.CURIO_REWARD_SEED, unitId) ?? 0;
+    const entity = curioUnit * 100 + entry;
+    const hash = first(units, ID.CURIO_REWARD_KEY, entity);
+    const seed = first(units, ID.CURIO_REWARD_SEED, entity) ?? 0;
     if (entry === 1) {
       const key = keyOf(GEM_KEYS, hash);
       if (key === undefined) continue;
       const level =
-        units.values(ID.CURIO_REWARD_LEVEL, unitId, "int")?.[0] ?? 0;
+        units.values(ID.CURIO_REWARD_LEVEL, entity, "int")?.[0] ?? 0;
       return {
         type: "sigil",
         key,
@@ -322,15 +322,15 @@ function readCurioReward(
 
 function readCurios(units: UnitStore): Curio[] {
   const curios: Curio[] = [];
-  for (const unit of units.ofIdType(ID.CURIO_KEY)) {
+  for (const unit of units.withAttribute(ID.CURIO_KEY)) {
     const key = keyOf(ITEM_KEYS, (unit.values as number[])[0]);
     if (key === undefined) continue;
     const tier = /^ITEM_19_000(\d)$/.exec(key)?.[1];
     curios.push({
       key,
       tier: tier === undefined ? undefined : Number(tier),
-      serial: first(units, ID.CURIO_SERIAL, unit.unitId) ?? 0,
-      reward: readCurioReward(units, unit.unitId),
+      serial: first(units, ID.CURIO_SERIAL, unit.entity) ?? 0,
+      reward: readCurioReward(units, unit.entity),
     });
   }
   return curios;
@@ -338,20 +338,20 @@ function readCurios(units: UnitStore): Curio[] {
 
 function readWrightstones(units: UnitStore): Map<number, InventoryWrightstone> {
   const stones = new Map<number, InventoryWrightstone>();
-  for (const unit of units.ofIdType(ID.WRIGHTSTONE_KEY)) {
+  for (const unit of units.withAttribute(ID.WRIGHTSTONE_KEY)) {
     const key = keyOf(ITEM_KEYS, (unit.values as number[])[0]);
-    const slotId = first(units, ID.WRIGHTSTONE_SLOT_ID, unit.unitId);
+    const slotId = first(units, ID.WRIGHTSTONE_SLOT_ID, unit.entity);
     if (!slotId || key === undefined) continue;
     stones.set(slotId, {
       key,
       traits: readTraits(
         units,
-        UNIT.TRAIT_OWNER_WRIGHTSTONE + unit.unitId - UNIT.WRIGHTSTONE,
+        UNIT.TRAIT_OWNER_WRIGHTSTONE + unit.entity - UNIT.WRIGHTSTONE,
       ).filter((trait): trait is Trait => trait !== undefined),
       locked:
-        units.values(ID.WRIGHTSTONE_LOCKED, unit.unitId, "bool")?.[0] ?? false,
+        units.values(ID.WRIGHTSTONE_LOCKED, unit.entity, "bool")?.[0] ?? false,
       seen:
-        ((first(units, ID.WRIGHTSTONE_FLAGS, unit.unitId) ?? 0) &
+        ((first(units, ID.WRIGHTSTONE_FLAGS, unit.entity) ?? 0) &
           WRIGHTSTONE_SEEN) !==
         0,
     });
@@ -361,17 +361,17 @@ function readWrightstones(units: UnitStore): Map<number, InventoryWrightstone> {
 
 function readSummons(units: UnitStore): Map<number, Summon> {
   const summons = new Map<number, Summon>();
-  for (const unit of units.ofIdType(ID.SUMMON_ID)) {
+  for (const unit of units.withAttribute(ID.SUMMON_ID)) {
     const id = (unit.values as number[])[0];
-    const key = keyOf(SUMMON_KEYS, first(units, ID.SUMMON_KEY, unit.unitId));
+    const key = keyOf(SUMMON_KEYS, first(units, ID.SUMMON_KEY, unit.entity));
     if (!id || key === undefined) continue;
     const [traitHash, bonusHash] =
-      units.values(ID.SUMMON_TRAIT_AND_BONUS, unit.unitId, "uint") ?? [];
+      units.values(ID.SUMMON_TRAIT_AND_BONUS, unit.entity, "uint") ?? [];
     const [traitLevel = 0, bonusLevel = 0] =
-      units.values(ID.SUMMON_LEVELS, unit.unitId, "int") ?? [];
+      units.values(ID.SUMMON_LEVELS, unit.entity, "int") ?? [];
     const traitKey = keyOf(SKILL_KEYS, traitHash);
     const bonusKey = keyOf(SUMMON_BASE_PARAM_KEYS, bonusHash);
-    const flags = first(units, ID.SUMMON_FLAGS, unit.unitId) ?? 0;
+    const flags = first(units, ID.SUMMON_FLAGS, unit.entity) ?? 0;
     summons.set(id, {
       key,
       trait:
@@ -390,7 +390,8 @@ function readSummons(units: UnitStore): Map<number, Summon> {
 }
 
 export function readInventory(units: UnitStore): Inventory {
-  const int = (idType: number) => units.values(idType, 0, "int")?.[0] ?? 0;
+  const int = (attribute: number) =>
+    units.values(attribute, 0, "int")?.[0] ?? 0;
   return {
     rupies: int(ID.USER_RUPIES),
     masteryPoints: int(ID.USER_MASTERY_POINTS),
