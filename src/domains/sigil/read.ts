@@ -12,6 +12,8 @@ import {
 } from "./attributes";
 
 export interface Sigil {
+  entity: UnitEntity;
+  id: number;
   /** gem.Key */
   key: string;
   level: number;
@@ -43,6 +45,8 @@ export function readSigil(
     TRAIT_SIGIL + entity - SIGIL_FIRST,
   );
   return {
+    entity,
+    id,
     key,
     level: at.get(SIGIL_LEVEL),
     primaryTrait,
@@ -56,7 +60,7 @@ export function readSigils(units: UnitStore): Map<number, Sigil> {
   const sigils = new Map<number, Sigil>();
   for (const entity of units.entitiesWith(SIGIL_ID)) {
     const sigil = readSigil(units, entity);
-    if (sigil) sigils.set(units.of(entity).get(SIGIL_ID), sigil);
+    if (sigil) sigils.set(sigil.id, sigil);
   }
   return sigils;
 }

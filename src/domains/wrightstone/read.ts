@@ -18,6 +18,8 @@ export interface Wrightstone {
 }
 
 export interface InventoryWrightstone extends Wrightstone {
+  entity: UnitEntity;
+  id: number;
   locked: boolean;
   /** False while the game marks the stone as new. */
   seen: boolean;
@@ -32,6 +34,8 @@ export function readWrightstone(
   const id = at.get(WRIGHTSTONE_ID);
   if (!id || key === undefined) return undefined;
   return {
+    entity,
+    id,
     key,
     traits: readFilledTraits(
       units,
@@ -49,7 +53,7 @@ export function readWrightstones(
   const stones = new Map<number, InventoryWrightstone>();
   for (const entity of units.entitiesWith(WRIGHTSTONE_KEY)) {
     const stone = readWrightstone(units, entity);
-    if (stone) stones.set(units.of(entity).get(WRIGHTSTONE_ID), stone);
+    if (stone) stones.set(stone.id, stone);
   }
   return stones;
 }

@@ -28,6 +28,7 @@ export type CurioReward =
   | { type: "wrightstone"; /** item.Key */ key: string; seed: number };
 
 export interface Curio {
+  entity: UnitEntity;
   /** item.Key of the curio tier, ITEM_19_0001-0004. */
   key: string;
   /** 1-4, the tier in the item.Key; undefined when the key is unresolved. */
@@ -74,6 +75,7 @@ export function readCurios(units: UnitStore): Curio[] {
     if (key === undefined) continue;
     const tier = /^ITEM_19_000(\d)$/.exec(key)?.[1];
     curios.push({
+      entity,
       key,
       tier: tier === undefined ? undefined : Number(tier),
       serial: at.get(CURIO_SERIAL),

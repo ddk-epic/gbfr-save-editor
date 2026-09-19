@@ -4,11 +4,13 @@ import {
   SKILLBOARD_CELLS,
 } from "../../data/master-traits";
 import { keyOf } from "../../core/keys";
+import type { UnitEntity } from "../../core/save-data-binary";
 import type { EntityRange, UnitStore } from "../../core/unit-store";
 import { UNLOCK_KEY, UNLOCK_VALUE } from "../unlock/attributes";
 import { SKILLBOARD_EFFECTS } from "./attributes";
 
 export interface MasterTrait {
+  entity: UnitEntity;
   /** skillboard_effect.Key */
   key: string;
   /** skillboard_category: SB_DEF Insight, SB_ATK Essence, SB_LIMIT Crux. */
@@ -42,6 +44,7 @@ export function readMasterTraits(
     const [style, rank, order, perk] = cell;
     const key = keyOf(SKILLBOARD_EFFECTS, hash)!;
     cells.push({
+      entity,
       key,
       style,
       rank,
