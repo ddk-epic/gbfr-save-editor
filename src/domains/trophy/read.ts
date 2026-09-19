@@ -1,7 +1,7 @@
 import { TROPHIES, type TrophyTab } from "../../data/trophies";
 import type { UnitStore } from "../../core/unit-store";
 import { SAVE_ENTITY } from "../user/attributes";
-import { TROPHY_EARNED, TROPHY_VIEWED } from "./attributes";
+import { TROPHY_EARNED, TROPHY_SEEN } from "./attributes";
 
 export interface Trophy {
   /** `badge.Key`. */
@@ -13,7 +13,7 @@ export interface Trophy {
   quantity: number | undefined;
   earned: boolean;
   /** New mark cleared, only ever on earned trophies. */
-  viewed: boolean;
+  seen: boolean;
 }
 
 /**
@@ -26,14 +26,14 @@ export function readTrophies(units: UnitStore): Trophy[] {
   const earned = new Set(
     at.get(TROPHY_EARNED).flatMap((flag, key) => (flag ? [key] : [])),
   );
-  const viewed = at.get(TROPHY_VIEWED);
+  const seen = at.get(TROPHY_SEEN);
   const trophies: Trophy[] = TROPHIES.map(([key, tab, dlc, quantity]) => ({
     key,
     tab,
     dlc,
     quantity,
     earned: earned.delete(key),
-    viewed: viewed[key] === true,
+    seen: seen[key] === true,
   }));
   // An earned key the table does not hold, after a game update.
   for (const key of earned)
@@ -43,7 +43,7 @@ export function readTrophies(units: UnitStore): Trophy[] {
       dlc: undefined,
       quantity: undefined,
       earned: true,
-      viewed: viewed[key] === true,
+      seen: seen[key] === true,
     });
   return trophies;
 }

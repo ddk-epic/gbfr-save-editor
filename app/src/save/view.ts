@@ -267,7 +267,7 @@ const trophyTables = (trophies: Trophy[]): Table[] =>
         ["description", 60],
         ["dlc", 5],
         ["earned", 6],
-        ["viewed", 6],
+        ["new", 5],
       ],
       trophies
         .filter((t) => t.tab === tab)
@@ -281,7 +281,7 @@ const trophyTables = (trophies: Trophy[]): Table[] =>
           // A key the table lacks has no known origin.
           t.dlc ?? unknownCell,
           t.earned,
-          t.viewed,
+          t.earned && !t.seen,
         ]),
       { stretch: "description", tab: TROPHY_TAB_NAMES[tab] },
     ),
@@ -557,13 +557,13 @@ export function buildView(save: Save): SaveView {
         ["entry", 60],
         ["chapter", 36],
         ["unlocked", 8],
-        ["viewed", 6],
+        ["new", 5],
       ],
       readMainStory(units).map((e) => [
         keyCell("story", e.key),
         keyCell("storyChapter", String(e.chapter)),
         e.unlocked,
-        e.viewed,
+        e.unlocked && !e.seen,
       ]),
       { stretch: "entry", tab: "main story" },
     ),
@@ -574,7 +574,7 @@ export function buildView(save: Save): SaveView {
         ["entry", 60],
         ["category", 36],
         ["unlocked", 8],
-        ["viewed", 6],
+        ["new", 5],
       ],
       readFieldNotes(units).map((e) => {
         const [text, category] = FIELD_NOTE_TEXT[e.category];
@@ -583,7 +583,7 @@ export function buildView(save: Save): SaveView {
           keyCell("fieldNoteCategory", category),
           e.unlocked,
           // Only Treasure carries a bit for it.
-          e.viewed ?? unknownCell,
+          e.seen === undefined ? unknownCell : e.unlocked && !e.seen,
         ];
       }),
       { stretch: "entry", tab: "field notes" },
@@ -594,12 +594,12 @@ export function buildView(save: Save): SaveView {
       [
         ["entry", 60],
         ["unlocked", 6],
-        ["viewed", 6],
+        ["new", 5],
       ],
       readArchives(units).map((e) => [
         keyCell("archive", e.key),
         e.unlocked,
-        e.viewed,
+        e.unlocked && !e.seen,
       ]),
       { stretch: "entry", tab: "archive" },
     ),
@@ -609,12 +609,12 @@ export function buildView(save: Save): SaveView {
       [
         ["entry", 60],
         ["unlocked", 6],
-        ["viewed", 6],
+        ["new", 5],
       ],
       readGlossary(units).map((e) => [
         keyCell("glossary", e.key),
         e.unlocked,
-        e.viewed,
+        e.unlocked && !e.seen,
       ]),
       { stretch: "entry", tab: "glossary" },
     ),
@@ -624,9 +624,13 @@ export function buildView(save: Save): SaveView {
       [
         ["entry", 60],
         ["unlocked", 6],
-        ["viewed", 6],
+        ["new", 5],
       ],
-      readTips(units).map((e) => [keyCell("tip", e.key), e.unlocked, e.viewed]),
+      readTips(units).map((e) => [
+        keyCell("tip", e.key),
+        e.unlocked,
+        e.unlocked && !e.seen,
+      ]),
       { stretch: "entry", tab: "tip" },
     ),
     table(
@@ -635,12 +639,12 @@ export function buildView(save: Save): SaveView {
       [
         ["entry", 60],
         ["unlocked", 6],
-        ["viewed", 6],
+        ["new", 5],
       ],
       readMusic(units).map((e) => [
         keyCell("music", e.key),
         e.unlocked,
-        e.viewed,
+        e.unlocked && !e.seen,
       ]),
       { stretch: "entry", tab: "music" },
     ),

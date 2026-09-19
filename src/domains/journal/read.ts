@@ -27,15 +27,15 @@ import {
   TIP_KEY,
 } from "./attributes";
 
-/** One row of a journal list: `unlocked` is the entry having a page, `viewed`
+/** One row of a journal list: `unlocked` is the entry having a page, `seen`
  * its new mark being cleared. The bits are in research/save-units.md. */
 export interface JournalEntry {
   key: string;
   unlocked: boolean;
-  viewed: boolean;
+  seen: boolean;
 }
 
-type JournalFlags = { unlocked: boolean; viewed: boolean };
+type JournalFlags = { unlocked: boolean; seen: boolean };
 
 /** A list keyed by a hash unit with a flags unit beside it. */
 function section(
@@ -95,10 +95,10 @@ export function readMainStory(units: UnitStore): StoryEntry[] {
 export type FieldNoteCategory =
   "characters" | "foes" | "weapons" | "treasure" | "wrightstones";
 
-export interface FieldNoteEntry extends Omit<JournalEntry, "viewed"> {
+export interface FieldNoteEntry extends Omit<JournalEntry, "seen"> {
   category: FieldNoteCategory;
   /** Only Treasure has a bit for it; the rest are undecoded. */
-  viewed: boolean | undefined;
+  seen: boolean | undefined;
 }
 
 /** key -> flags, for the categories that ride on a list kept for something else. */
@@ -128,7 +128,7 @@ export function readFieldNotes(units: UnitStore): FieldNoteEntry[] {
       category,
       key: name,
       unlocked,
-      viewed: undefined,
+      seen: undefined,
     }));
 
   const weapons = flagsByKey(
@@ -145,7 +145,7 @@ export function readFieldNotes(units: UnitStore): FieldNoteEntry[] {
       category: "weapons" as const,
       key,
       unlocked: weapons.get(key)?.unlocked ?? false,
-      viewed: undefined,
+      seen: undefined,
     })),
     ...FIELD_NOTE_TREASURE.map((key) => {
       const flags = treasure.get(key);
@@ -153,7 +153,7 @@ export function readFieldNotes(units: UnitStore): FieldNoteEntry[] {
         category: "treasure" as const,
         key,
         unlocked: flags?.fieldNote ?? false,
-        viewed: flags?.seen ?? false,
+        seen: flags?.seen ?? false,
       };
     }),
     ...own(

@@ -70,7 +70,7 @@ describe.skipIf(!hasSave)("the journal", () => {
     expect(of("weapons").map((e) => e.key)).toEqual([...FIELD_NOTE_WEAPONS]);
     expect(of("treasure").map((e) => e.key)).toEqual([...FIELD_NOTE_TREASURE]);
     // Only Treasure has a seen bit; the other four leave it undecoded.
-    const seen = (e: (typeof entries)[number]) => e.viewed !== undefined;
+    const seen = (e: (typeof entries)[number]) => e.seen !== undefined;
     expect(
       entries.filter((e) => seen(e) !== (e.category === "treasure")),
     ).toEqual([]);
@@ -81,10 +81,8 @@ describe.skipIf(!hasSave)("the journal", () => {
     expect(trophies.map((t) => t.key)).toEqual(TROPHIES.map(([key]) => key));
   });
 
-  it("marks only earned trophies viewed", () => {
-    expect(readTrophies(units).filter((t) => t.viewed && !t.earned)).toEqual(
-      [],
-    );
+  it("marks only earned trophies seen", () => {
+    expect(readTrophies(units).filter((t) => t.seen && !t.earned)).toEqual([]);
   });
 });
 
