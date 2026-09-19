@@ -2,7 +2,6 @@ import type {
   SaveUnit,
   UnitAttribute,
   UnitEntity,
-  ValueOf,
   ValueType,
 } from "./save-data-binary";
 import type { Attribute } from "./attribute";
@@ -67,27 +66,50 @@ export class UnitStore {
     }
   }
 
-  /** Attributes present, ascending. */
-  attributes(): UnitAttribute[] {
-    return [...this.byAttribute.keys()].sort((a, b) => a - b);
+  /** Attributes present with their value types, ascending. */
+  attributes(): { attribute: UnitAttribute; valueType: ValueType }[] {
+    return [...this.byAttribute]
+      .map(([attribute, { valueType }]) => ({ attribute, valueType }))
+      .sort((a, b) => a.attribute - b.attribute);
   }
 
-  valueTypeOf(attribute: UnitAttribute): ValueType | undefined {
-    return this.byAttribute.get(attribute)?.valueType;
+  /** The attribute's units, throwing if the save stores it as another type. */
+  private unitsOf(
+    attribute: Attribute<unknown>,
+  ): Map<UnitEntity, SaveUnit> | undefined {
+    const group = this.byAttribute.get(attribute.id);
+    if (!group) return undefined;
+    if (group.valueType !== attribute.valueType) {
+      throw new SaveFormatError({
+        code: "wrongValueType",
+        attribute: attribute.id,
+        expected: attribute.valueType,
+        actual: group.valueType,
+      });
+    }
+    return group.units;
   }
 
-  get(attribute: UnitAttribute, entity: UnitEntity): SaveUnit | undefined {
-    return this.byAttribute.get(attribute)?.units.get(entity);
-  }
-
-  private sortedEntities(attribute: UnitAttribute): readonly UnitEntity[] {
-    let entities = this.sorted.get(attribute);
+  private sortedEntities(attribute: Attribute<unknown>): readonly UnitEntity[] {
+    let entities = this.sorted.get(attribute.id);
     if (!entities) {
-      const units = this.byAttribute.get(attribute)?.units;
+      const units = this.unitsOf(attribute);
       entities = units ? [...units.keys()].sort((a, b) => a - b) : [];
-      this.sorted.set(attribute, entities);
+      this.sorted.set(attribute.id, entities);
     }
     return entities;
+  }
+
+  get(attribute: Attribute<unknown>, entity: UnitEntity): SaveUnit | undefined {
+    return this.unitsOf(attribute)?.get(entity);
+  }
+
+  /** Values of one unit, undefined when the save holds none. */
+  values(
+    attribute: Attribute<unknown>,
+    entity: UnitEntity,
+  ): readonly unknown[] | undefined {
+    return this.get(attribute, entity)?.values;
   }
 
   of(entity: UnitEntity): EntityValues {
@@ -102,7 +124,7 @@ export class UnitStore {
     attribute: Attribute<unknown>,
     range?: EntityRange,
   ): UnitEntity[] {
-    const entities = this.sortedEntities(attribute.id);
+    const entities = this.sortedEntities(attribute);
     if (!range) return entities.slice();
     return entities.slice(
       firstIndexAtOrAbove(entities, range.first),
@@ -116,11 +138,11 @@ export class UnitStore {
    * only narrows what is returned.
    */
   entitiesWhere(
-    attribute: UnitAttribute,
+    attribute: Attribute<unknown>,
     value: number,
     range?: EntityRange,
   ): UnitEntity[] {
-    const units = this.byAttribute.get(attribute)?.units;
+    const units = this.unitsOf(attribute);
     if (!units) return [];
     const found: UnitEntity[] = [];
     for (const [entity, unit] of units)
@@ -130,32 +152,6 @@ export class UnitStore {
       )
         found.push(entity);
     return found.sort((a, b) => a - b);
-  }
-
-  /** Units of one attribute, ascending by entity. */
-  withAttribute(attribute: UnitAttribute): SaveUnit[] {
-    const units = this.byAttribute.get(attribute)?.units;
-    if (!units) return [];
-    return this.sortedEntities(attribute).map((entity) => units.get(entity)!);
-  }
-
-  /** Values of one unit, checked against the expected value type. */
-  values<T extends ValueType>(
-    attribute: UnitAttribute,
-    entity: UnitEntity,
-    valueType: T,
-  ): ValueOf[T][] | undefined {
-    const unit = this.get(attribute, entity);
-    if (!unit) return undefined;
-    if (unit.valueType !== valueType) {
-      throw new SaveFormatError({
-        code: "wrongValueType",
-        attribute,
-        expected: valueType,
-        actual: unit.valueType,
-      });
-    }
-    return unit.values as ValueOf[T][];
   }
 }
 
@@ -168,12 +164,10 @@ export class EntityValues {
 
   /** The attribute's value, or its fallback when the save holds no unit. */
   get<T>(attribute: Attribute<T>): T {
-    return attribute.read(
-      this.store.values(attribute.id, this.entity, attribute.valueType),
-    );
+    return attribute.read(this.store.values(attribute, this.entity));
   }
 
   has(attribute: Attribute<unknown>): boolean {
-    return this.store.get(attribute.id, this.entity) !== undefined;
+    return this.store.get(attribute, this.entity) !== undefined;
   }
 }

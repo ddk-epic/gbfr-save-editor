@@ -89,4 +89,4 @@ export function readWeapons(units: UnitStore): Map<number, Weapon> {
 export const findWeaponById = (
   units: UnitStore,
   id: number,
-): UnitEntity | undefined => units.entitiesWhere(WEAPON_ID.id, id)[0];
+): UnitEntity | undefined => units.entitiesWhere(WEAPON_ID, id)[0];
