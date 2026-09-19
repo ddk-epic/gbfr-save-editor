@@ -60,7 +60,8 @@ export interface CounterQuest {
 }
 
 /** Quest ids are stored as the uint their hex digits spell. */
-const questId = (id: number) => id.toString(16).toUpperCase().padStart(8, "0");
+export const questId = (id: number) =>
+  id.toString(16).toUpperCase().padStart(8, "0");
 
 /** Side quests in save order, accepted or not. */
 export function readSideQuests(units: UnitStore): SideQuest[] {

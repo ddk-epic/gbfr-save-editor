@@ -38,6 +38,7 @@
   "tables": {
     "summary": "Summary",
     "overMasteries": "Over-masteries",
+    "cardCharacters": "Card characters",
     "expandAll": "expand all",
     "collapseAll": "collapse all"
   },
@@ -73,6 +74,7 @@
   },
   "sections": {
     "profile": "Profile",
+    "recentPlayers": "Recent players",
     "items": "Items",
     "sigils": "Sigils",
     "weapons": "Weapons",
@@ -158,7 +160,13 @@
     "cost": "cost",
     "aura": "aura",
     "obtained": "obtained",
-    "chosen": "chosen"
+    "chosen": "chosen",
+    "character": "character",
+    "masterLevel": "M. Lv",
+    "player": "player",
+    "lastPlayed": "last played",
+    "mostUsed": "most used",
+    "lastSeen": "last seen"
   },
   "loadErrors": {
     "rejected": "Rejected: {{reason}}",

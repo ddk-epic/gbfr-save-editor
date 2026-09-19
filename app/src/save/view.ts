@@ -15,6 +15,7 @@ import {
   readMainStory,
   readMusic,
   readProfile,
+  readRecentPlayers,
   readSideQuests,
   readSystem,
   readTips,
@@ -154,6 +155,14 @@ const keyCell = (
   key === undefined ? undefined : { text, key, level };
 
 const trait = (t: Trait | undefined) => t && keyCell("trait", t.key, t.level);
+
+/** profile 4706, from 1. */
+const SKYFARER_GRADES = [
+  "Veteran Skyfarer",
+  "Zegagrande Legend",
+  "Fatebreaker",
+  "Fatebreaker (Infinity)",
+];
 
 /** A curio's reward when it is a sigil, for the columns only sigils fill. */
 const sigilReward = (c: Curio) =>
@@ -405,7 +414,29 @@ export function buildView(save: Save): SaveView {
         ["slot version", user.slotVersion],
         ["feature version", user.featureVersion],
       ],
-      { stretch: "field" },
+      { stretch: "field", tab: "profile", label: "summary" },
+    ),
+    table(
+      "profile:characters",
+      "profile",
+      [
+        ["field", 12],
+        ["character", 24],
+        ["level", 5],
+        ["masterLevel", 5],
+        ["questsUsed", 8],
+      ],
+      [
+        ["last played", profile.lastPlayed] as const,
+        ...profile.mostUsed.map((m, i) => [`most used ${i + 1}`, m] as const),
+      ].map(([field, m]): Cell[] => [
+        field,
+        keyCell("character", m?.character),
+        m?.level,
+        m?.masterLevel,
+        m?.questsUsed,
+      ]),
+      { stretch: "character", tab: "profile", label: "cardCharacters" },
     ),
     ...itemTables(inventory.items, wished, unseen),
     table(
@@ -649,6 +680,35 @@ export function buildView(save: Save): SaveView {
       { stretch: "entry", tab: "music" },
     ),
     ...trophyTables(readTrophies(units)),
+    table(
+      "recentPlayers",
+      "recentPlayers",
+      [
+        ["player", 18],
+        ["grade", 21],
+        ["clears", 6],
+        ["quest", 42],
+        ["lastPlayed", 24],
+        ["mostUsed", 42],
+        ["lastSeen", 19],
+      ],
+      readRecentPlayers(units).map((p): Cell[] => [
+        p.name,
+        SKYFARER_GRADES[p.grade - 1] ?? p.grade,
+        p.questsCleared,
+        keyCell("quest", p.quest),
+        p.lastPlayed &&
+          keyCell("character", p.lastPlayed.character, p.lastPlayed.level),
+        {
+          keys: p.mostUsed.flatMap((m) =>
+            m ? [{ text: "character", key: m.character }] : [],
+          ),
+          separator: ", ",
+        },
+        p.lastSeen.toISOString().slice(0, 16).replace("T", " "),
+      ]),
+      { stretch: "mostUsed" },
+    ),
   ];
 
   const equipmentSet = (
