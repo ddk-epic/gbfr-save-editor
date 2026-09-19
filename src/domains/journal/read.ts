@@ -2,9 +2,10 @@ import {
   FIELD_NOTE_TREASURE,
   FIELD_NOTE_WEAPONS,
   STORY_ORDER,
-} from "../data/journal";
-import type { Attribute } from "../core/attribute";
-import type { UnitStore } from "../core/unit-store";
+} from "../../data/journal";
+import type { Attribute } from "../../core/attribute";
+import type { UnitStore } from "../../core/unit-store";
+import { ITEM_FLAGS, ITEM_KEY } from "../item/attributes";
 import {
   ARCHIVE_FLAGS,
   ARCHIVE_KEY,
@@ -18,15 +19,13 @@ import {
   FIELD_NOTE_WRIGHTSTONE_KEY,
   GLOSSARY_FLAGS,
   GLOSSARY_KEY,
-  ITEM_FLAGS,
-  ITEM_KEY,
   MUSIC_FLAGS,
   MUSIC_KEY,
   STORY_FLAGS,
   STORY_KEY,
   TIP_FLAGS,
   TIP_KEY,
-} from "./layout";
+} from "./attributes";
 
 /** One row of a journal list: `unlocked` is the entry having a page, `viewed`
  * its new mark being cleared. The bits are in research/save-units.md. */

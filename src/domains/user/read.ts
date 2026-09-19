@@ -1,16 +1,16 @@
-import type { UnitStore } from "../core/unit-store";
+import type { UnitStore } from "../../core/unit-store";
 import {
   LOCATION_PARTY_HP,
   LOCATION_SPOT,
   LOCATION_STAGE,
   SAVE_FEATURE_VERSION,
   SAVE_SLOT_VERSION,
-  SAVE_WIDE,
+  SAVE_ENTITY,
   SYSTEM_PLAY_TIME,
   USER_COMMENDATIONS,
   USER_ONLINE_STATUS_FLAGS,
   USER_PLAYER_NAME,
-} from "./layout";
+} from "./attributes";
 
 /** The save-wide SlotData values, 1001-1207. */
 export interface User {
@@ -37,7 +37,7 @@ const phaseId = (stage: number) =>
   stage.toString(16).toUpperCase().padStart(8, "0");
 
 export function readUser(units: UnitStore): User {
-  const at = units.of(SAVE_WIDE);
+  const at = units.of(SAVE_ENTITY);
   const stage = at.get(LOCATION_STAGE);
   return {
     slotVersion: at.get(SAVE_SLOT_VERSION),
@@ -52,5 +52,5 @@ export function readUser(units: UnitStore): User {
 }
 
 export function readSystem(units: UnitStore): System {
-  return { playTime: Number(units.of(SAVE_WIDE).get(SYSTEM_PLAY_TIME)) };
+  return { playTime: Number(units.of(SAVE_ENTITY).get(SYSTEM_PLAY_TIME)) };
 }
