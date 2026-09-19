@@ -46,7 +46,6 @@ const columnLayout = (table: Table) => {
   };
 };
 
-/** A small uppercase label for a table heading. */
 export const TableLabel = ({ children }: { children: string }) => (
   <span className="text-[12px] tracking-widest text-subtle-foreground uppercase">
     {children}

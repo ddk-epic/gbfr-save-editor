@@ -50,7 +50,6 @@ export function CollapsibleTables({
   );
 }
 
-/** A section that opens and closes by its header. */
 export function CollapsibleSection({
   section,
   count,
@@ -165,7 +164,6 @@ function Section({
   );
 }
 
-/** Expand all / collapse all, for a page header. */
 export function ExpandCollapseActions({
   onExpandAll,
   onCollapseAll,

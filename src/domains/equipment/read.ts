@@ -14,9 +14,9 @@ export interface Equipment {
   /** chara.CharId */
   character: string;
   weapon: Weapon | undefined;
-  /** One per sigil position, undefined where empty. */
+  /** One per sigil position. */
   sigils: (Sigil | undefined)[];
-  /** ability.Key per skill position, undefined where empty. */
+  /** ability.Key per skill position. */
   skills: (string | undefined)[];
 }
 

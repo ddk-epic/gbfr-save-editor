@@ -32,7 +32,6 @@ export interface Weapon {
   plus: number;
   awakening: number;
   transcendence: number;
-  /** Times used in a quest. */
   questsUsed: number;
   /** skill.Key per trait position 1-5, undefined when not unlocked. */
   traits: (string | undefined)[];
