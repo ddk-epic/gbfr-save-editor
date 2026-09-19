@@ -6,7 +6,7 @@ import {
   TRAIT_INVENTORY_SORT_ORDER,
 } from "../data/sigils";
 import { SUMMON_BASE_PARAM_KEYS } from "../data/summons";
-import type { UnitStore } from "../format/unit-store";
+import type { UnitStore } from "../core/unit-store";
 import { keyOf } from "./keys";
 import {
   ABILITY_FLAGS,

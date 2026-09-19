@@ -17,7 +17,7 @@ import { GEM_KEYS, SKILL_KEYS } from "../data/sigils";
 import { ABILITY_KEYS } from "../data/skills";
 import { SUMMON_KEYS } from "../data/summons";
 import { WEAPON_KEYS } from "../data/weapons";
-import { Attribute } from "../format/attribute";
+import { Attribute } from "../core/attribute";
 import { hashAttribute, keyAttribute } from "./keys";
 
 export const UNIT = {

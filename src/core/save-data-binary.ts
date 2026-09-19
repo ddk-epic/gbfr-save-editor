@@ -1,5 +1,5 @@
 import { ByteReader } from "./bytes";
-import { SaveFormatError } from "../errors";
+import { SaveFormatError } from "./errors";
 
 /** Root table vectors in schema order, after VersionMaybe. */
 export const VALUE_TYPES = [

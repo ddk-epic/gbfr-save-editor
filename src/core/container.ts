@@ -1,5 +1,5 @@
 import { ByteReader } from "./bytes";
-import { SaveFormatError } from "../errors";
+import { SaveFormatError } from "./errors";
 
 export const FILE_SIZE = 0x1600000;
 export const HEADER_SIZE = 0x34;

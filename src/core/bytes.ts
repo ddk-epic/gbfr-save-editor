@@ -1,4 +1,4 @@
-import { SaveFormatError } from "../errors";
+import { SaveFormatError } from "./errors";
 
 /** Little-endian reader that throws SaveFormatError on out-of-range reads. */
 export class ByteReader {

@@ -1,5 +1,5 @@
 import { QUEST_COUNTER } from "../data/quests";
-import type { UnitStore } from "../format/unit-store";
+import type { UnitStore } from "../core/unit-store";
 import {
   COUNTER_QUEST_CLEARS,
   COUNTER_QUEST_FLAGS,

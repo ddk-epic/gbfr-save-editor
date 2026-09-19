@@ -2,13 +2,13 @@ export {
   SaveFormatError,
   type SaveFormatCode,
   type SaveFormatIssue,
-} from "./errors";
+} from "./core/errors";
 export {
   FILE_SIZE,
   readContainer,
   type SaveContainer,
   type SaveHeader,
-} from "./format/container";
+} from "./core/container";
 export {
   VALUE_TYPES,
   decodeSaveDataBinary,
@@ -18,11 +18,11 @@ export {
   type UnitEntity,
   type ValueOf,
   type ValueType,
-} from "./format/save-data-binary";
-export { EntityValues, UnitStore } from "./format/unit-store";
-export { Attribute } from "./format/attribute";
-export { readSave, type Save, type SaveSection } from "./format/read-save";
-export { hashId } from "./hash/xxhash32-custom";
+} from "./core/save-data-binary";
+export { EntityValues, UnitStore, type EntityRange } from "./core/unit-store";
+export { Attribute } from "./core/attribute";
+export { readSave, type Save, type SaveSection } from "./core/read-save";
+export { hashId } from "./core/xxhash32-custom";
 export {
   itemOrder,
   itemTab,
