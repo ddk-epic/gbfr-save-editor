@@ -1,10 +1,10 @@
 # Characters
 
-A character is one unit per `chara` row. `readCharacters` in `src/domain/characters.ts` reads it. Master traits, masteries and over-masteries sit in per-character progress units under their own entities.
+A character is one unit per `chara` row. `readCharacterData` in `src/read/characters.ts` reads it. Master traits, masteries and over-masteries sit in a mastery block under its own entities.
 
 ## The character unit
 
-Characters occupy 41 entities, `UNIT.CHARACTER` (10000) to 10040, one per `chara` row. The character index is the entity minus 10000. Every save has all 41 units, a new game included.
+Characters occupy 41 entities, `CHARACTER_FIRST` (10000) to 10040, one per `chara` row. The character index is the entity minus 10000. Every save has all 41 units, a new game included.
 
 | Attribute | Name                          | Type        | Holds                                                        |
 | --------- | ----------------------------- | ----------- | ------------------------------------------------------------ |
@@ -31,8 +31,8 @@ Characters occupy 41 entities, `UNIT.CHARACTER` (10000) to 10040, one per `chara
 | 1324      | `CHARACTER_DELEGATE_ENLISTED` | `int`       | Probably the times the character was enlisted as a delegate  |
 | 1325      | not named                     | `int`       | Always -1                                                    |
 | 1326      | `CHARACTER_DELEGATE_MESSAGE`  | `byte[241]` | Delegate message, padded with 0                              |
-| 1402      | `EQUIP_WEAPON`                | `uint`      | Weapon slot id                                               |
-| 1403      | `EQUIP_SIGILS`                | `uint[13]`  | Sigil slot ids                                               |
+| 1402      | `EQUIP_WEAPON`                | `uint`      | Weapon id                                                    |
+| 1403      | `EQUIP_SIGILS`                | `uint[13]`  | Sigil ids                                                    |
 | 1404      | `EQUIP_SKILLS`                | `uint[4]`   | Skill keys                                                   |
 | 1501      | not named                     | `int`       | Always 0                                                     |
 | 1502      | not named                     | `int`       | 0 or 7                                                       |
@@ -68,9 +68,9 @@ Not every unit is a playable character.
 
 `USER_CAPTAIN` (1103) holds the captain picked at the start. The `SLOT` rows have no name, element -1 and UI order 1000-1003. What they are for is not known.
 
-## Progress units
+## The mastery block
 
-Per-character progress sits at `CHARACTER_PROGRESS` (10000000) + character index \* 1000 + entry. 1601 and 1602 at entities 0-199 hold the Resonance tree, which `conflux.md` covers.
+A character's mastery block sits at `MASTERY_FIRST` (10000000) + character index \* 1000 + entry, 400 entities wide. It holds over-masteries, mastery nodes and master trait cells. Level, experience and base stats sit on the character's own entity, not in here. 1601 and 1602 at entities 0-199 hold the Resonance tree, which `conflux.md` covers.
 
 | Attribute | Name                           | Type   | Entries | Holds                                                        |
 | --------- | ------------------------------ | ------ | ------- | ------------------------------------------------------------ |

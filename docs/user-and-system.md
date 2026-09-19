@@ -1,6 +1,6 @@
 # User and system data
 
-SystemData and the start of SlotData hold the save-wide state: save versions, the play timer, the current stage, the player name, currencies and a few unnamed counters and flag sets. Every attribute here has a single unit at entity 0. `readUser` and `readSystem` in `src/domain/user.ts` read the named values.
+SystemData and the start of SlotData hold the save-wide state: save versions, the play timer, the current stage, the player name, currencies and a few unnamed counters and flag sets. Every attribute here has a single unit at entity 0. `readUser` and `readSystem` in `src/domains/user/read.ts` read the named values.
 
 ## SystemData
 

@@ -1,10 +1,10 @@
 # Summons
 
-A summon is one unit in the summon list. Its trait and equip bonus live on the unit itself, with no trait list. `readSummons` in `src/domain/inventory.ts` reads it. The layout facts hold in every local save tested, from a new game to endgame. Of those saves, only SaveData1 holds summons, so the facts about filled units rest on that save alone.
+A summon is one unit in the summon list. Its trait and equip bonus live on the unit itself, with no trait list. `readSummons` in `src/domains/summon/read.ts` reads it. The layout facts hold in every local save tested, from a new game to endgame. Of those saves, only SaveData1 holds summons, so the facts about filled units rest on that save alone.
 
 ## The summon unit
 
-Summons occupy 1000 entities, `UNIT.SUMMON` (0) to 999. Every save has all 1000 units, a new game included. A summon id of 0 marks an empty entry.
+Summons occupy 1000 entities, `SUMMON_FIRST` (0) to 999. Every save has all 1000 units, a new game included. A summon id of 0 marks an empty entry.
 
 | Attribute | Name                     | Type      | Holds                                                                |
 | --------- | ------------------------ | --------- | -------------------------------------------------------------------- |
