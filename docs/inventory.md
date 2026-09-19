@@ -1,14 +1,14 @@
 # Inventory
 
-The inventory spans six unit lists in SlotData. `readInventory` in `src/domain/inventory.ts` reads all of them. The facts below hold in every local save tested, from a new game to endgame.
+The inventory spans six unit lists in SlotData. `readInventory` in `src/read/inventory.ts` reads all of them. The facts below hold in every local save tested, from a new game to endgame.
 
 | List         | Attribute of the key | Entities    | Units | Empty entry           |
 | ------------ | -------------------- | ----------- | ----- | --------------------- |
 | Items        | 1801                 | 0-499       | 500   | key is the empty hash |
 | Curios       | 2002                 | 0-998       | 999   | key is the empty hash |
 | Summons      | 1456                 | 0-999       | 1000  | summon id 0           |
-| Sigils       | 2702                 | 30000-35099 | 5100  | slot id 0             |
-| Weapons      | 2802                 | 40000-40255 | 256   | slot id 0             |
+| Sigils       | 2702                 | 30000-35099 | 5100  | id 0                  |
+| Weapons      | 2802                 | 40000-40255 | 256   | id 0                  |
 | Wrightstones | 2102                 | 50000-54999 | 5000  | key is the empty hash |
 
 Every list has its full unit count in every save, a new game included. Curios, summons and weapons in use fill their list from the first unit with no gaps. Sigils and wrightstones in use can have empty units between them.
@@ -81,7 +81,7 @@ Every non-empty 2002 key is one of the four tiers. The Curio item rows do not fo
 ## Wrightstones
 
 - A stone's key is an `item` row of `ItemCategoryId` 6, a wrightstone item.
-- A stone has 0 to 3 traits in its `TRAIT_OWNER_WRIGHTSTONE` list.
+- A stone has 0 to 3 traits in its `TRAIT_WRIGHTSTONE` list.
 - A wrightstone item's count equals the number of inventory stones with that key. `ITEM_26_0131` is the exception, one below the number of stones in every save that holds it.
 - Stones applied to a weapon have no inventory unit and are not in the count.
 
@@ -89,6 +89,6 @@ Every non-empty 2002 key is one of the four tiers. The Curio item rows do not fo
 
 ## Sigils, weapons and summons
 
-Sigil slot ids are not dense: the highest slot id in use is far above the number of sigils. Equipment and loadout units reference sigils and weapons by slot id, and the summon slots at 1451 reference summons by summon id.
+Sigil ids are not dense: the highest id in use is far above the number of sigils. Equip positions reference sigils and weapons by their ids, and 1451 references summons by summon id.
 
 `sigils.md`, `weapons.md` and `summons.md` cover each unit.

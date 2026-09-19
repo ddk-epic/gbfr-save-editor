@@ -1,6 +1,6 @@
 # Conflux
 
-Conflux is the endless mode added in the Endless Ragnarok DLC. The save holds its Resonance tree, its aura collection and a few unnamed state values. `readConflux` in `src/domain/conflux.ts` reads the points, the tree and the collection. The tables behind it are the `endlessmode_*` tables of the archive.
+Conflux is the endless mode added in the Endless Ragnarok DLC. The save holds its Resonance tree, its aura collection and a few unnamed state values. `readConflux` in `src/domains/conflux/read.ts` reads the points, the tree and the collection. The tables behind it are the `endlessmode_*` tables of the archive.
 
 ## Resonance points
 
