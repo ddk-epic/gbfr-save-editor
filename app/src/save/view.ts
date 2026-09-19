@@ -100,6 +100,8 @@ export interface EquipmentSetView {
   id: string;
   /** Loadout name, undefined for what the character has equipped. */
   name: string | undefined;
+  /** From 1. */
+  partySet?: number;
   weapon: Table;
   wrightstone: Table;
   skills: Table;
@@ -123,6 +125,8 @@ export interface CharacterView {
 
 export interface SaveView {
   shared: Table[];
+  /** The characters landing page. */
+  party: Table[];
   characters: CharacterView[];
   captain: Captain | undefined;
   /** SlotData VersionMaybe. */
@@ -711,6 +715,48 @@ export function buildView(save: Save): SaveView {
     ),
   ];
 
+  const party: Table[] = [
+    table(
+      "party:current",
+      "party",
+      [
+        ["index", 4],
+        ["character", 24],
+        ["level", 5],
+      ],
+      data.party.map((key, i) => [
+        i + 1,
+        keyCell("character", key),
+        data.characters.find((c) => c.character === key)?.level,
+      ]),
+      { stretch: "character", tab: "party", label: "currentParty" },
+    ),
+    table(
+      "party:sets",
+      "party",
+      [
+        ["set", 4],
+        ["members", 60],
+      ],
+      data.partySets.flatMap((members, set): Cell[][] =>
+        members
+          ? [
+              [
+                set + 1,
+                {
+                  keys: members.flatMap((m) =>
+                    m ? [{ text: "character", key: m.character }] : [],
+                  ),
+                  separator: ", ",
+                },
+              ],
+            ]
+          : [],
+      ),
+      { stretch: "members", tab: "party", label: "partySets" },
+    ),
+  ];
+
   const equipmentSet = (
     id: string,
     name: string | undefined,
@@ -923,11 +969,20 @@ export function buildView(save: Save): SaveView {
           .map((l, i) =>
             equipmentSet(`${c.character}:loadout:${i}`, l.name, l),
           ),
+        ...data.partySets.flatMap((members, set) =>
+          (members ?? [])
+            .filter((m) => m?.character === c.character)
+            .map((m) => ({
+              ...equipmentSet(`${c.character}:partySet:${set}`, undefined, m!),
+              partySet: set + 1,
+            })),
+        ),
       ],
     }));
 
   const unresolved = [
     ...shared,
+    ...party,
     ...characters.flatMap((c) => [
       ...c.tables,
       ...c.equipment.flatMap(equipmentSetTables),
@@ -938,6 +993,7 @@ export function buildView(save: Save): SaveView {
 
   return {
     shared,
+    party,
     characters,
     captain: data.captain,
     slotVersion: save.slotData.version,

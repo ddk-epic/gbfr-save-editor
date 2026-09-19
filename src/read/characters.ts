@@ -42,7 +42,7 @@ import {
   readOverMasteries,
   type OverMastery,
 } from "../domains/over-mastery/read";
-import { readParty } from "../domains/party/read";
+import { readParty, readPartySets } from "../domains/party/read";
 import {
   readEquippedSummons,
   readSummons,
@@ -82,6 +82,7 @@ export interface CharacterData {
   characters: Character[];
   /** Current party: chara.CharId per position. */
   party: (string | undefined)[];
+  partySets: ((Equipment | undefined)[] | undefined)[];
   /** Equipped summons, shared by the party. */
   summons: (Summon | undefined)[];
   /** Loadouts with a character assigned, in save order. */
@@ -130,6 +131,7 @@ export function readCharacterData(units: UnitStore): CharacterData {
     captain,
     characters,
     party: readParty(units),
+    partySets: readPartySets(units, lookup),
     summons: readEquippedSummons(units, readSummons(units)),
     loadouts,
   };

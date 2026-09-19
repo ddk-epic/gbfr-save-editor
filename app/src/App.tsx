@@ -14,7 +14,7 @@ import { loadSave, type LoadedSave, type LoadError } from "./save/load";
 import type { SectionId } from "./save/view";
 import { useScrollGutter } from "./useScrollGutter";
 
-const DEFAULT_OPEN = ["profile", "stats", "gear"];
+const DEFAULT_OPEN = ["profile", "party", "stats", "gear"];
 
 export function App() {
   const { t } = useTranslation();
@@ -121,7 +121,20 @@ export function App() {
             {save && page === "save" && (
               <SavePage
                 fileName={save.fileName}
+                title={t("contents.save")}
                 tables={save.view.shared}
+                open={open}
+                setOpen={setOpen}
+                selection={selection}
+                onSelect={setSelection}
+                onRoot={() => go("welcome")}
+              />
+            )}
+            {save && page === "characters" && (
+              <SavePage
+                fileName={save.fileName}
+                title={t("contents.characters")}
+                tables={save.view.party}
                 open={open}
                 setOpen={setOpen}
                 selection={selection}

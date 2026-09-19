@@ -39,11 +39,14 @@
     "summary": "Summary",
     "overMasteries": "Over-masteries",
     "cardCharacters": "Card characters",
+    "currentParty": "Current party",
+    "partySets": "Party sets",
     "expandAll": "expand all",
     "collapseAll": "collapse all"
   },
   "equipment": {
     "loadout": "Loadout {{number}}",
+    "partySet": "Party set {{number}}",
     "name": "Name",
     "equipped": "Equipped",
     "weapon": "Weapon",
@@ -74,6 +77,7 @@
   },
   "sections": {
     "profile": "Profile",
+    "party": "Party",
     "recentPlayers": "Recent players",
     "items": "Items",
     "sigils": "Sigils",
@@ -163,6 +167,8 @@
     "chosen": "chosen",
     "character": "character",
     "masterLevel": "M. Lv",
+    "set": "set",
+    "members": "members",
     "player": "player",
     "lastPlayed": "last played",
     "mostUsed": "most used",

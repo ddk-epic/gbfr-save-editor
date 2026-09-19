@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next";
 import {
   CollapsibleTables,
   ExpandCollapseActions,
@@ -8,8 +7,10 @@ import { RowPanel } from "../components/RowPanel";
 import type { Selection } from "../navigation";
 import type { Table } from "../save/view";
 
+/** A page of shared tables: the save, or the characters landing page. */
 export function SavePage({
   fileName,
+  title,
   tables,
   open,
   setOpen,
@@ -18,6 +19,7 @@ export function SavePage({
   onRoot,
 }: {
   fileName: string;
+  title: string;
   tables: Table[];
   open: Set<string>;
   setOpen: (open: Set<string>) => void;
@@ -25,7 +27,6 @@ export function SavePage({
   onSelect: (selection: Selection) => void;
   onRoot: () => void;
 }) {
-  const { t } = useTranslation();
   const sections: string[] = tables.map((table) => table.section);
   const toggle = (section: string) => {
     const next = new Set(open);
@@ -37,8 +38,8 @@ export function SavePage({
   return (
     <>
       <PageTop
-        crumbs={[fileName, t("contents.save")]}
-        title={t("contents.save")}
+        crumbs={[fileName, title]}
+        title={title}
         onRoot={onRoot}
         actions={
           <ExpandCollapseActions
