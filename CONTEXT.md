@@ -11,7 +11,7 @@ One stored value, carrying its entity, its attribute, its value type and its val
 _Avoid_: cell, record, row
 
 **Entity**:
-The thing a unit is about, such as one character, one sigil slot or one curio. Save wide values sit at entity 0.
+The thing a unit is about, such as one character, one sigil or one curio. Save wide values sit at entity 0.
 _Avoid_: UnitID, unit id, owner, subject, slot
 
 **Attribute**:
@@ -25,6 +25,14 @@ _Avoid_: data type, primitive
 **Entity range**:
 A span of entity numbers reserved for one kind of thing. Characters start at 10000, sigils at 30000, weapons at 40000.
 _Avoid_: base, offset, section
+
+**Sigil id**, **Weapon id**, **Wrightstone id**:
+The number the game gives one owned sigil, weapon or wrightstone, stored with it and used wherever something refers to it. Handed out in order and never reused, so the gaps in a long played save are deletions. Each kind counts on its own, so an id says nothing without knowing its kind. Not positional: it does not say where the save stores the thing, which is its entity.
+_Avoid_: slot, slot id, index, serial
+
+**Equip position**:
+A place on a character or a loadout that holds a reference to something equipped, counted from 0: twelve sigil positions, four skill positions, one weapon. A position holds an id, never an entity.
+_Avoid_: slot, sigil slot, index
 
 **System data**, **Slot data**:
 The save's two blobs. System data holds settings. Slot data holds game progress and is the part the readers interpret.
@@ -54,6 +62,6 @@ _Avoid_: null, blank, unset
 A function turning the units of one feature into typed records. Readers are the only place that assigns meaning to a unit.
 _Avoid_: parser, mapper, loader, decoder
 
-**Character progress**:
-The entity range holding one character's mastery nodes and master trait cells together. Both sit under the same attributes and are told apart by which generated table recognises the hash.
-_Avoid_: skillboard, progress block
+**Mastery block**:
+The entity range holding everything one character has earned through the mastery system: over-masteries on the first four entities, then mastery nodes and master trait cells spread across the rest. Nodes and cells sit under the same attribute and are told apart by which generated table recognises the hash. A character's level, experience and base stats are not in here; they sit on the character's own entity.
+_Avoid_: character progress, progress block, skillboard
