@@ -1,6 +1,6 @@
 # Inventory
 
-The inventory spans six unit lists in SlotData. `readInventory` in `src/read/inventory.ts` reads all of them. The facts below hold in every local save tested, from a new game to endgame.
+The inventory spans six unit lists in SlotData.
 
 | List         | Attribute of the key | Entities    | Units | Empty entry           |
 | ------------ | -------------------- | ----------- | ----- | --------------------- |
@@ -19,11 +19,11 @@ Rupies are 1104 and mastery points 1112, each an `int` at entity 0. The item row
 
 ## Items
 
-| Attribute | Type   | Holds                      |
-| --------- | ------ | -------------------------- |
-| 1801      | `uint` | `item.Key` hash, one value |
-| 1802      | `int`  | Count                      |
-| 1803      | `uint` | Flags                      |
+| Attribute | Name         | Type   | Holds                      |
+| --------- | ------------ | ------ | -------------------------- |
+| 1801      | `ITEM_KEY`   | `uint` | `item.Key` hash, one value |
+| 1802      | `ITEM_COUNT` | `int`  | Count                      |
+| 1803      | `ITEM_FLAGS` | `uint` | Flags                      |
 
 All three attributes cover entities 0-499.
 
@@ -74,7 +74,35 @@ Every save holds a unit for each of the 74 wrightstone item rows, a new game inc
 
 ## Curios
 
-A curio's tier is its `item.Key`, `ITEM_19_0001` to `ITEM_19_0004`, in 2002. Its reward sits at entity `curio unit * 100 + entry`, entries 0-4.
+A curio's tier is its `item.Key`, `ITEM_19_0001` to `ITEM_19_0004`, in 2002. Curios run oldest first.
+
+| Attribute | Name           | Type   | Holds                                                         |
+| --------- | -------------- | ------ | ------------------------------------------------------------- |
+| 2001      | not named      | `uint` | At entity 0 only, the find number of the newest curio         |
+| 2002      | `CURIO_KEY`    | `uint` | `item.Key` of the tier, the empty hash on an unused unit      |
+| 2003      | `CURIO_SERIAL` | `uint` | Find number, counting up across the save, 0 on an unused unit |
+| 2004      | not named      | `int`  | Always 0                                                      |
+
+A curio's reward is rolled when the curio is found. It sits at entity curio unit \* 100 + entry, entries 0-4.
+
+| Attribute | Name                 | Type   | Holds                                                   |
+| --------- | -------------------- | ------ | ------------------------------------------------------- |
+| 1901      | `CURIO_REWARD_KEY`   | `uint` | The reward's key, by entry                              |
+| 1902      | not named            | `int`  | 1 on the entry holding the reward, 0 elsewhere          |
+| 1903      | `CURIO_REWARD_SEED`  | `uint` | Seed of the traits rolled at appraisal, 0 on a material |
+| 1904      | `CURIO_REWARD_LEVEL` | `int`  | Sigil level                                             |
+
+| Entry | Reward      | 1901                             |
+| ----- | ----------- | -------------------------------- |
+| 0     | Material    | `item.Key`                       |
+| 1     | Sigil       | `gem.Key`                        |
+| 2     | Not known   | Never filled                     |
+| 3     | Wrightstone | `item.Key` of a wrightstone item |
+| 4     | Not known   | Never filled                     |
+
+- Every curio holds exactly one reward.
+- A reward sigil's own trait is `gem.SkillId1`. Its second trait is rolled at appraisal from `SkillTypeLotIdForRandom2ndSkill`, with 1903 as the seed.
+- Appraising rolls every curio at once and lists the rewards oldest first. A material already listed stacks onto its first appearance.
 
 Every non-empty 2002 key is one of the four tiers. The Curio item rows do not follow the tiers. `ITEM_19_0001` holds the number of curios in the list, all tiers together. `ITEM_19_0002`, `ITEM_19_0003` and `ITEM_19_0004` hold 0.
 
@@ -85,10 +113,6 @@ Every non-empty 2002 key is one of the four tiers. The Curio item rows do not fo
 - A wrightstone item's count equals the number of inventory stones with that key. `ITEM_26_0131` is the exception, one below the number of stones in every save that holds it.
 - Stones applied to a weapon have no inventory unit and are not in the count.
 
-`weapons.md` covers the trait lists and applied stones.
-
 ## Sigils, weapons and summons
 
 Sigil ids are not dense: the highest id in use is far above the number of sigils. Equip positions reference sigils and weapons by their ids, and 1451 references summons by summon id.
-
-`sigils.md`, `weapons.md` and `summons.md` cover each unit.

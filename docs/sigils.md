@@ -1,6 +1,6 @@
 # Sigils
 
-A sigil is one unit in the sigil list plus a two-entry trait list. `readSigils` in `src/domains/sigil/read.ts` reads both. The facts below hold in every local save tested, from a new game to endgame.
+A sigil is one unit in the sigil list plus a two-entry trait list.
 
 ## The sigil unit
 
@@ -16,10 +16,10 @@ Sigils occupy 5100 entities, `SIGIL_FIRST` (30000) to 35099. Every save has all 
 
 Two more units sit at entity 0:
 
-| Attribute | Type   | Holds                                               |
-| --------- | ------ | --------------------------------------------------- |
-| 2701      | `uint` | `SIGIL_LAST_ID`, the highest id in use, 0 when none |
-| 2708      | `uint` | Not named                                           |
+| Attribute | Name      | Type   | Holds                              |
+| --------- | --------- | ------ | ---------------------------------- |
+| 2701      | not named | `uint` | The highest id in use, 0 when none |
+| 2708      | not named | `uint` | Bitmask, no meaning assigned       |
 
 2708 is one value for the whole save, not a per-sigil field: it exists only at entity 0. It holds 0 in a new game and 7 (bits 0, 1 and 2) in the saves that hold sigils, the same in saves with different sigil counts. No save holds any other value, so the meaning of each bit is not known.
 

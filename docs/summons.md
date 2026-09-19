@@ -1,6 +1,6 @@
 # Summons
 
-A summon is one unit in the summon list. Its trait and equip bonus live on the unit itself, with no trait list. `readSummons` in `src/domains/summon/read.ts` reads it. The layout facts hold in every local save tested, from a new game to endgame. Of those saves, only SaveData1 holds summons, so the facts about filled units rest on that save alone.
+A summon is one unit in the summon list. Its trait and equip bonus live on the unit itself, with no trait list.
 
 ## The summon unit
 
@@ -33,10 +33,10 @@ The summon list shares its attribute range with these units:
 
 Every non-zero id in 1451 belongs to a held summon. The slots are shared by the party.
 
-1455 is 1 in SaveData1, the only save with access to summons, and 0 in the others.
+1455 is 1 in a save with access to summons and 0 otherwise.
 
 - `summon` has 189 rows, one per summon. 1452 lists all of them in every save, a new game included.
-- 1453 has 159 ones in SaveData1 and none in the other saves. SaveData1 holds 181 summons of 55 keys, and every held key has a 1. 1453 does not mark held summons.
+- Every held summon key has a 1 in 1453, and so do keys never held. 1453 does not mark held summons.
 - A save with only part of the summons obtained is needed to confirm 1453.
 
 ## Flags

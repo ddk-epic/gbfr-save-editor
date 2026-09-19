@@ -13,7 +13,7 @@ const archives = readArchives(save.slotData.units);
 
 ### Container
 
-`readContainer` in `src/core/container.ts` reads the 0x34 byte header. It holds the main and sub versions, the Steam ID, and the offset and size of SystemData and SlotData. It cuts both sections out of the file. The last 0x14 bytes of SlotData are a footer that gives the offset and byte count of the ten xxHash64 checksums. `readContainer` reads the checksums and trims them off, so `slotData` ends at the FlatBuffer. `save-checksum.md` lists the hashed ranges.
+`readContainer` in `src/core/container.ts` reads the 0x34 byte header. It holds the main and sub versions, the Steam ID, and the offset and size of SystemData and SlotData. It cuts both sections out of the file. The last 0x14 bytes of SlotData are a footer that gives the offset and byte count of the ten xxHash64 checksums. `readContainer` reads the checksums and trims them off, so `slotData` ends at the FlatBuffer.
 
 Every offset and size gets checked against the file. A section out of bounds or a footer that does not line up throws `SaveFormatError`. Its `issue` holds a `code` naming the failed check and that check's parameters, such as `{ code: "outOfBounds", what: "SlotData", at, size, length }`, so callers phrase the reason in their own language. The library holds no text for them; the message is the code and its parameters.
 
@@ -100,12 +100,12 @@ Every record carries the entity it was read from, and its id where it has one. T
 | 7901      | 1      | uint | `[0x0326a9e4]` |
 | 7902      | 1      | uint | `[1]`          |
 
-For entity 0, `ARCHIVE_KEY` resolves `0x00178066` to `ARC_OTHER_004`. `ARCHIVE_FLAGS` reads `[3]` against `{ unlocked: 1, viewed: 2 }`, so the entry is unlocked and viewed. Entity 1 has only the unlocked bit, and the game shows it with the new mark.
+For entity 0, `ARCHIVE_KEY` resolves `0x00178066` to `ARC_OTHER_004`. `ARCHIVE_FLAGS` reads `[3]` against `{ unlocked: 1, seen: 2 }`, so the entry is unlocked and seen. Entity 1 has only the unlocked bit, and the game shows it with the new mark.
 
 ```ts
 [
-  { key: "ARC_OTHER_004", unlocked: true, viewed: true },
-  { key: "ARC_OTHER_066", unlocked: true, viewed: false },
+  { key: "ARC_OTHER_004", unlocked: true, seen: true },
+  { key: "ARC_OTHER_066", unlocked: true, seen: false },
 ];
 ```
 
