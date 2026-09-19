@@ -13,7 +13,7 @@ import {
 import { WEAPONS } from "../weapon/attributes";
 
 const journalFlags = (id: number) =>
-  Attribute.flags(id, { unlocked: 1, viewed: 2 });
+  Attribute.flags(id, { unlocked: 1, seen: 2 });
 
 export const ARCHIVE_KEY = keyAttribute(
   7901,

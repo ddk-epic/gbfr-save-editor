@@ -7,7 +7,7 @@ export const ABILITIES = keyTable("ability", ABILITY_KEYS);
 export const ABILITY_KEY = keyAttribute(3903, ABILITIES);
 export const ABILITY_FLAGS = Attribute.rawFlags(3904);
 
-/** Bit of ABILITY_FLAGS set once the ability is seen, clearing its new mark. */
+export const ABILITY_ACQUIRED = 1;
 export const ABILITY_SEEN = 8;
 
 export const ABILITY_POSITIONS = 4;
