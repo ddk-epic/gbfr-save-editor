@@ -63,7 +63,6 @@ export class UnitStore {
     return this.byAttribute.get(attribute)?.units.get(entity);
   }
 
-  /** The values one entity holds. */
   of(entity: UnitEntity): EntityValues {
     return new EntityValues(this, entity);
   }
@@ -146,7 +145,6 @@ export class EntityValues {
     );
   }
 
-  /** True when the save holds a unit for this attribute at this entity. */
   has(attribute: Attribute<unknown>): boolean {
     return this.store.get(attribute.id, this.entity) !== undefined;
   }

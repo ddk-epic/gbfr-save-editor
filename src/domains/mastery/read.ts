@@ -36,7 +36,6 @@ export interface MasteryEffect {
 }
 
 export interface MasteryProgress {
-  /** Nodes taken. */
   taken: number;
   /** Nodes in the section; transcendence counts the T7 rows only. */
   total: number;

@@ -56,7 +56,6 @@ export interface Character extends Equipment {
   /** HP and ATK from chara_status at this level, before gear and masteries. */
   baseHp: number;
   baseAttack: number;
-  /** Times the character was used in a quest. */
   questsUsed: number;
   /** MSP spent on master levels. */
   masterXp: number;
@@ -81,9 +80,9 @@ export interface CharacterData {
   captain: Captain | undefined;
   /** Every character's level and current equipment, in save order. */
   characters: Character[];
-  /** Current party: chara.CharId per position, undefined when empty. */
+  /** Current party: chara.CharId per position. */
   party: (string | undefined)[];
-  /** Equipped summons, shared by the party, undefined when empty. */
+  /** Equipped summons, shared by the party. */
   summons: (Summon | undefined)[];
   /** Loadouts with a character assigned, in save order. */
   loadouts: Loadout[];

@@ -74,7 +74,6 @@ const ELEMENTS: {
 const UNIT_ATTRIBUTE = 0;
 const UNIT_ENTITY = 1;
 const UNIT_VALUES = 2;
-/** Root table fields. */
 const ROOT_VERSION = 0;
 const ROOT_FIRST_TABLE = 1;
 
@@ -142,7 +141,6 @@ function readUnit<T extends ValueType>(
   } as SaveUnit;
 }
 
-/** Decodes a SaveDataBinary FlatBuffer. */
 export function decodeSaveDataBinary(bytes: Uint8Array): SaveDataBinary {
   const reader = new ByteReader(bytes);
   if (reader.length < 4) {

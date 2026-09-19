@@ -18,7 +18,7 @@ export const keyTable = (
 
 const warned = new Set<string>();
 
-/** Archive key for a hash, "#" + 8 hex digits when the table has none, undefined when empty. */
+/** Archive key for a hash, "#" + 8 hex digits when the table has none. */
 export function keyOf(
   table: KeyTable,
   hash: number | undefined,
@@ -38,7 +38,6 @@ export function keyOf(
   return unresolved;
 }
 
-/** A hash unit read as it is stored, undefined for an empty slot. */
 export function hashAttribute(
   id: UnitAttribute,
 ): Attribute<number | undefined> {
@@ -52,7 +51,6 @@ export function hashAttribute(
   };
 }
 
-/** A hash unit read as its archive key, undefined for an empty slot. */
 export function keyAttribute(
   id: UnitAttribute,
   table: KeyTable,

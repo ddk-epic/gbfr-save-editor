@@ -28,7 +28,6 @@ export interface Summon {
   key: string;
   trait: Trait | undefined;
   equipBonus: EquipBonus | undefined;
-  /** Equipped at least once. */
   everEquipped: boolean;
   /** False while the game marks the summon as new. */
   seen: boolean;

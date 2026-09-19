@@ -205,7 +205,6 @@ const FIELD_NOTE_TEXT: Record<
   wrightstones: ["fieldNoteWrightstone", "4"],
 };
 
-/** Tab names of the item menu tabs. */
 const ITEM_TAB_NAMES: Record<ItemTab, string> = {
   treasures: "treasures",
   keyItems: "key items",
@@ -247,7 +246,6 @@ const itemTables = (
     ),
   );
 
-/** Tab names of the trophy tabs. */
 const TROPHY_TAB_NAMES: Record<TrophyTab, string> = {
   story: "story & quest",
   character: "character",
