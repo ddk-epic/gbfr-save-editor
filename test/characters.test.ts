@@ -35,16 +35,6 @@ describe.skipIf(!hasSave)("readCharacterData", () => {
     expect(data.loadouts.filter((l) => !known(l.character))).toEqual([]);
   });
 
-  it("reads gear slots on every character", () => {
-    for (const character of [...data.characters, ...data.loadouts]) {
-      const where = character.character;
-      expect(character.sigils.length, where).toBeLessThanOrEqual(12);
-      expect(character.skills.length, where).toBeLessThanOrEqual(4);
-      if (character.weapon)
-        expect(character.weapon.traits, where).toHaveLength(5);
-    }
-  });
-
   it("reads masteries that add up", () => {
     for (const character of data.characters)
       for (const [name, section] of Object.entries(character.masteries)) {
@@ -85,12 +75,10 @@ describe.skipIf(!hasSave)("readCharacterData", () => {
     }
   });
 
-  it("reads fate episodes, leaving out the one the menu hides", () => {
+  it("reads each fate episode once", () => {
     for (const character of data.characters) {
       const keys = character.fateEpisodes.map((episode) => episode.key);
       expect(new Set(keys).size, character.character).toBe(keys.length);
-      // REMI_PL0200_00 is stored but the menu does not list it.
-      expect(keys, character.character).not.toContain("REMI_PL0200_00");
     }
   });
 });

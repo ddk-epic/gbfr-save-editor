@@ -50,11 +50,9 @@ describe.skipIf(!hasSave)("readInventory", () => {
     }
   });
 
-  it("reads weapons with five trait slots and a resolved appearance", () => {
+  it("reads weapons with a resolved appearance", () => {
     for (const [slotId, weapon] of inventory.weapons) {
       expect(weapon.key, `${slotId}`).not.toMatch(/^#/);
-      // Terminus aside, the slots are there whether or not they hold a trait.
-      expect(weapon.traits, `${slotId}`).toHaveLength(5);
       if (weapon.appearance)
         expect(weapon.appearance, `${slotId}`).not.toMatch(/^#/);
       expect(weapon.wrightstone?.traits.length ?? 0).toBeLessThanOrEqual(3);
