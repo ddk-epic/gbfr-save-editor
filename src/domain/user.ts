@@ -1,5 +1,16 @@
 import type { UnitStore } from "../format/unit-store";
-import { ID } from "./layout";
+import {
+  LOCATION_PARTY_HP,
+  LOCATION_SPOT,
+  LOCATION_STAGE,
+  SAVE_FEATURE_VERSION,
+  SAVE_SLOT_VERSION,
+  SAVE_WIDE,
+  SYSTEM_PLAY_TIME,
+  USER_COMMENDATIONS,
+  USER_ONLINE_STATUS_FLAGS,
+  USER_PLAYER_NAME,
+} from "./layout";
 
 /** The save-wide SlotData values, 1001-1207. */
 export interface User {
@@ -22,34 +33,24 @@ export interface System {
   playTime: number;
 }
 
-/** Characters up to the first 0. */
-const text = (codes: readonly number[]) => {
-  const end = codes.indexOf(0);
-  return String.fromCharCode(...(end === -1 ? codes : codes.slice(0, end)));
-};
-
 const phaseId = (stage: number) =>
   stage.toString(16).toUpperCase().padStart(8, "0");
 
 export function readUser(units: UnitStore): User {
-  const int = (id: number) => units.values(id, 0, "int")?.[0] ?? 0;
-  const stage = units.values(ID.LOCATION_STAGE, 0, "int")?.[0];
+  const at = units.of(SAVE_WIDE);
+  const stage = at.get(LOCATION_STAGE);
   return {
-    slotVersion: units.values(ID.SAVE_SLOT_VERSION, 0, "ushort")?.[0],
-    featureVersion: units.values(ID.SAVE_FEATURE_VERSION, 0, "ushort")?.[0],
-    playerName: text(units.values(ID.USER_PLAYER_NAME, 0, "ushort") ?? []),
-    commendations: int(ID.USER_COMMENDATIONS),
-    onlineStatusFlags:
-      units.values(ID.USER_ONLINE_STATUS_FLAGS, 0, "uint")?.[0] ?? 0,
+    slotVersion: at.get(SAVE_SLOT_VERSION),
+    featureVersion: at.get(SAVE_FEATURE_VERSION),
+    playerName: at.get(USER_PLAYER_NAME),
+    commendations: at.get(USER_COMMENDATIONS),
+    onlineStatusFlags: at.get(USER_ONLINE_STATUS_FLAGS),
     stage: stage === undefined ? undefined : phaseId(stage),
-    spot: text(units.values(ID.LOCATION_SPOT, 0, "ubyte") ?? []),
-    partyHp:
-      units.values(ID.LOCATION_PARTY_HP, 0, "int")?.find((hp) => hp !== 0) ?? 0,
+    spot: at.get(LOCATION_SPOT),
+    partyHp: at.get(LOCATION_PARTY_HP).find((hp) => hp !== 0) ?? 0,
   };
 }
 
 export function readSystem(units: UnitStore): System {
-  return {
-    playTime: Number(units.values(ID.SYSTEM_PLAY_TIME, 0, "ulong")?.[0] ?? 0n),
-  };
+  return { playTime: Number(units.of(SAVE_WIDE).get(SYSTEM_PLAY_TIME)) };
 }

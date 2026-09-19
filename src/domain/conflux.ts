@@ -1,11 +1,14 @@
 import { CONFLUX_AURAS, CONFLUX_TREE } from "../data/conflux";
+import type { Attribute } from "../format/attribute";
 import type { UnitStore } from "../format/unit-store";
 import {
-  CONFLUX_AURA_OBTAINED,
-  CONFLUX_AURA_SEEN,
-  EMPTY_HASH,
-  ID,
+  CONFLUX_AURA_FLAGS,
+  CONFLUX_AURA_KEY,
+  PROGRESS_KEY,
+  PROGRESS_VALUE,
+  SAVE_WIDE,
   UNIT,
+  USER_RESONANCE_POINTS,
 } from "./layout";
 
 export interface ResonanceEffect {
@@ -42,33 +45,28 @@ export interface Conflux {
   auras: Aura[];
 }
 
-/** Values of one attribute by the key hash another attribute holds at the same units. */
-function byKey(
+/** Values of one attribute by the key hash another attribute holds at the same entity. */
+function byKey<T>(
   units: UnitStore,
-  keyId: number,
-  valueId: number,
-  valueType: "int" | "uint",
-  first: number,
-  count: number,
-): Map<number, number> {
-  const values = new Map<number, number>();
-  for (let unit = first; unit < first + count; unit++) {
-    const key = units.values(keyId, unit, "uint")?.[0];
-    if (key === undefined || key === EMPTY_HASH) continue;
-    values.set(key, units.values(valueId, unit, valueType)?.[0] ?? 0);
+  key: Attribute<number | undefined>,
+  value: Attribute<T>,
+  range: { first: number; count: number },
+): Map<number, T> {
+  const values = new Map<number, T>();
+  for (const entity of units.entitiesWith(key, range)) {
+    const at = units.of(entity);
+    const hash = at.get(key);
+    if (hash === undefined) continue;
+    values.set(hash, at.get(value));
   }
   return values;
 }
 
 export function readConflux(units: UnitStore): Conflux {
-  const bits = byKey(
-    units,
-    ID.PROGRESS_KEY,
-    ID.PROGRESS_VALUE,
-    "int",
-    UNIT.CONFLUX_TREE,
-    UNIT.CONFLUX_TREE_ENTRIES,
-  );
+  const bits = byKey(units, PROGRESS_KEY, PROGRESS_VALUE, {
+    first: UNIT.CONFLUX_TREE,
+    count: UNIT.CONFLUX_TREE_ENTRIES,
+  });
   const resonance = CONFLUX_TREE.map(
     ([hash, key, bit, cost, effects]): ResonanceNode => ({
       key,
@@ -78,19 +76,19 @@ export function readConflux(units: UnitStore): Conflux {
     }),
   );
 
-  const flags = byKey(
-    units,
-    ID.CONFLUX_AURA_KEY,
-    ID.CONFLUX_AURA_FLAGS,
-    "uint",
-    UNIT.CONFLUX_AURA,
-    UNIT.CONFLUX_AURA_COUNT,
-  );
-  const aura = (key: string, category: number | undefined, flag = 0): Aura => ({
+  const flags = byKey(units, CONFLUX_AURA_KEY, CONFLUX_AURA_FLAGS, {
+    first: UNIT.CONFLUX_AURA,
+    count: UNIT.CONFLUX_AURA_COUNT,
+  });
+  const aura = (
+    key: string,
+    category: number | undefined,
+    flag?: { obtained: boolean; seen: boolean },
+  ): Aura => ({
     key,
     category,
-    obtained: (flag & CONFLUX_AURA_OBTAINED) !== 0,
-    seen: (flag & CONFLUX_AURA_SEEN) !== 0,
+    obtained: flag?.obtained ?? false,
+    seen: flag?.seen ?? false,
   });
   const auras = CONFLUX_AURAS.map(([hash, key, category]) => {
     const flag = flags.get(hash);
@@ -102,7 +100,7 @@ export function readConflux(units: UnitStore): Conflux {
     auras.push(aura(`#${hash.toString(16).padStart(8, "0")}`, undefined, flag));
 
   return {
-    resonancePoints: units.values(ID.USER_RESONANCE_POINTS, 0, "int")?.[0] ?? 0,
+    resonancePoints: units.of(SAVE_WIDE).get(USER_RESONANCE_POINTS),
     resonance,
     auras,
   };

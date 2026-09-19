@@ -16,7 +16,12 @@ import { GEM_KEYS, SKILL_KEYS } from "../data/sigils";
 import { ABILITY_KEYS } from "../data/skills";
 import { SUMMON_BASE_PARAM_KEYS, SUMMON_KEYS } from "../data/summons";
 import { WEAPON_KEYS } from "../data/weapons";
-import { EMPTY_HASH } from "./layout";
+import type { Attribute } from "../format/attribute";
+import type { UnitAttribute } from "../format/save-data-binary";
+import { hashId } from "../hash/xxhash32-custom";
+
+/** The save's value for an empty id. */
+export const EMPTY_HASH = hashId("");
 
 const TABLE_NAMES = new Map<Readonly<Record<number, string>>, string>([
   [CHARACTER_KEYS, "chara"],
@@ -44,6 +49,30 @@ const TABLE_NAMES = new Map<Readonly<Record<number, string>>, string>([
 ]);
 
 const warned = new Set<string>();
+
+export function hashAttribute(
+  id: UnitAttribute,
+): Attribute<number | undefined> {
+  return {
+    id,
+    valueType: "uint",
+    read(values) {
+      const hash = values?.[0] as number | undefined;
+      return hash === undefined || hash === EMPTY_HASH ? undefined : hash;
+    },
+  };
+}
+
+export function keyAttribute(
+  id: UnitAttribute,
+  table: Readonly<Record<number, string>>,
+): Attribute<string | undefined> {
+  return {
+    id,
+    valueType: "uint",
+    read: (values) => keyOf(table, values?.[0] as number | undefined),
+  };
+}
 
 /** Archive key for a hash, "#" + 8 hex digits when the table has none, undefined when empty. */
 export function keyOf(
