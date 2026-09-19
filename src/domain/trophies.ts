@@ -1,5 +1,5 @@
 import { TROPHIES, type TrophyTab } from "../data/trophies";
-import type { UnitStore } from "../format/unit-store";
+import type { UnitStore } from "../core/unit-store";
 import { SAVE_WIDE, TROPHY_EARNED, TROPHY_VIEWED } from "./layout";
 
 export interface Trophy {

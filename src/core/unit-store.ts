@@ -6,7 +6,16 @@ import type {
   ValueType,
 } from "./save-data-binary";
 import type { Attribute } from "./attribute";
-import { SaveFormatError } from "../errors";
+import { SaveFormatError } from "./errors";
+
+/** A span of entity numbers, `count` wide, starting at `first`. */
+export interface EntityRange {
+  first: UnitEntity;
+  count: number;
+}
+
+const within = (range: EntityRange, entity: UnitEntity) =>
+  entity >= range.first && entity < range.first + range.count;
 
 /** Units of one SaveDataBinary, looked up by attribute and entity. */
 export class UnitStore {
@@ -65,18 +74,36 @@ export class UnitStore {
    */
   entitiesWith(
     attribute: Attribute<unknown>,
-    range?: { first: UnitEntity; count: number },
+    range?: EntityRange,
   ): UnitEntity[] {
     const units = this.byAttribute.get(attribute.id)?.units;
     if (!units) return [];
     const entities = [...units.keys()];
-    const within = range
-      ? entities.filter(
-          (entity) =>
-            entity >= range.first && entity < range.first + range.count,
-        )
-      : entities;
-    return within.sort((a, b) => a - b);
+    return (range ? entities.filter((e) => within(range, e)) : entities).sort(
+      (a, b) => a - b,
+    );
+  }
+
+  /**
+   * Entities whose unit for one attribute holds `value` as its first value,
+   * ascending. The search is over the attribute's units alone, so a `range`
+   * only narrows what is returned.
+   */
+  entitiesWhere(
+    attribute: UnitAttribute,
+    value: number,
+    range?: EntityRange,
+  ): UnitEntity[] {
+    const units = this.byAttribute.get(attribute)?.units;
+    if (!units) return [];
+    const found: UnitEntity[] = [];
+    for (const [entity, unit] of units)
+      if (
+        (unit.values as (number | boolean)[])[0] === value &&
+        (!range || within(range, entity))
+      )
+        found.push(entity);
+    return found.sort((a, b) => a - b);
   }
 
   /** Units of one attribute, ascending by entity. */

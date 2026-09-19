@@ -1,4 +1,4 @@
-import type { UnitStore } from "../format/unit-store";
+import type { UnitStore } from "../core/unit-store";
 import {
   LOCATION_PARTY_HP,
   LOCATION_SPOT,

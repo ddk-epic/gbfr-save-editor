@@ -3,7 +3,7 @@
 // pnpm gen:data [tables.sqlite] [text dir]
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
-import { hashId } from "../src/hash/xxhash32-custom";
+import { hashId } from "../src/core/xxhash32-custom";
 
 const [
   dbPath = "../gbfr-extract/tables.sqlite",

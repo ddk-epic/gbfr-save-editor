@@ -1,6 +1,6 @@
 import { CONFLUX_AURAS, CONFLUX_TREE } from "../data/conflux";
-import type { Attribute } from "../format/attribute";
-import type { UnitStore } from "../format/unit-store";
+import type { Attribute } from "../core/attribute";
+import type { UnitStore } from "../core/unit-store";
 import {
   CONFLUX_AURA_FLAGS,
   CONFLUX_AURA_KEY,

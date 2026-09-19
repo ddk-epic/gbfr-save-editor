@@ -1,4 +1,4 @@
-import type { UnitStore } from "../format/unit-store";
+import type { UnitStore } from "../core/unit-store";
 import { PROFILE_QUESTS_CLEARED, UNIT } from "./layout";
 
 /** The player's own profile, in the same format as the online player list entry. */

@@ -3,8 +3,8 @@ import {
   FIELD_NOTE_WEAPONS,
   STORY_ORDER,
 } from "../data/journal";
-import type { Attribute } from "../format/attribute";
-import type { UnitStore } from "../format/unit-store";
+import type { Attribute } from "../core/attribute";
+import type { UnitStore } from "../core/unit-store";
 import {
   ARCHIVE_FLAGS,
   ARCHIVE_KEY,

@@ -18,9 +18,9 @@ import {
   REPLACED_TRANSCENDENCE,
 } from "../data/masteries";
 import { ABILITY_KEYS } from "../data/skills";
-import { SaveFormatError } from "../errors";
-import type { Attribute } from "../format/attribute";
-import type { UnitStore } from "../format/unit-store";
+import { SaveFormatError } from "../core/errors";
+import type { Attribute } from "../core/attribute";
+import type { UnitStore } from "../core/unit-store";
 import {
   readInventory,
   type Inventory,

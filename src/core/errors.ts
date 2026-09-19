@@ -1,4 +1,4 @@
-import type { ValueType } from "./format/save-data-binary";
+import type { ValueType } from "./save-data-binary";
 
 export type SaveFormatIssue =
   /** A read of `size` bytes at `at` falls outside `length`. `what` names the part, such as `SlotData` or `u32`. */

@@ -16,9 +16,9 @@ import { GEM_KEYS, SKILL_KEYS } from "../data/sigils";
 import { ABILITY_KEYS } from "../data/skills";
 import { SUMMON_BASE_PARAM_KEYS, SUMMON_KEYS } from "../data/summons";
 import { WEAPON_KEYS } from "../data/weapons";
-import type { Attribute } from "../format/attribute";
-import type { UnitAttribute } from "../format/save-data-binary";
-import { hashId } from "../hash/xxhash32-custom";
+import type { Attribute } from "../core/attribute";
+import type { UnitAttribute } from "../core/save-data-binary";
+import { hashId } from "../core/xxhash32-custom";
 
 /** The save's value for an empty id. */
 export const EMPTY_HASH = hashId("");
