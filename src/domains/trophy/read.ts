@@ -1,6 +1,7 @@
-import { TROPHIES, type TrophyTab } from "../data/trophies";
-import type { UnitStore } from "../core/unit-store";
-import { SAVE_WIDE, TROPHY_EARNED, TROPHY_VIEWED } from "./layout";
+import { TROPHIES, type TrophyTab } from "../../data/trophies";
+import type { UnitStore } from "../../core/unit-store";
+import { SAVE_ENTITY } from "../user/attributes";
+import { TROPHY_EARNED, TROPHY_VIEWED } from "./attributes";
 
 export interface Trophy {
   /** `badge.Key`. */
@@ -21,7 +22,7 @@ export interface Trophy {
  * earned; that is not stored.
  */
 export function readTrophies(units: UnitStore): Trophy[] {
-  const at = units.of(SAVE_WIDE);
+  const at = units.of(SAVE_ENTITY);
   const earned = new Set(
     at.get(TROPHY_EARNED).flatMap((flag, key) => (flag ? [key] : [])),
   );

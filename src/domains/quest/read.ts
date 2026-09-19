@@ -1,15 +1,15 @@
-import { QUEST_COUNTER } from "../data/quests";
-import type { UnitStore } from "../core/unit-store";
+import { QUEST_COUNTER } from "../../data/quests";
+import type { UnitStore } from "../../core/unit-store";
+import { SAVE_ENTITY } from "../user/attributes";
 import {
   COUNTER_QUEST_CLEARS,
   COUNTER_QUEST_FLAGS,
   COUNTER_QUEST_IDS,
   COUNTER_QUEST_LAST_CLEARED,
-  SAVE_WIDE,
   SIDE_QUEST_ACCEPTED,
   SIDE_QUEST_IDS,
   SIDE_QUEST_STATE,
-} from "./layout";
+} from "./attributes";
 
 const QUEST_POSITIONS = new Map(QUEST_COUNTER.map(([id], i) => [id, i]));
 const QUEST_POWERS = new Map(QUEST_COUNTER);
@@ -64,7 +64,7 @@ const questId = (id: number) => id.toString(16).toUpperCase().padStart(8, "0");
 
 /** Side quests in save order, accepted or not. */
 export function readSideQuests(units: UnitStore): SideQuest[] {
-  const at = units.of(SAVE_WIDE);
+  const at = units.of(SAVE_ENTITY);
   const ids = at.get(SIDE_QUEST_IDS);
   const states = at.get(SIDE_QUEST_STATE);
   const accepted = at.get(SIDE_QUEST_ACCEPTED);
@@ -82,7 +82,7 @@ export function readSideQuests(units: UnitStore): SideQuest[] {
 
 /** Quest counter quests in save order, including ids never cleared. */
 export function readCounterQuests(units: UnitStore): CounterQuest[] {
-  const at = units.of(SAVE_WIDE);
+  const at = units.of(SAVE_ENTITY);
   const ids = at.get(COUNTER_QUEST_IDS);
   const clears = at.get(COUNTER_QUEST_CLEARS);
   const flags = at.get(COUNTER_QUEST_FLAGS);
