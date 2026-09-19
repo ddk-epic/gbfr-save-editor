@@ -17,6 +17,8 @@ export const MASTERY_ENTRIES = 400;
 
 export const CHARACTER_KEY = keyAttribute(1301, CHARACTERS);
 export const CHARACTER_XP = Attribute.int(1303);
+export const CHARACTER_FLAGS = Attribute.rawFlags(1305);
+export const CHARACTER_JOINED = 1;
 export const CHARACTER_LEVEL = Attribute.int(1308);
 export const CHARACTER_BASE_HP = Attribute.int(1309);
 export const CHARACTER_BASE_ATTACK = Attribute.int(1310);
