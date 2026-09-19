@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { hashId } from "../src/core/xxhash32-custom";
 import {
   ARCHIVE_KEYS,
   FIELD_NOTE_TREASURE,
@@ -10,6 +11,19 @@ import {
   TIP_KEYS,
 } from "../src/data/journal";
 import { TROPHIES } from "../src/data/trophies";
+import { ITEM_FLAGS, ITEM_KEY } from "../src/domains/item/attributes";
+import {
+  FIELD_NOTE_CHARACTER_FLAGS,
+  FIELD_NOTE_CHARACTER_KEY,
+  FIELD_NOTE_FOE_KEY,
+  FIELD_NOTE_WEAPON_FLAGS,
+  FIELD_NOTE_WEAPON_KEY,
+  FIELD_NOTE_WRIGHTSTONE_KEY,
+  STORY_FLAGS,
+  STORY_KEY,
+} from "../src/domains/journal/attributes";
+import { TROPHY_EARNED, TROPHY_SEEN } from "../src/domains/trophy/attributes";
+import { SAVE_ENTITY } from "../src/domains/user/attributes";
 import {
   readArchives,
   readFieldNotes,
@@ -22,6 +36,7 @@ import {
   TROPHY_TABS,
   type JournalEntry,
 } from "../src/index";
+import { unitStore } from "./fixture";
 
 // Local save, gitignored. Any save works: these hold at every point of progress.
 // The counts one save happens to show are in research/save-units.md.
@@ -57,32 +72,139 @@ describe.skipIf(!hasSave)("the journal", () => {
     expect(Math.max(...chapters)).toBe(14);
   });
 
-  it("reads the five field note categories", () => {
+  it("resolves every field note", () => {
     const entries = readFieldNotes(units);
-    const of = (category: string) =>
-      entries.filter((e) => e.category === category);
     expect(entries.filter((e) => e.key.startsWith("#"))).toEqual([]);
-    expect([...new Set(entries.map((e) => e.category))]).toEqual([
-      ...["characters", "foes", "weapons"],
-      ...["treasure", "wrightstones"],
-    ]);
-    // Weapons and Treasure cover the rows of the lists they draw from.
-    expect(of("weapons").map((e) => e.key)).toEqual([...FIELD_NOTE_WEAPONS]);
-    expect(of("treasure").map((e) => e.key)).toEqual([...FIELD_NOTE_TREASURE]);
-    // Only Treasure has a seen bit; the other four leave it undecoded.
-    const seen = (e: (typeof entries)[number]) => e.seen !== undefined;
-    expect(
-      entries.filter((e) => seen(e) !== (e.category === "treasure")),
-    ).toEqual([]);
   });
 
-  it("reads one trophy per badge, earned or not", () => {
-    const trophies = readTrophies(units);
-    expect(trophies.map((t) => t.key)).toEqual(TROPHIES.map(([key]) => key));
+  it("earns no trophy the badge table lacks", () => {
+    expect(readTrophies(units).filter((t) => t.dlc === undefined)).toEqual([]);
   });
 
   it("marks only earned trophies seen", () => {
     expect(readTrophies(units).filter((t) => t.seen && !t.earned)).toEqual([]);
+  });
+});
+
+describe("readMainStory", () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it("lists entries in story order, not save order", () => {
+    const units = unitStore({
+      1: [
+        [STORY_KEY, hashId("ct0060")],
+        [STORY_FLAGS, 1],
+      ],
+      2: [[STORY_KEY, hashId("cm0010")]],
+      3: [[STORY_KEY, hashId("tt0001")]],
+    });
+    expect(readMainStory(units)).toEqual([
+      { key: "tt0001", chapter: 0, unlocked: false, seen: false },
+      { key: "cm0010", chapter: 1, unlocked: false, seen: false },
+      { key: "ct0060", chapter: 2, unlocked: true, seen: false },
+    ]);
+  });
+
+  it("puts a row the story order lacks last, as chapter 0", () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const units = unitStore({
+      1: [[STORY_KEY, 0x12345678]],
+      2: [[STORY_KEY, hashId("cm0010")]],
+    });
+    expect(readMainStory(units).map((e) => [e.key, e.chapter])).toEqual([
+      ["cm0010", 1],
+      ["#12345678", 0],
+    ]);
+  });
+});
+
+describe("readFieldNotes", () => {
+  const units = unitStore({
+    1: [
+      [FIELD_NOTE_CHARACTER_KEY, hashId("PL0300")],
+      [FIELD_NOTE_CHARACTER_FLAGS, 1],
+    ],
+    2: [
+      [FIELD_NOTE_WEAPON_KEY, hashId(FIELD_NOTE_WEAPONS[0]!)],
+      [FIELD_NOTE_WEAPON_FLAGS, 4],
+    ],
+    3: [
+      [ITEM_KEY, hashId(FIELD_NOTE_TREASURE[0]!)],
+      [ITEM_FLAGS, 4 | 8],
+    ],
+    4: [[FIELD_NOTE_FOE_KEY, hashId("EM0802")]],
+    5: [[FIELD_NOTE_WRIGHTSTONE_KEY, hashId("ITEM_28_0000")]],
+  });
+  const entries = readFieldNotes(units);
+  const of = (category: string) =>
+    entries.filter((e) => e.category === category);
+
+  it("lists the five categories in menu order", () => {
+    expect([...new Set(entries.map((e) => e.category))]).toEqual([
+      ...["characters", "foes", "weapons"],
+      ...["treasure", "wrightstones"],
+    ]);
+    expect(of("characters")).toEqual([
+      {
+        category: "characters",
+        key: "PL0300",
+        unlocked: true,
+        seen: undefined,
+      },
+    ]);
+  });
+
+  it("covers every Weapons and Treasure row, held or not", () => {
+    expect(of("weapons").map((e) => e.key)).toEqual([...FIELD_NOTE_WEAPONS]);
+    expect(of("treasure").map((e) => e.key)).toEqual([...FIELD_NOTE_TREASURE]);
+    expect(of("weapons").filter((e) => e.unlocked)).toHaveLength(1);
+    expect(of("treasure").filter((e) => e.unlocked)).toHaveLength(1);
+  });
+
+  it("reads a seen bit on Treasure only", () => {
+    expect(of("treasure")[0]!.seen).toBe(true);
+    expect(of("treasure")[1]!.seen).toBe(false);
+    expect(
+      entries.filter(
+        (e) => (e.seen !== undefined) !== (e.category === "treasure"),
+      ),
+    ).toEqual([]);
+  });
+});
+
+describe("readTrophies", () => {
+  const [first, second] = TROPHIES.map(([key]) => key);
+  const unknown = Math.max(...TROPHIES.map(([key]) => key)) + 1;
+  const bits = (...keys: number[]) =>
+    Array.from({ length: unknown + 1 }, (_, key) => keys.includes(key));
+
+  it("lists every badge in table order, earned or not", () => {
+    const units = unitStore({
+      [SAVE_ENTITY]: [
+        [TROPHY_EARNED, bits(second!)],
+        [TROPHY_SEEN, bits(second!)],
+      ],
+    });
+    const trophies = readTrophies(units);
+    expect(trophies.map((t) => t.key)).toEqual(TROPHIES.map(([key]) => key));
+    expect(trophies.filter((t) => t.earned).map((t) => t.key)).toEqual([
+      second,
+    ]);
+    expect(trophies.find((t) => t.key === first)!.earned).toBe(false);
+  });
+
+  it("puts an earned badge the table lacks last, under other", () => {
+    const units = unitStore({
+      [SAVE_ENTITY]: [[TROPHY_EARNED, bits(unknown)]],
+    });
+    expect(readTrophies(units).at(-1)).toEqual({
+      key: unknown,
+      tab: "other",
+      dlc: undefined,
+      quantity: undefined,
+      earned: true,
+      seen: false,
+    });
   });
 });
 
