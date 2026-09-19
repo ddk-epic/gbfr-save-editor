@@ -19,7 +19,8 @@ export {
   type ValueOf,
   type ValueType,
 } from "./format/save-data-binary";
-export { UnitStore } from "./format/unit-store";
+export { EntityValues, UnitStore } from "./format/unit-store";
+export { Attribute } from "./format/attribute";
 export { readSave, type Save, type SaveSection } from "./format/read-save";
 export { hashId } from "./hash/xxhash32-custom";
 export {

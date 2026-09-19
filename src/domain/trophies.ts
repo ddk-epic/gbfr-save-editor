@@ -1,6 +1,6 @@
 import { TROPHIES, type TrophyTab } from "../data/trophies";
 import type { UnitStore } from "../format/unit-store";
-import { ID } from "./layout";
+import { SAVE_WIDE, TROPHY_EARNED, TROPHY_VIEWED } from "./layout";
 
 export interface Trophy {
   /** `badge.Key`. */
@@ -21,12 +21,11 @@ export interface Trophy {
  * earned; that is not stored.
  */
 export function readTrophies(units: UnitStore): Trophy[] {
+  const at = units.of(SAVE_WIDE);
   const earned = new Set(
-    (units.values(ID.TROPHY_EARNED, 0, "bool") ?? []).flatMap((flag, key) =>
-      flag ? [key] : [],
-    ),
+    at.get(TROPHY_EARNED).flatMap((flag, key) => (flag ? [key] : [])),
   );
-  const viewed = units.values(ID.TROPHY_VIEWED, 0, "bool") ?? [];
+  const viewed = at.get(TROPHY_VIEWED);
   const trophies: Trophy[] = TROPHIES.map(([key, tab, dlc, quantity]) => ({
     key,
     tab,

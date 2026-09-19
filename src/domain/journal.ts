@@ -1,27 +1,31 @@
 import {
-  ARCHIVE_KEYS,
-  FIELD_NOTE_CHARACTER_KEYS,
-  FIELD_NOTE_FOE_KEYS,
   FIELD_NOTE_TREASURE,
   FIELD_NOTE_WEAPONS,
-  FIELD_NOTE_WRIGHTSTONE_KEYS,
-  GLOSSARY_KEYS,
-  MUSIC_KEYS,
-  STORY_KEYS,
   STORY_ORDER,
-  TIP_KEYS,
 } from "../data/journal";
-import { ITEM_KEYS } from "../data/items";
-import { WEAPON_KEYS } from "../data/weapons";
+import type { Attribute } from "../format/attribute";
 import type { UnitStore } from "../format/unit-store";
-import { keyOf } from "./keys";
 import {
-  FIELD_NOTE_WEAPON_UNLOCKED,
-  ID,
-  ITEM_FIELD_NOTE,
-  ITEM_SEEN,
-  JOURNAL_UNLOCKED,
-  JOURNAL_VIEWED,
+  ARCHIVE_FLAGS,
+  ARCHIVE_KEY,
+  FIELD_NOTE_CHARACTER_FLAGS,
+  FIELD_NOTE_CHARACTER_KEY,
+  FIELD_NOTE_FOE_FLAGS,
+  FIELD_NOTE_FOE_KEY,
+  FIELD_NOTE_WEAPON_FLAGS,
+  FIELD_NOTE_WEAPON_KEY,
+  FIELD_NOTE_WRIGHTSTONE_FLAGS,
+  FIELD_NOTE_WRIGHTSTONE_KEY,
+  GLOSSARY_FLAGS,
+  GLOSSARY_KEY,
+  ITEM_FLAGS,
+  ITEM_KEY,
+  MUSIC_FLAGS,
+  MUSIC_KEY,
+  STORY_FLAGS,
+  STORY_KEY,
+  TIP_FLAGS,
+  TIP_KEY,
 } from "./layout";
 
 /** One row of a journal list: `unlocked` is the entry having a page, `viewed`
@@ -32,43 +36,40 @@ export interface JournalEntry {
   viewed: boolean;
 }
 
+type JournalFlags = { unlocked: boolean; viewed: boolean };
+
 /** A list keyed by a hash unit with a flags unit beside it. */
 function section(
   units: UnitStore,
-  keys: Readonly<Record<number, string>>,
-  keyId: number,
-  flagsId: number,
+  key: Attribute<string | undefined>,
+  flags: Attribute<JournalFlags>,
 ): JournalEntry[] {
   const entries: JournalEntry[] = [];
-  for (const unit of units.withAttribute(keyId)) {
-    const key = keyOf(keys, unit.values[0] as number);
-    if (!key) continue;
-    const flags = units.values(flagsId, unit.entity, "uint")?.[0] ?? 0;
-    entries.push({
-      key,
-      unlocked: (flags & JOURNAL_UNLOCKED) !== 0,
-      viewed: (flags & JOURNAL_VIEWED) !== 0,
-    });
+  for (const entity of units.entitiesWith(key)) {
+    const at = units.of(entity);
+    const name = at.get(key);
+    if (!name) continue;
+    entries.push({ key: name, ...at.get(flags) });
   }
   return entries;
 }
 
 /** Archives, every `story_note_archive` row. */
 export const readArchives = (units: UnitStore) =>
-  section(units, ARCHIVE_KEYS, ID.ARCHIVE_KEY, ID.ARCHIVE_FLAGS);
+  section(units, ARCHIVE_KEY, ARCHIVE_FLAGS);
 
 /** Glossary, every `story_note_wordlist` row, hashed as WORDLIST_ and its last 4 digits. */
 export const readGlossary = (units: UnitStore) =>
-  section(units, GLOSSARY_KEYS, ID.GLOSSARY_KEY, ID.GLOSSARY_FLAGS);
+  section(units, GLOSSARY_KEY, GLOSSARY_FLAGS);
 
 /** Tips, every `story_note_tips` row. The table hides some that are unlocked:
  * other platforms' versions and `QuestId` 1. */
 export const readTips = (units: UnitStore) =>
-  section(units, TIP_KEYS, ID.TIP_KEY, ID.TIP_FLAGS);
+  section(units, TIP_KEY, TIP_FLAGS);
 
 /** Music Collection, every `story_note_bgm` row. */
 export const readMusic = (units: UnitStore) =>
-  section(units, MUSIC_KEYS, ID.MUSIC_KEY, ID.MUSIC_FLAGS);
+  section(units, MUSIC_KEY, MUSIC_FLAGS);
 
 export interface StoryEntry extends JournalEntry {
   /** `story_note_chapter.Key`, 0 for The Story So Far, 1-14 for the chapters. */
@@ -78,10 +79,7 @@ export interface StoryEntry extends JournalEntry {
 /** Main Story in `STORY_ORDER`, the order the game lists, not save order. */
 export function readMainStory(units: UnitStore): StoryEntry[] {
   const held = new Map(
-    section(units, STORY_KEYS, ID.STORY_KEY, ID.STORY_FLAGS).map((e) => [
-      e.key,
-      e,
-    ]),
+    section(units, STORY_KEY, STORY_FLAGS).map((e) => [e.key, e]),
   );
   const entries: StoryEntry[] = [];
   for (const [key, chapter] of STORY_ORDER) {
@@ -105,17 +103,16 @@ export interface FieldNoteEntry extends Omit<JournalEntry, "viewed"> {
 }
 
 /** key -> flags, for the categories that ride on a list kept for something else. */
-function flagsByKey(
+function flagsByKey<F>(
   units: UnitStore,
-  keys: Readonly<Record<number, string>>,
-  keyId: number,
-  flagsId: number,
-): Map<string, number> {
-  const held = new Map<string, number>();
-  for (const unit of units.withAttribute(keyId)) {
-    const key = keyOf(keys, unit.values[0] as number);
-    if (key)
-      held.set(key, units.values(flagsId, unit.entity, "uint")?.[0] ?? 0);
+  key: Attribute<string | undefined>,
+  flags: Attribute<F>,
+): Map<string, F> {
+  const held = new Map<string, F>();
+  for (const entity of units.entitiesWith(key)) {
+    const at = units.of(entity);
+    const name = at.get(key);
+    if (name) held.set(name, at.get(flags));
   }
   return held;
 }
@@ -125,58 +122,45 @@ function flagsByKey(
 export function readFieldNotes(units: UnitStore): FieldNoteEntry[] {
   const own = (
     category: FieldNoteCategory,
-    keys: Readonly<Record<number, string>>,
-    keyId: number,
-    flagsId: number,
+    key: Attribute<string | undefined>,
+    flags: Attribute<JournalFlags>,
   ): FieldNoteEntry[] =>
-    [...flagsByKey(units, keys, keyId, flagsId)].map(([key, flags]) => ({
+    [...flagsByKey(units, key, flags)].map(([name, { unlocked }]) => ({
       category,
-      key,
-      unlocked: (flags & JOURNAL_UNLOCKED) !== 0,
+      key: name,
+      unlocked,
       viewed: undefined,
     }));
 
   const weapons = flagsByKey(
     units,
-    WEAPON_KEYS,
-    ID.FIELD_NOTE_WEAPON_KEY,
-    ID.FIELD_NOTE_WEAPON_FLAGS,
+    FIELD_NOTE_WEAPON_KEY,
+    FIELD_NOTE_WEAPON_FLAGS,
   );
-  const treasure = flagsByKey(units, ITEM_KEYS, ID.ITEM_KEY, ID.ITEM_FLAGS);
+  const treasure = flagsByKey(units, ITEM_KEY, ITEM_FLAGS);
 
   return [
-    ...own(
-      "characters",
-      FIELD_NOTE_CHARACTER_KEYS,
-      ID.FIELD_NOTE_CHARACTER_KEY,
-      ID.FIELD_NOTE_CHARACTER_FLAGS,
-    ),
-    ...own(
-      "foes",
-      FIELD_NOTE_FOE_KEYS,
-      ID.FIELD_NOTE_FOE_KEY,
-      ID.FIELD_NOTE_FOE_FLAGS,
-    ),
+    ...own("characters", FIELD_NOTE_CHARACTER_KEY, FIELD_NOTE_CHARACTER_FLAGS),
+    ...own("foes", FIELD_NOTE_FOE_KEY, FIELD_NOTE_FOE_FLAGS),
     ...FIELD_NOTE_WEAPONS.map((key) => ({
       category: "weapons" as const,
       key,
-      unlocked: ((weapons.get(key) ?? 0) & FIELD_NOTE_WEAPON_UNLOCKED) !== 0,
+      unlocked: weapons.get(key)?.unlocked ?? false,
       viewed: undefined,
     })),
     ...FIELD_NOTE_TREASURE.map((key) => {
-      const flags = treasure.get(key) ?? 0;
+      const flags = treasure.get(key);
       return {
         category: "treasure" as const,
         key,
-        unlocked: (flags & ITEM_FIELD_NOTE) !== 0,
-        viewed: (flags & ITEM_SEEN) !== 0,
+        unlocked: flags?.fieldNote ?? false,
+        viewed: flags?.seen ?? false,
       };
     }),
     ...own(
       "wrightstones",
-      FIELD_NOTE_WRIGHTSTONE_KEYS,
-      ID.FIELD_NOTE_WRIGHTSTONE_KEY,
-      ID.FIELD_NOTE_WRIGHTSTONE_FLAGS,
+      FIELD_NOTE_WRIGHTSTONE_KEY,
+      FIELD_NOTE_WRIGHTSTONE_FLAGS,
     ),
   ];
 }

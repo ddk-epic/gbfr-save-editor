@@ -1,131 +1,24 @@
 // SlotData attributes and entity ranges, named as in docs/.
 
-import { hashId } from "../hash/xxhash32-custom";
-
-/** Hash of "", the save's value for an empty id. */
-export const EMPTY_HASH = hashId("");
-
-export const ID = {
-  SYSTEM_HASHSEED: 803,
-  SYSTEM_HASHSEED_2: 811,
-  SYSTEM_PLAY_TIME: 812,
-  SYSTEM_STAGE: 813,
-  SYSTEM_PLAYER_NAME: 814,
-  SYSTEM_STAGE_2: 819,
-  SYSTEM_PLAYER_NAME_2: 834,
-  SAVE_SLOT_VERSION: 1001,
-  SAVE_FEATURE_VERSION: 1002,
-  SAVE_HASHSEED: 1003,
-  USER_PLAYER_NAME: 1101,
-  USER_CAPTAIN: 1103,
-  USER_RUPIES: 1104,
-  USER_COMMENDATIONS: 1106,
-  USER_ONLINE_STATUS_FLAGS: 1108,
-  USER_MASTERY_POINTS: 1112,
-  USER_RESONANCE_POINTS: 1116,
-  LOCATION_STAGE: 1201,
-  LOCATION_SPOT: 1202,
-  LOCATION_PARTY_HP: 1206,
-  CHARACTER_KEY: 1301,
-  CHARACTER_XP: 1303,
-  CHARACTER_FLAGS: 1305,
-  CHARACTER_LEVEL: 1308,
-  CHARACTER_BASE_HP: 1309,
-  CHARACTER_BASE_ATTACK: 1310,
-  CHARACTER_BASE_STUN: 1312,
-  CHARACTER_BASE_CRIT: 1313,
-  CHARACTER_QUESTS_USED: 1314,
-  CHARACTER_MASTER_XP: 1323,
-  CHARACTER_DELEGATE_ENLISTED: 1324,
-  CHARACTER_DELEGATE_MESSAGE: 1326,
-  EQUIP_WEAPON: 1402,
-  EQUIP_SIGILS: 1403,
-  EQUIP_SKILLS: 1404,
-  SUMMONS_EQUIPPED: 1451,
-  SUMMONS_KEY: 1452,
-  SUMMONS_OBTAINED: 1453,
-  SUMMON_LAST_ID: 1454,
-  SUMMON_ID: 1456,
-  SUMMON_KEY: 1457,
-  SUMMON_TRAIT_AND_BONUS: 1458,
-  SUMMON_LEVELS: 1459,
-  SUMMON_FLAGS: 1460,
-  PROGRESS_KEY: 1601,
-  PROGRESS_VALUE: 1602,
-  CHARACTER_OVER_MASTERY_KEY: 1606,
-  CHARACTER_OVER_MASTERY_LEVEL: 1607,
-  TRAIT_KEY: 1701,
-  SIDE_QUEST_IDS: 2550,
-  SIDE_QUEST_STATE: 2551,
-  SIDE_QUEST_ACCEPTED: 2555,
-  COUNTER_QUEST_IDS: 2570,
-  COUNTER_QUEST_CLEARS: 2571,
-  COUNTER_QUEST_FLAGS: 2574,
-  COUNTER_QUEST_LAST_CLEARED: 2579,
-  TROPHY_EARNED: 5801,
-  TROPHY_VIEWED: 5816,
-  ARCHIVE_KEY: 7901,
-  ARCHIVE_FLAGS: 7902,
-  STORY_KEY: 8201,
-  STORY_FLAGS: 8202,
-  FIELD_NOTE_CHARACTER_KEY: 8401,
-  FIELD_NOTE_CHARACTER_FLAGS: 8402,
-  FIELD_NOTE_FOE_KEY: 8501,
-  FIELD_NOTE_FOE_FLAGS: 8502,
-  FIELD_NOTE_WRIGHTSTONE_KEY: 8601,
-  FIELD_NOTE_WRIGHTSTONE_FLAGS: 8602,
-  FIELD_NOTE_WEAPON_KEY: 7401,
-  FIELD_NOTE_WEAPON_FLAGS: 7403,
-  GLOSSARY_KEY: 8101,
-  GLOSSARY_FLAGS: 8102,
-  TIP_KEY: 8701,
-  TIP_FLAGS: 8702,
-  MUSIC_KEY: 8301,
-  MUSIC_FLAGS: 8302,
-  CONFLUX_AURA_KEY: 9601,
-  CONFLUX_AURA_FLAGS: 9602,
-  CURIO_REWARD_KEY: 1901,
-  CURIO_REWARD_SEED: 1903,
-  CURIO_REWARD_LEVEL: 1904,
-  CURIO_KEY: 2002,
-  CURIO_SERIAL: 2003,
-  ITEM_KEY: 1801,
-  ITEM_COUNT: 1802,
-  ITEM_FLAGS: 1803,
-  WRIGHTSTONE_LAST_SLOT_ID: 2101,
-  WRIGHTSTONE_KEY: 2102,
-  WRIGHTSTONE_SLOT_ID: 2103,
-  WRIGHTSTONE_LOCKED: 2104,
-  WRIGHTSTONE_FLAGS: 2105,
-  TRAIT_LEVEL: 1702,
-  SIGIL_LAST_SLOT_ID: 2701,
-  SIGIL_SLOT_ID: 2702,
-  SIGIL_KEY: 2703,
-  SIGIL_LEVEL: 2704,
-  SIGIL_WORN_BY: 2706,
-  SIGIL_FLAGS: 2707,
-  WEAPON_LAST_SLOT_ID: 2801,
-  WEAPON_SLOT_ID: 2802,
-  WEAPON_KEY: 2803,
-  WEAPON_XP: 2804,
-  WEAPON_UNCAP: 2805,
-  WEAPON_PLUS: 2806,
-  WEAPON_AWAKENING: 2807,
-  WEAPON_WRIGHTSTONE: 2816,
-  WEAPON_TRANSCENDENCE: 2817,
-  WEAPON_QUESTS_USED: 2813,
-  WEAPON_APPEARANCE: 2814,
-  WEAPON_FLAGS: 2815,
-  ABILITY_KEY: 3903,
-  ABILITY_FLAGS: 3904,
-  PROFILE_QUESTS_CLEARED: 4901,
-  WEAPON_TRAITS: 2818,
-  PARTY_CHARACTER: 2201,
-  LOADOUT_NAME: 3002,
-  FATE_EPISODE_KEY: 3501,
-  FATE_EPISODE_STATE: 3502,
-  EQUIP_CHARACTER: 3003,
-} as const;
+import {
+  ARCHIVE_KEYS,
+  FIELD_NOTE_CHARACTER_KEYS,
+  FIELD_NOTE_FOE_KEYS,
+  FIELD_NOTE_WRIGHTSTONE_KEYS,
+  GLOSSARY_KEYS,
+  MUSIC_KEYS,
+  STORY_KEYS,
+  TIP_KEYS,
+} from "../data/journal";
+import { CHARACTER_KEYS } from "../data/characters";
+import { ITEM_KEYS } from "../data/items";
+import { LIMIT_BONUS_PARAM_KEYS } from "../data/masteries";
+import { GEM_KEYS, SKILL_KEYS } from "../data/sigils";
+import { ABILITY_KEYS } from "../data/skills";
+import { SUMMON_KEYS } from "../data/summons";
+import { WEAPON_KEYS } from "../data/weapons";
+import { Attribute } from "../format/attribute";
+import { hashAttribute, keyAttribute } from "./keys";
 
 export const UNIT = {
   /** Summon inventory, 1000 units; 1451 at unit 0 holds the equipped ids. */
@@ -162,39 +55,162 @@ export const UNIT = {
   TRAIT_OWNER_WRIGHTSTONE: 200000,
 } as const;
 
+export const SAVE_WIDE = 0;
+export const TRAIT_SLOTS_PER_OWNER = 100;
 /** Reward entries per curio, CURIO_REWARD_KEY at curio unit * 100 + entry. */
 export const CURIO_REWARD_ENTRIES = 5;
-/** Bits every journal list's flags unit uses: ARCHIVE, GLOSSARY, TIP, MUSIC
- * and STORY_FLAGS alike. Field Notes uses bit 0 too, bit 2 on Weapons. */
-export const JOURNAL_UNLOCKED = 1;
-export const JOURNAL_VIEWED = 2;
-/** The unlocked bit on FIELD_NOTE_WEAPON_FLAGS, a unit the weapon list shares. */
-export const FIELD_NOTE_WEAPON_UNLOCKED = 4;
-/** Bit of ITEM_FLAGS set on an item on the wish list, at most 20. */
-export const ITEM_WISH_LIST = 1;
-/** Bit of ITEM_FLAGS set once the item is seen, clearing its new mark. */
-export const ITEM_SEEN = 8;
-/** Bit of ITEM_FLAGS set once the item has a page in Field Notes Treasure. */
-export const ITEM_FIELD_NOTE = 4;
 /** Bit of ABILITY_FLAGS set once the ability is seen, clearing its new mark. */
 export const ABILITY_SEEN = 8;
-/** Bit of WEAPON_FLAGS set once the weapon is seen in the transwakening menu. */
-export const WEAPON_SEEN = 64;
-/** Bit of WEAPON_FLAGS set on an awakenable weapon once seen in the upgrade menu. */
-export const WEAPON_AWAKENING_SEEN = 16;
-/** Bit of WRIGHTSTONE_FLAGS set once the stone is seen, clearing its new mark. */
-export const WRIGHTSTONE_SEEN = 2;
-/** Bits of SIGIL_FLAGS: locked, and seen, clearing the new mark. */
-export const SIGIL_LOCKED = 1;
-export const SIGIL_SEEN = 2;
 export const SIGIL_SLOTS = 12;
 export const SKILL_SLOTS = 4;
 export const SUMMON_SLOTS = 4;
-/** Bits of SUMMON_FLAGS: equipped at least once, and seen, clearing the new mark. */
-export const SUMMON_EVER_EQUIPPED = 1;
-export const SUMMON_SEEN = 2;
-/** Bits of CONFLUX_AURA_FLAGS: obtained, and seen, clearing the new mark. */
-export const CONFLUX_AURA_OBTAINED = 1;
-export const CONFLUX_AURA_SEEN = 2;
 export const OVER_MASTERY_LINES = 4;
 export const WEAPON_TRAIT_SLOTS = 5;
+
+const journalFlags = (id: number) =>
+  Attribute.flags(id, { unlocked: 1, viewed: 2 });
+
+export const SYSTEM_PLAY_TIME = Attribute.ulong(812);
+
+export const SAVE_SLOT_VERSION = Attribute.optional<number>(1001, "ushort");
+export const SAVE_FEATURE_VERSION = Attribute.optional<number>(1002, "ushort");
+
+export const USER_PLAYER_NAME = Attribute.text(1101, "ushort");
+export const USER_CAPTAIN = Attribute.optional<number>(1103, "int");
+export const USER_RUPIES = Attribute.int(1104);
+export const USER_COMMENDATIONS = Attribute.int(1106);
+export const USER_ONLINE_STATUS_FLAGS = Attribute.rawFlags(1108);
+export const USER_MASTERY_POINTS = Attribute.int(1112);
+export const USER_RESONANCE_POINTS = Attribute.int(1116);
+
+export const LOCATION_STAGE = Attribute.optional<number>(1201, "int");
+export const LOCATION_SPOT = Attribute.text(1202, "ubyte");
+export const LOCATION_PARTY_HP = Attribute.intList(1206);
+
+export const CHARACTER_KEY = keyAttribute(1301, CHARACTER_KEYS);
+export const CHARACTER_XP = Attribute.int(1303);
+export const CHARACTER_LEVEL = Attribute.int(1308);
+export const CHARACTER_BASE_HP = Attribute.int(1309);
+export const CHARACTER_BASE_ATTACK = Attribute.int(1310);
+export const CHARACTER_QUESTS_USED = Attribute.uint(1314);
+export const CHARACTER_MASTER_XP = Attribute.int(1323);
+
+export const EQUIP_WEAPON = Attribute.uint(1402);
+export const EQUIP_SIGILS = Attribute.uintList(1403);
+export const EQUIP_SKILLS = Attribute.uintList(1404);
+export const SUMMONS_EQUIPPED = Attribute.uintList(1451);
+export const SUMMON_ID = Attribute.uint(1456);
+export const SUMMON_KEY = keyAttribute(1457, SUMMON_KEYS);
+export const SUMMON_TRAIT_AND_BONUS = Attribute.uintList(1458);
+export const SUMMON_LEVELS = Attribute.intList(1459);
+export const SUMMON_FLAGS = Attribute.flags(1460, {
+  everEquipped: 1,
+  seen: 2,
+});
+
+export const PROGRESS_KEY = hashAttribute(1601);
+export const PROGRESS_VALUE = Attribute.int(1602);
+export const CHARACTER_OVER_MASTERY_KEY = keyAttribute(
+  1606,
+  LIMIT_BONUS_PARAM_KEYS,
+);
+export const CHARACTER_OVER_MASTERY_LEVEL = Attribute.int(1607);
+
+export const TRAIT_KEY = keyAttribute(1701, SKILL_KEYS);
+export const TRAIT_LEVEL = Attribute.int(1702);
+
+export const ITEM_KEY = keyAttribute(1801, ITEM_KEYS);
+export const ITEM_COUNT = Attribute.int(1802);
+export const ITEM_FLAGS = Attribute.flags(1803, {
+  wishList: 1,
+  fieldNote: 4,
+  seen: 8,
+});
+
+export const CURIO_REWARD_KEY = hashAttribute(1901);
+export const CURIO_REWARD_SEED = Attribute.uint(1903);
+export const CURIO_REWARD_LEVEL = Attribute.int(1904);
+export const CURIO_KEY = keyAttribute(2002, ITEM_KEYS);
+export const CURIO_SERIAL = Attribute.uint(2003);
+
+export const WRIGHTSTONE_KEY = keyAttribute(2102, ITEM_KEYS);
+export const WRIGHTSTONE_SLOT_ID = Attribute.uint(2103);
+export const WRIGHTSTONE_LOCKED = Attribute.bool(2104);
+export const WRIGHTSTONE_FLAGS = Attribute.flags(2105, { seen: 2 });
+
+export const PARTY_CHARACTER = keyAttribute(2201, CHARACTER_KEYS);
+
+export const SIDE_QUEST_IDS = Attribute.uintList(2550);
+export const SIDE_QUEST_STATE = Attribute.uintList(2551);
+export const SIDE_QUEST_ACCEPTED = Attribute.boolList(2555);
+export const COUNTER_QUEST_IDS = Attribute.uintList(2570);
+export const COUNTER_QUEST_CLEARS = Attribute.uintList(2571);
+export const COUNTER_QUEST_FLAGS = Attribute.uintList(2574);
+export const COUNTER_QUEST_LAST_CLEARED = Attribute.uintList(2579);
+
+export const SIGIL_SLOT_ID = Attribute.uint(2702);
+export const SIGIL_KEY = keyAttribute(2703, GEM_KEYS);
+export const SIGIL_LEVEL = Attribute.int(2704);
+export const SIGIL_FLAGS = Attribute.flags(2707, { locked: 1, seen: 2 });
+
+export const WEAPON_SLOT_ID = Attribute.uint(2802);
+export const WEAPON_KEY = keyAttribute(2803, WEAPON_KEYS);
+export const WEAPON_XP = Attribute.uint(2804);
+export const WEAPON_UNCAP = Attribute.int(2805);
+export const WEAPON_PLUS = Attribute.int(2806);
+export const WEAPON_AWAKENING = Attribute.int(2807);
+export const WEAPON_QUESTS_USED = Attribute.uint(2813);
+export const WEAPON_APPEARANCE = keyAttribute(2814, WEAPON_KEYS);
+export const WEAPON_FLAGS = Attribute.flags(2815, {
+  seen: 64,
+  awakeningSeen: 16,
+});
+export const WEAPON_WRIGHTSTONE = keyAttribute(2816, ITEM_KEYS);
+export const WEAPON_TRANSCENDENCE = Attribute.int(2817);
+export const WEAPON_TRAITS = Attribute.uintList(2818);
+
+export const LOADOUT_NAME = Attribute.text(3002, "byte");
+export const EQUIP_CHARACTER = keyAttribute(3003, CHARACTER_KEYS);
+
+export const FATE_EPISODE_KEY = hashAttribute(3501);
+export const FATE_EPISODE_STATE = Attribute.flags(3502, { completed: 8 });
+
+export const ABILITY_KEY = keyAttribute(3903, ABILITY_KEYS);
+export const ABILITY_FLAGS = Attribute.rawFlags(3904);
+
+export const PROFILE_QUESTS_CLEARED = Attribute.int(4901);
+
+export const TROPHY_EARNED = Attribute.boolList(5801);
+export const TROPHY_VIEWED = Attribute.boolList(5816);
+
+export const FIELD_NOTE_WEAPON_KEY = keyAttribute(7401, WEAPON_KEYS);
+export const FIELD_NOTE_WEAPON_FLAGS = Attribute.flags(7403, { unlocked: 4 });
+
+export const ARCHIVE_KEY = keyAttribute(7901, ARCHIVE_KEYS);
+export const ARCHIVE_FLAGS = journalFlags(7902);
+export const GLOSSARY_KEY = keyAttribute(8101, GLOSSARY_KEYS);
+export const GLOSSARY_FLAGS = journalFlags(8102);
+export const STORY_KEY = keyAttribute(8201, STORY_KEYS);
+export const STORY_FLAGS = journalFlags(8202);
+export const MUSIC_KEY = keyAttribute(8301, MUSIC_KEYS);
+export const MUSIC_FLAGS = journalFlags(8302);
+export const FIELD_NOTE_CHARACTER_KEY = keyAttribute(
+  8401,
+  FIELD_NOTE_CHARACTER_KEYS,
+);
+export const FIELD_NOTE_CHARACTER_FLAGS = journalFlags(8402);
+export const FIELD_NOTE_FOE_KEY = keyAttribute(8501, FIELD_NOTE_FOE_KEYS);
+export const FIELD_NOTE_FOE_FLAGS = journalFlags(8502);
+export const FIELD_NOTE_WRIGHTSTONE_KEY = keyAttribute(
+  8601,
+  FIELD_NOTE_WRIGHTSTONE_KEYS,
+);
+export const FIELD_NOTE_WRIGHTSTONE_FLAGS = journalFlags(8602);
+export const TIP_KEY = keyAttribute(8701, TIP_KEYS);
+export const TIP_FLAGS = journalFlags(8702);
+
+export const CONFLUX_AURA_KEY = hashAttribute(9601);
+export const CONFLUX_AURA_FLAGS = Attribute.flags(9602, {
+  obtained: 1,
+  seen: 2,
+});
