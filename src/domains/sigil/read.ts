@@ -68,4 +68,4 @@ export function readSigils(units: UnitStore): Map<number, Sigil> {
 export const findSigilById = (
   units: UnitStore,
   id: number,
-): UnitEntity | undefined => units.entitiesWhere(SIGIL_ID.id, id)[0];
+): UnitEntity | undefined => units.entitiesWhere(SIGIL_ID, id)[0];

@@ -33,14 +33,16 @@ Each vector entry is a unit table with an attribute, an entity and a value vecto
 
 `UnitStore` in `src/core/unit-store.ts` indexes the units by attribute, then entity. It throws if one attribute appears under two value types, or if an attribute and entity pair appears twice.
 
-| Method                                    | Returns                                                     |
-| ----------------------------------------- | ----------------------------------------------------------- |
-| `of(entity)`                              | A cursor reading typed attributes at that entity            |
-| `get(attribute, entity)`                  | One unit, or undefined                                      |
-| `entitiesWith(attribute, range?)`         | Entities holding an attribute, ascending                    |
-| `entitiesWhere(attribute, value, range?)` | Entities whose first value equals `value`                   |
-| `withAttribute(attribute)`                | All units of an attribute, ascending by entity              |
-| `values(attribute, entity, valueType)`    | The unit's values, throwing if it is stored as another type |
+Every method addressing an attribute takes a typed attribute and throws if the save stores it as another value type.
+
+| Method                                    | Returns                                              |
+| ----------------------------------------- | ---------------------------------------------------- |
+| `of(entity)`                              | A cursor reading typed attributes at that entity     |
+| `get(attribute, entity)`                  | One unit, or undefined                               |
+| `values(attribute, entity)`               | The unit's values, or undefined                      |
+| `entitiesWith(attribute, range?)`         | Entities holding an attribute, ascending             |
+| `entitiesWhere(attribute, value, range?)` | Entities whose first value equals `value`, ascending |
+| `attributes()`                            | Attributes present with their value types, ascending |
 
 The result is a `Save` with `header`, `checksums`, `systemData` and `slotData`. Each section has a `version` and a `units` store.
 

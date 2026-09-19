@@ -42,15 +42,8 @@ describe.skipIf(!hasSave)("readSave", () => {
     for (const section of [save.systemData, save.slotData]) {
       const attributes = section.units.attributes();
       expect(attributes.length).toBeGreaterThan(0);
-      for (const id of attributes) {
-        expect(VALUE_TYPES, `attribute ${id}`).toContain(
-          section.units.valueTypeOf(id),
-        );
-        expect(
-          section.units.withAttribute(id).length,
-          `attribute ${id}`,
-        ).toBeGreaterThan(0);
-      }
+      for (const { attribute, valueType } of attributes)
+        expect(VALUE_TYPES, `attribute ${attribute}`).toContain(valueType);
     }
     expect(save.systemData.version).toBeUndefined();
     expect(save.slotData.version).toBe(1);

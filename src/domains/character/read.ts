@@ -59,7 +59,7 @@ export function findCharacter(
   units: UnitStore,
   character: string,
 ): CharacterEntities | undefined {
-  const gear = units.entitiesWhere(CHARACTER_KEY.id, hashId(character), {
+  const gear = units.entitiesWhere(CHARACTER_KEY, hashId(character), {
     first: CHARACTER_FIRST,
     count: 1000,
   })[0];
