@@ -107,7 +107,13 @@ export {
   type FateEpisode,
 } from "./domains/fate-episode/read";
 export { readParty } from "./domains/party/read";
-export { readProfile, type Profile } from "./domains/profile/read";
+export {
+  readProfile,
+  readRecentPlayers,
+  type CardCharacter,
+  type Profile,
+  type RecentPlayer,
+} from "./domains/profile/read";
 export {
   readSystem,
   readUser,
