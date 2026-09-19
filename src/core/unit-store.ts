@@ -17,12 +17,29 @@ export interface EntityRange {
 const within = (range: EntityRange, entity: UnitEntity) =>
   entity >= range.first && entity < range.first + range.count;
 
+/** The standard lower bound binary search. */
+function firstIndexAtOrAbove(
+  entities: readonly UnitEntity[],
+  entity: UnitEntity,
+) {
+  let low = 0;
+  let high = entities.length;
+  while (low < high) {
+    const mid = (low + high) >>> 1;
+    if (entities[mid]! < entity) low = mid + 1;
+    else high = mid;
+  }
+  return low;
+}
+
 /** Units of one SaveDataBinary, looked up by attribute and entity. */
 export class UnitStore {
   private readonly byAttribute = new Map<
     UnitAttribute,
     { valueType: ValueType; units: Map<UnitEntity, SaveUnit> }
   >();
+  /** Entities per attribute, ascending, built on first query. */
+  private readonly sorted = new Map<UnitAttribute, UnitEntity[]>();
 
   constructor(units: readonly SaveUnit[]) {
     for (const unit of units) {
@@ -63,6 +80,16 @@ export class UnitStore {
     return this.byAttribute.get(attribute)?.units.get(entity);
   }
 
+  private sortedEntities(attribute: UnitAttribute): readonly UnitEntity[] {
+    let entities = this.sorted.get(attribute);
+    if (!entities) {
+      const units = this.byAttribute.get(attribute)?.units;
+      entities = units ? [...units.keys()].sort((a, b) => a - b) : [];
+      this.sorted.set(attribute, entities);
+    }
+    return entities;
+  }
+
   of(entity: UnitEntity): EntityValues {
     return new EntityValues(this, entity);
   }
@@ -75,11 +102,11 @@ export class UnitStore {
     attribute: Attribute<unknown>,
     range?: EntityRange,
   ): UnitEntity[] {
-    const units = this.byAttribute.get(attribute.id)?.units;
-    if (!units) return [];
-    const entities = [...units.keys()];
-    return (range ? entities.filter((e) => within(range, e)) : entities).sort(
-      (a, b) => a - b,
+    const entities = this.sortedEntities(attribute.id);
+    if (!range) return entities.slice();
+    return entities.slice(
+      firstIndexAtOrAbove(entities, range.first),
+      firstIndexAtOrAbove(entities, range.first + range.count),
     );
   }
 
@@ -108,7 +135,8 @@ export class UnitStore {
   /** Units of one attribute, ascending by entity. */
   withAttribute(attribute: UnitAttribute): SaveUnit[] {
     const units = this.byAttribute.get(attribute)?.units;
-    return units ? [...units.values()].sort((a, b) => a.entity - b.entity) : [];
+    if (!units) return [];
+    return this.sortedEntities(attribute).map((entity) => units.get(entity)!);
   }
 
   /** Values of one unit, checked against the expected value type. */
