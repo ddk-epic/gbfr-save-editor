@@ -10,7 +10,7 @@ type Tab = "save" | "characters";
 const tabOf = (page: Page): Tab | undefined =>
   page === "save"
     ? "save"
-    : page.startsWith("char:")
+    : page === "characters" || page.startsWith("char:")
       ? "characters"
       : undefined;
 
@@ -31,14 +31,14 @@ export function ContentsTree({
   const character = page.startsWith("char:") ? page.slice(5) : undefined;
 
   const [tab, setTab] = useState<Tab>(tabOf(page) ?? "save");
-  // The character page last shown, reopened by the characters tab.
+  // The character page last shown, reopened by the characters tab; the party landing page until then.
   const [lastCharacter, setLastCharacter] = useState<Page>();
   const [prevPage, setPrevPage] = useState(page);
   if (page !== prevPage) {
     setPrevPage(page);
     const next = tabOf(page);
     if (next) setTab(next);
-    if (next === "characters") setLastCharacter(page);
+    if (page.startsWith("char:")) setLastCharacter(page);
   }
   const [prevView, setPrevView] = useState(view);
   if (view !== prevView) {
@@ -48,12 +48,7 @@ export function ContentsTree({
 
   const isDisabled = (key: string) =>
     isNPC(key) || isUnused(key) || isUnchosenCaptain(key, view?.captain);
-  const openCharacters = () => {
-    const first = view?.characters.find((c) => !isDisabled(c.key));
-    const next = lastCharacter ?? (first && `char:${first.key}`);
-    if (next) onPage(next);
-    else setTab("characters");
-  };
+  const openCharacters = () => onPage(lastCharacter ?? "characters");
 
   return (
     <nav className="sticky top-0 h-fit space-y-4 py-6 text-sidebar-foreground">
@@ -81,6 +76,13 @@ export function ContentsTree({
                 />
               ),
             )}
+          {tab === "characters" && (
+            <Link
+              label={t("sections.party")}
+              active={page === "characters"}
+              onClick={() => onPage("characters")}
+            />
+          )}
           {tab === "characters" &&
             view.characters.map((c) => (
               <Link

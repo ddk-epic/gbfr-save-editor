@@ -39,11 +39,13 @@ export function EquipmentSets({
               onClick={() => setSetId(s.id)}
               className={`-mb-px border-b-2 px-[min(0.75rem,1%)] pb-1 whitespace-nowrap ${s === set ? "border-primary text-primary" : "border-transparent text-subtle-foreground hover:border-white/40 hover:text-strong-foreground"}`}
             >
-              {i === 0
-                ? t("equipment.equipped")
-                : t("equipment.loadout", {
-                    number: String(i).padStart(2, "0"),
-                  })}
+              {s.partySet !== undefined
+                ? t("equipment.partySet", { number: s.partySet })
+                : i === 0
+                  ? t("equipment.equipped")
+                  : t("equipment.loadout", {
+                      number: String(i).padStart(2, "0"),
+                    })}
             </button>
           ))}
         </div>
