@@ -1,4 +1,5 @@
 import { SaveFormatError } from "../../core/errors";
+import type { UnitEntity } from "../../core/save-data-binary";
 import type { EntityRange, UnitStore } from "../../core/unit-store";
 import {
   OVER_MASTERY_KEY,
@@ -7,6 +8,7 @@ import {
 } from "./attributes";
 
 export interface OverMastery {
+  entity: UnitEntity;
   /** limit_bonus_param.Key, MED_EFF_* */
   key: string;
   /** Roll level 1-10. */
@@ -27,6 +29,6 @@ export function readOverMasteries(
     const level = Math.log2(bits) + 1;
     if (!Number.isInteger(level))
       throw new SaveFormatError({ code: "overMasteryLevel", entity, bits });
-    return { key, level };
+    return { entity, key, level };
   });
 }

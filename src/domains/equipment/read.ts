@@ -9,6 +9,8 @@ import { readWeapons, type Weapon } from "../weapon/read";
 import { EQUIP_SIGILS, EQUIP_SKILLS, EQUIP_WEAPON } from "./attributes";
 
 export interface Equipment {
+  /** The gear entity for live equipment, the loadout entity for a loadout. */
+  entity: UnitEntity;
   /** chara.CharId */
   character: string;
   weapon: Weapon | undefined;
@@ -48,6 +50,7 @@ export function readEquipment(
   const skills = at.get(EQUIP_SKILLS);
 
   return {
+    entity,
     character,
     weapon: weaponId ? lookup.weapons.get(weaponId) : undefined,
     sigils: Array.from({ length: SIGIL_POSITIONS }, (_, i) => {

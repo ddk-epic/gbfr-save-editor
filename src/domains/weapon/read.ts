@@ -22,6 +22,8 @@ import {
 } from "./attributes";
 
 export interface Weapon {
+  entity: UnitEntity;
+  id: number;
   /** weapon.Key */
   key: string;
   xp: number;
@@ -57,6 +59,8 @@ export function readWeapon(
   const traits = readFilledTraits(units, TRAIT_WEAPON + entity - WEAPON_FIRST);
   const positionTraits = at.get(WEAPON_TRAITS);
   return {
+    entity,
+    id,
     key,
     xp: at.get(WEAPON_XP),
     uncap: at.get(WEAPON_UNCAP),
@@ -78,7 +82,7 @@ export function readWeapons(units: UnitStore): Map<number, Weapon> {
   const weapons = new Map<number, Weapon>();
   for (const entity of units.entitiesWith(WEAPON_ID)) {
     const weapon = readWeapon(units, entity);
-    if (weapon) weapons.set(units.of(entity).get(WEAPON_ID), weapon);
+    if (weapon) weapons.set(weapon.id, weapon);
   }
   return weapons;
 }

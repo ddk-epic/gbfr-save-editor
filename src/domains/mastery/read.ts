@@ -6,6 +6,7 @@ import {
   REPLACED_TRANSCENDENCE,
 } from "../../data/masteries";
 import { SaveFormatError } from "../../core/errors";
+import type { UnitEntity } from "../../core/save-data-binary";
 import type { EntityRange, UnitStore } from "../../core/unit-store";
 import { UNLOCK_KEY, UNLOCK_VALUE } from "../unlock/attributes";
 
@@ -18,6 +19,9 @@ export interface MasteryNode {
   grid: number;
   msp: number;
   taken: boolean;
+  /** The unit holding the node's ladder, and the node's bit in it. */
+  entity: UnitEntity | undefined;
+  bit: number;
   /** limit_bonus_param effects of the node, each with its value as displayed. */
   params: MasteryEffect[];
 }
@@ -57,6 +61,7 @@ export function readMasteries(
   if (!nodes) return progress;
 
   const takenBits = new Map<number, number>();
+  const ladderEntity = new Map<number, UnitEntity>();
   for (const entity of units.entitiesWith(UNLOCK_KEY, mastery)) {
     const at = units.of(entity);
     const hash = at.get(UNLOCK_KEY);
@@ -75,6 +80,7 @@ export function readMasteries(
         });
     });
     takenBits.set(hash, bits);
+    ladderEntity.set(hash, entity);
   }
 
   for (const [hash, ladder] of Object.entries(nodes)) {
@@ -102,6 +108,8 @@ export function readMasteries(
         grid,
         msp,
         taken,
+        entity: ladderEntity.get(Number(hash)),
+        bit: index,
         params: params.map((param): MasteryEffect => {
           const values = MASTERY_PARAM_VALUES[param]!;
           return section === MASTERY_SECTIONS.indexOf("transcendence")

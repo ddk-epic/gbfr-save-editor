@@ -22,6 +22,8 @@ export interface EquipBonus {
 }
 
 export interface Summon {
+  entity: UnitEntity;
+  id: number;
   /** summon.Key */
   key: string;
   trait: Trait | undefined;
@@ -46,9 +48,14 @@ export function readSummon(
   const traitKey = keyOf(SKILLS, traitHash);
   const bonusKey = keyOf(SUMMON_BASE_PARAMS, bonusHash);
   return {
+    entity,
+    id,
     key,
+    // The summon's own trait and bonus sit on the summon, not in a trait list.
     trait:
-      traitKey === undefined ? undefined : { key: traitKey, level: traitLevel },
+      traitKey === undefined
+        ? undefined
+        : { entity, key: traitKey, level: traitLevel },
     equipBonus:
       bonusKey === undefined ? undefined : { key: bonusKey, level: bonusLevel },
     ...at.get(SUMMON_FLAGS),
@@ -60,7 +67,7 @@ export function readSummons(units: UnitStore): Map<number, Summon> {
   const summons = new Map<number, Summon>();
   for (const entity of units.entitiesWith(SUMMON_ID)) {
     const summon = readSummon(units, entity);
-    if (summon) summons.set(units.of(entity).get(SUMMON_ID), summon);
+    if (summon) summons.set(summon.id, summon);
   }
   return summons;
 }
