@@ -1,26 +1,26 @@
 # Conflux
 
-Conflux is the endless mode added in the Endless Ragnarok DLC. The save holds its Resonance tree, its aura collection and a few unnamed state values. `readConflux` in `src/domains/conflux/read.ts` reads the points, the tree and the collection. The tables behind it are the `endlessmode_*` tables of the archive.
+Conflux is the endless mode added in the Endless Ragnarok DLC. The save holds its Resonance tree, its aura collection and a few unnamed state values. The tables behind it are the `endlessmode_*` tables of the archive.
 
 ## Resonance points
 
-`USER_RESONANCE_POINTS` (1116) at entity 0 holds the Resonance points, the currency of the Resonance tree. `user-and-system.md` covers the user data.
+`USER_RESONANCE_POINTS` (1116) at entity 0 holds the Resonance points, the currency of the Resonance tree.
 
 ## Resonance tree
 
-The Resonance tree shares its attributes with the character progress units and is stored the same way as masteries. It sits at entities 0-199.
+The Resonance tree shares its attributes with masteries and master traits, and is stored the same way as masteries. It sits at entities 0-199.
 
-| Attribute | Name             | Type   | Holds                                       |
-| --------- | ---------------- | ------ | ------------------------------------------- |
-| 1601      | `PROGRESS_KEY`   | `uint` | Bonus of the node, a `limit_bonus.Key` hash |
-| 1602      | `PROGRESS_VALUE` | `int`  | Bitmask of the taken nodes with that bonus  |
+| Attribute | Name           | Type   | Holds                                       |
+| --------- | -------------- | ------ | ------------------------------------------- |
+| 1601      | `UNLOCK_KEY`   | `uint` | Bonus of the node, a `limit_bonus.Key` hash |
+| 1602      | `UNLOCK_VALUE` | `int`  | Bitmask of the taken nodes with that bonus  |
 
 - `endlessmode_tree` has 62 rows, one per node. Several nodes can grant the same bonus, so the save holds 58 entries at units 0-57, one per distinct `endlessmode_tree.Unk19`, in the order each first appears in the table. Units 58-199 hold the empty hash and 0.
 - Every save has all 58 entries, a new game included.
 - Bit n of 1602 is the node with that bonus at `endlessmode_tree.Unk24` n, as `LimitBonusParamIndex` works for masteries.
 - The game's tree completion probably counts only the first 42 rows. The other 20 rows carry `Unk35` 151.
 
-### The tree table
+### `endlessmode_tree` columns
 
 `endlessmode_tree` columns keep the extractor's names.
 

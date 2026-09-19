@@ -1,6 +1,6 @@
 # Characters
 
-A character is one unit per `chara` row. `readCharacterData` in `src/read/characters.ts` reads it. Master traits, masteries and over-masteries sit in a mastery block under its own entities.
+A character is one unit per `chara` row.
 
 ## The character unit
 
@@ -32,7 +32,7 @@ Characters occupy 41 entities, `CHARACTER_FIRST` (10000) to 10040, one per `char
 | 1325      | not named                     | `int`       | Always -1                                                    |
 | 1326      | `CHARACTER_DELEGATE_MESSAGE`  | `byte[241]` | Delegate message, padded with 0                              |
 | 1402      | `EQUIP_WEAPON`                | `uint`      | Weapon id                                                    |
-| 1403      | `EQUIP_SIGILS`                | `uint[13]`  | Sigil ids                                                    |
+| 1403      | `EQUIP_SIGILS`                | `uint[13]`  | Sigil ids of the 12 positions, then a 13th value, always 0   |
 | 1404      | `EQUIP_SKILLS`                | `uint[4]`   | Skill keys                                                   |
 | 1501      | not named                     | `int`       | Always 0                                                     |
 | 1502      | not named                     | `int`       | 0 or 7                                                       |
@@ -42,19 +42,19 @@ Characters occupy 41 entities, `CHARACTER_FIRST` (10000) to 10040, one per `char
 - 1309, 1310, 1312 and 1313 are the character's own stats. They leave out gear, fate episodes and masteries, and none of them is the stat the game displays. Characters with no `chara_status` rows hold 0.
 - 1323 equals a `chara_master_exp.TotalMSP` row, and the row index is the master level. 0 reads as master level 1.
 - The delegate is the character set in the Backup Characters menu for other players to enlist. The message is set there after picking one.
-- `weapons.md` and `sigils.md` cover the equipment attributes. A character unit holds the character's current gear, apart from its saved loadouts.
+- A character unit holds the character's current gear, apart from its saved loadouts.
 
 ### Flags
 
 1305 uses bits 0, 3, 4, 13 and 14.
 
-| Bit | Value    | Name      | Set on                                                                                        |
-| --- | -------- | --------- | --------------------------------------------------------------------------------------------- |
-| 0   | `0x1`    | not named | Captains and recruited characters                                                             |
-| 3   | `0x8`    | not named | Set in place of bit 4 on one character                                                        |
-| 4   | `0x10`   | not named | Probably characters recruited outside the main story, set before they join, DLC ones included |
-| 13  | `0x2000` | not named |                                                                                               |
-| 14  | `0x4000` | not named | Only on recruited characters, and not in every save                                           |
+| Bit | Value    | Name               | Set on                                                                                               |
+| --- | -------- | ------------------ | ---------------------------------------------------------------------------------------------------- |
+| 0   | `0x1`    | `CHARACTER_JOINED` | In the crew: the starting cast from a new game on, both captains included, and others once they join |
+| 3   | `0x8`    | not named          | Set in place of bit 4 on one character                                                               |
+| 4   | `0x10`   | not named          | Probably characters recruited outside the main story, set before they join, DLC ones included        |
+| 13  | `0x2000` | not named          |                                                                                                      |
+| 14  | `0x4000` | not named          | Only on recruited characters, and not in every save                                                  |
 
 ## Special units
 
@@ -68,43 +68,35 @@ Not every unit is a playable character.
 
 `USER_CAPTAIN` (1103) holds the captain picked at the start. The `SLOT` rows have no name, element -1 and UI order 1000-1003. What they are for is not known.
 
-## The mastery block
+## Party
 
-A character's mastery block sits at `MASTERY_FIRST` (10000000) + character index \* 1000 + entry, 400 entities wide. It holds over-masteries, mastery nodes and master trait cells. Level, experience and base stats sit on the character's own entity, not in here. 1601 and 1602 at entities 0-199 hold the Resonance tree, which `conflux.md` covers.
+| Entities                    | Name              | Holds                                                 |
+| --------------------------- | ----------------- | ----------------------------------------------------- |
+| 103000-103003               | `PARTY_FIRST`     | `PARTY_CHARACTER` (2201), `chara.CharId` per position |
+| 104000-104003               | not named         | Four members in the equipment shape, use not known    |
+| 105000 + set \* 10 + member | `PARTY_SET_FIRST` | Party set 0-29, member 0-3, in the equipment shape    |
 
-| Attribute | Name                           | Type   | Entries | Holds                                                        |
-| --------- | ------------------------------ | ------ | ------- | ------------------------------------------------------------ |
-| 1601      | `PROGRESS_KEY`                 | `uint` | 0-399   | Mastery node `LimitBonusId` or `skillboard_effect.Key`       |
-| 1602      | `PROGRESS_VALUE`               | `int`  | 0-399   | Node bitmask or master trait selection                       |
-| 1606      | `CHARACTER_OVER_MASTERY_KEY`   | `uint` | 0-3     | `limit_bonus_param.Key` of a `MED_EFF_*` stat                |
-| 1607      | `CHARACTER_OVER_MASTERY_LEVEL` | `int`  | 0-3     | Roll level as one bit, level n is `1 << (n-1)`, 0 when empty |
+- The equipment shape is the one loadouts use: `EQUIP_CHARACTER` (3003), `EQUIP_WEAPON` (1402), `EQUIP_SIGILS` (1403) and `EQUIP_SKILLS` (1404).
+- An unused party set member holds the empty hash in 3003.
+- 104000-104003 matches neither the current party nor a saved set. It is likely a leftover of a deleted set.
+- 3004, 3005 and 3007 sit here as on loadouts, with no meaning assigned.
 
-### Masteries
+## Loadouts
 
-The entries start with the character's mastery nodes: every `LimitBonusId` of its `ap_tree_atk`, `ap_tree_def`, `ap_tree_wep` and `ap_tree_rebuild` rows. 1602 holds a bitmask per node.
+Loadouts occupy 615 entities, `LOADOUT_FIRST` (20000) to 20614, in 41 blocks of 15. A block belongs to one character. The block order does not follow the character units.
 
-| Bits  | Holds                                                        |
-| ----- | ------------------------------------------------------------ |
-| 0-7   | Bit n set when the node at `LimitBonusParamIndex` n is taken |
-| 8-15  | A subset of bits 0-7, likely nodes granted on joining        |
-| 16-31 | Always 0                                                     |
+| Attribute | Name              | Type       | Holds                                                      |
+| --------- | ----------------- | ---------- | ---------------------------------------------------------- |
+| 1402      | `EQUIP_WEAPON`    | `uint`     | Weapon id                                                  |
+| 1403      | `EQUIP_SIGILS`    | `uint[13]` | Sigil ids of the 12 positions, then a 13th value, always 0 |
+| 1404      | `EQUIP_SKILLS`    | `uint[4]`  | Skill keys                                                 |
+| 3001      | not named         | `int`      | Always -1                                                  |
+| 3002      | `LOADOUT_NAME`    | `byte[64]` | Name, ASCII up to the first 0                              |
+| 3003      | `EQUIP_CHARACTER` | `uint`     | `chara.CharId`, the empty hash on an unused loadout        |
+| 3004      | not named         | `int`      | No meaning assigned                                        |
+| 3005      | not named         | `uint[5]`  | Hashes, no meaning assigned                                |
+| 3007      | not named         | `uint[50]` | Hashes, no meaning assigned                                |
 
-- The extension is the Offense and Defense rows at `DiffSeparatorMaybe` 311 and up.
-- Transcendence counts the `ap_tree_rebuild` rows at `ReqWepTranscensionLevel` 7 only. The T1-6 rows are never set.
-
-### Master traits
-
-The master trait cells follow the nodes: 99 `skillboard_effect.Key` entries, 111 for the captains, then empty ids. 1602 is 1 when the cell is selected and 0 otherwise.
-
-Cells join to `skillboard_layout` through `SkillboardEffectOrUiId`, which gives the style (`SkillboardCategoryId`), the rank (`SkillboardGroupId`) and the perk flag (`Unk25` = 100). Within a style the cells run in `skillboard_layout.Unk30` order: the three perks, then the ordinary cells rank by rank.
-
-| `Unk30`     | Cells                  |
-| ----------- | ---------------------- |
-| 0, 100, 200 | Insight, Essence, Crux |
-| +0 to +2    | Perks                  |
-| +10         | Rank 1                 |
-| +20         | Rank 2                 |
-| +30         | Rank 3                 |
-| +50         | EX                     |
-
-A trait's text is `skillboard_effect.Unk19`. `{n}` in it is `Value(n % 10 + 1)` of action part `n / 10` in `skillboard_effect_action_parts`, through `SkillboardEffectActionPartsId1` to 3. Stun Power parts (`SubType` 8, `MainType` 8) hold 1/10 of the displayed value.
+- Every save has all 615 units, a new game included.
+- Bytes after the first 0 in 3002 are left over from the default name, such as the tail of "Loadout 02".
+- 3004, 3005 and 3007 also sit on party sets and 104000-104003. 3001 sits on loadouts only.
