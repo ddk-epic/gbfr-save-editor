@@ -73,7 +73,9 @@
     "unresolved_other": "{{count}} keys missing from the key tables, shown as # and hex",
     "none": "none",
     "legality": "Legality",
-    "legalityPending": "Checked once editing arrives. Nothing is verified yet."
+    "legalityPending": "Checked once editing arrives. Nothing is verified yet.",
+    "rejects": "Rejects",
+    "rejectsNone": "header, section bounds, footer, both FlatBuffers decode"
   },
   "sections": {
     "profile": "Profile",
@@ -187,5 +189,37 @@
     "unusedMasteryBit": "masteries {{entity}}: bit {{bit}} set on an unused index",
     "overMasteryLevel": "over-mastery {{entity}}: level bits {{bits}} are not a single bit",
     "unexpected": "the file could not be read"
+  },
+  "validationIssues": {
+    "headerLayout": "header {{field}} is {{actual}}, not {{expected}}",
+    "slotDataPastFileSize": "SlotData ends at {{end}} B, past the {{size}} B file",
+    "unexpectedVersion": "{{what}} is {{actual}}, not {{expected}}",
+    "zeroChecksum": "SlotData checksum {{index}} is 0",
+    "tableCount": "{{table}}: the save holds {{held}} rows, the table {{expected}}",
+    "masteryOverTotal": "{{character}} {{section}}: {{taken}} nodes taken of {{total}}",
+    "masterTraitPool": "{{character}} {{rank}}: {{chosen}} cells chosen of {{pool}}",
+    "overMasteryOverMax": "{{character}}: over-mastery at level {{level}}",
+    "duplicateFateEpisode": "{{character}}: fate episode {{key}} twice",
+    "negativeResonancePoints": "Resonance points are {{points}}",
+    "resonanceRootNotTaken": "Resonance nodes taken without the root",
+    "auraSeenNotObtained": "aura {{key}} is seen but not obtained",
+    "auraNotInTable": "aura {{key}} is not in the aura table",
+    "negativeItemCount": "{{key}}: count is {{count}}",
+    "wishListTooLong": "wish list holds {{count}} items, the most is {{max}}",
+    "duplicateWishListItem": "wish list holds {{key}} twice",
+    "wishListNotTreasure": "wish list holds {{key}}, which is not a material",
+    "itemNotHeld": "{{list}} names {{key}}, which the inventory does not hold",
+    "tooManyTraits": "{{holder}} {{id}}: wrightstone has {{count}} traits, the most is {{max}}",
+    "traitsNotDescending": "{{holder}} {{id}}: wrightstone traits are not in descending level",
+    "curioSerialOrder": "curio {{entity}}: serial does not climb",
+    "duplicateJournalRow": "{{list}} holds {{key}} twice",
+    "trophySeenNotEarned": "trophy {{key}} is seen but not earned",
+    "trophyNotInTable": "trophy {{key}} is not in the badge table",
+    "duplicateQuest": "{{list}} quests hold {{id}} twice",
+    "completedNotAccepted": "quest {{id}} is completed but never accepted",
+    "clearDateWithoutClear": "quest {{id}} has a clear date but no clear",
+    "clearDateOutOfRange": "quest {{id}} was cleared at {{date}}",
+    "questClearsMismatch": "quest clears add up to {{sum}}, the profile counts {{profile}}",
+    "unknownCharacter": "{{where}} names {{key}}, which is not in the character table"
   }
 }

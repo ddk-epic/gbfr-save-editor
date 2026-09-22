@@ -1,4 +1,4 @@
 import { defineConfig } from "vitest/config";
 
-// Library tests only; app has its own vitest run.
+// Library tests only; the app has none.
 export default defineConfig({ test: { include: ["test/**/*.test.ts"] } });

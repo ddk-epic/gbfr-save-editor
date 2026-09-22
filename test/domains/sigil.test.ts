@@ -1,25 +1,25 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { EMPTY_HASH } from "../src/core/keys";
-import { hashId } from "../src/core/xxhash32-custom";
+import { EMPTY_HASH } from "../../src/core/keys";
+import { hashId } from "../../src/core/xxhash32-custom";
 import {
   SIGIL_FIRST,
   SIGIL_FLAGS,
   SIGIL_ID,
   SIGIL_KEY,
   SIGIL_LEVEL,
-} from "../src/domains/sigil/attributes";
+} from "../../src/domains/sigil/attributes";
 import {
   findSigilById,
   readSigil,
   readSigils,
-} from "../src/domains/sigil/read";
+} from "../../src/domains/sigil/read";
 import {
   TRAIT_KEY,
   TRAIT_LEVEL,
   TRAIT_SIGIL,
   traitRange,
-} from "../src/domains/trait/attributes";
-import { unitStore, type EntityUnits } from "./fixture";
+} from "../../src/domains/trait/attributes";
+import { unitStore, type EntityUnits } from "../../src/testing";
 
 /** The entity of a sigil's trait at one index. */
 const traitAt = (sigil: number, index: number) =>

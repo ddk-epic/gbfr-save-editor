@@ -22,6 +22,13 @@ export {
 export { EntityValues, UnitStore, type EntityRange } from "./core/unit-store";
 export { Attribute } from "./core/attribute";
 export { readSave, type Save, type SaveSection } from "./core/read-save";
+export {
+  type SaveIssue,
+  type Severity,
+  type ValidationCode,
+  type ValidationIssue,
+} from "./core/validation";
+export { validateSave, type ValidateOptions } from "./validate";
 export { hashId } from "./core/xxhash32-custom";
 export { keyOf, keyTable, type KeyTable } from "./core/keys";
 
