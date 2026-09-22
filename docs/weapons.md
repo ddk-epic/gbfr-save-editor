@@ -61,3 +61,22 @@ A wrightstone's trait list holds the main trait, then the two subs.
 ## Applied stones
 
 An applied stone has no inventory unit. Applying a wrightstone moves its traits onto the weapon. The weapon keeps the stone's `item.Key` in `WEAPON_WRIGHTSTONE`, and the traits become the weapon's `TRAIT_WEAPON` list. Nothing remains under `WRIGHTSTONE_FIRST` for it.
+
+Applying a stone changes these units and no others.
+
+| Units                                         | Change                                                                        |
+| --------------------------------------------- | ----------------------------------------------------------------------------- |
+| `WEAPON_WRIGHTSTONE` on the weapon            | Empty to the stone's `item.Key`                                               |
+| The weapon's `TRAIT_WEAPON` list              | Empty to the stone's traits, keys and levels, in the stone's order            |
+| `WRIGHTSTONE_KEY`, `_ID`, `_LOCKED`, `_FLAGS` | Reset to empty, 0, false and 0, the values of an unused entity                |
+| The stone's `TRAIT_WRIGHTSTONE` list          | Reset to empty keys at level 0                                                |
+| `ITEM_COUNT` of the stone's `item.Key`        | Down by 1, the count of loose stones with that key                            |
+| Unit 5815 at entity 0, index 195              | Up by 1, progress by `badge.BehaviorId` for the trophies for applying a stone |
+
+The emptied stone entity stays where it is. The game does not move the stones after it, and `WRIGHTSTONE_LAST_ID` does not change.
+
+Every weapon holds `WEAPON_WRIGHTSTONE` and a three index `TRAIT_WEAPON` list whether a stone is applied or not, so a weapon without one reads the empty hash at level 0.
+
+## Removing a stone
+
+The game has no way to take a stone off a weapon. `removeWrightstone` in `src/domains/weapon/edit.ts` discards it: `WEAPON_WRIGHTSTONE` and the three trait keys go to the empty hash and the trait levels to 0, the state of a weapon never applied a stone. No stone returns to the inventory, so the item count and trophy progress stay as they are.

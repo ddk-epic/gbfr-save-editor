@@ -104,6 +104,7 @@ export interface EquipmentSetView {
   partySet?: number;
   weapon: Table;
   wrightstone: Table;
+  wrightstoneWeaponId: number | undefined;
   skills: Table;
   sigils: Table;
 }
@@ -791,6 +792,7 @@ export function buildView(save: Save): SaveView {
           : [],
         { stretch: "value" },
       ),
+      wrightstoneWeaponId: w?.wrightstone ? w.id : undefined,
       wrightstone: table(
         `${id}:wrightstone`,
         "gear",

@@ -1,27 +1,40 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import type { Selection } from "../navigation";
 import type { EquipmentSetView, Table } from "../save/view";
 import { DataTable, TableLabel } from "./DataTable";
+import { EditMenu } from "./EditMenu";
 
 /** The equipped set and each loadout as tabs: skills and sigils left, weapon and wrightstone right. */
 export function EquipmentSets({
   sets,
   selection,
   onSelect,
+  onRemoveWrightstone,
 }: {
   sets: EquipmentSetView[];
   selection: Selection | undefined;
   onSelect: (selection: Selection) => void;
+  onRemoveWrightstone: (weaponId: number) => void;
 }) {
   const { t } = useTranslation();
   const [setId, setSetId] = useState(sets[0]?.id);
   const set = sets.find((s) => s.id === setId) ?? sets[0];
   if (!set) return null;
-  const tableOf = (label: string, table: Table, flush = false) => (
+  const tableOf = (
+    label: string,
+    table: Table,
+    flush = false,
+    menu?: ReactNode,
+  ) => (
     <DataTable
       table={table}
-      heading={<TableLabel>{label}</TableLabel>}
+      heading={
+        <>
+          <TableLabel>{label}</TableLabel>
+          {menu && <div className="ml-auto">{menu}</div>}
+        </>
+      }
       flush={flush}
       selectedRowId={selection?.row.id}
       onSelect={(rowId) =>
@@ -71,7 +84,21 @@ export function EquipmentSets({
         </div>
         <div className="min-w-0">
           {tableOf(t("equipment.weapon"), set.weapon, true)}
-          {tableOf(t("equipment.wrightstone"), set.wrightstone)}
+          {tableOf(
+            t("equipment.wrightstone"),
+            set.wrightstone,
+            false,
+            set.wrightstoneWeaponId !== undefined && (
+              <EditMenu
+                actions={[
+                  {
+                    label: t("edit.removeWrightstone"),
+                    run: () => onRemoveWrightstone(set.wrightstoneWeaponId!),
+                  },
+                ]}
+              />
+            ),
+          )}
         </div>
       </div>
     </div>

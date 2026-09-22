@@ -44,6 +44,14 @@ export async function loadSave(file: File): Promise<LoadResult> {
   }
 }
 
+export function applyEdit(
+  save: LoadedSave,
+  edit: (session: SaveSession) => void,
+): LoadedSave {
+  edit(save.session);
+  return { ...save, ...read(save.session), edited: true };
+}
+
 export function downloadSave(save: LoadedSave) {
   const url = URL.createObjectURL(new Blob([save.session.export()]));
   const link = document.createElement("a");

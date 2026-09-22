@@ -1,3 +1,4 @@
+import { removeWrightstone } from "gbfr-save-editor/edit";
 import { FolderOpen } from "lucide-react";
 import { useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -12,6 +13,7 @@ import { SavePage } from "./pages/SavePage";
 import { CharacterPage } from "./pages/CharacterPage";
 import { WelcomePage } from "./pages/WelcomePage";
 import {
+  applyEdit,
   downloadSave,
   loadSave,
   type LoadedSave,
@@ -36,10 +38,12 @@ export function App() {
   // Scroll position by page, so each page keeps its own; cleared per save.
   const scrollTops = useRef(new Map<Page, number>());
 
+  // Keyed on the session, so an edit keeps the scroll position.
+  const session = save?.session;
   useLayoutEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = scrollTops.current.get(page) ?? 0;
-  }, [page, save, scrollRef]);
+  }, [page, session, scrollRef]);
 
   const view = save?.view;
 
@@ -66,6 +70,13 @@ export function App() {
     setOpen((o) => new Set(o).add(section));
     go(next);
     scrollToSection(section);
+  };
+
+  const edit = (run: Parameters<typeof applyEdit>[1]) => {
+    if (!save) return;
+    // Rows are rebuilt, so the selected one no longer exists.
+    setSelection(undefined);
+    setSave(applyEdit(save, run));
   };
 
   const character = page.startsWith("char:")
@@ -161,6 +172,9 @@ export function App() {
                 setOpen={setOpen}
                 selection={selection}
                 onSelect={setSelection}
+                onRemoveWrightstone={(weaponId) =>
+                  edit((session) => removeWrightstone(session, weaponId))
+                }
                 onRoot={() => go("welcome")}
               />
             )}
