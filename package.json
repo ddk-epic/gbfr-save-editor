@@ -6,6 +6,7 @@
   "packageManager": "pnpm@10.33.2",
   "exports": {
     ".": "./src/index.ts",
+    "./edit": "./src/edit.ts",
     "./language": "./src/language.ts"
   },
   "scripts": {

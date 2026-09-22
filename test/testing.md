@@ -24,6 +24,7 @@ const units = unitStore({
 - `unitStore(entities)` gives a `UnitStore`, the seam every reader takes.
 - `fixtureSave({ slotData })` wraps one in a `Save` with a valid header and checksums, for `validateSave`. `header` overrides single header fields.
 - `sampleUnits()` holds one character, one item and one sigil, for anything reading across domains.
+- `fixtureFile(entities)` gives the bytes of a whole save file around the units, for `readSave` and `SaveSession`. It computes the checksum `SAVE_HASHSEED` selects when the units hold one. `encodeSaveDataBinary(units)` gives the FlatBuffer alone. Its layout differs from the game's, and the decoder reads it back as the same units.
 
 `hashId(key)` stores a key the way the save does. The key has to come from the table the attribute reads against, or the reader warns and keeps the hash: `SKILL_000_00` is a gem trait, not one of the abilities a loadout equips. `src/data` is the list to pick from.
 
@@ -31,7 +32,8 @@ const units = unitStore({
 
 | Path                    | Holds                                                                   |
 | ----------------------- | ----------------------------------------------------------------------- |
-| `test/core/`            | The container, the unit store, the hash                                 |
+| `test/core/`            | The container, the unit store, the hashes                               |
+| `test/session/`         | `SaveSession`: patching, export and the checksum it recomputes          |
 | `test/domains/`         | One file per `src/domains` module with a reader or checks worth pinning |
 | `test/read/`            | The readers spanning domains, and their checks                          |
 | `test/data.test.ts`     | The generated `src/data` tables on their own, no reader and no save     |
@@ -41,6 +43,6 @@ A function belongs to the test of the module that exports it, whatever table it 
 
 ## Gaps
 
-Reading real bytes has no test: `readSave` is covered on bad input only. `pnpm check:save` runs it over real files, and the app runs it on every save opened. An encoder would close the gap with a round trip, building units, writing them and reading them back.
+Reading bytes the game wrote has no test: `readSave` reads fixture files, whose layout is the test encoder's. `pnpm check:save` runs it over real files, and the app runs it on every save opened.
 
 `readRecentPlayers` is read by no test. The rest of the readers are covered by their own domain test or through `readInventory` and `readCharacterData`, whose fixtures hold a row per collection.

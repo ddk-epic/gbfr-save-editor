@@ -10,7 +10,8 @@
       "dark": "dark",
       "light": "light",
       "system": "system"
-    }
+    },
+    "export": "export"
   },
   "status": {
     "slotVersion": "slot data v{{version}}",
@@ -30,6 +31,10 @@
     "title": "Granblue Fantasy: Relink save editor",
     "drop": "Drop SaveData1.dat here, or click to choose it",
     "news": "What's new"
+  },
+  "export": {
+    "description": "Downloads the edited save as {{fileName}}. Put it in place of the original to load it in game.",
+    "download": "Download"
   },
   "stats": {
     "level": "Level",

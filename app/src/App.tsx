@@ -6,11 +6,17 @@ import { ContentsTree } from "./components/ContentsTree";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { ToolbarButton } from "./components/ToolbarButton";
 import { ValidationMenu } from "./components/ValidationMenu";
+import { ExportMenu } from "./components/ExportMenu";
 import { scrollToSection, type Page, type Selection } from "./navigation";
 import { SavePage } from "./pages/SavePage";
 import { CharacterPage } from "./pages/CharacterPage";
 import { WelcomePage } from "./pages/WelcomePage";
-import { loadSave, type LoadedSave, type LoadError } from "./save/load";
+import {
+  downloadSave,
+  loadSave,
+  type LoadedSave,
+  type LoadError,
+} from "./save/load";
 import type { SectionId } from "./save/view";
 import { useScrollGutter } from "./useScrollGutter";
 
@@ -93,6 +99,10 @@ export function App() {
             setOpen={setValidationOpen}
           />
         )}
+        <ExportMenu
+          fileName={save?.edited ? save.fileName : undefined}
+          onDownload={() => save && downloadSave(save)}
+        />
         <ToolbarButton onClick={() => fileInput.current?.click()}>
           <FolderOpen size={13} /> {t("toolbar.open")}
         </ToolbarButton>
