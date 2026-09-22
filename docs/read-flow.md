@@ -1,4 +1,4 @@
-# Reading a save
+# Read flow
 
 The library turns a `SaveData*.dat` file into typed objects in two stages. `readSave` parses the whole file into generic units. A domain reader then picks the units for one feature and interprets them.
 
@@ -76,7 +76,7 @@ at.get(SIGIL_FLAGS); // { locked: boolean, seen: boolean }
 
 `keyAttribute` resolves a hash to its archive key. `keyOf` in `src/core/keys.ts` does the lookup and takes the table as a parameter, so it holds no table of its own. It returns undefined for the hash of an empty string, which marks an empty slot. A hash missing from the table comes back as `#` plus 8 hex digits, with one console warning per hash.
 
-### Records carry their coordinates
+### Record coordinates
 
 Every record carries the entity it was read from, and its id where it has one. The entity is the address a write would patch. The id is what equip positions point at, and it is not the entity: `entity - range start` never equals the id in a played save.
 

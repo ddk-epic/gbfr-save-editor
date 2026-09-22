@@ -9,7 +9,7 @@ export function LoadErrorText({ error }: { error: LoadError }) {
   return <>{t("loadErrors.rejected", { reason: reason(t, error) })}</>;
 }
 
-function reason(
+export function reason(
   t: ReturnType<typeof useTranslation>["t"],
   error: LoadError,
 ): string {

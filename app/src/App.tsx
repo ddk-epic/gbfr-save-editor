@@ -88,6 +88,7 @@ export function App() {
         {view && (
           <ValidationMenu
             view={view}
+            issues={save?.issues ?? []}
             open={validationOpen}
             setOpen={setValidationOpen}
           />

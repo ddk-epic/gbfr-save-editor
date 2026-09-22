@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { EMPTY_HASH } from "../src/core/keys";
-import { hashId } from "../src/core/xxhash32-custom";
+import { EMPTY_HASH } from "../../src/core/keys";
+import { hashId } from "../../src/core/xxhash32-custom";
 import {
   WEAPON_APPEARANCE,
   WEAPON_FIRST,
@@ -8,9 +8,9 @@ import {
   WEAPON_KEY,
   WEAPON_TRAITS,
   WEAPON_TRAIT_POSITIONS,
-} from "../src/domains/weapon/attributes";
-import { findWeaponById, readWeapon } from "../src/domains/weapon/read";
-import { unitStore } from "./fixture";
+} from "../../src/domains/weapon/attributes";
+import { findWeaponById, readWeapon } from "../../src/domains/weapon/read";
+import { unitStore } from "../../src/testing";
 
 const WEAPON = WEAPON_FIRST + 3;
 
