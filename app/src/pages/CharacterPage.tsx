@@ -19,6 +19,7 @@ export function CharacterPage({
   setOpen,
   selection,
   onSelect,
+  onRemoveWrightstone,
   onRoot,
 }: {
   fileName: string;
@@ -27,6 +28,7 @@ export function CharacterPage({
   setOpen: (open: Set<string>) => void;
   selection: Selection | undefined;
   onSelect: (selection: Selection) => void;
+  onRemoveWrightstone: (weaponId: number) => void;
   onRoot: () => void;
 }) {
   const { t } = useTranslation();
@@ -109,6 +111,7 @@ export function CharacterPage({
                 sets={character.equipment}
                 selection={selection}
                 onSelect={onSelect}
+                onRemoveWrightstone={onRemoveWrightstone}
               />
             </CollapsibleSection>
           </>

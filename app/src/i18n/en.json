@@ -59,6 +59,10 @@
     "skills": "Skills",
     "sigils": "Sigils"
   },
+  "edit": {
+    "menu": "Edit",
+    "removeWrightstone": "Remove wrightstone"
+  },
   "table": {
     "empty": "Nothing stored.",
     "yes": "yes",
