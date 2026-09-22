@@ -16,6 +16,7 @@
     "format": "prettier --write .",
     "gen:data": "tsx scripts/gen-data.ts",
     "check:save": "tsx scripts/check-save.ts",
+    "diff:save": "tsx tools/diff-save.ts",
     "dev": "pnpm --filter gbfr-save-editor-app dev",
     "prepare": "husky"
   },
