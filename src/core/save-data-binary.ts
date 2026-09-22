@@ -42,6 +42,8 @@ export type SaveUnit = {
     attribute: UnitAttribute;
     entity: UnitEntity;
     values: ValueOf[T][];
+    /** Position of the first value in its FlatBuffer, absent on units built in memory. */
+    valuesAt?: number;
   };
 }[ValueType];
 
@@ -52,22 +54,63 @@ export interface SaveDataBinary {
   units: SaveUnit[];
 }
 
-const ELEMENTS: {
+export const ELEMENTS: {
   [T in ValueType]: {
     size: number;
     read: (reader: ByteReader, at: number) => ValueOf[T];
+    write: (view: DataView, at: number, value: ValueOf[T]) => void;
   };
 } = {
-  bool: { size: 1, read: (r, at) => r.u8(at) !== 0 },
-  byte: { size: 1, read: (r, at) => r.i8(at) },
-  ubyte: { size: 1, read: (r, at) => r.u8(at) },
-  short: { size: 2, read: (r, at) => r.i16(at) },
-  ushort: { size: 2, read: (r, at) => r.u16(at) },
-  int: { size: 4, read: (r, at) => r.i32(at) },
-  uint: { size: 4, read: (r, at) => r.u32(at) },
-  long: { size: 8, read: (r, at) => r.i64(at) },
-  ulong: { size: 8, read: (r, at) => r.u64(at) },
-  float: { size: 4, read: (r, at) => r.f32(at) },
+  bool: {
+    size: 1,
+    read: (r, at) => r.u8(at) !== 0,
+    write: (v, at, x) => v.setUint8(at, x ? 1 : 0),
+  },
+  byte: {
+    size: 1,
+    read: (r, at) => r.i8(at),
+    write: (v, at, x) => v.setInt8(at, x),
+  },
+  ubyte: {
+    size: 1,
+    read: (r, at) => r.u8(at),
+    write: (v, at, x) => v.setUint8(at, x),
+  },
+  short: {
+    size: 2,
+    read: (r, at) => r.i16(at),
+    write: (v, at, x) => v.setInt16(at, x, true),
+  },
+  ushort: {
+    size: 2,
+    read: (r, at) => r.u16(at),
+    write: (v, at, x) => v.setUint16(at, x, true),
+  },
+  int: {
+    size: 4,
+    read: (r, at) => r.i32(at),
+    write: (v, at, x) => v.setInt32(at, x, true),
+  },
+  uint: {
+    size: 4,
+    read: (r, at) => r.u32(at),
+    write: (v, at, x) => v.setUint32(at, x, true),
+  },
+  long: {
+    size: 8,
+    read: (r, at) => r.i64(at),
+    write: (v, at, x) => v.setBigInt64(at, x, true),
+  },
+  ulong: {
+    size: 8,
+    read: (r, at) => r.u64(at),
+    write: (v, at, x) => v.setBigUint64(at, x, true),
+  },
+  float: {
+    size: 4,
+    read: (r, at) => r.f32(at),
+    write: (v, at, x) => v.setFloat32(at, x, true),
+  },
 };
 
 /** Unit table fields. The schema names them IDType, UnitID and ValueData. */
@@ -117,17 +160,19 @@ function readUnit<T extends ValueType>(
 ): SaveUnit {
   const attributeAt = fieldAt(reader, table, UNIT_ATTRIBUTE);
   const entityAt = fieldAt(reader, table, UNIT_ENTITY);
-  const valuesAt = fieldAt(reader, table, UNIT_VALUES);
+  const valuesField = fieldAt(reader, table, UNIT_VALUES);
   const element = ELEMENTS[valueType];
 
   const values: ValueOf[T][] = [];
-  if (valuesAt !== undefined) {
+  let first: number | undefined;
+  if (valuesField !== undefined) {
     const { start, length } = vectorAt(
       reader,
-      valuesAt,
+      valuesField,
       element.size,
       `${valueType} ValueData`,
     );
+    first = start;
     for (let i = 0; i < length; i++) {
       values.push(element.read(reader, start + i * element.size));
     }
@@ -138,6 +183,7 @@ function readUnit<T extends ValueType>(
     attribute: attributeAt === undefined ? 0 : reader.u32(attributeAt),
     entity: entityAt === undefined ? 0 : reader.u32(entityAt),
     values,
+    valuesAt: first,
   } as SaveUnit;
 }
 

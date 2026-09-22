@@ -23,7 +23,7 @@ Every offset and size gets checked against the file. A section out of bounds or 
 
 `bool`, `byte`, `ubyte`, `short`, `ushort`, `int`, `uint`, `long`, `ulong`, `float`
 
-Each vector entry is a unit table with an attribute, an entity and a value vector of that type. The decoder returns them as a flat list.
+Each vector entry is a unit table with an attribute, an entity and a value vector of that type. The decoder returns them as a flat list, each with `valuesAt`, the position of its first value in the FlatBuffer, where an edit overwrites them.
 
 ```ts
 { valueType: "uint", attribute: 7902, entity: 3, values: [3] }
