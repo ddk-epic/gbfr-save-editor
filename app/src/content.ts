@@ -1,6 +1,11 @@
 /** Newest first. */
 export const NEWS = [
   {
+    date: "2026-09-22",
+    title: "First edit option implemented",
+    body: "Remove a weapon's wrightstone, then export the save.",
+  },
+  {
     date: "2026-09-14",
     title: "Save browser",
     body: "Load a save and browse every save domain and character. Editing comes next.",
