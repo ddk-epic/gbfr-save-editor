@@ -22,7 +22,7 @@ import {
 import type { SectionId } from "./save/view";
 import { useScrollGutter } from "./useScrollGutter";
 
-const DEFAULT_OPEN = ["profile", "party", "stats", "gear"];
+const DEFAULT_OPEN = ["profile", "party", "equippedSummons", "stats", "gear"];
 
 export function App() {
   const { t } = useTranslation();
