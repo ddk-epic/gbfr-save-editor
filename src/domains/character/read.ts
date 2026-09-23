@@ -2,7 +2,12 @@ import { CHARACTER_UI_ORDER, MASTER_LEVEL_MSP } from "../../data/characters";
 import { hashId } from "../../core/xxhash32-custom";
 import type { EntityRange, UnitStore } from "../../core/unit-store";
 import type { UnitEntity } from "../../core/save-data-binary";
-import { CHARACTER_FIRST, CHARACTER_KEY, masteryRange } from "./attributes";
+import {
+  CHARACTER_FIRST,
+  CHARACTER_KEY,
+  CHARACTER_MASTER_XP,
+  masteryRange,
+} from "./attributes";
 
 /** NP rows: Lyria, Vyrn, Sierokarte, Rolan, Historiath, Zathba. */
 export const isNPC = (character: string) => /^NP\d{4}$/.test(character);
@@ -39,6 +44,9 @@ export function masterLevelOf(xp: number): number {
     level++;
   return level;
 }
+
+export const readMasterLevel = (units: UnitStore, gear: UnitEntity) =>
+  masterLevelOf(units.of(gear).get(CHARACTER_MASTER_XP));
 
 /** A character sits at two coordinates: its gear entity and its mastery range. */
 export interface CharacterEntities {
