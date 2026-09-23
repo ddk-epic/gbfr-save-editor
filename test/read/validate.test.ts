@@ -98,6 +98,7 @@ const weapon = (id: number, wrightstone: Wrightstone | undefined): Weapon => ({
   wrightstone,
   appearance: undefined,
   owned: true,
+  series: 0,
   seen: true,
   awakeningSeen: true,
 });

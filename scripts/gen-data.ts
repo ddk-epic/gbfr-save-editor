@@ -541,6 +541,28 @@ console.log(
   `CONFLUX_TREE: ${treeRows.length} nodes, CONFLUX_AURAS: ${auraRows.length} auras`,
 );
 
+// Weapon series by key hash, weapon.Unk30. The traits each series carries name it:
+// 1 holds Stun Power, 3 Critical Hit Rate, 4 HP and Garrison, 5 Weak Point DMG,
+// while 0 and 2 are the Terminus and Ascension weapons. 6 sits on the unnamed
+// _07 weapons. Every character has one weapon of each series.
+const weaponRows = db
+  .prepare("select Key, Unk30 as series from weapon order by Key")
+  .all() as { Key: string; series: number }[];
+emit(
+  "weapons",
+  `/** weapon.Key hash -> weapon series (weapon.Unk30), ${weaponRows.length} weapons. */
+export const WEAPON_SERIES: Readonly<Record<number, number>> = {
+${weaponRows
+  .filter(({ Key }) => Key !== "")
+  .map(
+    ({ Key, series }) =>
+      `  0x${hashId(Key).toString(16).padStart(8, "0")}: ${series},`,
+  )
+  .join("\n")}
+};`,
+);
+console.log(`WEAPON_SERIES: ${weaponRows.length} weapons`);
+
 // Game text: gt() table -> query returning (key, text_id), the key domain
 // returns and its .msg id. Unk* columns keep the extractor's names.
 const GAME_TEXT = {
@@ -579,6 +601,14 @@ const GAME_TEXT = {
   trophyDescription: `select cast(Key as text) key, Description text_id from badge`,
   stage: `select PhaseId key, Name text_id from stagename`,
   aura: `select Unk105 key, BuffName text_id from endlessmode_buff`,
+  // No table names the weapon series; weapon.Unk30 indexes these labels, and 6 has none.
+  weaponSeries: `select '0' key, 'TXT_PAU_WEP_TYPE_BAHAMUT' text_id
+    union all select '1', 'TXT_PAU_WEP_TYPE_STUN'
+    union all select '2', 'TXT_PAU_WEP_TYPE_AWAKE'
+    union all select '3', 'TXT_PAU_WEP_TYPE_CRI'
+    union all select '4', 'TXT_PAU_WEP_DEFENSE'
+    union all select '5', 'TXT_PAU_WEP_TYPE_WEAK'
+    union all select '7', 'TXT_PAU_WEP_TYPE_PRIVILEGE'`,
   // No table names the categories; the collection's type labels are in category order.
   auraCategory: `select '0' key, 'TXT_KKTN_BFCHIC_TYPE_BREATH' text_id
     union all select '1', 'TXT_KKTN_BFCHIC_TYPE_ISOLATION'

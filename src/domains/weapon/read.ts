@@ -1,3 +1,5 @@
+import { WEAPON_SERIES } from "../../data/weapons";
+import { hashId } from "../../core/xxhash32-custom";
 import { keyOf } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { UnitStore } from "../../core/unit-store";
@@ -40,6 +42,8 @@ export interface Weapon {
   appearance: string | undefined;
   /** In the player's hands, and so equippable. */
   owned: boolean;
+  /** Weapon series, the gt() weaponSeries key, undefined for a key off the table. */
+  series: number | undefined;
   /** False while the transwakening menu marks the weapon as new. */
   seen: boolean;
   /** Seen in the upgrade menu, set only on awakenable weapons. */
@@ -74,6 +78,7 @@ export function readWeapon(
     ),
     wrightstone: stoneKey === undefined ? undefined : { key: stoneKey, traits },
     appearance: at.get(WEAPON_APPEARANCE),
+    series: WEAPON_SERIES[hashId(key)],
     ...at.get(WEAPON_FLAGS),
   };
 }

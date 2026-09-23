@@ -105,7 +105,7 @@ export interface EquipmentSetView {
   partySet?: number;
   weapon: Table;
   /** Weapons the character can equip, empty on a set that is not the live one. */
-  weaponOptions: { id: number; key: string }[];
+  weaponOptions: { id: number; key: string; series: number | undefined }[];
   /** The character entity the live gear sits on, undefined on a loadout or party set. */
   characterEntity: number | undefined;
   wrightstone: Table;
@@ -777,10 +777,13 @@ export function buildView(save: Save): SaveView {
       weaponOptions:
         characterEntity === undefined
           ? []
-          : equippableWeapons(units, characterEntity).map(({ id, key }) => ({
-              id,
-              key,
-            })),
+          : equippableWeapons(units, characterEntity).map(
+              ({ id, key, series }) => ({
+                id,
+                key,
+                series,
+              }),
+            ),
       weapon: table(
         `${id}:weapon`,
         "gear",

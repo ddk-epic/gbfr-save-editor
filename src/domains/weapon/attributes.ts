@@ -25,3 +25,5 @@ export const WEAPON_TRANSCENDENCE = Attribute.int(2817);
 export const WEAPON_TRAITS = Attribute.uintList(2818);
 
 export const WEAPON_TRAIT_POSITIONS = 5;
+
+export const WEAPON_SERIES_ORDER = [4, 1, 2, 3, 5, 0, 6, 7];
