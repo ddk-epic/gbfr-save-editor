@@ -56,6 +56,7 @@ export {
 } from "./domains/character/read";
 export {
   equipmentLookup,
+  readCharacterEquipment,
   readEquipment,
   type Equipment,
   type EquipmentLookup,
