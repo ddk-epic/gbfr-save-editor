@@ -106,10 +106,11 @@ describe("equipWeapon", () => {
     [WEAPON_FIRST + 3]: weapon(9, "WEP_PL0300_01"),
   };
 
-  it("offers the character's own weapons, held ones only", () => {
+  it("offers the character's own weapons, held ones only, in list order", () => {
     const units = unitStore(inventory);
+    // Durandal is listed before Albacore Blade, whatever their ids.
     expect(equippableWeapons(units, CHARACTER).map((w) => w.id)).toEqual([
-      71, 72,
+      72, 71,
     ]);
     expect(equippableWeapons(units, CHARACTER + 1)).toEqual([]);
   });

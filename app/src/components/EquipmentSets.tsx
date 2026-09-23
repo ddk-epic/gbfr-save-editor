@@ -94,7 +94,11 @@ export function EquipmentSets({
             <EditMenu
               actions={set.weaponOptions.map((weapon) => ({
                 label: t("edit.equipWeapon", {
-                  weapon: gt("weapon", weapon.key) ?? weapon.key,
+                  weapon:
+                    (weapon.series !== undefined &&
+                      gt("weaponSeries", String(weapon.series))) ||
+                    gt("weapon", weapon.key) ||
+                    weapon.key,
                 }),
                 run: () => onEquipWeapon(set.characterEntity!, weapon.id),
               }))}

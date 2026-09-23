@@ -29,6 +29,25 @@ Weapons occupy 256 entities, `WEAPON_FIRST` (40000) to 40255. `WEAPON_ID` (2802)
 
 A weapon belongs to the character its key names, `WEP_<CharId>_*`. The inventory keeps a separate entry per character even where two hold the same weapon, so the two captains never share one.
 
+## Series
+
+The save holds no series. It comes from the `weapon` table's `Unk30`, as `WEAPON_SERIES` in `src/data/weapons.ts`. Every character has one weapon of each series, and the traits the weapon carries name it.
+
+| Series | Name             | Traits                              |
+| ------ | ---------------- | ----------------------------------- |
+| 0      | Terminus Weapon  | Catastrophe, Regen                  |
+| 1      | Stunner          | Stun Power, Linked Together         |
+| 2      | Ascension Weapon | ATK, HP                             |
+| 3      | Stinger          | Critical Hit Rate, Critical Hit DMG |
+| 4      | Defender         | HP, Garrison                        |
+| 5      | Executioner      | Weak Point DMG, Break Assassin      |
+| 6      | not named        | Sits on the unused `_07` weapons    |
+| 7      | Bonus Weapon     |                                     |
+
+The names are game text, under the `weaponSeries` table by series number.
+
+A weapon list goes by series, in `WEAPON_SERIES_ORDER`. The game keeps its own order in `weapon.SortOrder`, which agrees with this for every character but Sandalphon, Id and Seofon, whose ascension weapon the game lists last.
+
 ## Trait lists
 
 Traits with levels live in their own units at `TRAIT_FIRST + holder * TRAIT_STRIDE + index` (120000000 + …). Each index holds `TRAIT_KEY` (1701, a `skill.Key` hash) and `TRAIT_LEVEL` (1702, an int).

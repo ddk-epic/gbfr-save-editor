@@ -13405,6 +13405,15 @@
     "FFF07A5F": "Doom and Gloom",
     "FFFBFD03": "Famine"
   },
+  "weaponSeries": {
+    "0": "Terminus Weapon",
+    "1": "Stunner",
+    "2": "Ascension Weapon",
+    "3": "Stinger",
+    "4": "Defender",
+    "5": "Executioner",
+    "7": "Bonus Weapon"
+  },
   "auraCategory": {
     "0": "Vitality",
     "1": "Sequestration",
