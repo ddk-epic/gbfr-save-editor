@@ -49,11 +49,7 @@ import {
   type PartyMember,
 } from "../domains/party/read";
 import { readEquippedSkills } from "../domains/skill/read";
-import {
-  readEquippedSummons,
-  readSummons,
-  type Summon,
-} from "../domains/summon/read";
+import { readEquippedSummons, type Summon } from "../domains/summon/read";
 import { SAVE_ENTITY, USER_CAPTAIN } from "../domains/user/attributes";
 
 export interface Character extends Equipment {
@@ -150,7 +146,7 @@ export function readCharacterData(units: UnitStore): CharacterData {
     characters,
     party: readParty(units),
     partySets: readPartySets(units, lookup),
-    summons: readEquippedSummons(units, readSummons(units)),
+    summons: readEquippedSummons(units),
     loadouts,
   };
 }
