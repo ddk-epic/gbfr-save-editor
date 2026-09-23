@@ -766,7 +766,7 @@ export function buildView(save: Save): SaveView {
   const equipmentSet = (
     id: string,
     name: string | undefined,
-    e: Equipment,
+    e: Equipment & { skills: (string | undefined)[] },
     characterEntity?: number,
   ): EquipmentSetView => {
     const w = e.weapon;

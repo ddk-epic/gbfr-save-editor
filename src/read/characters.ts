@@ -43,7 +43,12 @@ import {
   readOverMasteries,
   type OverMastery,
 } from "../domains/over-mastery/read";
-import { readParty, readPartySets } from "../domains/party/read";
+import {
+  readParty,
+  readPartySets,
+  type PartyMember,
+} from "../domains/party/read";
+import { readEquippedSkills } from "../domains/skill/read";
 import {
   readEquippedSummons,
   readSummons,
@@ -54,6 +59,8 @@ import { SAVE_ENTITY, USER_CAPTAIN } from "../domains/user/attributes";
 export interface Character extends Equipment {
   /** The character's own entity, which its live gear sits on. */
   entity: UnitEntity;
+  /** ability.Key per skill position. */
+  skills: (string | undefined)[];
   level: number;
   xp: number;
   /** HP and ATK from chara_status at this level, before gear and masteries. */
@@ -76,6 +83,8 @@ export interface Character extends Equipment {
 
 export interface Loadout extends Equipment {
   name: string;
+  /** ability.Key per skill position. */
+  skills: (string | undefined)[];
 }
 
 export interface CharacterData {
@@ -85,7 +94,7 @@ export interface CharacterData {
   characters: Character[];
   /** Current party: chara.CharId per position. */
   party: (string | undefined)[];
-  partySets: ((Equipment | undefined)[] | undefined)[];
+  partySets: ((PartyMember | undefined)[] | undefined)[];
   /** Equipped summons, shared by the party. */
   summons: (Summon | undefined)[];
   /** Loadouts with a character assigned, in save order. */
@@ -105,6 +114,7 @@ export function readCharacterData(units: UnitStore): CharacterData {
     characters.push({
       ...equipment,
       entity: where.gear,
+      skills: readEquippedSkills(units, where.gear),
       level: at.get(CHARACTER_LEVEL),
       xp: at.get(CHARACTER_XP),
       baseHp: at.get(CHARACTER_BASE_HP),
@@ -124,7 +134,11 @@ export function readCharacterData(units: UnitStore): CharacterData {
     const entity = LOADOUT_FIRST + i;
     const equipment = readEquipment(units, entity, EQUIP_CHARACTER, lookup);
     if (equipment)
-      loadouts.push({ ...equipment, name: units.of(entity).get(LOADOUT_NAME) });
+      loadouts.push({
+        ...equipment,
+        name: units.of(entity).get(LOADOUT_NAME),
+        skills: readEquippedSkills(units, entity),
+      });
   }
 
   const captainNumber = units.of(SAVE_ENTITY).get(USER_CAPTAIN);

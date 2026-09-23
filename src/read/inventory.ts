@@ -1,5 +1,5 @@
 import type { UnitStore } from "../core/unit-store";
-import { readUnseenAbilities } from "../domains/ability/read";
+import { readUnseenSkills } from "../domains/skill/read";
 import { readCurios, type Curio } from "../domains/curio/read";
 import { readItems, readItemsFlagged } from "../domains/item/read";
 import { readSigils, type Sigil } from "../domains/sigil/read";
@@ -28,10 +28,10 @@ export interface Inventory {
    */
   unseenItems: string[];
   /**
-   * ability.Key of abilities in a character's list not yet seen, guest
-   * characters included. Abilities a character has not got hold 0 and are left out.
+   * ability.Key of skills in a character's list not yet seen, guest
+   * characters included. Skills a character has not got hold 0 and are left out.
    */
-  unseenAbilities: string[];
+  unseenSkills: string[];
   /** Oldest first, the order the game appraises them in. */
   curios: Curio[];
   /** By wrightstone id. */
@@ -54,7 +54,7 @@ export function readInventory(units: UnitStore): Inventory {
       units,
       (flags, count) => count > 0 && !flags.seen,
     ),
-    unseenAbilities: readUnseenAbilities(units),
+    unseenSkills: readUnseenSkills(units),
     curios: readCurios(units),
     wrightstones: readWrightstones(units),
     sigils: readSigils(units),

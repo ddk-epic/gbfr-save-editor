@@ -113,7 +113,12 @@ export {
   readFateEpisodes,
   type FateEpisode,
 } from "./domains/fate-episode/read";
-export { readParty, readPartySets } from "./domains/party/read";
+export {
+  readParty,
+  readPartySets,
+  type PartyMember,
+} from "./domains/party/read";
+export { readEquippedSkills, readUnseenSkills } from "./domains/skill/read";
 export {
   readProfile,
   readRecentPlayers,

@@ -75,7 +75,7 @@ const inventory = (fields: Partial<Inventory>): Inventory => ({
   items: new Map(),
   wishList: [],
   unseenItems: [],
-  unseenAbilities: [],
+  unseenSkills: [],
   curios: [],
   wrightstones: new Map(),
   weapons: new Map(),
