@@ -548,7 +548,7 @@ export function buildView(save: Save): SaveView {
       "curios",
       "curios",
       [
-        ["index", 3],
+        ["index", 2],
         ["tier", 4],
         ["serial", 7],
         ["type", 12],
@@ -726,7 +726,7 @@ export function buildView(save: Save): SaveView {
       "party:current",
       "party",
       [
-        ["index", 4],
+        ["index", 2],
         ["character", 24],
         ["level", 5],
       ],
@@ -760,6 +760,24 @@ export function buildView(save: Save): SaveView {
           : [],
       ),
       { stretch: "members", tab: "party", label: "partySets" },
+    ),
+    table(
+      "party:summons",
+      "equippedSummons",
+      [
+        ["index", 2],
+        ["summon", 36],
+        ["trait", 36],
+        ["equipBonus", 36],
+      ],
+      data.summons.map((s, i) => [
+        i + 1,
+        keyCell("summon", s?.key),
+        trait(s?.trait),
+        s?.equipBonus &&
+          keyCell("summonBonus", s.equipBonus.key, s.equipBonus.level + 1),
+      ]),
+      { stretch: "summon" },
     ),
   ];
 
@@ -917,7 +935,7 @@ export function buildView(save: Save): SaveView {
           `${c.character}:overMasteries`,
           "masteries",
           [
-            ["index", 4],
+            ["index", 2],
             ["bonus", 40],
             ["level", 5],
           ],

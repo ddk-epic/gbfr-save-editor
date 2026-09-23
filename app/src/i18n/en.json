@@ -90,6 +90,7 @@
   "sections": {
     "profile": "Profile",
     "party": "Party",
+    "equippedSummons": "Equipped summons",
     "recentPlayers": "Recent players",
     "items": "Items",
     "sigils": "Sigils",
