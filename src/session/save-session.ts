@@ -11,11 +11,7 @@ export interface Patch {
   values: readonly unknown[];
 }
 
-/**
- * A save file open for editing. Edits overwrite unit values in place at the
- * same length, so every other byte stays as the game wrote it, and `save`
- * reads the edited values.
- */
+/** A save file open for editing. Values are overwritten in place, same length. */
 export class SaveSession {
   private constructor(
     private readonly bytes: Uint8Array,
@@ -28,7 +24,7 @@ export class SaveSession {
     return new SaveSession(copy, readSave(copy));
   }
 
-  /** Applies every patch or none: a missing unit or a length change throws first. */
+  /** Every patch or none: a missing unit or a length change throws first. */
   patch(patches: readonly Patch[]): void {
     const units = this.save.slotData.units;
     const targets = patches.map(({ attribute, entity, values }) => {

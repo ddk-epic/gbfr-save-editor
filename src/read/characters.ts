@@ -1,3 +1,4 @@
+import type { UnitEntity } from "../core/save-data-binary";
 import type { UnitStore } from "../core/unit-store";
 import {
   CHARACTER_BASE_ATTACK,
@@ -51,6 +52,8 @@ import {
 import { SAVE_ENTITY, USER_CAPTAIN } from "../domains/user/attributes";
 
 export interface Character extends Equipment {
+  /** The character's own entity, which its live gear sits on. */
+  entity: UnitEntity;
   level: number;
   xp: number;
   /** HP and ATK from chara_status at this level, before gear and masteries. */
@@ -101,6 +104,7 @@ export function readCharacterData(units: UnitStore): CharacterData {
     const masterXp = at.get(CHARACTER_MASTER_XP);
     characters.push({
       ...equipment,
+      entity: where.gear,
       level: at.get(CHARACTER_LEVEL),
       xp: at.get(CHARACTER_XP),
       baseHp: at.get(CHARACTER_BASE_HP),

@@ -38,6 +38,8 @@ export interface Weapon {
   wrightstone: Wrightstone | undefined;
   /** weapon.Key of the look chosen for the weapon, undefined for its own. */
   appearance: string | undefined;
+  /** In the player's hands, and so equippable. */
+  owned: boolean;
   /** False while the transwakening menu marks the weapon as new. */
   seen: boolean;
   /** Seen in the upgrade menu, set only on awakenable weapons. */

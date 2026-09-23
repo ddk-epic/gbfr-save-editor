@@ -36,6 +36,7 @@ import {
   type Trophy,
   type TrophyTab,
 } from "gbfr-save-editor";
+import { equippableWeapons } from "gbfr-save-editor/edit";
 import type { GameTextTable } from "../game-text";
 import type en from "../i18n/en.json";
 
@@ -103,6 +104,10 @@ export interface EquipmentSetView {
   /** From 1. */
   partySet?: number;
   weapon: Table;
+  /** Weapons the character can equip, empty on a set that is not the live one. */
+  weaponOptions: { id: number; key: string }[];
+  /** The character entity the live gear sits on, undefined on a loadout or party set. */
+  characterEntity: number | undefined;
   wrightstone: Table;
   wrightstoneWeaponId: number | undefined;
   skills: Table;
@@ -762,11 +767,20 @@ export function buildView(save: Save): SaveView {
     id: string,
     name: string | undefined,
     e: Equipment,
+    characterEntity?: number,
   ): EquipmentSetView => {
     const w = e.weapon;
     return {
       id,
       name,
+      characterEntity,
+      weaponOptions:
+        characterEntity === undefined
+          ? []
+          : equippableWeapons(units, characterEntity).map(({ id, key }) => ({
+              id,
+              key,
+            })),
       weapon: table(
         `${id}:weapon`,
         "gear",
@@ -965,7 +979,7 @@ export function buildView(save: Save): SaveView {
         ),
       ],
       equipment: [
-        equipmentSet(`${c.character}:equipped`, undefined, c),
+        equipmentSet(`${c.character}:equipped`, undefined, c, c.entity),
         ...data.loadouts
           .filter((l) => l.character === c.character)
           .map((l, i) =>

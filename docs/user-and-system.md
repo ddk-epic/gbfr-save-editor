@@ -92,6 +92,8 @@ Location uses attributes 1201-1207.
 | 1206      | `LOCATION_PARTY_HP` | `int[4]`    | HP per party slot. Only the player's slot holds a value, AI and empty slots hold 0 |
 | 1207      | not named           | `int[4]`    |                                                                                    |
 
+1206 is a cache. The game recomputes it from the party's gear and writes it on every save, so a value left stale by an edit corrects itself and the HP shows right in the meantime.
+
 `stagename.PhaseId` spells the stage as 8 hex digits, so stage `0xC00` is PhaseId `00000C00`, Folca, Frontier Town. `stagename.Name` is a text key in `text_telop` or `text_ui`. The opening stage `0xA01` has no `stagename` row.
 
 A teleport changes 1201 and SystemData 813 and 819 together. At the start of a new game, 813 and 819 hold `0x800`, Grandcypher Deck, while 1201 holds the opening stage. 1202 stays the same after a teleport.
