@@ -91,32 +91,32 @@ export function EquipmentSets({
             t("equipment.weapon"),
             set.weapon,
             true,
-            set.characterEntity !== undefined &&
-              set.weaponOptions.length > 0 && (
-                <EditMenu
-                  actions={set.weaponOptions.map((weapon) => ({
-                    label: t("edit.equipWeapon", {
-                      weapon: gt("weapon", weapon.key) ?? weapon.key,
-                    }),
-                    run: () => onEquipWeapon(set.characterEntity!, weapon.id),
-                  }))}
-                />
-              ),
+            <EditMenu
+              actions={set.weaponOptions.map((weapon) => ({
+                label: t("edit.equipWeapon", {
+                  weapon: gt("weapon", weapon.key) ?? weapon.key,
+                }),
+                run: () => onEquipWeapon(set.characterEntity!, weapon.id),
+              }))}
+            />,
           )}
           {tableOf(
             t("equipment.wrightstone"),
             set.wrightstone,
             false,
-            set.wrightstoneWeaponId !== undefined && (
-              <EditMenu
-                actions={[
-                  {
-                    label: t("edit.removeWrightstone"),
-                    run: () => onRemoveWrightstone(set.wrightstoneWeaponId!),
-                  },
-                ]}
-              />
-            ),
+            <EditMenu
+              actions={
+                set.wrightstoneWeaponId === undefined
+                  ? []
+                  : [
+                      {
+                        label: t("edit.removeWrightstone"),
+                        run: () =>
+                          onRemoveWrightstone(set.wrightstoneWeaponId!),
+                      },
+                    ]
+              }
+            />,
           )}
         </div>
       </div>
