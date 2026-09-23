@@ -48,20 +48,29 @@ export function masterLevelOf(xp: number): number {
 export const readMasterLevel = (units: UnitStore, gear: UnitEntity) =>
   masterLevelOf(units.of(gear).get(CHARACTER_MASTER_XP));
 
-/** A character sits at two coordinates: its gear entity and its mastery range. */
+/** A character's id and its two coordinates (gear entity and mastery range). */
 export interface CharacterEntities {
+  /** chara.CharId */
+  character: string;
   gear: UnitEntity;
   mastery: EntityRange;
 }
 
-export const characterAt = (gear: UnitEntity): CharacterEntities => ({
-  gear,
-  mastery: masteryRange(gear),
-});
+export function characterAt(
+  units: UnitStore,
+  gear: UnitEntity,
+): CharacterEntities | undefined {
+  const character = units.of(gear).get(CHARACTER_KEY);
+  return character === undefined
+    ? undefined
+    : { character, gear, mastery: masteryRange(gear) };
+}
 
 /** In gear entity order. */
 export const characterEntities = (units: UnitStore): CharacterEntities[] =>
-  units.entitiesWith(CHARACTER_KEY).map(characterAt);
+  units
+    .entitiesWith(CHARACTER_KEY)
+    .flatMap((gear) => characterAt(units, gear) ?? []);
 
 export function findCharacter(
   units: UnitStore,
@@ -71,5 +80,5 @@ export function findCharacter(
     first: CHARACTER_FIRST,
     count: 1000,
   })[0];
-  return gear === undefined ? undefined : characterAt(gear);
+  return gear === undefined ? undefined : characterAt(units, gear);
 }
