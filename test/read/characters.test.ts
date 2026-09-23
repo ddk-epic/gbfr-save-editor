@@ -37,7 +37,7 @@ import { unitStore } from "../../src/testing";
 
 const GRAN = CHARACTER_FIRST;
 const KATALINA = CHARACTER_FIRST + 1;
-/** Katalina's mastery block: over-mastery lines and master trait cells. */
+/** Katalina's mastery block: Over Mastery lines and master trait cells. */
 const KATALINA_MASTERY = masteryRange(KATALINA).first;
 
 const OVER_MASTERY = "LBP_AB_PL1100_01";
@@ -123,7 +123,7 @@ describe("readCharacterData", () => {
     ]);
   });
 
-  it("reads over-masteries and master trait cells off the mastery block", () => {
+  it("reads Over Masteries and master trait cells off the mastery block", () => {
     const katalina = data.characters[1]!;
     expect(katalina.overMasteries[0]).toEqual({
       entity: KATALINA_MASTERY,
