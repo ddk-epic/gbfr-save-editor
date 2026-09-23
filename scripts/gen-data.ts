@@ -14,6 +14,7 @@ type DataFile =
   | "characters"
   | "master-traits"
   | "masteries"
+  | "over-masteries"
   | "weapons"
   | "sigils"
   | "skills"
@@ -32,7 +33,7 @@ const SOURCES = {
   SKILL_KEYS: ["sigils", "skill", "Key"],
   ABILITY_KEYS: ["skills", "ability", "Key"],
   ITEM_KEYS: ["items", "item", "Key"],
-  LIMIT_BONUS_PARAM_KEYS: ["masteries", "limit_bonus_param", "Key"],
+  LIMIT_BONUS_PARAM_KEYS: ["over-masteries", "limit_bonus_param", "Key"],
   SKILLBOARD_EFFECT_KEYS: ["master-traits", "skillboard_effect", "Key"],
   SUMMON_KEYS: ["summons", "summon", "Key"],
   SUMMON_BASE_PARAM_KEYS: ["summons", "summon_base_param", "Key"],

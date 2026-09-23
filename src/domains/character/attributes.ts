@@ -9,7 +9,7 @@ export const CHARACTERS = keyTable("chara", CHARACTER_KEYS);
 export const CHARACTER_FIRST = 10000;
 
 /**
- * The mastery block holds over-masteries, mastery nodes and master trait
+ * The mastery block holds Over Masteries, mastery nodes and master trait
  * cells. Level, experience and base stats sit on the character's own entity.
  */
 export const MASTERY_FIRST = 10000000;

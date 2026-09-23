@@ -40,7 +40,7 @@ export type SaveFormatIssue =
     }
   /** A mastery bit set on a node index the table leaves unused. */
   | { code: "unusedMasteryBit"; entity: number; bit: number }
-  /** An over-mastery level that is not a single bit. */
+  /** An Over Mastery level that is not a single bit. */
   | { code: "overMasteryLevel"; entity: number; bits: number };
 
 export type SaveFormatCode = SaveFormatIssue["code"];

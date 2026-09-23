@@ -42,7 +42,7 @@
   },
   "tables": {
     "summary": "Summary",
-    "overMasteries": "Over-masteries",
+    "overMasteries": "Over Masteries",
     "cardCharacters": "Card characters",
     "currentParty": "Current party",
     "partySets": "Party sets",
@@ -197,7 +197,7 @@
     "duplicateUnit": "attribute {{attribute}} entity {{entity}} appears twice",
     "wrongValueType": "attribute {{attribute}} is {{actual}}, not {{expected}}",
     "unusedMasteryBit": "masteries {{entity}}: bit {{bit}} set on an unused index",
-    "overMasteryLevel": "over-mastery {{entity}}: level bits {{bits}} are not a single bit",
+    "overMasteryLevel": "Over Mastery {{entity}}: level bits {{bits}} are not a single bit",
     "unexpected": "the file could not be read"
   },
   "validationIssues": {
@@ -208,7 +208,7 @@
     "tableCount": "{{table}}: the save holds {{held}} rows, the table {{expected}}",
     "masteryOverTotal": "{{character}} {{section}}: {{taken}} nodes taken of {{total}}",
     "masterTraitPool": "{{character}} {{rank}}: {{chosen}} cells chosen of {{pool}}",
-    "overMasteryOverMax": "{{character}}: over-mastery at level {{level}}",
+    "overMasteryOverMax": "{{character}}: Over Mastery at level {{level}}",
     "duplicateFateEpisode": "{{character}}: fate episode {{key}} twice",
     "negativeResonancePoints": "Resonance points are {{points}}",
     "resonanceRootNotTaken": "Resonance nodes taken without the root",

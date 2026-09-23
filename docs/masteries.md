@@ -1,6 +1,6 @@
 # Masteries
 
-A character's mastery block holds its over-masteries, mastery nodes and master trait cells.
+A character's mastery block holds its Over Masteries, mastery nodes and master trait cells.
 
 ## The mastery block
 
