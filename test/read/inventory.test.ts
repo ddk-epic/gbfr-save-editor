@@ -1,11 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { hashId } from "../../src/core/xxhash32-custom";
-import {
-  ABILITY_ACQUIRED,
-  ABILITY_FLAGS,
-  ABILITY_KEY,
-  ABILITY_SEEN,
-} from "../../src/domains/ability/attributes";
 import { CURIO_KEY, CURIO_SERIAL } from "../../src/domains/curio/attributes";
 import {
   ITEM_COUNT,
@@ -17,6 +11,12 @@ import {
   SIGIL_ID,
   SIGIL_KEY,
 } from "../../src/domains/sigil/attributes";
+import {
+  SKILL_ACQUIRED,
+  SKILL_FLAGS,
+  SKILL_KEY,
+  SKILL_SEEN,
+} from "../../src/domains/skill/attributes";
 import {
   SUMMON_FLAGS,
   SUMMON_ID,
@@ -56,8 +56,8 @@ const WEAPON = "WEP_PL1600_03";
 const SUMMON_HASH = 0x0033943a;
 const SUMMON = "0033943A";
 const TRAITS = ["SKILL_094_00", "SKILL_070_00", "SKILL_124_01"] as const;
-const ABILITY_UNSEEN = "AB_PL2700_06";
-const ABILITY_SEEN_KEY = "AB_PL2000_05";
+const SKILL_UNSEEN = "AB_PL2700_06";
+const SKILL_SEEN_KEY = "AB_PL2000_05";
 
 /** A wrightstone's traits live in their own entity range, one entity each. */
 const traitList = (
@@ -99,14 +99,14 @@ const units = unitStore({
     [CURIO_KEY, hashId("ITEM_19_0002")],
     [CURIO_SERIAL, 4],
   ],
-  // Two acquired abilities, one of them seen.
+  // Two acquired skills, one of them seen.
   5: [
-    [ABILITY_KEY, hashId(ABILITY_UNSEEN)],
-    [ABILITY_FLAGS, ABILITY_ACQUIRED],
+    [SKILL_KEY, hashId(SKILL_UNSEEN)],
+    [SKILL_FLAGS, SKILL_ACQUIRED],
   ],
   6: [
-    [ABILITY_KEY, hashId(ABILITY_SEEN_KEY)],
-    [ABILITY_FLAGS, ABILITY_ACQUIRED | ABILITY_SEEN],
+    [SKILL_KEY, hashId(SKILL_SEEN_KEY)],
+    [SKILL_FLAGS, SKILL_ACQUIRED | SKILL_SEEN],
   ],
   [SIGIL_FIRST]: [
     [SIGIL_ID, 71],
@@ -154,8 +154,8 @@ describe("readInventory", () => {
     expect(inventory.unseenItems).toEqual([POTION]);
   });
 
-  it("lists acquired abilities not yet seen", () => {
-    expect(inventory.unseenAbilities).toEqual([ABILITY_UNSEEN]);
+  it("lists acquired skills not yet seen", () => {
+    expect(inventory.unseenSkills).toEqual([SKILL_UNSEEN]);
   });
 
   it("collects the other inventories by id", () => {

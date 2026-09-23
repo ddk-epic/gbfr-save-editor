@@ -1,12 +1,10 @@
-import { keyOf } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { Attribute } from "../../core/attribute";
 import type { UnitStore } from "../../core/unit-store";
-import { ABILITIES, ABILITY_POSITIONS } from "../ability/attributes";
 import { SIGIL_POSITIONS } from "../sigil/attributes";
 import { readSigils, type Sigil } from "../sigil/read";
 import { readWeapons, type Weapon } from "../weapon/read";
-import { EQUIP_SIGILS, EQUIP_SKILLS, EQUIP_WEAPON } from "./attributes";
+import { EQUIP_SIGILS, EQUIP_WEAPON } from "./attributes";
 
 export interface Equipment {
   /** The gear entity for live equipment, the loadout entity for a loadout. */
@@ -16,8 +14,6 @@ export interface Equipment {
   weapon: Weapon | undefined;
   /** One per sigil position. */
   sigils: (Sigil | undefined)[];
-  /** ability.Key per skill position. */
-  skills: (string | undefined)[];
 }
 
 /** Equip positions hold ids, not entities, so resolving one needs a way back. */
@@ -47,7 +43,6 @@ export function readEquipment(
 
   const weaponId = at.get(EQUIP_WEAPON);
   const sigilIds = at.get(EQUIP_SIGILS);
-  const skills = at.get(EQUIP_SKILLS);
 
   return {
     entity,
@@ -57,8 +52,5 @@ export function readEquipment(
       const id = sigilIds[i];
       return id ? lookup.sigils.get(id) : undefined;
     }),
-    skills: Array.from({ length: ABILITY_POSITIONS }, (_, i) =>
-      keyOf(ABILITIES, skills[i]),
-    ),
   };
 }
