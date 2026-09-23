@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { useGameText } from "../game-text";
 import type { Selection } from "../navigation";
 import type { EquipmentSetView, Table } from "../save/view";
 import { DataTable, TableLabel } from "./DataTable";
@@ -11,13 +12,16 @@ export function EquipmentSets({
   selection,
   onSelect,
   onRemoveWrightstone,
+  onEquipWeapon,
 }: {
   sets: EquipmentSetView[];
   selection: Selection | undefined;
   onSelect: (selection: Selection) => void;
   onRemoveWrightstone: (weaponId: number) => void;
+  onEquipWeapon: (character: number, weaponId: number) => void;
 }) {
   const { t } = useTranslation();
+  const gt = useGameText();
   const [setId, setSetId] = useState(sets[0]?.id);
   const set = sets.find((s) => s.id === setId) ?? sets[0];
   if (!set) return null;
@@ -83,7 +87,22 @@ export function EquipmentSets({
           {tableOf(t("equipment.sigils"), set.sigils)}
         </div>
         <div className="min-w-0">
-          {tableOf(t("equipment.weapon"), set.weapon, true)}
+          {tableOf(
+            t("equipment.weapon"),
+            set.weapon,
+            true,
+            set.characterEntity !== undefined &&
+              set.weaponOptions.length > 0 && (
+                <EditMenu
+                  actions={set.weaponOptions.map((weapon) => ({
+                    label: t("edit.equipWeapon", {
+                      weapon: gt("weapon", weapon.key) ?? weapon.key,
+                    }),
+                    run: () => onEquipWeapon(set.characterEntity!, weapon.id),
+                  }))}
+                />
+              ),
+          )}
           {tableOf(
             t("equipment.wrightstone"),
             set.wrightstone,

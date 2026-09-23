@@ -43,6 +43,7 @@ Characters occupy 41 entities, `CHARACTER_FIRST` (10000) to 10040, one per `char
 - 1323 equals a `chara_master_exp.TotalMSP` row, and the row index is the master level. 0 reads as master level 1.
 - The delegate is the character set in the Backup Characters menu for other players to enlist. The message is set there after picking one.
 - A character unit holds the character's current gear, apart from its saved loadouts.
+- 1402 holds `WEAPON_ID` (2802), not the weapon's entity. It is the only place a live weapon is equipped: the weapon unit itself carries no mark, so switching a weapon writes this unit alone.
 
 ### Flags
 

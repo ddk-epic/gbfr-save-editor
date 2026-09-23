@@ -6,22 +6,28 @@ A weapon carries two separate trait lists. Its own five trait positions sit on t
 
 Weapons occupy 256 entities, `WEAPON_FIRST` (40000) to 40255. `WEAPON_ID` (2802) gives the id the equip positions reference. An id of 0 or an unresolved `WEAPON_KEY` (2803) marks an empty entry.
 
-| Attribute | Name                   | Type      | Holds                                           |
-| --------- | ---------------------- | --------- | ----------------------------------------------- |
-| 2802      | `WEAPON_ID`            | `uint`    | Id the equip positions point at                 |
-| 2803      | `WEAPON_KEY`           | `uint`    | `weapon.Key` hash                               |
-| 2804      | `WEAPON_XP`            | `uint`    | Experience                                      |
-| 2805      | `WEAPON_UNCAP`         | `int`     | Uncap level                                     |
-| 2806      | `WEAPON_PLUS`          | `int`     | Plus value                                      |
-| 2807      | `WEAPON_AWAKENING`     | `int`     | Awakening level                                 |
-| 2813      | `WEAPON_QUESTS_USED`   | `uint`    | Times taken into a quest                        |
-| 2814      | `WEAPON_APPEARANCE`    | `uint`    | `weapon.Key` of the chosen look                 |
-| 2815      | `WEAPON_FLAGS`         | `uint`    | `WEAPON_SEEN` 64, `WEAPON_AWAKENING_SEEN` 16    |
-| 2816      | `WEAPON_WRIGHTSTONE`   | `uint`    | `item.Key` of the applied stone                 |
-| 2817      | `WEAPON_TRANSCENDENCE` | `int`     | Transcendence stage                             |
-| 2818      | `WEAPON_TRAITS`        | `uint[5]` | Five `skill.Key` hashes, one per trait position |
+| Attribute | Name                   | Type      | Holds                                                          |
+| --------- | ---------------------- | --------- | -------------------------------------------------------------- |
+| 2802      | `WEAPON_ID`            | `uint`    | Id the equip positions point at                                |
+| 2803      | `WEAPON_KEY`           | `uint`    | `weapon.Key` hash                                              |
+| 2804      | `WEAPON_XP`            | `uint`    | Experience                                                     |
+| 2805      | `WEAPON_UNCAP`         | `int`     | Uncap level                                                    |
+| 2806      | `WEAPON_PLUS`          | `int`     | Plus value                                                     |
+| 2807      | `WEAPON_AWAKENING`     | `int`     | Awakening level                                                |
+| 2813      | `WEAPON_QUESTS_USED`   | `uint`    | Times taken into a quest                                       |
+| 2814      | `WEAPON_APPEARANCE`    | `uint`    | `weapon.Key` of the chosen look                                |
+| 2815      | `WEAPON_FLAGS`         | `uint`    | `WEAPON_OWNED` 1, `WEAPON_SEEN` 64, `WEAPON_AWAKENING_SEEN` 16 |
+| 2816      | `WEAPON_WRIGHTSTONE`   | `uint`    | `item.Key` of the applied stone                                |
+| 2817      | `WEAPON_TRANSCENDENCE` | `int`     | Transcendence stage                                            |
+| 2818      | `WEAPON_TRAITS`        | `uint[5]` | Five `skill.Key` hashes, one per trait position                |
 
 `WEAPON_TRAITS` is a single vector of `WEAPON_TRAIT_POSITIONS` (5) hashes. Neither the vector nor the unit holds a level for them. An unlocked position holds the hash of an empty string, which `keyOf` returns as undefined.
+
+## Ownership
+
+`WEAPON_OWNED`, bit 0 of the flags, marks a weapon the player holds. An entry without it is one the game keeps for its own use: a `_A0` or `_99` key standing in for a weapon's look, a copy held for the captain not in play, and the starter weapon of a character not yet recruited. Only an owned weapon can be equipped.
+
+A weapon belongs to the character its key names, `WEP_<CharId>_*`. The inventory keeps a separate entry per character even where two hold the same weapon, so the two captains never share one.
 
 ## Trait lists
 

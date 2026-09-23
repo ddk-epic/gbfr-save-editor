@@ -61,7 +61,8 @@
   },
   "edit": {
     "menu": "Edit",
-    "removeWrightstone": "Remove wrightstone"
+    "removeWrightstone": "Remove wrightstone",
+    "equipWeapon": "Equip {{weapon}}"
   },
   "table": {
     "empty": "Nothing stored.",
