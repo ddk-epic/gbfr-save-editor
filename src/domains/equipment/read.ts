@@ -1,9 +1,20 @@
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { Attribute } from "../../core/attribute";
 import type { UnitStore } from "../../core/unit-store";
+import { CHARACTER_KEY } from "../character/attributes";
 import { SIGIL_POSITIONS } from "../sigil/attributes";
-import { readSigils, type Sigil } from "../sigil/read";
-import { readWeapons, type Weapon } from "../weapon/read";
+import {
+  findSigilById,
+  readSigil,
+  readSigils,
+  type Sigil,
+} from "../sigil/read";
+import {
+  findWeaponById,
+  readWeapon,
+  readWeapons,
+  type Weapon,
+} from "../weapon/read";
 import { EQUIP_SIGILS, EQUIP_WEAPON } from "./attributes";
 
 export interface Equipment {
@@ -18,13 +29,27 @@ export interface Equipment {
 
 /** Equip positions hold ids, not entities, so resolving one needs a way back. */
 export interface EquipmentLookup {
-  sigils: Map<number, Sigil>;
-  weapons: Map<number, Weapon>;
+  sigil: (id: number) => Sigil | undefined;
+  weapon: (id: number) => Weapon | undefined;
 }
 
-export const equipmentLookup = (units: UnitStore): EquipmentLookup => ({
-  sigils: readSigils(units),
-  weapons: readWeapons(units),
+/** Reads the whole inventory once, for resolving many entities. */
+export function equipmentLookup(units: UnitStore): EquipmentLookup {
+  const sigils = readSigils(units);
+  const weapons = readWeapons(units);
+  return { sigil: (id) => sigils.get(id), weapon: (id) => weapons.get(id) };
+}
+
+/** Find by id. */
+const findingLookup = (units: UnitStore): EquipmentLookup => ({
+  sigil: (id) => {
+    const entity = findSigilById(units, id);
+    return entity === undefined ? undefined : readSigil(units, entity);
+  },
+  weapon: (id) => {
+    const entity = findWeaponById(units, id);
+    return entity === undefined ? undefined : readWeapon(units, entity);
+  },
 });
 
 /**
@@ -47,10 +72,17 @@ export function readEquipment(
   return {
     entity,
     character,
-    weapon: weaponId ? lookup.weapons.get(weaponId) : undefined,
+    weapon: weaponId ? lookup.weapon(weaponId) : undefined,
     sigils: Array.from({ length: SIGIL_POSITIONS }, (_, i) => {
       const id = sigilIds[i];
-      return id ? lookup.sigils.get(id) : undefined;
+      return id ? lookup.sigil(id) : undefined;
     }),
   };
 }
+
+/** For one character's live equipment. */
+export const readCharacterEquipment = (
+  units: UnitStore,
+  gear: UnitEntity,
+): Equipment | undefined =>
+  readEquipment(units, gear, CHARACTER_KEY, findingLookup(units));

@@ -16,6 +16,7 @@ import {
 } from "../../src/domains/equipment/edit";
 import {
   equipmentLookup,
+  readCharacterEquipment,
   readEquipment,
 } from "../../src/domains/equipment/read";
 import {
@@ -72,6 +73,35 @@ describe("readEquipment", () => {
     expect(
       readEquipment(units, LOADOUT, EQUIP_CHARACTER, equipmentLookup(units)),
     ).toBeUndefined();
+  });
+});
+
+describe("readCharacterEquipment", () => {
+  it("resolves a character's weapon and sigils by id", () => {
+    const CHARACTER = CHARACTER_FIRST + 1;
+    const units = unitStore({
+      [CHARACTER]: [
+        [CHARACTER_KEY, hashId("PL0100")],
+        [EQUIP_WEAPON, 72],
+        [EQUIP_SIGILS, [0, 71, 99]],
+      ],
+      [SIGIL_FIRST + 4]: [
+        [SIGIL_ID, 71],
+        [SIGIL_KEY, hashId("GEEN_158_13")],
+      ],
+      [WEAPON_FIRST + 2]: [
+        [WEAPON_ID, 72],
+        [WEAPON_KEY, hashId("WEP_PL0100_02")],
+      ],
+    });
+    const equipment = readCharacterEquipment(units, CHARACTER)!;
+    expect(equipment.character).toBe("PL0100");
+    expect(equipment.weapon?.entity).toBe(WEAPON_FIRST + 2);
+    expect(equipment.sigils.map((sigil) => sigil?.entity)).toEqual([
+      undefined,
+      SIGIL_FIRST + 4,
+      ...Array(SIGIL_POSITIONS - 2).fill(undefined),
+    ]);
   });
 });
 
