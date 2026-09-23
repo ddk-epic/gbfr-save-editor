@@ -71,13 +71,16 @@ export function readSummons(units: UnitStore): Map<number, Summon> {
   return summons;
 }
 
-export function readEquippedSummons(
+export const findSummonById = (
   units: UnitStore,
-  held: Map<number, Summon>,
-): (Summon | undefined)[] {
+  id: number,
+): UnitEntity | undefined => units.entitiesWhere(SUMMON_ID, id)[0];
+
+export function readEquippedSummons(units: UnitStore): (Summon | undefined)[] {
   const equipped = units.of(0).get(SUMMONS_EQUIPPED);
   return Array.from({ length: SUMMON_POSITIONS }, (_, i) => {
     const id = equipped[i];
-    return id ? held.get(id) : undefined;
+    const entity = id ? findSummonById(units, id) : undefined;
+    return entity === undefined ? undefined : readSummon(units, entity);
   });
 }

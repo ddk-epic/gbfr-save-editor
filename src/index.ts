@@ -80,6 +80,7 @@ export {
 } from "./domains/wrightstone/read";
 export { readTraits, type Trait } from "./domains/trait/read";
 export {
+  findSummonById,
   readEquippedSummons,
   readSummon,
   readSummons,
