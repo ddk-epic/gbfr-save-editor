@@ -50,6 +50,7 @@ export {
   isUnchosenCaptain,
   isUnused,
   masterLevelOf,
+  readMasterLevel,
   type Captain,
   type CharacterEntities,
 } from "./domains/character/read";
