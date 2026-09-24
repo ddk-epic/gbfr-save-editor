@@ -1,4 +1,8 @@
-import { equipWeapon, removeWrightstone } from "gbfr-save-editor/edit";
+import {
+  equipWeapon,
+  removeOverMasteries,
+  removeWrightstone,
+} from "gbfr-save-editor/edit";
 import { FolderOpen } from "lucide-react";
 import { useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -177,6 +181,9 @@ export function App() {
                 }
                 onEquipWeapon={(character, weaponId) =>
                   edit((session) => equipWeapon(session, character, weaponId))
+                }
+                onRemoveOverMasteries={(character) =>
+                  edit((session) => removeOverMasteries(session, character))
                 }
                 onRoot={() => go("welcome")}
               />

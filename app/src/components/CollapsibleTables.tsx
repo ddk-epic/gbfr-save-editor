@@ -12,6 +12,7 @@ export function CollapsibleTables({
   onToggle,
   selection,
   onSelect,
+  menuOf,
   before,
   children,
 }: {
@@ -20,6 +21,8 @@ export function CollapsibleTables({
   onToggle: (section: SectionId) => void;
   selection: Selection | undefined;
   onSelect: (selection: Selection) => void;
+  /** An edit menu beside a table's label. */
+  menuOf?: (table: Table) => ReactNode;
   /** Sections with their own layout, before the table sections. */
   before?: ReactNode;
   /** Sections with their own layout, after the table sections. */
@@ -43,6 +46,7 @@ export function CollapsibleTables({
           onToggle={() => onToggle(section)}
           selection={selection}
           onSelect={onSelect}
+          menuOf={menuOf}
         />
       ))}
       {children}
@@ -88,6 +92,7 @@ function Section({
   onToggle,
   selection,
   onSelect,
+  menuOf,
 }: {
   section: SectionId;
   tables: Table[];
@@ -95,6 +100,7 @@ function Section({
   onToggle: () => void;
   selection: Selection | undefined;
   onSelect: (selection: Selection) => void;
+  menuOf?: (table: Table) => ReactNode;
 }) {
   const { t } = useTranslation();
   const tabs = new Map<string, Table[]>();
@@ -151,9 +157,14 @@ function Section({
               <div key={table.id} className="min-w-0">
                 {tableOf(
                   table,
-                  table.label && (
-                    <TableLabel>{t(`tables.${table.label}`)}</TableLabel>
-                  ),
+                  <>
+                    {table.label && (
+                      <TableLabel>{t(`tables.${table.label}`)}</TableLabel>
+                    )}
+                    {menuOf?.(table) && (
+                      <div className="ml-auto">{menuOf(table)}</div>
+                    )}
+                  </>,
                 )}
               </div>
             ))}

@@ -62,7 +62,8 @@
   "edit": {
     "menu": "Edit",
     "removeWrightstone": "Remove wrightstone",
-    "equipWeapon": "Equip {{weapon}}"
+    "equipWeapon": "Equip {{weapon}}",
+    "removeOverMasteries": "Remove Over Mastery"
   },
   "table": {
     "empty": "Nothing stored.",

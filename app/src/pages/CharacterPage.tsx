@@ -5,6 +5,7 @@ import {
   ExpandCollapseActions,
 } from "../components/CollapsibleTables";
 import { DataTable, TableLabel } from "../components/DataTable";
+import { EditMenu } from "../components/EditMenu";
 import { EquipmentSets } from "../components/EquipmentSets";
 import { useGameText } from "../game-text";
 import { PageTop } from "../components/PageTop";
@@ -21,6 +22,7 @@ export function CharacterPage({
   onSelect,
   onRemoveWrightstone,
   onEquipWeapon,
+  onRemoveOverMasteries,
   onRoot,
 }: {
   fileName: string;
@@ -31,6 +33,7 @@ export function CharacterPage({
   onSelect: (selection: Selection) => void;
   onRemoveWrightstone: (weaponId: number) => void;
   onEquipWeapon: (character: number, weaponId: number) => void;
+  onRemoveOverMasteries: (character: number) => void;
   onRoot: () => void;
 }) {
   const { t } = useTranslation();
@@ -86,6 +89,22 @@ export function CharacterPage({
         onToggle={toggle}
         selection={selection}
         onSelect={onSelect}
+        menuOf={(table) =>
+          table.id === `${character.key}:overMasteries` && (
+            <EditMenu
+              actions={
+                character.overMasteryRolled
+                  ? [
+                      {
+                        label: t("edit.removeOverMasteries"),
+                        run: () => onRemoveOverMasteries(character.entity),
+                      },
+                    ]
+                  : []
+              }
+            />
+          )
+        }
         before={
           <>
             <CollapsibleSection

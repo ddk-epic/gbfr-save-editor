@@ -1,5 +1,20 @@
 import { describe, expect, it } from "vitest";
+import { EMPTY_HASH } from "../../src/core/keys";
+import { hashId } from "../../src/core/xxhash32-custom";
+import {
+  CHARACTER_FIRST,
+  CHARACTER_KEY,
+  masteryRange,
+} from "../../src/domains/character/attributes";
+import {
+  OVER_MASTERY_KEY,
+  OVER_MASTERY_LEVEL,
+} from "../../src/domains/over-mastery/attributes";
+import { removeOverMasteries } from "../../src/domains/over-mastery/edit";
+import { readOverMasteries } from "../../src/domains/over-mastery/read";
 import { validateOverMasteries } from "../../src/domains/over-mastery/validate";
+import { SaveSession } from "../../src/session/save-session";
+import { fixtureFile, type EntityUnits } from "../../src/testing";
 
 describe("validateOverMasteries", () => {
   it("passes levels up to 10 and unrolled lines", () => {
@@ -27,5 +42,62 @@ describe("validateOverMasteries", () => {
         level: 11,
       },
     ]);
+  });
+});
+
+describe("removeOverMasteries", () => {
+  const CHARACTER = CHARACTER_FIRST + 7;
+  const mastery = masteryRange(CHARACTER);
+
+  const lines = (character: number, keys: string[]) =>
+    Object.fromEntries(
+      keys.map((key, i): [number, EntityUnits] => [
+        masteryRange(character).first + i,
+        [
+          [OVER_MASTERY_KEY, key === "" ? EMPTY_HASH : hashId(key)],
+          [OVER_MASTERY_LEVEL, key === "" ? 0 : 1 << i],
+        ],
+      ]),
+    );
+
+  const rolled = [
+    "MED_EFF_ATK01",
+    "MED_EFF_HP01",
+    "MED_EFF_BREAK01",
+    "MED_EFF_CRITICAL01",
+  ];
+
+  it("empties all four lines of that character only", () => {
+    const session = SaveSession.open(
+      fixtureFile({
+        [CHARACTER]: [[CHARACTER_KEY, hashId("PL1900")]],
+        [CHARACTER + 1]: [[CHARACTER_KEY, hashId("PL2000")]],
+        ...lines(CHARACTER, rolled),
+        ...lines(CHARACTER + 1, rolled),
+      }),
+    );
+    removeOverMasteries(session, CHARACTER);
+    const units = session.save.slotData.units;
+    expect(readOverMasteries(units, mastery)).toEqual(Array(4).fill(undefined));
+    for (let i = 0; i < 4; i++)
+      expect(units.values(OVER_MASTERY_LEVEL, mastery.first + i)).toEqual([0]);
+    expect(
+      readOverMasteries(units, masteryRange(CHARACTER + 1)).map((l) => l?.key),
+    ).toEqual(rolled);
+  });
+
+  it("refuses a character without an Over Mastery", () => {
+    const session = SaveSession.open(
+      fixtureFile({
+        [CHARACTER]: [[CHARACTER_KEY, hashId("PL1900")]],
+        ...lines(CHARACTER, ["", "", "", ""]),
+      }),
+    );
+    expect(() => removeOverMasteries(session, CHARACTER)).toThrow(
+      "has no Over Mastery",
+    );
+    expect(() => removeOverMasteries(session, CHARACTER + 1)).toThrow(
+      "no character at",
+    );
   });
 });
