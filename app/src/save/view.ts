@@ -124,7 +124,10 @@ export const equipmentSetTables = (set: EquipmentSetView): Table[] => [
 export interface CharacterView {
   /** chara.CharId */
   key: string;
+  /** The character's own entity. */
+  entity: number;
   level: number;
+  overMasteryRolled: boolean;
   tables: Table[];
   equipment: EquipmentSetView[];
 }
@@ -883,7 +886,9 @@ export function buildView(save: Save): SaveView {
     .sort((a, b) => characterOrder(a.character) - characterOrder(b.character))
     .map((c): CharacterView => ({
       key: c.character,
+      entity: c.entity,
       level: c.level,
+      overMasteryRolled: c.overMasteries.some((o) => o !== undefined),
       tables: [
         table(
           `${c.character}:level`,

@@ -6,12 +6,32 @@ A character's mastery block holds its Over Masteries, mastery nodes and master t
 
 A character's mastery block sits at `MASTERY_FIRST` (10000000) + character index \* 1000 + entry, 400 entities wide. 1601 and 1602 at entities 0-199 hold the Resonance tree.
 
-| Attribute | Name                 | Type   | Entries | Holds                                                        |
-| --------- | -------------------- | ------ | ------- | ------------------------------------------------------------ |
-| 1601      | `UNLOCK_KEY`         | `uint` | 0-399   | Mastery node `LimitBonusId` or `skillboard_effect.Key`       |
-| 1602      | `UNLOCK_VALUE`       | `int`  | 0-399   | Node bitmask or master trait selection                       |
-| 1606      | `OVER_MASTERY_KEY`   | `uint` | 0-3     | `limit_bonus_param.Key` of a `MED_EFF_*` stat                |
-| 1607      | `OVER_MASTERY_LEVEL` | `int`  | 0-3     | Roll level as one bit, level n is `1 << (n-1)`, 0 when empty |
+| Attribute | Name           | Type   | Entries | Holds                                                  |
+| --------- | -------------- | ------ | ------- | ------------------------------------------------------ |
+| 1601      | `UNLOCK_KEY`   | `uint` | 0-399   | Mastery node `LimitBonusId` or `skillboard_effect.Key` |
+| 1602      | `UNLOCK_VALUE` | `int`  | 0-399   | Node bitmask or master trait selection                 |
+
+## Over Masteries
+
+A character holds four Over Mastery stats at entries 0-3 of its mastery block. Each roll tier has its own seed, shared by all characters, that decides its next roll.
+
+| Attribute | Name                 | Type        | Entity      | Holds                                                                |
+| --------- | -------------------- | ----------- | ----------- | -------------------------------------------------------------------- |
+| 1606      | `OVER_MASTERY_KEY`   | `uint`      | Entries 0-3 | `limit_bonus_param.Key` of a `MED_EFF_*` stat, empty hash when empty |
+| 1607      | `OVER_MASTERY_LEVEL` | `int`       | Entries 0-3 | Roll level as one bit, level n is `1 << (n-1)`, 0 when empty         |
+| 7601      | not named            | `uint[131]` | 0           | Over Mastery seeds by tier, see below                                |
+
+A roll is Over Master Lv 1, 2 or 3 and writes all four entries. Each tier costs its own MSP (1112) and writes its own units at entity 0:
+
+| Tier | MSP   | Seed, 7601 index | Roll count, 5815 index | Flags set       |
+| ---- | ----- | ---------------- | ---------------------- | --------------- |
+| Lv 1 | 700   | 11               | 396                    | 5807 at 5       |
+| Lv 2 | 1,000 | 52               | 397                    | 5807 at 5       |
+| Lv 3 | 2,000 | 93               | 398                    | 5807, 5808 at 5 |
+
+- Two Lv 3 rolls from the same seed give the same four stats and levels. Running a quest also advances the seeds.
+- Removing an Over Mastery is the empty hash at 1606 and 0 at 1607 on all four entries. The game loads the character as unrolled and rolls it again.
+- A roll sets its flags back to true when they are false, so removal can leave them as they are. 5807 and 5808 have no meaning assigned.
 
 ## Mastery nodes
 

@@ -34,4 +34,4 @@ The journal lists base game and Endless Ragnarok trophies apart, by `badge.IsEnd
 
 - 5815 at entity 0 holds 1,200 longs. Indexed by `badge.BehaviorId`, it likely holds the progress toward a trophy's `ReqQuantity`.
 - 5814 at entity 0 holds 1,700 bools, true only on earned trophies. No meaning is assigned.
-- 5802 and 5803 hold 28 ints, 5807, 5808 and 5817 hold 28 bools, 5821 holds 54 bools, and 5818-5820 and 5822 one bool each. None has a meaning assigned.
+- 5802 and 5803 hold 28 ints, 5807, 5808 and 5817 hold 28 bools, 5821 holds 54 bools, and 5818-5820 and 5822 one bool each. None has a meaning assigned. An Over Mastery roll sets 5807 at index 5, and a Lv 3 roll also 5808 at index 5, see `masteries.md`.
