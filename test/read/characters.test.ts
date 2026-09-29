@@ -12,6 +12,10 @@ import {
   LOADOUT_NAME,
 } from "../../src/domains/equipment/attributes";
 import {
+  MASTER_TRAIT_CHOSEN,
+  MASTER_TRAIT_KEY,
+} from "../../src/domains/master-trait/attributes";
+import {
   OVER_MASTERY_KEY,
   OVER_MASTERY_LEVEL,
   OVER_MASTERY_LINES,
@@ -30,7 +34,6 @@ import {
   SUMMON_POSITIONS,
   SUMMONS_EQUIPPED,
 } from "../../src/domains/summon/attributes";
-import { UNLOCK_KEY, UNLOCK_VALUE } from "../../src/domains/unlock/attributes";
 import { SAVE_ENTITY, USER_CAPTAIN } from "../../src/domains/user/attributes";
 import { readCharacterData } from "../../src/read/characters";
 import { unitStore } from "../../src/testing";
@@ -70,8 +73,8 @@ const units = unitStore({
     [OVER_MASTERY_LEVEL, 4],
   ],
   [KATALINA_MASTERY + OVER_MASTERY_LINES]: [
-    [UNLOCK_KEY, MASTER_TRAIT_HASH],
-    [UNLOCK_VALUE, 1],
+    [MASTER_TRAIT_KEY, MASTER_TRAIT_HASH],
+    [MASTER_TRAIT_CHOSEN, 1],
   ],
   [PARTY_FIRST]: [[PARTY_CHARACTER, hashId("PL0000")]],
   [PARTY_FIRST + 1]: [[PARTY_CHARACTER, hashId("PL0300")]],

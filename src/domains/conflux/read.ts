@@ -1,13 +1,14 @@
 import { CONFLUX_AURAS, CONFLUX_TREE } from "../../data/conflux";
-import type { UnitStore } from "../../core/unit-store";
-import { UNLOCK_KEY, UNLOCK_VALUE } from "../unlock/attributes";
-import { byKey } from "../unlock/read";
+import type { Attribute } from "../../core/attribute";
+import type { EntityRange, UnitStore } from "../../core/unit-store";
 import { SAVE_ENTITY, USER_RESONANCE_POINTS } from "../user/attributes";
 import {
   CONFLUX_AURA_FLAGS,
   CONFLUX_AURA_KEY,
   CONFLUX_AURA_RANGE,
   CONFLUX_TREE_RANGE,
+  RESONANCE_BITS,
+  RESONANCE_KEY,
 } from "./attributes";
 
 export interface ResonanceEffect {
@@ -44,8 +45,25 @@ export interface Conflux {
   auras: Aura[];
 }
 
+/** Values of one attribute by the key hash another attribute holds at the same entity. */
+function byKey<T>(
+  units: UnitStore,
+  key: Attribute<number | undefined>,
+  value: Attribute<T>,
+  range: EntityRange,
+): Map<number, T> {
+  const values = new Map<number, T>();
+  for (const entity of units.entitiesWith(key, range)) {
+    const at = units.of(entity);
+    const hash = at.get(key);
+    if (hash === undefined) continue;
+    values.set(hash, at.get(value));
+  }
+  return values;
+}
+
 export function readConflux(units: UnitStore): Conflux {
-  const bits = byKey(units, UNLOCK_KEY, UNLOCK_VALUE, CONFLUX_TREE_RANGE);
+  const bits = byKey(units, RESONANCE_KEY, RESONANCE_BITS, CONFLUX_TREE_RANGE);
   const resonance = CONFLUX_TREE.map(
     ([hash, key, bit, cost, effects]): ResonanceNode => ({
       key,

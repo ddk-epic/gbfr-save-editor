@@ -3,6 +3,8 @@ import { CONFLUX_AURAS, CONFLUX_TREE } from "../../src/data/conflux";
 import {
   CONFLUX_AURA_FLAGS,
   CONFLUX_AURA_KEY,
+  RESONANCE_BITS,
+  RESONANCE_KEY,
 } from "../../src/domains/conflux/attributes";
 import {
   readConflux,
@@ -11,7 +13,6 @@ import {
   type ResonanceNode,
 } from "../../src/domains/conflux/read";
 import { validateConflux } from "../../src/domains/conflux/validate";
-import { UNLOCK_KEY, UNLOCK_VALUE } from "../../src/domains/unlock/attributes";
 import {
   SAVE_ENTITY,
   USER_RESONANCE_POINTS,
@@ -50,8 +51,8 @@ describe("readConflux", () => {
         bonuses.map((hash, i) => [
           i + 1,
           [
-            [UNLOCK_KEY, hash],
-            [UNLOCK_VALUE, -1],
+            [RESONANCE_KEY, hash],
+            [RESONANCE_BITS, -1],
           ],
         ]),
       ),
