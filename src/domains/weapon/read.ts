@@ -1,4 +1,4 @@
-import { WEAPON_SERIES } from "../../data/weapons";
+import { WEAPON_CHARACTERS, WEAPON_SERIES } from "../../data/weapons";
 import { hashId } from "../../core/xxhash32-custom";
 import { keyOf } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
@@ -7,6 +7,7 @@ import { SKILLS, TRAIT_WEAPON } from "../trait/attributes";
 import { readFilledTraits } from "../trait/read";
 import type { Wrightstone } from "../wrightstone/read";
 import {
+  COLLECTION_SERIES,
   WEAPON_APPEARANCE,
   WEAPON_AWAKENING,
   WEAPON_FIRST,
@@ -44,6 +45,8 @@ export interface Weapon {
   owned: boolean;
   /** Weapon series, the gt() weaponSeries key, undefined for a key off the table. */
   series: number | undefined;
+  /** chara.CharId of the owner, from weapon.CharaId, undefined for a key off the table. */
+  character: string | undefined;
   /** False while the transwakening menu marks the weapon as new. */
   seen: boolean;
   /** Seen in the upgrade menu, set only on awakenable weapons. */
@@ -79,6 +82,7 @@ export function readWeapon(
     wrightstone: stoneKey === undefined ? undefined : { key: stoneKey, traits },
     appearance: at.get(WEAPON_APPEARANCE),
     series: WEAPON_SERIES[hashId(key)],
+    character: WEAPON_CHARACTERS[hashId(key)],
     ...at.get(WEAPON_FLAGS),
   };
 }
@@ -91,6 +95,22 @@ export function readWeapons(units: UnitStore): Map<number, Weapon> {
     if (weapon) weapons.set(weapon.id, weapon);
   }
   return weapons;
+}
+
+export function readOwnedWeapons(
+  units: UnitStore,
+): Map<string, Map<number, Weapon>> {
+  const owned = new Map<string, Map<number, Weapon>>();
+  for (const weapon of readWeapons(units).values()) {
+    const { character, series } = weapon;
+    if (!weapon.owned || character === undefined || series === undefined)
+      continue;
+    if (!COLLECTION_SERIES.includes(series)) continue;
+    let bySeries = owned.get(character);
+    if (!bySeries) owned.set(character, (bySeries = new Map()));
+    if (!bySeries.has(series)) bySeries.set(series, weapon);
+  }
+  return owned;
 }
 
 export const findWeaponById = (

@@ -6,9 +6,6 @@ import { WEAPON_SERIES_ORDER } from "../weapon/attributes";
 import { readWeapons, type Weapon } from "../weapon/read";
 import { EQUIP_WEAPON } from "./attributes";
 
-/** The `chara.CharId` a weapon belongs to, from its `WEP_<CharId>_*` key. */
-const weaponOwner = (key: string) => key.split("_")[1];
-
 const rank = ({ series }: Weapon) => {
   const at = series === undefined ? -1 : WEAPON_SERIES_ORDER.indexOf(series);
   return at === -1 ? WEAPON_SERIES_ORDER.length : at;
@@ -21,9 +18,7 @@ export function equippableWeapons(
   const characterKey = units.of(character).get(CHARACTER_KEY);
   if (characterKey === undefined) return [];
   return [...readWeapons(units).values()]
-    .filter(
-      (weapon) => weapon.owned && weaponOwner(weapon.key) === characterKey,
-    )
+    .filter((weapon) => weapon.owned && weapon.character === characterKey)
     .sort((a, b) => rank(a) - rank(b));
 }
 

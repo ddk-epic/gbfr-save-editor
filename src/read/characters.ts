@@ -50,6 +50,7 @@ import {
 } from "../domains/party/read";
 import { readEquippedSkills } from "../domains/skill/read";
 import { readEquippedSummons, type Summon } from "../domains/summon/read";
+import { readOwnedWeapons, type Weapon } from "../domains/weapon/read";
 import { SAVE_ENTITY, USER_CAPTAIN } from "../domains/user/attributes";
 
 export interface Character extends Equipment {
@@ -75,6 +76,8 @@ export interface Character extends Equipment {
   masteries: Record<MasterySection, MasteryProgress>;
   /** The character's fate episodes, in save order. */
   fateEpisodes: FateEpisode[];
+  /** Owned weapons of the Collection series, by series. */
+  weapons: Map<number, Weapon>;
 }
 
 export interface Loadout extends Equipment {
@@ -100,6 +103,7 @@ export interface CharacterData {
 export function readCharacterData(units: UnitStore): CharacterData {
   const lookup = equipmentLookup(units);
   const fateEpisodes = readFateEpisodes(units);
+  const ownedWeapons = readOwnedWeapons(units);
 
   const characters: Character[] = [];
   for (const where of characterEntities(units)) {
@@ -122,6 +126,7 @@ export function readCharacterData(units: UnitStore): CharacterData {
       masterTraits: readMasterTraits(units, where.mastery),
       masteries: readMasteries(units, where.mastery, equipment.character),
       fateEpisodes: fateEpisodes.get(equipment.character) ?? [],
+      weapons: ownedWeapons.get(equipment.character) ?? new Map(),
     });
   }
 

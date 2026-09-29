@@ -51,6 +51,7 @@ const character = (
   masterTraits: [],
   masteries: noMasteries(),
   fateEpisodes: [],
+  weapons: new Map(),
   ...fields,
 });
 
@@ -99,6 +100,7 @@ const weapon = (id: number, wrightstone: Wrightstone | undefined): Weapon => ({
   appearance: undefined,
   owned: true,
   series: 0,
+  character: "PL0000",
   seen: true,
   awakeningSeen: true,
 });

@@ -12,6 +12,7 @@ import { SAVE_HASHSEED } from "../../src/domains/user/attributes";
 import {
   WEAPON_APPEARANCE,
   WEAPON_FIRST,
+  WEAPON_FLAGS,
   WEAPON_ID,
   WEAPON_KEY,
   WEAPON_TRAITS,
@@ -19,7 +20,11 @@ import {
   WEAPON_WRIGHTSTONE,
 } from "../../src/domains/weapon/attributes";
 import { removeWrightstone } from "../../src/domains/weapon/edit";
-import { findWeaponById, readWeapon } from "../../src/domains/weapon/read";
+import {
+  findWeaponById,
+  readOwnedWeapons,
+  readWeapon,
+} from "../../src/domains/weapon/read";
 import { SaveSession } from "../../src/session/save-session";
 import { fixtureFile, unitStore, type EntityUnits } from "../../src/testing";
 
@@ -78,6 +83,55 @@ describe("readWeapon", () => {
     const units = unitStore({ [WEAPON]: [[WEAPON_ID, 9]] });
     expect(findWeaponById(units, 9)).toBe(WEAPON);
     expect(findWeaponById(units, 10)).toBeUndefined();
+  });
+
+  it("reads the owner of a hash-keyed weapon from the table", () => {
+    const units = unitStore({
+      [WEAPON]: [
+        [WEAPON_ID, 9],
+        [WEAPON_KEY, 0x219ee448],
+      ],
+    });
+    expect(readWeapon(units, WEAPON)).toEqual(
+      expect.objectContaining({ key: "219EE448", character: "PL2900" }),
+    );
+  });
+});
+
+describe("readOwnedWeapons", () => {
+  /** WEAPON_FLAGS bit marking a weapon the player holds. */
+  const WEAPON_OWNED = 1;
+  const weapon = (
+    id: number,
+    key: number,
+    flags = WEAPON_OWNED,
+  ): EntityUnits => [
+    [WEAPON_ID, id],
+    [WEAPON_KEY, key],
+    [WEAPON_FLAGS, flags],
+  ];
+  const units = unitStore({
+    [WEAPON_FIRST]: weapon(1, hashId("WEP_PL2900_01")),
+    [WEAPON_FIRST + 1]: weapon(2, 0x219ee448),
+    // Not held, a bonus series, and an NPC's.
+    [WEAPON_FIRST + 2]: weapon(3, hashId("WEP_PL2900_04"), 0),
+    [WEAPON_FIRST + 3]: weapon(4, hashId("WEP_PL0100_10")),
+    [WEAPON_FIRST + 4]: weapon(5, hashId("WEP_NP0300_01")),
+  });
+  const owned = readOwnedWeapons(units);
+
+  it("groups held Collection weapons by owner and series", () => {
+    const ids = (character: string) =>
+      [...(owned.get(character) ?? [])].map(([series, w]) => [series, w.id]);
+    expect(ids("PL2900")).toEqual([
+      [4, 1],
+      [2, 2],
+    ]);
+    expect(owned.has("PL0100")).toBe(false);
+  });
+
+  it("keeps an NPC's weapon under its own CharaId", () => {
+    expect(owned.get("NP0300")?.get(4)?.id).toBe(5);
   });
 });
 

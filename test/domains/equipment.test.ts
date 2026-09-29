@@ -109,11 +109,11 @@ describe("equipWeapon", () => {
   const CHARACTER = CHARACTER_FIRST + 1;
   const weapon = (
     id: number,
-    key: string,
+    key: string | number,
     flags = WEAPON_OWNED,
   ): EntityUnits => [
     [WEAPON_ID, id],
-    [WEAPON_KEY, hashId(key)],
+    [WEAPON_KEY, typeof key === "string" ? hashId(key) : key],
     [WEAPON_FLAGS, flags],
   ];
   const inventory = {
@@ -135,6 +135,14 @@ describe("equipWeapon", () => {
       72, 71,
     ]);
     expect(equippableWeapons(units, CHARACTER + 1)).toEqual([]);
+  });
+
+  it("offers a hash-keyed DLC weapon to its owner", () => {
+    const units = unitStore({
+      [CHARACTER]: [[CHARACTER_KEY, hashId("PL2900")]],
+      [WEAPON_FIRST]: weapon(5, 0x219ee448),
+    });
+    expect(equippableWeapons(units, CHARACTER).map((w) => w.id)).toEqual([5]);
   });
 
   it("equips one of them", () => {
