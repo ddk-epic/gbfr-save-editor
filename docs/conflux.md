@@ -8,12 +8,12 @@ Conflux is the endless mode added in the Endless Ragnarok DLC. The save holds it
 
 ## Resonance tree
 
-The Resonance tree shares its attributes with masteries and master traits, and is stored the same way as masteries. It sits at entities 0-199.
+The Resonance tree uses attributes 1601 and 1602, as masteries and master traits do in the mastery block, and is stored the same way as masteries. It sits at entities 0-199.
 
-| Attribute | Name           | Type   | Holds                                       |
-| --------- | -------------- | ------ | ------------------------------------------- |
-| 1601      | `UNLOCK_KEY`   | `uint` | Bonus of the node, a `limit_bonus.Key` hash |
-| 1602      | `UNLOCK_VALUE` | `int`  | Bitmask of the taken nodes with that bonus  |
+| Attribute | Name             | Type   | Holds                                       |
+| --------- | ---------------- | ------ | ------------------------------------------- |
+| 1601      | `RESONANCE_KEY`  | `uint` | Bonus of the node, a `limit_bonus.Key` hash |
+| 1602      | `RESONANCE_BITS` | `int`  | Bitmask of the taken nodes with that bonus  |
 
 - `endlessmode_tree` has 62 rows, one per node. Several nodes can grant the same bonus, so the save holds 58 entries at units 0-57, one per distinct `endlessmode_tree.Unk19`, in the order each first appears in the table. Units 58-199 hold the empty hash and 0.
 - Every save has all 58 entries, a new game included.

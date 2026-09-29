@@ -6,10 +6,10 @@ A master trait cell is one entry of a character's mastery block.
 
 The master trait cells follow the mastery nodes: 99 `skillboard_effect.Key` entries, 111 for the captains, then empty ids.
 
-| Attribute | Name           | Type   | Holds                                    |
-| --------- | -------------- | ------ | ---------------------------------------- |
-| 1601      | `UNLOCK_KEY`   | `uint` | `skillboard_effect.Key`                  |
-| 1602      | `UNLOCK_VALUE` | `int`  | 1 when the cell is selected, 0 otherwise |
+| Attribute | Name                  | Type   | Holds                                    |
+| --------- | --------------------- | ------ | ---------------------------------------- |
+| 1601      | `MASTER_TRAIT_KEY`    | `uint` | `skillboard_effect.Key`                  |
+| 1602      | `MASTER_TRAIT_CHOSEN` | `int`  | 1 when the cell is selected, 0 otherwise |
 
 ## Board layout
 

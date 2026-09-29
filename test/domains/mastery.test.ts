@@ -4,11 +4,14 @@ import {
   MASTERY_ENTRIES,
 } from "../../src/domains/character/attributes";
 import {
+  MASTERY_NODE_BITS,
+  MASTERY_NODE_KEY,
+} from "../../src/domains/mastery/attributes";
+import {
   readMasteries,
   type MasteryProgress,
 } from "../../src/domains/mastery/read";
 import { validateMasteries } from "../../src/domains/mastery/validate";
-import { UNLOCK_KEY, UNLOCK_VALUE } from "../../src/domains/unlock/attributes";
 import { unitStore } from "../../src/testing";
 
 const MASTERY = { first: MASTERY_FIRST, count: MASTERY_ENTRIES };
@@ -18,8 +21,8 @@ describe("readMasteries", () => {
     // PL0000's ladder 0x00b7a3dd: four defense nodes at 70 MSP each.
     const units = unitStore({
       [MASTERY_FIRST + 10]: [
-        [UNLOCK_KEY, 0x00b7a3dd],
-        [UNLOCK_VALUE, 0b0101],
+        [MASTERY_NODE_KEY, 0x00b7a3dd],
+        [MASTERY_NODE_BITS, 0b0101],
       ],
     });
     const masteries = readMasteries(units, MASTERY, "PL0000");

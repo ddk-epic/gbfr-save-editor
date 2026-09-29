@@ -4,12 +4,7 @@ A character's mastery block holds its Over Masteries, mastery nodes and master t
 
 ## The mastery block
 
-A character's mastery block sits at `MASTERY_FIRST` (10000000) + character index \* 1000 + entry, 400 entities wide. 1601 and 1602 at entities 0-199 hold the Resonance tree.
-
-| Attribute | Name           | Type   | Entries | Holds                                                  |
-| --------- | -------------- | ------ | ------- | ------------------------------------------------------ |
-| 1601      | `UNLOCK_KEY`   | `uint` | 0-399   | Mastery node `LimitBonusId` or `skillboard_effect.Key` |
-| 1602      | `UNLOCK_VALUE` | `int`  | 0-399   | Node bitmask or master trait selection                 |
+A character's mastery block sits at `MASTERY_FIRST` (10000000) + character index \* 1000 + entry, 400 entities wide. Mastery nodes and master trait cells both use attributes 1601 and 1602, told apart by the table that holds the 1601 hash. 1601 and 1602 at entities 0-199 hold the Resonance tree.
 
 ## Over Masteries
 
@@ -35,7 +30,12 @@ A roll is Over Master Lv 1, 2 or 3 and writes all four entries. Each tier costs 
 
 ## Mastery nodes
 
-The entries start with the character's mastery nodes: every `LimitBonusId` of its `ap_tree_atk`, `ap_tree_def`, `ap_tree_wep` and `ap_tree_rebuild` rows. 1602 holds a bitmask per node.
+The entries start with the character's mastery nodes: every `LimitBonusId` of its `ap_tree_atk`, `ap_tree_def`, `ap_tree_wep` and `ap_tree_rebuild` rows.
+
+| Attribute | Name                | Type   | Holds                    |
+| --------- | ------------------- | ------ | ------------------------ |
+| 1601      | `MASTERY_NODE_KEY`  | `uint` | Node `LimitBonusId`      |
+| 1602      | `MASTERY_NODE_BITS` | `int`  | Bitmask of the node rows |
 
 | Bits  | Holds                                                        |
 | ----- | ------------------------------------------------------------ |

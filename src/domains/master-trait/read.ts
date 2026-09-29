@@ -6,8 +6,11 @@ import {
 import { keyOf } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { EntityRange, UnitStore } from "../../core/unit-store";
-import { UNLOCK_KEY, UNLOCK_VALUE } from "../unlock/attributes";
-import { SKILLBOARD_EFFECTS } from "./attributes";
+import {
+  MASTER_TRAIT_CHOSEN,
+  MASTER_TRAIT_KEY,
+  SKILLBOARD_EFFECTS,
+} from "./attributes";
 
 export interface MasterTrait {
   entity: UnitEntity;
@@ -36,9 +39,9 @@ export function readMasterTraits(
   mastery: EntityRange,
 ): MasterTrait[] {
   const cells: MasterTrait[] = [];
-  for (const entity of units.entitiesWith(UNLOCK_KEY, mastery)) {
+  for (const entity of units.entitiesWith(MASTER_TRAIT_KEY, mastery)) {
     const at = units.of(entity);
-    const hash = at.get(UNLOCK_KEY);
+    const hash = at.get(MASTER_TRAIT_KEY);
     const cell = hash === undefined ? undefined : SKILLBOARD_CELLS[hash];
     if (cell === undefined) continue;
     const [style, rank, order, perk] = cell;
@@ -50,7 +53,7 @@ export function readMasterTraits(
       rank,
       order,
       perk,
-      chosen: at.get(UNLOCK_VALUE) === 1,
+      chosen: at.get(MASTER_TRAIT_CHOSEN) === 1,
       values: MASTER_TRAIT_VALUES[key] ?? [],
       valueScales: MASTER_TRAIT_VALUE_SCALES[key] ?? [],
     });

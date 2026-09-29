@@ -8,7 +8,7 @@ import {
 import { SaveFormatError } from "../../core/errors";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { EntityRange, UnitStore } from "../../core/unit-store";
-import { UNLOCK_KEY, UNLOCK_VALUE } from "../unlock/attributes";
+import { MASTERY_NODE_BITS, MASTERY_NODE_KEY } from "./attributes";
 
 export type MasterySection = (typeof MASTERY_SECTIONS)[number];
 
@@ -61,15 +61,15 @@ export function readMasteries(
 
   const takenBits = new Map<number, number>();
   const ladderEntity = new Map<number, UnitEntity>();
-  for (const entity of units.entitiesWith(UNLOCK_KEY, mastery)) {
+  for (const entity of units.entitiesWith(MASTERY_NODE_KEY, mastery)) {
     const at = units.of(entity);
-    const hash = at.get(UNLOCK_KEY);
+    const hash = at.get(MASTERY_NODE_KEY);
     if (hash === undefined) continue;
     const ladder = nodes[hash];
     if (!ladder) continue;
     // Low byte: bit n is the node at LimitBonusParamIndex n. The second byte
     // flags a subset of those and has no meaning assigned.
-    const bits = at.get(UNLOCK_VALUE) & 0xff;
+    const bits = at.get(MASTERY_NODE_BITS) & 0xff;
     ladder.forEach((node, index) => {
       if (bits & (1 << index) && !node)
         throw new SaveFormatError({
