@@ -1,4 +1,4 @@
-import { isNPC, isUnchosenCaptain, isUnused } from "gbfr-save-editor";
+import { isPlayable } from "gbfr-save-editor";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGameText } from "../game-text";
@@ -46,8 +46,7 @@ export function ContentsTree({
     setLastCharacter(undefined);
   }
 
-  const isDisabled = (key: string) =>
-    isNPC(key) || isUnused(key) || isUnchosenCaptain(key, view?.captain);
+  const isDisabled = (key: string) => !isPlayable(key, view?.captain);
   const openCharacters = () => onPage(lastCharacter ?? "characters");
 
   return (
