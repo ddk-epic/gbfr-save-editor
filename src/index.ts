@@ -70,6 +70,7 @@ export {
 } from "./domains/sigil/read";
 export {
   findWeaponById,
+  readOwnedWeapons,
   readWeapon,
   readWeapons,
   type Weapon,

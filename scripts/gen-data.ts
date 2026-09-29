@@ -564,6 +564,25 @@ ${weaponRows
 );
 console.log(`WEAPON_SERIES: ${weaponRows.length} weapons`);
 
+// Owner by key hash, weapon.CharaId. The save holds no owner, and a hash-keyed
+// DLC weapon has no WEP_<CharId> in its key to read one from.
+const ownerRows = db
+  .prepare("select Key, CharaId from weapon where Key <> '' order by Key")
+  .all() as { Key: string; CharaId: string }[];
+emit(
+  "weapons",
+  `/** weapon.Key hash -> chara.CharId (weapon.CharaId), ${ownerRows.length} weapons. */
+export const WEAPON_CHARACTERS: Readonly<Record<number, string>> = {
+${ownerRows
+  .map(
+    ({ Key, CharaId }) =>
+      `  0x${hashId(Key).toString(16).padStart(8, "0")}: ${JSON.stringify(CharaId)},`,
+  )
+  .join("\n")}
+};`,
+);
+console.log(`WEAPON_CHARACTERS: ${ownerRows.length} weapons`);
+
 // Game text: gt() table -> query returning (key, text_id), the key domain
 // returns and its .msg id. Unk* columns keep the extractor's names.
 const GAME_TEXT = {

@@ -27,7 +27,9 @@ Weapons occupy 256 entities, `WEAPON_FIRST` (40000) to 40255. `WEAPON_ID` (2802)
 
 `WEAPON_OWNED`, bit 0 of the flags, marks a weapon the player holds. An entry without it is one the game keeps for its own use: a `_A0` or `_99` key standing in for a weapon's look, a copy held for the captain not in play, and the starter weapon of a character not yet recruited. Only an owned weapon can be equipped.
 
-A weapon belongs to the character its key names, `WEP_<CharId>_*`. The inventory keeps a separate entry per character even where two hold the same weapon, so the two captains never share one.
+The save holds no owner. A weapon belongs to the character in the `weapon` table's `CharaId`, as `WEAPON_CHARACTERS` in `src/data/weapons.ts`, read into `Weapon.character`. For a `WEP_<CharId>_*` key this is the character the key names. A DLC weapon's key is a bare hash, such as `219EE448`, and only the table names its owner. The inventory keeps a separate entry per character even where two hold the same weapon, so the two captains never share one.
+
+`readOwnedWeapons` gives the owned weapons of the Collection series by `chara.CharId`, then by series. An NPC's weapon, such as `WEP_NP0300_01`, sits under its own `CharaId`. No save holds two owned weapons of one series for a character; the first held is kept.
 
 ## Series
 
@@ -46,7 +48,7 @@ The save holds no series. It comes from the `weapon` table's `Unk30`, as `WEAPON
 
 The names are game text, under the `weaponSeries` table by series number.
 
-A weapon list goes by series, in `WEAPON_SERIES_ORDER`. The game keeps its own order in `weapon.SortOrder`, which agrees with this for every character but Sandalphon, Id and Seofon, whose ascension weapon the game lists last.
+The Collection counts series 0 to 5, `COLLECTION_SERIES`. A weapon list goes by series, in `WEAPON_SERIES_ORDER`. The game keeps its own order in `weapon.SortOrder`, which agrees with this for every character but Sandalphon, Id and Seofon, whose ascension weapon the game lists last.
 
 ## Trait lists
 
