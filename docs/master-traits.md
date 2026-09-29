@@ -24,6 +24,10 @@ Cells join to `skillboard_layout` through `SkillboardEffectOrUiId`, which gives 
 | +30         | Rank 3                 |
 | +50         | EX                     |
 
+- Each `skillboard_effect` sits on one cell of one board, `skillboard_layout.CharacterId`, perks included.
+- Within a rank, `Unk30` order is the board's reading order in game: left to right, top to bottom.
+- A cell's position is its 1-based place among the ordinary cells of its board, style and rank, in `Unk30` order. Perks have none.
+
 ## Text
 
 A trait's text is `skillboard_effect.Unk19`. `{n}` in it is `Value(n % 10 + 1)` of action part `n / 10` in `skillboard_effect_action_parts`, through `SkillboardEffectActionPartsId1` to 3. Stun Power parts (`SubType` 8, `MainType` 8) hold 1/10 of the displayed value.

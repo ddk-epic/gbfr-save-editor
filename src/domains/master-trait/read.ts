@@ -23,6 +23,8 @@ export interface MasterTrait {
   order: number;
   /** A style perk: named at r1, upgraded at r2 and r3. */
   perk: boolean;
+  /** 1-based among the non-perk cells of its style and rank on the board, in order; undefined on perks. */
+  position: number | undefined;
   chosen: boolean;
   /** Numbers for {0}-{29} in the trait's text, as the archive stores them. */
   values: readonly number[];
@@ -44,7 +46,7 @@ export function readMasterTraits(
     const hash = at.get(MASTER_TRAIT_KEY);
     const cell = hash === undefined ? undefined : SKILLBOARD_CELLS[hash];
     if (cell === undefined) continue;
-    const [style, rank, order, perk] = cell;
+    const [style, rank, order, perk, position] = cell;
     const key = keyOf(SKILLBOARD_EFFECTS, hash)!;
     cells.push({
       entity,
@@ -53,6 +55,7 @@ export function readMasterTraits(
       rank,
       order,
       perk,
+      position,
       chosen: at.get(MASTER_TRAIT_CHOSEN) === 1,
       values: MASTER_TRAIT_VALUES[key] ?? [],
       valueScales: MASTER_TRAIT_VALUE_SCALES[key] ?? [],
