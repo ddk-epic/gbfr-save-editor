@@ -50,6 +50,7 @@ export {
   isUnchosenCaptain,
   isUnused,
   masterLevelOf,
+  readCaptain,
   readMasterLevel,
   type Captain,
   type CharacterEntities,
