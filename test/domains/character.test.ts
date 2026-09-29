@@ -8,6 +8,7 @@ import {
 } from "../../src/domains/character/attributes";
 import {
   characterEntities,
+  playableCharacters,
   readCaptain,
   readMasterLevel,
 } from "../../src/domains/character/read";
@@ -54,5 +55,23 @@ describe("readCaptain", () => {
     expect(captain(1)).toBe("PL0000");
     expect(captain(2)).toBe("PL0100");
     expect(captain()).toBeUndefined();
+  });
+});
+
+describe("playableCharacters", () => {
+  it("skips NPCs, unused rows and the captain not picked", () => {
+    const units = unitStore({
+      [SAVE_ENTITY]: [[USER_CAPTAIN, 2]],
+      [CHARACTER_FIRST]: [[CHARACTER_KEY, hashId("PL0000")]],
+      [CHARACTER_FIRST + 1]: [[CHARACTER_KEY, hashId("PL0100")]],
+      [CHARACTER_FIRST + 2]: [[CHARACTER_KEY, hashId("PL0300")]],
+      [CHARACTER_FIRST + 3]: [[CHARACTER_KEY, hashId("NP0000")]],
+      [CHARACTER_FIRST + 4]: [[CHARACTER_KEY, hashId("SLOT01")]],
+      [CHARACTER_FIRST + 5]: [[CHARACTER_KEY, hashId("PL000B")]],
+    });
+    expect(playableCharacters(units).map((c) => c.character)).toEqual([
+      "PL0100",
+      "PL0300",
+    ]);
   });
 });

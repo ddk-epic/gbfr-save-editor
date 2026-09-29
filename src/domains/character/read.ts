@@ -37,6 +37,11 @@ export const isUnchosenCaptain = (
   (CAPTAINS as readonly string[]).includes(character) &&
   character !== captain;
 
+export const isPlayable = (character: string, captain: Captain | undefined) =>
+  !isNPC(character) &&
+  !isUnused(character) &&
+  !isUnchosenCaptain(character, captain);
+
 /** chara.UIOrder: playable, then NPCs, empty positions and dev rows; unresolved keys last. */
 export const characterOrder = (character: string) =>
   CHARACTER_UI_ORDER[character] ?? Infinity;
@@ -77,6 +82,13 @@ export const characterEntities = (units: UnitStore): CharacterEntities[] =>
   units
     .entitiesWith(CHARACTER_KEY)
     .flatMap((gear) => characterAt(units, gear) ?? []);
+
+export function playableCharacters(units: UnitStore): CharacterEntities[] {
+  const captain = readCaptain(units);
+  return characterEntities(units).filter((c) =>
+    isPlayable(c.character, captain),
+  );
+}
 
 export function findCharacter(
   units: UnitStore,
