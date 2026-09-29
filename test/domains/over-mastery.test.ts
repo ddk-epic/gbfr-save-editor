@@ -14,14 +14,37 @@ import { removeOverMasteries } from "../../src/domains/over-mastery/edit";
 import { readOverMasteries } from "../../src/domains/over-mastery/read";
 import { validateOverMasteries } from "../../src/domains/over-mastery/validate";
 import { SaveSession } from "../../src/session/save-session";
-import { fixtureFile, type EntityUnits } from "../../src/testing";
+import { fixtureFile, unitStore, type EntityUnits } from "../../src/testing";
+
+describe("readOverMasteries", () => {
+  it("gives each line's value at its roll level", () => {
+    const mastery = masteryRange(CHARACTER_FIRST);
+    const line = (key: number, level: number): EntityUnits => [
+      [OVER_MASTERY_KEY, key],
+      [OVER_MASTERY_LEVEL, 1 << (level - 1)],
+    ];
+    const units = unitStore({
+      [mastery.first]: line(hashId("MED_EFF_ATK01"), 3),
+      [mastery.first + 1]: line(hashId("MED_EFF_BREAK01"), 10),
+      [mastery.first + 2]: line(0x12345678, 5),
+    });
+    expect(
+      readOverMasteries(units, mastery).map((l) => l && [l.key, l.value]),
+    ).toEqual([
+      ["MED_EFF_ATK01", 200],
+      ["MED_EFF_BREAK01", 20],
+      ["#12345678", undefined],
+      undefined,
+    ]);
+  });
+});
 
 describe("validateOverMasteries", () => {
   it("passes levels up to 10 and unrolled lines", () => {
     expect(
       validateOverMasteries("PL0000", [
-        { entity: 1, key: "MED_EFF_01", level: 1 },
-        { entity: 2, key: "MED_EFF_02", level: 10 },
+        { entity: 1, key: "MED_EFF_01", level: 1, value: undefined },
+        { entity: 2, key: "MED_EFF_02", level: 10, value: undefined },
         undefined,
         undefined,
       ]),
@@ -31,7 +54,7 @@ describe("validateOverMasteries", () => {
   it("rejects a level past 10", () => {
     expect(
       validateOverMasteries("PL0000", [
-        { entity: 1, key: "MED_EFF_01", level: 11 },
+        { entity: 1, key: "MED_EFF_01", level: 11, value: undefined },
       ]),
     ).toEqual([
       {
