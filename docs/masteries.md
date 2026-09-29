@@ -44,4 +44,13 @@ The entries start with the character's mastery nodes: every `LimitBonusId` of it
 | 16-31 | Always 0                                                     |
 
 - The extension is the Offense and Defense rows at `DiffSeparatorMaybe` 311 and up.
-- Transcendence counts the `ap_tree_rebuild` rows at `ReqWepTranscensionLevel` 7 only. The T1-6 rows are never set.
+- Transcendence counts the `ap_tree_rebuild` rows at `ReqWepTranscensionLevel` 7 only. A bought transcendence node is a bit on its T7 row; the weapon's own stage (`WEAPON_TRANSCENDENCE`) unlocks the nodes and sets none. The T1-6 rows are never set.
+
+## Weapon series
+
+Every Collection and Transcendence row names a weapon in `WeaponId`, and that weapon's `weapon.Unk30` is the node's series. `MASTERY_NODES` carries it as a fourth cell element, `MasteryNode.series` reads it, and `MasteryProgress.bySeries` counts taken, total and MSP per series.
+
+- The series belongs to the node, not the ladder. One `LimitBonusId` can hold nodes of several series, such as bits 0-1 on a Defender, 2-3 on an Executioner and 4-5 on a Stinger.
+- `WeaponId` is often a variant key, such as `WEP_PL0000_01_01` or `WEP_PL0000_06_03`, not the key of the weapon held. Its series is the same.
+- A series holds 6 Collection nodes and 6 T7 Transcendence nodes.
+- PL2100-PL2500, PL2800 and PL2900 have no Stunner (1) or Executioner (5) in the Collection, so 4 series.

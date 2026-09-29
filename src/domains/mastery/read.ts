@@ -17,6 +17,8 @@ export interface MasteryNode {
   key: string;
   /** ap_tree NodeGridLocation. */
   grid: number;
+  /** Weapon series of a Collection or Transcendence node, from its WeaponId. */
+  series: number | undefined;
   msp: number;
   taken: boolean;
   /** The unit holding the node's ladder, and the node's bit in it. */
@@ -35,14 +37,19 @@ export interface MasteryEffect {
   bonus?: number;
 }
 
-export interface MasteryProgress {
+export interface MasteryCount {
   taken: number;
   /** Nodes in the section; transcendence counts the T7 rows only. */
   total: number;
   /** MspCost of the nodes taken. */
   msp: number;
+}
+
+export interface MasteryProgress extends MasteryCount {
   /** The section's nodes by grid location; T1-6 transcendence rows only when taken. */
   nodes: MasteryNode[];
+  /** Counts by weapon series, Collection and Transcendence only. */
+  bySeries: Map<number, MasteryCount>;
 }
 
 export function readMasteries(
@@ -53,7 +60,7 @@ export function readMasteries(
   const progress = Object.fromEntries(
     MASTERY_SECTIONS.map((section): [MasterySection, MasteryProgress] => [
       section,
-      { taken: 0, total: 0, msp: 0, nodes: [] },
+      { taken: 0, total: 0, msp: 0, nodes: [], bySeries: new Map() },
     ]),
   ) as Record<MasterySection, MasteryProgress>;
   const nodes = MASTERY_NODES[character];
@@ -87,7 +94,7 @@ export function readMasteries(
     const bits = takenBits.get(Number(hash)) ?? 0;
     ladder.forEach((node, index) => {
       if (!node) return;
-      const [section, msp, grid] = node;
+      const [section, msp, grid, series] = node;
       const taken = !!(bits & (1 << index));
       const replaced = section === REPLACED_TRANSCENDENCE;
       if (replaced && !taken) return;
@@ -97,14 +104,27 @@ export function readMasteries(
             replaced ? MASTERY_SECTIONS.indexOf("transcendence") : section
           ]!
         ];
-      if (!replaced) sectionProgress.total++;
-      if (taken) {
-        sectionProgress.taken++;
-        sectionProgress.msp += msp;
+      const counts: MasteryCount[] = [sectionProgress];
+      if (series !== undefined) {
+        let seriesCount = sectionProgress.bySeries.get(series);
+        if (!seriesCount)
+          sectionProgress.bySeries.set(
+            series,
+            (seriesCount = { taken: 0, total: 0, msp: 0 }),
+          );
+        counts.push(seriesCount);
+      }
+      for (const count of counts) {
+        if (!replaced) count.total++;
+        if (taken) {
+          count.taken++;
+          count.msp += msp;
+        }
       }
       sectionProgress.nodes.push({
         key: key!,
         grid,
+        series,
         msp,
         taken,
         entity: ladderEntity.get(Number(hash)),

@@ -100,6 +100,7 @@ export {
 } from "./domains/item/read";
 export {
   readMasteries,
+  type MasteryCount,
   type MasteryEffect,
   type MasteryNode,
   type MasteryProgress,
