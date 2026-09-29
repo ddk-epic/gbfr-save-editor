@@ -27,7 +27,7 @@ const noMasteries = (): Record<MasterySection, MasteryProgress> =>
   Object.fromEntries(
     MASTERY_SECTIONS.map((section): [MasterySection, MasteryProgress] => [
       section,
-      { taken: 0, total: 0, msp: 0, nodes: [] },
+      { taken: 0, total: 0, msp: 0, nodes: [], bySeries: new Map() },
     ]),
   ) as Record<MasterySection, MasteryProgress>;
 

@@ -313,8 +313,10 @@ export const MASTER_LEVEL_MSP: readonly number[] = [${masterMsp.join(", ")}];`,
 );
 console.log(`MASTER_LEVEL_MSP: ${masterMsp.length} levels`);
 
-// Masteries nodes: per character and limit_bonus key, a [section, MspCost]
-// pair per LimitBonusParamIndex, the bit 1602 sets when the node is taken.
+// Masteries nodes: per character and limit_bonus key, a [section, MspCost,
+// NodeGridLocation, series] cell per LimitBonusParamIndex, the bit 1602 sets
+// when the node is taken. Collection and Transcendence rows name their weapon,
+// whose weapon.Unk30 is the node's series; one ladder can span series.
 const SECTIONS = [
   "offense",
   "offenseExtension",
@@ -323,9 +325,17 @@ const SECTIONS = [
   "collection",
   "transcendence",
 ] as const;
-/** T1-6 transcendence rows, which the T7 rows replace. */
+/** T1-6 transcendence rows, never set; the T7 rows hold the bought nodes. */
 const REPLACED_TRANSCENDENCE = SECTIONS.length;
-const nodes = new Map<string, Map<number, [number, number, number][]>>();
+const nodes = new Map<string, Map<number, number[][]>>();
+const seriesOf = new Map(
+  (
+    db.prepare("select Key, Unk30 as series from weapon").all() as {
+      Key: string;
+      series: number;
+    }[]
+  ).map(({ Key, series }) => [Key, series]),
+);
 /** limit_bonus key hash -> key. */
 const bonusKeys = new Map<number, string>();
 let nodeCount = 0;
@@ -338,10 +348,11 @@ for (const tree of [
 ]) {
   const rows = db
     .prepare(
-      `select CharaId, LimitBonusId, LimitBonusParamIndex, MspCost, NodeGridLocation, DiffSeparatorMaybe, ReqWepTranscensionLevel from "${tree}"`,
+      `select CharaId, LimitBonusId, LimitBonusParamIndex, MspCost, NodeGridLocation, DiffSeparatorMaybe, ReqWepTranscensionLevel, WeaponId from "${tree}"`,
     )
     .all() as {
     CharaId: string;
+    WeaponId: string;
     LimitBonusId: string;
     LimitBonusParamIndex: number;
     MspCost: number;
@@ -374,11 +385,16 @@ for (const tree of [
       throw new Error(
         `${tree}: ${row.CharaId} ${row.LimitBonusId} index ${row.LimitBonusParamIndex} twice`,
       );
-    ladder[row.LimitBonusParamIndex] = [
-      section,
-      row.MspCost,
-      row.NodeGridLocation,
-    ];
+    const cell = [section, row.MspCost, row.NodeGridLocation];
+    if (tree === "ap_tree_wep" || tree === "ap_tree_rebuild") {
+      const series = seriesOf.get(row.WeaponId);
+      if (series === undefined)
+        throw new Error(
+          `${tree}: ${row.CharaId} weapon ${row.WeaponId} not in weapon`,
+        );
+      cell.push(series);
+    }
+    ladder[row.LimitBonusParamIndex] = cell;
     nodeCount++;
   }
 }
@@ -452,19 +468,23 @@ emit(
   "masteries",
   `export const MASTERY_SECTIONS = ${JSON.stringify(SECTIONS)} as const;
 
-/** Section index of T1-6 transcendence rows, replaced by the T7 rows. */
+/** Section index of T1-6 transcendence rows, never set; the T7 rows hold the bought nodes. */
 export const REPLACED_TRANSCENDENCE = ${REPLACED_TRANSCENDENCE};
 
 /**
  * ap_tree_* nodes, ${nodeCount} rows: chara.CharId -> limit_bonus key hash ->
- * [section index, MspCost, NodeGridLocation] per LimitBonusParamIndex, null
- * for an unused index.
+ * [section index, MspCost, NodeGridLocation, weapon series] per
+ * LimitBonusParamIndex, null for an unused index. The series is on Collection
+ * and Transcendence nodes only.
  */
 export const MASTERY_NODES: Readonly<
   Record<
     string,
     Readonly<
-      Record<number, readonly (readonly [number, number, number] | null)[]>
+      Record<
+        number,
+        readonly (readonly [number, number, number, number?] | null)[]
+      >
     >
   >
 > = {
