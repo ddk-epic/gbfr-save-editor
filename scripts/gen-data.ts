@@ -112,6 +112,37 @@ for (const [exportName, [file, table, column]] of Object.entries(SOURCES)) {
   );
 }
 
+// Summon equip bonuses: Level1Value-Level10Value times ValueDisplayMultiplier, 10 on Stun Power.
+const summonBonusBlock = (
+  db.prepare(`select * from summon_base_param`).all() as Record<
+    string,
+    number | string
+  >[]
+)
+  .map((row): [string, number[]] => [
+    row.Key as string,
+    Array.from(
+      { length: 10 },
+      (_, i) =>
+        Math.round(
+          (row[`Level${i + 1}Value`] as number) *
+            (row.ValueDisplayMultiplier as number) *
+            1000,
+        ) / 1000,
+    ),
+  ])
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(
+    ([key, values]) => `  ${JSON.stringify(key)}: ${JSON.stringify(values)},`,
+  );
+emit(
+  "summons",
+  `/** summon_base_param.Key -> Level1Value-Level10Value. */
+export const SUMMON_BONUS_VALUES: Readonly<Record<string, readonly number[]>> = {
+${summonBonusBlock.join("\n")}
+};`,
+);
+
 // Master trait cell by skillboard_effect key: [category, rank, board order, perk].
 // Ranks by skillboard_group key, in unlock order.
 const RANKS: Record<string, string> = {
@@ -457,7 +488,7 @@ const overMasteryBlock = [...paramValues]
   );
 emit(
   "over-masteries",
-  `/** MED_EFF_* limit_bonus_param.Key -> Lv1Value-Lv10Value as displayed, ${overMasteryBlock.length} stats. */
+  `/** MED_EFF_* limit_bonus_param.Key -> Lv1Value-Lv10Value. */
 export const OVER_MASTERY_VALUES: Readonly<Record<string, readonly number[]>> = {
 ${overMasteryBlock.join("\n")}
 };`,

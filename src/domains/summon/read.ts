@@ -1,6 +1,7 @@
 import { keyOf } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { UnitStore } from "../../core/unit-store";
+import { SUMMON_BONUS_VALUES } from "../../data/summons";
 import { SKILLS } from "../trait/attributes";
 import type { Trait } from "../trait/read";
 import {
@@ -19,6 +20,8 @@ export interface EquipBonus {
   key: string;
   /** 0-9, reads summon_base_param.Level<level + 1>Value. */
   level: number;
+  /** Level<level + 1>Value as displayed, undefined for a key off the table. */
+  value: number | undefined;
 }
 
 export interface Summon {
@@ -56,7 +59,13 @@ export function readSummon(
         ? undefined
         : { entity, key: traitKey, level: traitLevel },
     equipBonus:
-      bonusKey === undefined ? undefined : { key: bonusKey, level: bonusLevel },
+      bonusKey === undefined
+        ? undefined
+        : {
+            key: bonusKey,
+            level: bonusLevel,
+            value: SUMMON_BONUS_VALUES[bonusKey]?.[bonusLevel],
+          },
     ...at.get(SUMMON_FLAGS),
   };
 }
