@@ -447,6 +447,21 @@ const paramBlock = [...usedParams]
     (param) =>
       `  ${JSON.stringify(param)}: ${JSON.stringify(paramValues.get(param))},`,
   );
+// Over Mastery stats: the MED_EFF_* params, read at Lv<roll level>Value.
+const overMasteryBlock = [...paramValues]
+  .filter(([param]) => param.startsWith("MED_EFF_"))
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(
+    ([param, values]) =>
+      `  ${JSON.stringify(param)}: ${JSON.stringify(values)},`,
+  );
+emit(
+  "over-masteries",
+  `/** MED_EFF_* limit_bonus_param.Key -> Lv1Value-Lv10Value as displayed, ${overMasteryBlock.length} stats. */
+export const OVER_MASTERY_VALUES: Readonly<Record<string, readonly number[]>> = {
+${overMasteryBlock.join("\n")}
+};`,
+);
 const characterBlocks = [...nodes]
   .sort(([a], [b]) => a.localeCompare(b))
   .map(([chara, byBonus]) => {

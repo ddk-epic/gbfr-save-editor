@@ -24,9 +24,21 @@ A roll is Over Master Lv 1, 2 or 3 and writes all four entries. Each tier costs 
 | Lv 2 | 1,000 | 52               | 397                    | 5807 at 5       |
 | Lv 3 | 2,000 | 93               | 398                    | 5807, 5808 at 5 |
 
+- A stat's value is its `limit_bonus_param` `Lv<level>Value`, times 10 for Stun Power (`DisplayNumberMultiplier` 3).
 - Two Lv 3 rolls from the same seed give the same four stats and levels. Running a quest also advances the seeds.
 - Removing an Over Mastery is the empty hash at 1606 and 0 at 1607 on all four entries. The game loads the character as unrolled and rolls it again.
 - A roll sets its flags back to true when they are false, so removal can leave them as they are. 5807 and 5808 have no meaning assigned.
+
+`limit_bonus_meditation_category` holds each tier's stat pool, `MeditationWeightId` 0-2 for Lv 1-3, every entry at weight 1:
+
+| Tier       | Pool                                                                                           |
+| ---------- | ---------------------------------------------------------------------------------------------- |
+| Lv 1       | 23 entries: ATK and HP 5 each, Critical Hit Rate and Stun Power 3 each, the other seven 1 each |
+| Lv 2, Lv 3 | The 11 base `MED_EFF_*` keys, 1 each                                                           |
+
+- The extra Lv 1 entries are the `_02`-`_05` keys, copies of their base key with the same text and values.
+- Every tier rolls four entries: `limit_bonus_meditation` `NumMasteries1` is 4 at weight 100, `NumMasteries2` and `NumMasteries3` at weight 0.
+- A roll draws four different keys from its pool. Lv 2 and Lv 3 rolls give four different stats. A Lv 1 roll can give the same stat on more than one entry, as a base key and its copies.
 
 ## Mastery nodes
 
