@@ -1,6 +1,15 @@
 import { describe, expect, it } from "vitest";
-import type { MasterTrait } from "../../src/domains/master-trait/read";
+import {
+  masteryRange,
+  CHARACTER_FIRST,
+} from "../../src/domains/character/attributes";
+import { MASTER_TRAIT_KEY } from "../../src/domains/master-trait/attributes";
+import {
+  readMasterTraits,
+  type MasterTrait,
+} from "../../src/domains/master-trait/read";
 import { validateMasterTraits } from "../../src/domains/master-trait/validate";
+import { unitStore } from "../../src/testing";
 
 const cell = (
   rank: MasterTrait["rank"],
@@ -12,6 +21,7 @@ const cell = (
   rank,
   order: 0,
   perk: false,
+  position: undefined,
   chosen: true,
   values: [],
   valueScales: [],
@@ -20,6 +30,25 @@ const cell = (
 
 const cells = (count: number, rank: MasterTrait["rank"]) =>
   Array.from({ length: count }, () => cell(rank));
+
+describe("readMasterTraits", () => {
+  it("gives each cell its board position, whatever cells the save holds", () => {
+    // PL0000 Essence r1: the perk, then four cells in Unk30 order; the first two missing.
+    const mastery = masteryRange(CHARACTER_FIRST);
+    const units = unitStore({
+      [mastery.first]: [[MASTER_TRAIT_KEY, 0xec41afa1]],
+      [mastery.first + 1]: [[MASTER_TRAIT_KEY, 0xacb6619f]],
+      [mastery.first + 2]: [[MASTER_TRAIT_KEY, 0xe9264877]],
+    });
+    expect(
+      readMasterTraits(units, mastery).map((c) => [c.key, c.position]),
+    ).toEqual([
+      ["EC41AFA1", undefined],
+      ["E9264877", 3],
+      ["ACB6619F", 4],
+    ]);
+  });
+});
 
 describe("validateMasterTraits", () => {
   it("passes full pools, perks and unchosen cells not counting", () => {
