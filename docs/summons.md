@@ -18,6 +18,7 @@ Summons occupy 1000 entities, `SUMMON_FIRST` (0) to 999. Every save has all 1000
 - Summons in use fill the list from unit 0 with no gaps.
 - Summon ids are unique. They are not dense: the highest is far above the number of summons.
 - Every summon has a key that resolves in `summon`, a trait and an equip bonus.
+- An equip bonus's value is its `summon_base_param` `Level<level + 1>Value` times `ValueDisplayMultiplier`, 10 on Stun Power and 1 on the rest.
 
 ## Other units
 
