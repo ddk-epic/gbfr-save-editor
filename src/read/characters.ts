@@ -10,9 +10,9 @@ import {
   CHARACTER_XP,
 } from "../domains/character/attributes";
 import {
-  CAPTAINS,
   characterEntities,
   masterLevelOf,
+  readCaptain,
   type Captain,
 } from "../domains/character/read";
 import {
@@ -51,7 +51,6 @@ import {
 import { readEquippedSkills } from "../domains/skill/read";
 import { readEquippedSummons, type Summon } from "../domains/summon/read";
 import { readOwnedWeapons, type Weapon } from "../domains/weapon/read";
-import { SAVE_ENTITY, USER_CAPTAIN } from "../domains/user/attributes";
 
 export interface Character extends Equipment {
   /** The character's own entity, which its live gear sits on. */
@@ -142,12 +141,8 @@ export function readCharacterData(units: UnitStore): CharacterData {
       });
   }
 
-  const captainNumber = units.of(SAVE_ENTITY).get(USER_CAPTAIN);
-  const captain =
-    captainNumber === undefined ? undefined : CAPTAINS[captainNumber - 1];
-
   return {
-    captain,
+    captain: readCaptain(units),
     characters,
     party: readParty(units),
     partySets: readPartySets(units, lookup),

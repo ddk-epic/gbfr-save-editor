@@ -8,6 +8,7 @@ import {
   CHARACTER_MASTER_XP,
   masteryRange,
 } from "./attributes";
+import { SAVE_ENTITY, USER_CAPTAIN } from "../user/attributes";
 
 /** NP rows: Lyria, Vyrn, Sierokarte, Rolan, Historiath, Zathba. */
 export const isNPC = (character: string) => /^NP\d{4}$/.test(character);
@@ -21,6 +22,11 @@ export const isUnused = (character: string) =>
 /** Gran and Djeeta, in the order 1103 numbers them from 1. */
 export const CAPTAINS = ["PL0000", "PL0100"] as const;
 export type Captain = (typeof CAPTAINS)[number];
+
+export function readCaptain(units: UnitStore): Captain | undefined {
+  const captain = units.of(SAVE_ENTITY).get(USER_CAPTAIN);
+  return captain === undefined ? undefined : CAPTAINS[captain - 1];
+}
 
 /** The captain the save did not pick. Unknown when the save names no captain. */
 export const isUnchosenCaptain = (
