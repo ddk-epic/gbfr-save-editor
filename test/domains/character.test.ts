@@ -2,12 +2,14 @@ import { describe, expect, it } from "vitest";
 import { hashId } from "../../src/core/xxhash32-custom";
 import {
   CHARACTER_FIRST,
+  CHARACTER_FLAGS,
   CHARACTER_KEY,
   CHARACTER_MASTER_XP,
   masteryRange,
 } from "../../src/domains/character/attributes";
 import {
   characterEntities,
+  joinedCharacters,
   playableCharacters,
   readCaptain,
   readMasterLevel,
@@ -73,5 +75,25 @@ describe("playableCharacters", () => {
       "PL0100",
       "PL0300",
     ]);
+  });
+});
+
+describe("joinedCharacters", () => {
+  it("keeps playable characters with bit 0 of 1305 set", () => {
+    const units = unitStore({
+      [CHARACTER_FIRST]: [
+        [CHARACTER_KEY, hashId("PL0300")],
+        [CHARACTER_FLAGS, 1],
+      ],
+      [CHARACTER_FIRST + 1]: [
+        [CHARACTER_KEY, hashId("PL2600")],
+        [CHARACTER_FLAGS, 0x10],
+      ],
+      [CHARACTER_FIRST + 2]: [
+        [CHARACTER_KEY, hashId("NP0000")],
+        [CHARACTER_FLAGS, 1],
+      ],
+    });
+    expect(joinedCharacters(units).map((c) => c.character)).toEqual(["PL0300"]);
   });
 });

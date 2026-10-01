@@ -4,6 +4,8 @@ import type { EntityRange, UnitStore } from "../../core/unit-store";
 import type { UnitEntity } from "../../core/save-data-binary";
 import {
   CHARACTER_FIRST,
+  CHARACTER_FLAGS,
+  CHARACTER_JOINED,
   CHARACTER_KEY,
   CHARACTER_MASTER_XP,
   masteryRange,
@@ -89,6 +91,13 @@ export function playableCharacters(units: UnitStore): CharacterEntities[] {
     isPlayable(c.character, captain),
   );
 }
+
+export const isJoined = (units: UnitStore, gear: UnitEntity) =>
+  (units.of(gear).get(CHARACTER_FLAGS) & CHARACTER_JOINED) !== 0;
+
+/** In gear entity order. */
+export const joinedCharacters = (units: UnitStore): CharacterEntities[] =>
+  playableCharacters(units).filter((c) => isJoined(units, c.gear));
 
 export function findCharacter(
   units: UnitStore,
