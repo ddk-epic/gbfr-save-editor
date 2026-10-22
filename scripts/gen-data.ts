@@ -296,6 +296,52 @@ ${episodes.sort().join("\n")}
 };`,
 );
 
+// Grants the quest clear, item and archives on completing an episode.
+const rewards = (
+  db
+    .prepare(
+      `select f.Key, f.MissionQuestId quest, f.ItemReward item, i.ItemCategoryId category,
+         f.StoryNoteArchiveId1 archive1, f.StoryNoteArchiveId2 archive2
+       from fate_episode f left join item i on i.Key = f.ItemReward
+       where f.FateMissionTitle <> '' and (f.MissionQuestId <> '00000000' or f.ItemReward <> ''
+         or f.StoryNoteArchiveId1 <> '' or f.StoryNoteArchiveId2 <> '')`,
+    )
+    .all() as {
+    Key: string;
+    quest: string;
+    item: string;
+    category: number | null;
+    archive1: string;
+    archive2: string;
+  }[]
+).map((row) => {
+  const fields = [
+    row.quest !== "00000000" && `quest: 0x${row.quest}`,
+    row.item !== "" &&
+      `item: ${JSON.stringify(row.item)}, keyItem: ${row.category === 14}`,
+    (row.archive1 !== "" || row.archive2 !== "") &&
+      `archives: ${JSON.stringify([row.archive1, row.archive2].filter((a) => a !== ""))}`,
+  ].filter(Boolean);
+  return `  ${JSON.stringify(row.Key)}: { ${fields.join(", ")} },`;
+});
+emit(
+  "characters",
+  `/** Completion rewards by fate_episode.Key, ${rewards.length} episodes; keyItem is ItemCategoryId 14. */
+export const FATE_EPISODE_REWARDS: Readonly<
+  Record<
+    string,
+    {
+      quest?: number;
+      item?: string;
+      keyItem?: boolean;
+      archives?: readonly string[];
+    }
+  >
+> = {
+${rewards.sort().join("\n")}
+};`,
+);
+
 // Menu order: playable 0-102, NPCs 500+, empty slots 1000+, dev rows 2000+.
 const uiOrder = (
   db.prepare("select CharId, UIOrder from chara").all() as {

@@ -19,13 +19,14 @@ Rupies are 1104 and mastery points 1112, each an `int` at entity 0. The item row
 
 ## Items
 
-| Attribute | Name         | Type   | Holds                      |
-| --------- | ------------ | ------ | -------------------------- |
-| 1801      | `ITEM_KEY`   | `uint` | `item.Key` hash, one value |
-| 1802      | `ITEM_COUNT` | `int`  | Count                      |
-| 1803      | `ITEM_FLAGS` | `uint` | Flags                      |
+| Attribute | Name            | Type   | Holds                                    |
+| --------- | --------------- | ------ | ---------------------------------------- |
+| 1801      | `ITEM_KEY`      | `uint` | `item.Key` hash, one value               |
+| 1802      | `ITEM_COUNT`    | `int`  | Count                                    |
+| 1803      | `ITEM_FLAGS`    | `uint` | Flags                                    |
+| 1804      | `ITEM_ACQUIRED` | `uint` | The acquisition counter when last gained |
 
-All three attributes cover entities 0-499.
+All four attributes cover entities 0-499. 1805 `ITEM_ACQUIRED_LAST`, a `uint` at entity 0, is the acquisition counter: gaining an item adds 1 to it and stores the new value in the item's 1804. It equals the highest 1804.
 
 - Units 0-447 hold the 448 `item` rows, each row exactly once.
 - Units 448-499 hold the empty hash, with count 0 and flags 0.
@@ -37,14 +38,14 @@ Unit order does not follow `item.SortOrder`, and it is not the same in every sav
 
 1803 uses bits 0, 2, 3 and 5. No other bit is set.
 
-| Bit | Value | Name              | Set on                                 |
-| --- | ----- | ----------------- | -------------------------------------- |
-| 0   | 1     | `ITEM_WISH_LIST`  | Wish list items                        |
-| 1   | 2     | not named         | Unused, set on no item                 |
-| 2   | 4     | `ITEM_FIELD_NOTE` | Items with a Field Notes Treasure page |
-| 3   | 8     | `ITEM_SEEN`       | Items whose new mark is cleared        |
-| 4   | 16    | not named         | Unused, set on no item                 |
-| 5   | 32    | not named         | Key items (`ItemCategoryId` 14) only   |
+| Bit | Value | Name              | Set on                                                |
+| --- | ----- | ----------------- | ----------------------------------------------------- |
+| 0   | 1     | `ITEM_WISH_LIST`  | Wish list items                                       |
+| 1   | 2     | not named         | Unused, set on no item                                |
+| 2   | 4     | `ITEM_FIELD_NOTE` | Items with a Field Notes Treasure page                |
+| 3   | 8     | `ITEM_SEEN`       | Items whose new mark is cleared                       |
+| 4   | 16    | not named         | Unused, set on no item                                |
+| 5   | 32    | `ITEM_KEY_ITEM`   | Key items (`ItemCategoryId` 14) only, set when gained |
 
 - Every item with a count above 0 has bit 2.
 - Every item with bit 3 has bit 2.

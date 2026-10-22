@@ -8,3 +8,6 @@ export const COUNTER_QUEST_IDS = Attribute.uintList(2570);
 export const COUNTER_QUEST_CLEARS = Attribute.uintList(2571);
 export const COUNTER_QUEST_FLAGS = Attribute.uintList(2574);
 export const COUNTER_QUEST_LAST_CLEARED = Attribute.uintList(2579);
+
+export const FATE_QUEST_IDS = Attribute.uintList(2560);
+export const FATE_QUEST_CLEARED = Attribute.uintList(2561);

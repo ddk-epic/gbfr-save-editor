@@ -1,6 +1,6 @@
 # Quests
 
-Side quests and quest counter quests are parallel arrays at entity 0, one entry per quest.
+Side quests, quest counter quests and fate quests are parallel arrays at entity 0, one entry per quest.
 
 ## Quest ids
 
@@ -9,6 +9,7 @@ A quest id is a `quest_baseinfo_ex_data.Key`, 8 hex digits, stored as the uint t
 | Prefix | Quests               |
 | ------ | -------------------- |
 | `002`  | Side quests          |
+| `0030` | Fate quests          |
 | `0040` | Quest counter quests |
 
 - A quest's title is `TXT_QR_<id without the leading 00>` in `text_stage.msg`.
@@ -67,6 +68,18 @@ Four arrays of 512.
 | 4    | S+            |
 | 5    | S++           |
 | 7    | Never cleared |
+
+## Fate quests
+
+Two arrays of 100, for the episodes that are a quest (`fate_episode.MissionQuestId`).
+
+| Attribute | Name                 | Type        | Holds                          |
+| --------- | -------------------- | ----------- | ------------------------------ |
+| 2560      | `FATE_QUEST_IDS`     | `uint[100]` | Quest id, 0 on an unused entry |
+| 2561      | `FATE_QUEST_CLEARED` | `uint[100]` | 1 once cleared                 |
+
+- 2560 holds every fate quest from a new game on, 56 ids for the 58 quest episodes: the captain's two characters share theirs.
+- 2561 is set on returning from the quest, after the episode's completion.
 
 ## Open
 
