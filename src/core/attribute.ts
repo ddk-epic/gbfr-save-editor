@@ -43,6 +43,7 @@ export const Attribute = {
   ushortList: (id: UnitAttribute) => list<number>(id, "ushort"),
   intList: (id: UnitAttribute) => list<number>(id, "int"),
   uintList: (id: UnitAttribute) => list<number>(id, "uint"),
+  longList: (id: UnitAttribute) => list<bigint>(id, "long"),
 
   /**
    * A value read as optional, undefined when the save holds no unit.
