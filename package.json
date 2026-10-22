@@ -17,6 +17,8 @@
     "gen:data": "tsx scripts/gen-data.ts",
     "check:save": "tsx scripts/check-save.ts",
     "diff:save": "tsx tools/diff-save.ts",
+    "mod:log": "tsx tools/mod-log.ts",
+    "mod:check": "tsx tools/mod-check.ts",
     "dev": "pnpm --filter gbfr-save-editor-app dev",
     "prepare": "husky"
   },
