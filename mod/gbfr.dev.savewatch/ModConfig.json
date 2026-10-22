@@ -1,0 +1,21 @@
+{
+  "ModId": "gbfr.dev.savewatch",
+  "ModName": "Save Watch",
+  "ModAuthor": "ddk",
+  "ModVersion": "0.1.0",
+  "ModDescription": "Logs every save unit change from game memory to live.jsonl in its own folder.",
+  "ModDll": "gbfr.dev.savewatch.dll",
+  "ModIcon": "",
+  "ModR2RManagedDll32": "",
+  "ModR2RManagedDll64": "",
+  "ModNativeDll32": "",
+  "ModNativeDll64": "",
+  "IsLibrary": false,
+  "ReleaseMetadataFileName": "",
+  "PluginData": {},
+  "IsUniversalMod": false,
+  "ModDependencies": [],
+  "OptionalDependencies": [],
+  "SupportedAppId": ["granblue_fantasy_relink.exe"],
+  "ProjectUrl": ""
+}
