@@ -128,6 +128,7 @@ export interface CharacterView {
   entity: number;
   level: number;
   overMasteryRolled: boolean;
+  fateEpisodesIncomplete: boolean;
   tables: Table[];
   equipment: EquipmentSetView[];
 }
@@ -889,6 +890,7 @@ export function buildView(save: Save): SaveView {
       entity: c.entity,
       level: c.level,
       overMasteryRolled: c.overMasteries.some((o) => o !== undefined),
+      fateEpisodesIncomplete: c.fateEpisodes.some((f) => !f.completed),
       tables: [
         table(
           `${c.character}:level`,

@@ -63,7 +63,8 @@
     "menu": "Edit",
     "removeWrightstone": "Remove wrightstone",
     "equipWeapon": "Equip {{weapon}}",
-    "removeOverMasteries": "Remove Over Mastery"
+    "removeOverMasteries": "Remove Over Mastery",
+    "completeFateEpisodes": "Complete all fate episodes"
   },
   "table": {
     "empty": "Nothing stored.",

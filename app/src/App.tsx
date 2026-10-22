@@ -1,4 +1,5 @@
 import {
+  completeFateEpisodes,
   equipWeapon,
   removeOverMasteries,
   removeWrightstone,
@@ -184,6 +185,9 @@ export function App() {
                 }
                 onRemoveOverMasteries={(character) =>
                   edit((session) => removeOverMasteries(session, character))
+                }
+                onCompleteFateEpisodes={(character) =>
+                  edit((session) => completeFateEpisodes(session, character))
                 }
                 onRoot={() => go("welcome")}
               />

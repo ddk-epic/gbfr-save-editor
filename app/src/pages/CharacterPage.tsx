@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import {
   CollapsibleSection,
@@ -23,6 +24,7 @@ export function CharacterPage({
   onRemoveWrightstone,
   onEquipWeapon,
   onRemoveOverMasteries,
+  onCompleteFateEpisodes,
   onRoot,
 }: {
   fileName: string;
@@ -34,6 +36,7 @@ export function CharacterPage({
   onRemoveWrightstone: (weaponId: number) => void;
   onEquipWeapon: (character: number, weaponId: number) => void;
   onRemoveOverMasteries: (character: number) => void;
+  onCompleteFateEpisodes: (character: string) => void;
   onRoot: () => void;
 }) {
   const { t } = useTranslation();
@@ -54,10 +57,15 @@ export function CharacterPage({
     else next.add(section);
     setOpen(next);
   };
-  const tableOf = (label: string, table: Table) => (
+  const tableOf = (label: string, table: Table, menu?: ReactNode) => (
     <DataTable
       table={table}
-      heading={<TableLabel>{label}</TableLabel>}
+      heading={
+        <>
+          <TableLabel>{label}</TableLabel>
+          {menu && <div className="ml-auto">{menu}</div>}
+        </>
+      }
       flush
       selectedRowId={selection?.row.id}
       onSelect={(rowId) =>
@@ -118,7 +126,23 @@ export function CharacterPage({
                   {tableOf(t("stats.level"), level!)}
                 </div>
                 <div className="min-w-0">
-                  {tableOf(t("stats.fateEpisodes"), fateEpisodes!)}
+                  {tableOf(
+                    t("stats.fateEpisodes"),
+                    fateEpisodes!,
+                    <EditMenu
+                      actions={
+                        character.fateEpisodesIncomplete
+                          ? [
+                              {
+                                label: t("edit.completeFateEpisodes"),
+                                run: () =>
+                                  onCompleteFateEpisodes(character.key),
+                              },
+                            ]
+                          : []
+                      }
+                    />,
+                  )}
                 </div>
               </div>
             </CollapsibleSection>
