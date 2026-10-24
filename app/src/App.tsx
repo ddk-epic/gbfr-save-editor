@@ -79,11 +79,19 @@ export function App() {
     scrollToSection(section);
   };
 
-  const edit = (run: Parameters<typeof applyEdit>[1]) => {
+  const edit = (
+    run: Parameters<typeof applyEdit>[1],
+    select?: (next: LoadedSave) => Selection | undefined,
+  ) => {
     if (!save) return;
-    // Clears the selection of the replaced rows.
-    setSelection(undefined);
-    setSave(applyEdit(save, run));
+    const next = applyEdit(save, run);
+    setSelection(select?.(next));
+    setSave(next);
+  };
+  const stoneRow = (next: LoadedSave, id: number): Selection | undefined => {
+    const table = next.view.shared.find((t) => t.id === "wrightstones");
+    const row = table?.rows.find((r) => r.cells[0] === id);
+    return table && row && { table, row };
   };
 
   const character = page.startsWith("char:")
@@ -156,11 +164,20 @@ export function App() {
                 setOpen={setOpen}
                 selection={selection}
                 onSelect={setSelection}
-                onAddWrightstone={(roll) =>
-                  edit((session) => void addWrightstone(session, roll))
-                }
+                onAddWrightstone={(roll) => {
+                  let id = 0;
+                  edit(
+                    (session) => {
+                      id = addWrightstone(session, roll);
+                    },
+                    (next) => stoneRow(next, id),
+                  );
+                }}
                 onEditWrightstone={(id, roll) =>
-                  edit((session) => editWrightstone(session, id, roll))
+                  edit(
+                    (session) => editWrightstone(session, id, roll),
+                    (next) => stoneRow(next, id),
+                  )
                 }
                 onRoot={() => go("welcome")}
               />

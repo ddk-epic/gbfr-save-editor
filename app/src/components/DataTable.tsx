@@ -129,7 +129,11 @@ export function DataTable({
   const { t } = useTranslation();
   const renderCell = useRenderCell();
   const [shown, setShown] = useState({ tableId: table.id, limit: ROW_BATCH });
-  const limit = shown.tableId === table.id ? shown.limit : ROW_BATCH;
+  const selectedIndex = table.rows.findIndex((r) => r.id === selectedRowId);
+  const limit = Math.max(
+    shown.tableId === table.id ? shown.limit : ROW_BATCH,
+    selectedIndex + 1,
+  );
   const hasMore = table.rows.length > limit;
   const scroller = useRef<HTMLDivElement>(null);
   const sentinel = useRef<HTMLDivElement>(null);
@@ -166,6 +170,13 @@ export function DataTable({
     return () => observer.disconnect();
   }, [table.rows.length]);
   const layout = useMemo(() => columnLayout(table), [table]);
+
+  useEffect(() => {
+    if (selectedIndex >= 0)
+      rowGroup.current?.children[selectedIndex]?.scrollIntoView({
+        block: "nearest",
+      });
+  }, [selectedIndex]);
   const label = (column: ColumnId) => t(`columns.${column}`);
 
   const headingBlock = heading && (
