@@ -1,11 +1,11 @@
 import { EMPTY_HASH } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
-import type { SaveSession } from "../../session/save-session";
+import type { SaveSession } from "../../save/session";
 import { CHARACTER_KEY, masteryRange } from "../character/attributes";
 import { OVER_MASTERY_KEY, OVER_MASTERY_LEVEL } from "./attributes";
 import { readOverMasteries } from "./read";
 
-/** Empties all four lines; the game reads the character as unrolled. */
+/** Empties all four Over Mastery lines. */
 export function removeOverMasteries(
   session: SaveSession,
   character: UnitEntity,

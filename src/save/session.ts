@@ -11,20 +11,20 @@ export interface Patch {
   values: readonly unknown[];
 }
 
-/** A save file open for editing. Values are overwritten in place, same length. */
+/** A save file open for editing, values overwritten in place. */
 export class SaveSession {
   private constructor(
     private readonly bytes: Uint8Array,
     readonly save: Save,
   ) {}
 
-  /** Reads a copy of the file; `bytes` itself is never written. */
+  /** Opens a copy of `bytes`. */
   static open(bytes: Uint8Array): SaveSession {
     const copy = new Uint8Array(bytes);
     return new SaveSession(copy, readSave(copy));
   }
 
-  /** Every patch or none: a missing unit or a length change throws first. */
+  /** Applies every patch, or none on a missing unit or length change. */
   patch(patches: readonly Patch[]): void {
     const units = this.save.slotData.units;
     const targets = patches.map(({ attribute, entity, values }) => {

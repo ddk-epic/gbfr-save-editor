@@ -31,10 +31,10 @@ import {
   WEAPON_ID,
   WEAPON_KEY,
 } from "../../src/domains/weapon/attributes";
-import { SaveSession } from "../../src/session/save-session";
+import { SaveSession } from "../../src/save/session";
 import { fixtureFile, unitStore, type EntityUnits } from "../../src/testing";
 
-/** WEAPON_FLAGS bit marking a weapon the player holds. */
+/** WEAPON_FLAGS held bit. */
 const WEAPON_OWNED = 1;
 
 const LOADOUT = LOADOUT_FIRST + 2;

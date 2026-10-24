@@ -35,18 +35,17 @@ import {
   SUMMONS_EQUIPPED,
 } from "../../src/domains/summon/attributes";
 import { SAVE_ENTITY, USER_CAPTAIN } from "../../src/domains/user/attributes";
-import { readCharacterData } from "../../src/read/characters";
+import { readCharacterData } from "../../src/save/read-characters";
 import { unitStore } from "../../src/testing";
 
 const GRAN = CHARACTER_FIRST;
 const KATALINA = CHARACTER_FIRST + 1;
-/** Katalina's mastery block: Over Mastery lines and master trait cells. */
+/** Katalina's mastery block. */
 const KATALINA_MASTERY = masteryRange(KATALINA).first;
 
 const OVER_MASTERY = "LBP_AB_PL1100_01";
 /** SB_ATK r3, order 133, not a perk. */
 const MASTER_TRAIT_HASH = 0x00440979;
-// The summon table names unresolved keys in hex; the save stores the hash.
 const SUMMON_HASH = 0x0033943a;
 
 const units = unitStore({

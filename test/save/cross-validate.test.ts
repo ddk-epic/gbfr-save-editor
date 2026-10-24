@@ -12,17 +12,17 @@ import type {
   Character,
   CharacterData,
   Loadout,
-} from "../../src/read/characters";
-import type { Inventory } from "../../src/read/inventory";
+} from "../../src/save/read-characters";
+import type { Inventory } from "../../src/save/read-inventory";
 import {
   validateCharacterData,
   validateInventory,
   validateQuestClears,
-} from "../../src/read/validate";
+} from "../../src/save/cross-validate";
 
 const CHARACTER_COUNT = Object.keys(CHARACTER_KEYS).length;
 
-/** Every section at zero, as a character with no ap_tree rows reads. */
+/** A character without ap_tree rows. */
 const noMasteries = (): Record<MasterySection, MasteryProgress> =>
   Object.fromEntries(
     MASTERY_SECTIONS.map((section): [MasterySection, MasteryProgress] => [

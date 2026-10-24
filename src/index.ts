@@ -28,17 +28,17 @@ export {
   type ValidationCode,
   type ValidationIssue,
 } from "./core/validation";
-export { validateSave, type ValidateOptions } from "./validate";
+export { validateSave, type ValidateOptions } from "./save/validate";
 export { hashId } from "./core/xxhash32-custom";
 export { keyOf, keyTable, type KeyTable } from "./core/keys";
 
-export { readInventory, type Inventory } from "./read/inventory";
+export { readInventory, type Inventory } from "./save/read-inventory";
 export {
   readCharacterData,
   type Character,
   type CharacterData,
   type Loadout,
-} from "./read/characters";
+} from "./save/read-characters";
 
 export {
   CAPTAINS,

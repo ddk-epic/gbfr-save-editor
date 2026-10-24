@@ -25,7 +25,7 @@ import {
   readOwnedWeapons,
   readWeapon,
 } from "../../src/domains/weapon/read";
-import { SaveSession } from "../../src/session/save-session";
+import { SaveSession } from "../../src/save/session";
 import { fixtureFile, unitStore, type EntityUnits } from "../../src/testing";
 
 const WEAPON = WEAPON_FIRST + 3;
@@ -99,7 +99,7 @@ describe("readWeapon", () => {
 });
 
 describe("readOwnedWeapons", () => {
-  /** WEAPON_FLAGS bit marking a weapon the player holds. */
+  /** WEAPON_FLAGS held bit. */
   const WEAPON_OWNED = 1;
   const weapon = (
     id: number,

@@ -22,7 +22,7 @@ import {
   FATE_QUEST_CLEARED,
   FATE_QUEST_IDS,
 } from "../../src/domains/quest/attributes";
-import { SaveSession } from "../../src/session/save-session";
+import { SaveSession } from "../../src/save/session";
 import { fixtureFile, unitStore, type EntityUnits } from "../../src/testing";
 
 describe("readFateEpisodes", () => {

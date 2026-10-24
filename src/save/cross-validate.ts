@@ -9,8 +9,8 @@ import { validateMasteries } from "../domains/mastery/validate";
 import { validateOverMasteries } from "../domains/over-mastery/validate";
 import type { CounterQuest } from "../domains/quest/read";
 import { validateWrightstone } from "../domains/wrightstone/validate";
-import type { CharacterData } from "./characters";
-import type { Inventory } from "./inventory";
+import type { CharacterData } from "./read-characters";
+import type { Inventory } from "./read-inventory";
 
 const known = (key: string) => characterOrder(key) < Infinity;
 
@@ -71,7 +71,7 @@ export function validateInventory(inventory: Inventory): SaveIssue[] {
   return issues;
 }
 
-/** The profile counts the same clears from a different unit. */
+/** Quest clears against the profile's count. */
 export function validateQuestClears(
   quests: CounterQuest[],
   profileClears: number,

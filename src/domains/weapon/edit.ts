@@ -1,5 +1,5 @@
 import { EMPTY_HASH } from "../../core/keys";
-import type { SaveSession } from "../../session/save-session";
+import type { SaveSession } from "../../save/session";
 import {
   TRAIT_KEY,
   TRAIT_LEVEL,

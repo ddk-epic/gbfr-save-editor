@@ -4,13 +4,13 @@ import { checksumIndex, slotChecksum } from "../../src/core/checksum";
 import { readContainer } from "../../src/core/container";
 import { readSave } from "../../src/core/read-save";
 import { SAVE_HASHSEED } from "../../src/domains/user/attributes";
-import { SaveSession } from "../../src/session/save-session";
+import { SaveSession } from "../../src/save/session";
 import { fixtureFile } from "../../src/testing";
 
 const LEVEL = Attribute.int(2704);
 const LIST = Attribute.uintList(2818);
 const SEED = 23;
-/** Floats encode last, keeping the edited units clear of the trimmed tail no checksum covers. */
+/** Encodes after the edited units. */
 const TAIL = Attribute.float(9999);
 
 const file = () =>

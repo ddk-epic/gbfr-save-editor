@@ -31,7 +31,7 @@ import {
   type WrightstoneRoll,
 } from "../../src/domains/wrightstone/rolls";
 import { validateWrightstone } from "../../src/domains/wrightstone/validate";
-import { SaveSession } from "../../src/session/save-session";
+import { SaveSession } from "../../src/save/session";
 import { fixtureFile, type EntityUnits } from "../../src/testing";
 
 const stone = (...levels: number[]) => ({

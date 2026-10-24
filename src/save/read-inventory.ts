@@ -22,15 +22,9 @@ export interface Inventory {
   items: Map<string, number>;
   /** item.Key of the items on the wish list, in save order. */
   wishList: string[];
-  /**
-   * item.Key of held items not yet seen. Includes items the item menu does not
-   * show, such as potions and wrightstone items.
-   */
+  /** item.Key of held items not yet seen, menu-hidden items included. */
   unseenItems: string[];
-  /**
-   * ability.Key of skills in a character's list not yet seen, guest
-   * characters included. Skills a character has not got hold 0 and are left out.
-   */
+  /** ability.Key of acquired skills not yet seen, guest characters included. */
   unseenSkills: string[];
   /** Oldest first, the order the game appraises them in. */
   curios: Curio[];

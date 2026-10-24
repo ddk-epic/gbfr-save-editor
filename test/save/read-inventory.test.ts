@@ -45,21 +45,20 @@ import {
   WRIGHTSTONE_ID,
   WRIGHTSTONE_KEY,
 } from "../../src/domains/wrightstone/attributes";
-import { readInventory } from "../../src/read/inventory";
+import { readInventory } from "../../src/save/read-inventory";
 import { unitStore, type EntityUnits } from "../../src/testing";
 
 const POTION = "ITEM_10_0000";
 const MATERIAL = "ITEM_11_0000";
 const STONE = "ITEM_28_0000";
 const WEAPON = "WEP_PL1600_03";
-// The summon table names unresolved keys in hex; the save stores the hash.
 const SUMMON_HASH = 0x0033943a;
 const SUMMON = "0033943A";
 const TRAITS = ["SKILL_094_00", "SKILL_070_00", "SKILL_124_01"] as const;
 const SKILL_UNSEEN = "AB_PL2700_06";
 const SKILL_SEEN_KEY = "AB_PL2000_05";
 
-/** A wrightstone's traits live in their own entity range, one entity each. */
+/** A wrightstone's traits, one entity each. */
 const traitList = (
   holder: number,
   traits: readonly (readonly [string, number])[],
@@ -90,7 +89,7 @@ const units = unitStore({
     [ITEM_COUNT, 0],
     [ITEM_FLAGS, 1 | 8],
   ],
-  // Two curios, serials against entity order, so a sort by serial shows.
+  // Two curios, serials against entity order.
   3: [
     [CURIO_KEY, hashId("ITEM_19_0001")],
     [CURIO_SERIAL, 9],
@@ -127,8 +126,7 @@ const units = unitStore({
     [SUMMON_KEY, SUMMON_HASH],
     [SUMMON_FLAGS, 2],
   ],
-  // The stone's three traits under holder TRAIT_WRIGHTSTONE, the main one
-  // weakest, so a sort by level shows.
+  // The stone's three traits under TRAIT_WRIGHTSTONE, the main one weakest.
   ...traitList(TRAIT_WRIGHTSTONE, [
     [TRAITS[0], 3],
     [TRAITS[1], 15],

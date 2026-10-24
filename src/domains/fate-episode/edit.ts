@@ -5,7 +5,7 @@ import {
   FATE_EPISODE_CHARACTERS,
   FATE_EPISODE_REWARDS,
 } from "../../data/characters";
-import type { Patch, SaveSession } from "../../session/save-session";
+import type { Patch, SaveSession } from "../../save/session";
 import {
   ITEM_ACQUIRED,
   ITEM_ACQUIRED_LAST,

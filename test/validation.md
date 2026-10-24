@@ -1,6 +1,6 @@
 # Validation
 
-`validateSave` in `src/validate.ts` checks claims every save the game writes holds, and returns what it finds. Reading a save says what it holds; validation says whether what it holds makes sense.
+`validateSave` in `src/save/validate.ts` checks claims every save the game writes holds, and returns what it finds. Reading a save says what it holds; validation says whether what it holds makes sense.
 
 ```ts
 const issues = validateSave(readSave(bytes));
@@ -32,8 +32,8 @@ Unresolved keys are not reported here yet. They still surface as a console warni
 ## Layout
 
 - `src/domains/<x>/validate.ts` checks what that domain's reader returns, such as `validateTrophies(trophies)`.
-- `src/read/validate.ts` holds checks spanning domains, such as quest clears against the profile.
-- `src/validate.ts` reads the save once and runs both, catching a `SaveFormatError` per group.
+- `src/save/cross-validate.ts` holds checks spanning domains, such as quest clears against the profile.
+- `src/save/validate.ts` reads the save once and runs both, catching a `SaveFormatError` per group.
 
 Each check takes records rather than a `UnitStore`, so its test states the records it checks.
 

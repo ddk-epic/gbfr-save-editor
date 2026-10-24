@@ -1,23 +1,23 @@
 import { describe, expect, it } from "vitest";
-import { Attribute } from "../src/core/attribute";
-import { FILE_SIZE } from "../src/core/container";
-import { ITEM_KEYS } from "../src/data/items";
-import { CHARACTER_KEYS } from "../src/data/characters";
+import { Attribute } from "../../src/core/attribute";
+import { FILE_SIZE } from "../../src/core/container";
+import { ITEM_KEYS } from "../../src/data/items";
+import { CHARACTER_KEYS } from "../../src/data/characters";
 import {
   COUNTER_QUEST_CLEARS,
   COUNTER_QUEST_IDS,
   COUNTER_QUEST_LAST_CLEARED,
-} from "../src/domains/quest/attributes";
+} from "../../src/domains/quest/attributes";
 import {
   SIGIL_FIRST,
   SIGIL_ID,
   SIGIL_KEY,
-} from "../src/domains/sigil/attributes";
-import { SAVE_ENTITY } from "../src/domains/user/attributes";
-import { fixtureSave, unitStore } from "../src/testing";
-import { validateSave } from "../src/validate";
+} from "../../src/domains/sigil/attributes";
+import { SAVE_ENTITY } from "../../src/domains/user/attributes";
+import { fixtureSave, unitStore } from "../../src/testing";
+import { validateSave } from "../../src/save/validate";
 
-/** Issues a save with nothing in it raises: every table reads as empty. */
+/** Issues of an empty save. */
 const EMPTY_TABLES = [
   "item",
   "chara",
@@ -128,7 +128,7 @@ describe("validateSave", () => {
   });
 
   it("returns a reader's format error as a reject, and keeps checking", () => {
-    // 2702 is stored as uint; a sigil id read as int throws on the way.
+    // Sigil id 2702 as int instead of uint.
     const units = unitStore({
       [SIGIL_FIRST]: [
         [Attribute.int(SIGIL_ID.id), 71],

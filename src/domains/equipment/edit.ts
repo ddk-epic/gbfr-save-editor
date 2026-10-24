@@ -1,6 +1,6 @@
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { UnitStore } from "../../core/unit-store";
-import type { SaveSession } from "../../session/save-session";
+import type { SaveSession } from "../../save/session";
 import { CHARACTER_KEY } from "../character/attributes";
 import { WEAPON_SERIES_ORDER } from "../weapon/attributes";
 import { readWeapons, type Weapon } from "../weapon/read";

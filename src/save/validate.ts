@@ -1,41 +1,41 @@
-import { FILE_SIZE } from "./core/container";
-import { SaveFormatError } from "./core/errors";
-import type { Save } from "./core/read-save";
-import { reject, warning, type SaveIssue } from "./core/validation";
+import { FILE_SIZE } from "../core/container";
+import { SaveFormatError } from "../core/errors";
+import type { Save } from "../core/read-save";
+import { reject, warning, type SaveIssue } from "../core/validation";
 import {
   ARCHIVE_KEYS,
   GLOSSARY_KEYS,
   MUSIC_KEYS,
   STORY_KEYS,
   TIP_KEYS,
-} from "./data/journal";
-import { readConflux } from "./domains/conflux/read";
-import { validateConflux } from "./domains/conflux/validate";
+} from "../data/journal";
+import { readConflux } from "../domains/conflux/read";
+import { validateConflux } from "../domains/conflux/validate";
 import {
   readArchives,
   readGlossary,
   readMainStory,
   readMusic,
   readTips,
-} from "./domains/journal/read";
-import { validateJournalList } from "./domains/journal/validate";
-import { readProfile } from "./domains/profile/read";
-import { readCounterQuests, readSideQuests } from "./domains/quest/read";
+} from "../domains/journal/read";
+import { validateJournalList } from "../domains/journal/validate";
+import { readProfile } from "../domains/profile/read";
+import { readCounterQuests, readSideQuests } from "../domains/quest/read";
 import {
   validateCounterQuests,
   validateSideQuests,
-} from "./domains/quest/validate";
-import { readTrophies } from "./domains/trophy/read";
-import { validateTrophies } from "./domains/trophy/validate";
-import { readCharacterData } from "./read/characters";
-import { readInventory } from "./read/inventory";
+} from "../domains/quest/validate";
+import { readTrophies } from "../domains/trophy/read";
+import { validateTrophies } from "../domains/trophy/validate";
+import { readCharacterData } from "./read-characters";
+import { readInventory } from "./read-inventory";
 import {
   validateCharacterData,
   validateInventory,
   validateQuestClears,
-} from "./read/validate";
+} from "./cross-validate";
 
-/** Header fields the format fixes. Only slotDataSize moves, with what the slot holds. */
+/** Header fields the format fixes, slotDataSize aside. */
 const HEADER_LAYOUT = {
   systemDataOffset: 0x34,
   slotDataOffset: 0x1434,
@@ -79,11 +79,7 @@ export interface ValidateOptions {
   now?: Date;
 }
 
-/**
- * Checks claims every save the game writes holds. Save content never makes it
- * throw: a reader throwing SaveFormatError on the way is returned as a reject,
- * and the checks that did not depend on it still run.
- */
+/** Checks claims every save holds; a reader's SaveFormatError returns as a reject. */
 export function validateSave(
   save: Save,
   { now = new Date() }: ValidateOptions = {},
