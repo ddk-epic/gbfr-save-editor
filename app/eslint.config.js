@@ -1,11 +1,12 @@
 import path from "node:path";
 import js from "@eslint/js";
+import reactHooks from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
 import prettier from "eslint-config-prettier";
 
 const APP = import.meta.dirname;
 
-/** The library's package entries, the only way into it. */
+/** The library's package entries. */
 const ENTRIES = [
   "gbfr-save-editor",
   "gbfr-save-editor/edit",
@@ -49,6 +50,7 @@ export default tseslint.config(
   { ignores: ["node_modules", "dist"] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  reactHooks.configs.flat["recommended-latest"],
   {
     languageOptions: { parserOptions: { tsconfigRootDir: APP } },
   },
