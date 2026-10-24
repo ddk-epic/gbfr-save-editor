@@ -13,6 +13,7 @@ Trophies are two bool arrays at entity 0, indexed by `badge.Key`, and a progress
 - An entry whose index is no `badge.Key` stays false.
 - 5816 is only ever true on an earned trophy.
 - Trophies sharing a `BehaviorId` share one 5815 entry, such as the tiers of one count. An action that counts toward a trophy adds 1 to its entry: completing a fate episode to its character's entry (42 for `PL1500`), applying a wrightstone to 195, an Over Mastery roll to its character's entry for that tier (396-398 for `PL0600`).
+- Some entries are recounts instead, set to a count the game takes again and able to go down. 1015, for badges 1368 and 1370, is the number of crewmates with a power rating of at least 45,000; a weapon switch that takes a character below it lowers it by 1.
 - A trophy's name and description are `TXT_BADGE_NAME_<Key>` and `TXT_BADGE_EXPL_<Key>` in `text_badge.msg`. A `{0}` in the description is `badge.ReqQuantity`.
 
 ## Tabs
