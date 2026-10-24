@@ -6,6 +6,7 @@ export const ITEMS = keyTable("item", ITEM_KEYS);
 
 export const WRIGHTSTONE_FIRST = 50000;
 
+export const WRIGHTSTONE_LAST_ID = Attribute.uint(2101);
 export const WRIGHTSTONE_KEY = keyAttribute(2102, ITEMS);
 export const WRIGHTSTONE_ID = Attribute.uint(2103);
 export const WRIGHTSTONE_LOCKED = Attribute.bool(2104);

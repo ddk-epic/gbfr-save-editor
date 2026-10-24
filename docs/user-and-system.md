@@ -62,7 +62,7 @@ User data uses attributes 1101-1151.
 | 1102      | not named                  | `int`        | Always 1                                                            |
 | 1103      | `USER_CAPTAIN`             | `int`        | Captain picked at the start: 1 Gran, 2 Djeeta                       |
 | 1104      | `USER_RUPIES`              | `int`        | Rupies                                                              |
-| 1105      | not named                  | `int`        |                                                                     |
+| 1105      | `USER_TRANSMARVEL_POINTS`  | `int`        | Transmarvel points, 150 per Transmarvel Stock                       |
 | 1106      | `USER_COMMENDATIONS`       | `int`        | Commendations, as the player page shows                             |
 | 1107      | not named                  | `bool`       |                                                                     |
 | 1108      | `USER_ONLINE_STATUS_FLAGS` | `uint`       | Online status flags                                                 |
@@ -77,6 +77,8 @@ User data uses attributes 1101-1151.
 | 1151      | not named                  | `uint[58]`   | One entry per value: the low byte is its index, the high byte flags |
 
 The player name also appears at 4413 and 4506.
+
+A Transmutation pull adds its `gacha.TransmarvelEarned` to 1105, 15 per pull at Level 3, and a Transmarvel pull takes `gacha.TransmarvelCost`, 150. The Transmarvel Stock the game shows is 1105 / 150, and the remainder fills its bar.
 
 ## Location
 
