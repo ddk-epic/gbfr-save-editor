@@ -89,16 +89,16 @@ A wrightstone's trait list holds the main trait, then the two subs.
 
 An applied stone has no inventory unit. Applying a wrightstone moves its traits onto the weapon. The weapon keeps the stone's `item.Key` in `WEAPON_WRIGHTSTONE`, and the traits become the weapon's `TRAIT_WEAPON` list. Nothing remains under `WRIGHTSTONE_FIRST` for it.
 
-Applying a stone changes these units and no others.
+Only an unlocked stone can be applied, so `WRIGHTSTONE_LOCKED` is already false. Applying a stone changes these units and no others, in one step.
 
-| Units                                         | Change                                                                        |
-| --------------------------------------------- | ----------------------------------------------------------------------------- |
-| `WEAPON_WRIGHTSTONE` on the weapon            | Empty to the stone's `item.Key`                                               |
-| The weapon's `TRAIT_WEAPON` list              | Empty to the stone's traits, keys and levels, in the stone's order            |
-| `WRIGHTSTONE_KEY`, `_ID`, `_LOCKED`, `_FLAGS` | Reset to empty, 0, false and 0, the values of an unused entity                |
-| The stone's `TRAIT_WRIGHTSTONE` list          | Reset to empty keys at level 0                                                |
-| `ITEM_COUNT` of the stone's `item.Key`        | Down by 1, the count of loose stones with that key                            |
-| Unit 5815 at entity 0, index 195              | Up by 1, progress by `badge.BehaviorId` for the trophies for applying a stone |
+| Units                                  | Change                                                                        |
+| -------------------------------------- | ----------------------------------------------------------------------------- |
+| `WEAPON_WRIGHTSTONE` on the weapon     | Empty to the stone's `item.Key`                                               |
+| The weapon's `TRAIT_WEAPON` list       | Empty to the stone's traits, keys and levels, in the stone's order            |
+| `WRIGHTSTONE_KEY`, `_ID`, `_FLAGS`     | Reset to empty, 0 and 0, the values of an unused entity with `_LOCKED` false  |
+| The stone's `TRAIT_WRIGHTSTONE` list   | Reset to empty keys at level 0                                                |
+| `ITEM_COUNT` of the stone's `item.Key` | Down by 1, the count of loose stones with that key                            |
+| Unit 5815 at entity 0, index 195       | Up by 1, progress by `badge.BehaviorId` for the trophies for applying a stone |
 
 The emptied stone entity stays where it is. The game does not move the stones after it, and `WRIGHTSTONE_LAST_ID` does not change.
 
