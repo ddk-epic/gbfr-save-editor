@@ -12,7 +12,7 @@ Trophies are two bool arrays at entity 0, indexed by `badge.Key`, and a progress
 
 - An entry whose index is no `badge.Key` stays false.
 - 5816 is only ever true on an earned trophy.
-- Trophies sharing a `BehaviorId` share one 5815 entry, such as the tiers of one count. An action that counts toward a trophy adds 1 to its entry: completing a fate episode to its character's entry (42 for `PL1500`), applying a wrightstone to 195, an Over Mastery roll to 396-398 by tier.
+- Trophies sharing a `BehaviorId` share one 5815 entry, such as the tiers of one count. An action that counts toward a trophy adds 1 to its entry: completing a fate episode to its character's entry (42 for `PL1500`), applying a wrightstone to 195, an Over Mastery roll to its character's entry for that tier (396-398 for `PL0600`).
 - A trophy's name and description are `TXT_BADGE_NAME_<Key>` and `TXT_BADGE_EXPL_<Key>` in `text_badge.msg`. A `{0}` in the description is `badge.ReqQuantity`.
 
 ## Tabs
@@ -35,4 +35,5 @@ The journal lists base game and Endless Ragnarok trophies apart, by `badge.IsEnd
 ## Open
 
 - 5814 at entity 0 holds 1,700 bools, true only on earned trophies. No meaning is assigned.
-- 5802 and 5803 hold 28 ints, 5807, 5808 and 5817 hold 28 bools, 5821 holds 54 bools, and 5818-5820 and 5822 one bool each. None has a meaning assigned. An Over Mastery roll sets 5807 at index 5, and a Lv 3 roll also 5808 at index 5, see `masteries.md`.
+- 5802 and 5803 hold 28 ints, 5817 holds 28 bools, 5821 holds 54 bools, and 5818-5820 and 5822 one bool each. None has a meaning assigned.
+- 5807 and 5808 are 28 bools, one per character, set by Over Mastery rolls, see `masteries.md`.
