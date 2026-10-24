@@ -13424,5 +13424,12 @@
     "6": "Calamity",
     "7": "Salvation",
     "8": "Chaos"
+  },
+  "ui": {
+    "apply": "Apply",
+    "close": "Close",
+    "level": "Lvl",
+    "trait": "Trait",
+    "traitLevel": "T. Lvl"
   }
 }

@@ -777,6 +777,12 @@ const GAME_TEXT = {
     union all select '6', 'TXT_KKTN_BFCHIC_TYPE_DISASTER'
     union all select '7', 'TXT_KKTN_BFCHIC_TYPE_RESCUE'
     union all select '8', 'TXT_KKTN_BFCHIC_TYPE_CHAOS'`,
+  // Game UI labels, keyed by app name.
+  ui: `select 'close' key, 'TXT_DLG_BUTTON_CLOSE' text_id
+    union all select 'apply', 'TXT_DLG_BUTTON_EXECUTE'
+    union all select 'trait', 'TXT_BLS_CR_WEAPON_SKILL'
+    union all select 'traitLevel', 'TXT_PAU_SKILL_LEVEL_DETAIL'
+    union all select 'level', 'TXT_PAU_LEVEL'`,
 } satisfies Record<string, string>;
 
 /** Output language -> .msg folder. */
