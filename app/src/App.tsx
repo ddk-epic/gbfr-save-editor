@@ -1,5 +1,7 @@
 import {
+  addWrightstone,
   completeFateEpisodes,
+  editWrightstone,
   equipWeapon,
   removeOverMasteries,
   removeWrightstone,
@@ -40,10 +42,10 @@ export function App() {
   const [validationOpen, setValidationOpen] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
   const [scrollRef, gutter] = useScrollGutter<HTMLDivElement>();
-  // Scroll position by page, so each page keeps its own; cleared per save.
+  // Scroll position by page, cleared per save.
   const scrollTops = useRef(new Map<Page, number>());
 
-  // Keyed on the session, so an edit keeps the scroll position.
+  // Restores the page's scroll position, also after an edit.
   const session = save?.session;
   useLayoutEffect(() => {
     const el = scrollRef.current;
@@ -66,7 +68,7 @@ export function App() {
     setPage("save");
   };
   const go = (next: Page) => {
-    // The row panel belongs to a page; leaving the page clears it.
+    // Leaving a page clears its selection.
     if (next !== page) setSelection(undefined);
     scrollTops.current.set(page, scrollRef.current?.scrollTop ?? 0);
     setPage(next);
@@ -79,7 +81,7 @@ export function App() {
 
   const edit = (run: Parameters<typeof applyEdit>[1]) => {
     if (!save) return;
-    // Rows are rebuilt, so the selected one no longer exists.
+    // Clears the selection of the replaced rows.
     setSelection(undefined);
     setSave(applyEdit(save, run));
   };
@@ -154,6 +156,12 @@ export function App() {
                 setOpen={setOpen}
                 selection={selection}
                 onSelect={setSelection}
+                onAddWrightstone={(roll) =>
+                  edit((session) => void addWrightstone(session, roll))
+                }
+                onEditWrightstone={(id, roll) =>
+                  edit((session) => editWrightstone(session, id, roll))
+                }
                 onRoot={() => go("welcome")}
               />
             )}

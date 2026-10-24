@@ -59,17 +59,23 @@ export function CollapsibleSection({
   count,
   open,
   onToggle,
+  menu,
   children,
 }: {
   section: SectionId;
   count: number;
   open: boolean;
   onToggle: () => void;
+  /** An edit menu over the right end of the header. */
+  menu?: ReactNode;
   children: ReactNode;
 }) {
   const { t } = useTranslation();
   return (
-    <section id={sectionId(section)}>
+    <section id={sectionId(section)} className="relative">
+      {open && menu && (
+        <div className="absolute top-2 right-0 z-20">{menu}</div>
+      )}
       <button
         onClick={onToggle}
         className="flex w-full items-center gap-2 py-2 text-left hover:bg-muted"
@@ -146,6 +152,7 @@ function Section({
       count={tables.reduce((n, table) => n + table.rows.length, 0)}
       open={open}
       onToggle={onToggle}
+      menu={shown.length === 1 && menuOf?.(shown[0]!)}
     >
       {shown.length === 1 ? (
         tableOf(shown[0]!, tabBar)

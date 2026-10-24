@@ -64,7 +64,23 @@
     "removeWrightstone": "Remove wrightstone",
     "equipWeapon": "Equip {{weapon}}",
     "removeOverMasteries": "Remove Over Mastery",
-    "completeFateEpisodes": "Complete all fate episodes"
+    "completeFateEpisodes": "Complete all fate episodes",
+    "addWrightstone": "Add wrightstone"
+  },
+  "wrightstoneForm": {
+    "family": "Main trait",
+    "preset": "Levels",
+    "pick": "Pick a trait",
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "groups": {
+      "basic": "Basic",
+      "attack": "Attack",
+      "defense": "Defense",
+      "support": "Support",
+      "utility": "Utility",
+      "endless": "Endless Ragnarok"
+    }
   },
   "table": {
     "empty": "Nothing stored.",

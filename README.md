@@ -145,8 +145,8 @@ A save editor for Granblue Fantasy: Relink. Still work in progress and planned w
 
 #### Wrightstones
 
-- [ ] Add wrightstone: traits and levels
-- [ ] Edit wrightstone traits
+- [x] Add wrightstone: traits and levels
+- [x] Edit wrightstone traits
 - [ ] Lock or unlock
 - [ ] Remove wrightstone
 

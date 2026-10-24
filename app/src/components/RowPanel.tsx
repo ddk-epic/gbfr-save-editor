@@ -1,4 +1,5 @@
 import { Lock } from "lucide-react";
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { cellKeys, useRenderCell } from "./DataTable";
 import type { Row, Table } from "../save/view";
@@ -6,8 +7,11 @@ import type { Row, Table } from "../save/view";
 /** The edit panel above the tables. */
 export function RowPanel({
   selected,
+  editor,
 }: {
   selected: { table: Table; row: Row } | undefined;
+  /** Replaces the read-only note, or the empty text when no row is selected. */
+  editor?: ReactNode;
 }) {
   const { t } = useTranslation();
   const renderCell = useRenderCell();
@@ -48,8 +52,16 @@ export function RowPanel({
               );
             })}
           </div>
-          <p className="mt-2 text-faint-foreground">{t("rowPanel.readOnly")}</p>
+          {editor ? (
+            <div className="mt-3">{editor}</div>
+          ) : (
+            <p className="mt-2 text-faint-foreground">
+              {t("rowPanel.readOnly")}
+            </p>
+          )}
         </>
+      ) : editor ? (
+        editor
       ) : (
         <p className="pt-8 text-center text-faint-foreground">
           {t("rowPanel.empty")}
