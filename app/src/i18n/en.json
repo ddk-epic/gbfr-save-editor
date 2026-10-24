@@ -71,8 +71,6 @@
     "family": "Main trait",
     "preset": "Levels",
     "pick": "Pick a trait",
-    "apply": "Apply",
-    "cancel": "Cancel",
     "groups": {
       "basic": "Basic",
       "attack": "Attack",
@@ -90,6 +88,7 @@
   },
   "rowPanel": {
     "row": "Row",
+    "new": "New",
     "readOnly": "Read-only until editing ships.",
     "empty": "No row selected. Click a row below to see it here."
   },

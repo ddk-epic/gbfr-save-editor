@@ -8,6 +8,7 @@ import {
   type WrightstonePreset,
   type WrightstoneRoll,
 } from "gbfr-save-editor/edit";
+import { Check } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGameText } from "../game-text";
@@ -25,12 +26,11 @@ export function WrightstoneForm({
   initial,
   applyLabel,
   onApply,
-  onCancel,
 }: {
   initial?: Partial<WrightstoneRoll>;
-  applyLabel: string;
+  /** Tooltip of the check button. */
+  applyLabel: string | undefined;
   onApply: (roll: WrightstoneRoll) => void;
-  onCancel?: () => void;
 }) {
   const { t } = useTranslation();
   const gt = useGameText();
@@ -46,7 +46,7 @@ export function WrightstoneForm({
   const valid = subs.every((sub) => allowed.includes(sub));
 
   const field = (label: string, control: React.ReactNode) => (
-    <label className="flex flex-col gap-1 text-[14px]">
+    <label className="flex min-w-0 flex-col gap-1 text-[14px]">
       <span className="text-[13px] tracking-wide text-subtle-foreground uppercase">
         {label}
       </span>
@@ -54,10 +54,11 @@ export function WrightstoneForm({
     </label>
   );
   const select =
-    "rounded-sm border border-input bg-background px-1.5 py-0.5 text-foreground aria-invalid:border-destructive";
+    "w-full rounded-sm border border-input bg-background px-1.5 py-0.5 text-foreground aria-invalid:border-destructive";
 
+  // One row; the selects shrink to fit.
   return (
-    <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
+    <div className="flex items-end gap-x-6">
       {field(
         t("wrightstoneForm.family"),
         <select
@@ -123,23 +124,15 @@ export function WrightstoneForm({
           </select>,
         ),
       )}
-      <div className="flex gap-2">
-        <button
-          disabled={!valid}
-          onClick={() => onApply({ family, preset, subs })}
-          className="rounded-sm bg-primary px-2 py-0.5 text-primary-foreground enabled:hover:opacity-90 disabled:opacity-40"
-        >
-          {applyLabel}
-        </button>
-        {onCancel && (
-          <button
-            onClick={onCancel}
-            className="rounded-sm px-2 py-0.5 text-subtle-foreground hover:bg-accent hover:text-accent-foreground"
-          >
-            {t("wrightstoneForm.cancel")}
-          </button>
-        )}
-      </div>
+      <button
+        disabled={!valid}
+        onClick={() => onApply({ family, preset, subs })}
+        title={applyLabel}
+        aria-label={applyLabel}
+        className="shrink-0 rounded-sm bg-primary p-1 text-primary-foreground enabled:hover:opacity-90 disabled:opacity-40"
+      >
+        <Check size={16} />
+      </button>
     </div>
   );
 }

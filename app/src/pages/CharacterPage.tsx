@@ -32,7 +32,7 @@ export function CharacterPage({
   open: Set<string>;
   setOpen: (open: Set<string>) => void;
   selection: Selection | undefined;
-  onSelect: (selection: Selection) => void;
+  onSelect: (selection: Selection | undefined) => void;
   onRemoveWrightstone: (weaponId: number) => void;
   onEquipWeapon: (character: number, weaponId: number) => void;
   onRemoveOverMasteries: (character: number) => void;
@@ -89,7 +89,7 @@ export function CharacterPage({
           />
         }
       >
-        <RowPanel selected={selection} />
+        <RowPanel selected={selection} onClose={() => onSelect(undefined)} />
       </PageTop>
       <CollapsibleTables
         tables={tables}

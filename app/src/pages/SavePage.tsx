@@ -15,6 +15,7 @@ import { EditMenu } from "../components/EditMenu";
 import { PageTop } from "../components/PageTop";
 import { RowPanel } from "../components/RowPanel";
 import { WrightstoneForm } from "../components/WrightstoneForm";
+import { useGameText } from "../game-text";
 import type { Selection } from "../navigation";
 import type { KeyCell, Row, Table } from "../save/view";
 
@@ -63,12 +64,13 @@ export function SavePage({
   open: Set<string>;
   setOpen: (open: Set<string>) => void;
   selection: Selection | undefined;
-  onSelect: (selection: Selection) => void;
+  onSelect: (selection: Selection | undefined) => void;
   onAddWrightstone?: (roll: WrightstoneRoll) => void;
   onEditWrightstone?: (id: number, roll: WrightstoneRoll) => void;
   onRoot: () => void;
 }) {
   const { t } = useTranslation();
+  const gt = useGameText();
   const [adding, setAdding] = useState(false);
   const select = (next: Selection) => {
     setAdding(false);
@@ -84,13 +86,12 @@ export function SavePage({
         setAdding(false);
         onAddWrightstone?.(roll);
       }}
-      onCancel={() => setAdding(false)}
     />
   ) : stone && onEditWrightstone ? (
     <WrightstoneForm
       key={stone.id}
       initial={rollOf(stone)}
-      applyLabel={t("wrightstoneForm.apply")}
+      applyLabel={gt("ui", "apply")}
       onApply={(roll) => onEditWrightstone(stone.cells[0] as number, roll)}
     />
   ) : undefined;
@@ -118,7 +119,20 @@ export function SavePage({
           />
         }
       >
-        <RowPanel selected={adding ? undefined : selection} editor={editor} />
+        <RowPanel
+          selected={adding ? undefined : selection}
+          editor={editor}
+          heading={
+            adding
+              ? {
+                  label: t("rowPanel.new"),
+                  title: t("equipment.wrightstone"),
+                  section: "wrightstones",
+                }
+              : undefined
+          }
+          onClose={() => (adding ? setAdding(false) : onSelect(undefined))}
+        />
       </PageTop>
       <CollapsibleTables
         tables={tables}
