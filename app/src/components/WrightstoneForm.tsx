@@ -45,7 +45,7 @@ export function WrightstoneForm({
   const allowed = wrightstoneSubs(family);
   const valid = subs.every((sub) => allowed.includes(sub));
 
-  const field = (label: string, control: React.ReactNode) => (
+  const field = (label: React.ReactNode, control: React.ReactNode) => (
     <label className="flex min-w-0 flex-col gap-1 text-[14px]">
       <span className="text-[13px] tracking-wide text-subtle-foreground uppercase">
         {label}
@@ -60,7 +60,7 @@ export function WrightstoneForm({
   return (
     <div className="flex items-end gap-x-6">
       {field(
-        t("wrightstoneForm.family"),
+        gt("ui", "trait"),
         <select
           className={select}
           value={family}
@@ -77,7 +77,7 @@ export function WrightstoneForm({
         </select>,
       )}
       {field(
-        t("wrightstoneForm.preset"),
+        gt("ui", "level"),
         <select
           className={select}
           value={preset}
@@ -92,7 +92,7 @@ export function WrightstoneForm({
       )}
       {subs.map((sub, i) =>
         field(
-          `${t(i === 0 ? "columns.sub1" : "columns.sub2")} · Lv ${levels[i + 1]}`,
+          `${t(i === 0 ? "columns.sub1" : "columns.sub2", { trait: gt("ui", "trait") })} · ${gt("ui", "traitLevel")} ${levels[i + 1]}`,
           <select
             key={i}
             className={select}
@@ -105,7 +105,7 @@ export function WrightstoneForm({
             }}
           >
             <option value="" disabled>
-              {t("wrightstoneForm.pick")}
+              {gt("ui", "trait")} {i + 1}
             </option>
             {GROUPS.map((group) => (
               <optgroup

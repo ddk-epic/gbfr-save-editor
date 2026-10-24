@@ -61,7 +61,7 @@ export function RowPanel({
               return (
                 <div key={column} className="flex flex-col gap-1 text-[14px]">
                   <span className="text-[13px] tracking-wide text-subtle-foreground uppercase">
-                    {t(`columns.${column}`)}
+                    {t(`columns.${column}`, { trait: gt("ui", "trait") })}
                   </span>
                   <span className="flex items-center gap-1.5 text-foreground">
                     <Lock size={12} className="text-faint-foreground" />{" "}

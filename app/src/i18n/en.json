@@ -68,9 +68,6 @@
     "addWrightstone": "Add wrightstone"
   },
   "wrightstoneForm": {
-    "family": "Main trait",
-    "preset": "Levels",
-    "pick": "Pick a trait",
     "groups": {
       "basic": "Basic",
       "attack": "Attack",
@@ -152,8 +149,8 @@
     "wrightstone": "wrightstone",
     "questsUsed": "quests used",
     "main": "main",
-    "sub1": "sub 1",
-    "sub2": "sub 2",
+    "sub1": "{{trait}} 1",
+    "sub2": "{{trait}} 2",
     "id": "id",
     "summon": "summon",
     "trait": "trait",

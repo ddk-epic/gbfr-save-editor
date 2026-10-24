@@ -127,6 +127,7 @@ export function DataTable({
   flush?: boolean;
 }) {
   const { t } = useTranslation();
+  const gt = useGameText();
   const renderCell = useRenderCell();
   const [shown, setShown] = useState({ tableId: table.id, limit: ROW_BATCH });
   const selectedIndex = table.rows.findIndex((r) => r.id === selectedRowId);
@@ -177,7 +178,8 @@ export function DataTable({
         block: "nearest",
       });
   }, [selectedIndex]);
-  const label = (column: ColumnId) => t(`columns.${column}`);
+  const label = (column: ColumnId) =>
+    t(`columns.${column}`, { trait: gt("ui", "trait") });
 
   const headingBlock = heading && (
     <div
