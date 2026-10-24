@@ -1,6 +1,7 @@
 import {
   Fragment,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -148,17 +149,18 @@ export function DataTable({
     return () => observer.disconnect();
   }, [table.id, limit, hasMore]);
 
-  // The header sits outside the scroller, so it matches the body's width by
-  // padding for the vertical scrollbar while one shows.
+  // Pads the header for the body's vertical scrollbar.
   const header = useRef<HTMLDivElement>(null);
   const rowGroup = useRef<HTMLDivElement>(null);
-  const [scrollbar, setScrollbar] = useState(0);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = scroller.current;
     if (!el) return;
-    const observer = new ResizeObserver(() =>
-      setScrollbar(el.offsetWidth - el.clientWidth),
-    );
+    const measure = () => {
+      if (header.current)
+        header.current.style.paddingRight = `${el.offsetWidth - el.clientWidth}px`;
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
     observer.observe(el);
     if (rowGroup.current) observer.observe(rowGroup.current);
     return () => observer.disconnect();
@@ -187,7 +189,6 @@ export function DataTable({
       <div
         ref={header}
         role="rowgroup"
-        style={{ paddingRight: scrollbar }}
         className="relative z-10 overflow-hidden border-b-2 border-primary bg-secondary shadow-[0_2px_4px_-2px_rgb(0_0_0/0.25)]"
       >
         <div role="row" className="grid text-left" style={layout}>
