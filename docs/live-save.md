@@ -45,6 +45,12 @@ A key is `attribute << 32 | entity`, the unit's identity in the save file. The s
 
 Slots 1, 2 and 9 are one-instruction bodies (`mov eax, imm32`, `xor eax, eax`, `mov rax, [rcx+disp]`), so a reader decodes a unit class from its vtable's code bytes.
 
+## SaveDataUnitVariable
+
+`SaveDataUnitVariable<T>` holds a variable number of `T`: its `+0x10` points at an `std::vector<T>` (begin, end, capacity) in the owning object, and `+0x18` is the shadow vector. Instantiations: `int`, `unsigned int` and `unsigned __int64`. Slots 1 and 9 match `SaveDataUnit`; slot 2 returns the vector's size, `mov rcx, [rcx+0x10]; mov rax, [rcx+8]; sub rax, [rcx]; sar rax, n; ret` with `n` the log2 of the element size.
+
+`FUN_140607e80` registers 2505 (`unsigned int`), 2531 and 2590 to 2596 except 2593 (`int`); `FUN_1426be050` registers 2613 (`unsigned int`), 2614 and 2632 (`int`) and 2637 (`unsigned __int64`). 2593 and 2903 to 2906 are also `SaveDataUnitVariable`, registered elsewhere.
+
 ## Registration
 
 A game object registers its units when it is built. `FUN_14045d7c0` is one such function: for each field it takes a `SaveDataUnit` of the matching template from a per-type pool, points `+0x10` at the field, and inserts the key into a set at manager `+0x28`. While manager `+0x8A0` is clear, the live pointer also goes into a set at manager `+0xA8`. The keys there are attribute `0x22CB` (8907) onward at entity 0.
@@ -56,4 +62,4 @@ A game object registers its units when it is built. `FUN_14045d7c0` is one such 
 ## Unverified
 
 - `+0x0` as the slot data, from the write state that serializes it.
-- Unit classes other than `SaveDataUnit<T, N>`; the reader lists the vtables it cannot decode.
+- Unit classes other than `SaveDataUnit<T, N>` and `SaveDataUnitVariable<T>`. A played save's slot data holds none, and the reader lists the attributes and vtables (exe offsets) of any it cannot decode in each `registry` event.

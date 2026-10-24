@@ -5,12 +5,10 @@ using Reloaded.Mod.Interfaces;
 
 namespace gbfr.dev.savewatch;
 
-// Polls the live units and appends each change to live.jsonl, which tools/mod-log.ts renders.
-// A dump.request file in the folder asks for every unit in units.json, for tools/mod-check.ts.
+// Polls the live units into live.jsonl and writes units.json on a dump.request file.
 internal sealed class LiveLog
 {
     private const int IntervalMs = 500;
-    // More added, removed or changed units than this in one poll (loading a save) is logged as one event.
     private const int MaxListedChanges = 1000;
 
     private readonly SaveUnits _units;
@@ -47,11 +45,13 @@ internal sealed class LiveLog
             Snapshot next;
             if (last is null || !now.SameAs(registry))
             {
-                var list = _units.Scan(now, out int unread);
+                var list = _units.Scan(now, out var unread);
                 next = Snapshot.Take(new Plan(list));
+                string vtables = string.Join(",", unread.Vtables.Select(v => $"\"0x{v:x}\""));
                 writer.WriteLine($"{{\"t\":{t},\"event\":\"registry\",\"registry\":{now.Count},\"map\":{now.MapSize}," +
-                                 $"\"units\":{list.Count},\"unread\":{unread}}}");
-                _logger.WriteLine($"[savewatch] registry {now.Count}, map {now.MapSize}, {list.Count} units, {unread} unread");
+                                 $"\"units\":{list.Count},\"unread\":{unread.Count}," +
+                                 $"\"unreadAttributes\":[{string.Join(",", unread.Attributes)}],\"unreadVtables\":[{vtables}]}}");
+                _logger.WriteLine($"[savewatch] registry {now.Count}, map {now.MapSize}, {list.Count} units, {unread.Count} unread");
                 if (last is not null)
                     DiffByKey(writer, t, last, next);
                 registry = now;
@@ -100,7 +100,7 @@ internal sealed class LiveLog
         {
             if (!before.Plan.Index.TryGetValue(key, out int j) || !after.Read[i] || !before.Read[j])
                 continue;
-            if (after.Plan.Units[i].Layout.Size == before.Plan.Units[j].Layout.Size &&
+            if (after.Plan.Units[i].Layout == before.Plan.Units[j].Layout &&
                 !after.Values(i).SequenceEqual(before.Values(j)))
                 changed.Add((i, j));
         }
@@ -160,13 +160,13 @@ internal sealed class LiveLog
         Values(sb, unit.Layout, values);
     }
 
-    // Long and ulong as strings, which JSON numbers cannot hold exactly.
+    // Long and ulong as strings.
     private static void Values(StringBuilder sb, SaveUnits.Layout layout, ReadOnlySpan<byte> raw)
     {
         var inv = CultureInfo.InvariantCulture;
-        int size = raw.Length / layout.Count;
+        int size = layout.ElementSize;
         sb.Append('[');
-        for (int i = 0; i < layout.Count; i++)
+        for (int i = 0; i < raw.Length / size; i++)
         {
             if (i > 0)
                 sb.Append(',');
@@ -230,7 +230,8 @@ internal sealed class Plan
         }
         var members = new List<int>();
         nint start = 0, end = 0;
-        foreach (int i in Enumerable.Range(0, units.Count).OrderBy(i => (long)units[i].Data))
+        foreach (int i in Enumerable.Range(0, units.Count).Where(i => !units[i].Layout.Variable)
+                     .OrderBy(i => (long)units[i].Data))
         {
             nint at = units[i].Data, stop = at + units[i].Layout.Size;
             if (members.Count > 0 && at - end > Gap)
@@ -253,20 +254,30 @@ internal sealed class Snapshot
     public readonly Plan Plan;
     public readonly byte[] Data;
     public readonly bool[] Read;
+    private readonly byte[]?[] _vectors;
 
     private Snapshot(Plan plan)
     {
         Plan = plan;
         Data = new byte[plan.Size];
         Read = new bool[plan.Units.Count];
+        _vectors = new byte[]?[plan.Units.Count];
     }
 
-    public ReadOnlySpan<byte> Values(int i) => Data.AsSpan(Plan.Offsets[i], Plan.Units[i].Layout.Size);
+    public ReadOnlySpan<byte> Values(int i) =>
+        Plan.Units[i].Layout.Variable ? _vectors[i] : Data.AsSpan(Plan.Offsets[i], Plan.Units[i].Layout.Size);
 
     // A region crossing an unmapped page falls back to one read per unit.
     public static Snapshot Take(Plan plan)
     {
         var snapshot = new Snapshot(plan);
+        for (int i = 0; i < plan.Units.Count; i++)
+        {
+            if (!plan.Units[i].Layout.Variable)
+                continue;
+            snapshot._vectors[i] = SaveUnits.ReadVector(plan.Units[i]);
+            snapshot.Read[i] = snapshot._vectors[i] is not null;
+        }
         foreach (var (start, size, members) in plan.Regions)
         {
             var block = new byte[size];
