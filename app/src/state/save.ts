@@ -5,7 +5,7 @@ import {
   type SaveIssue,
 } from "gbfr-save-editor";
 import { SaveSession } from "gbfr-save-editor/edit";
-import { buildView, type SaveView } from "../view";
+import { buildView, reconcileView, type SaveView } from "../view";
 import { useWatched, Watched } from "./watched";
 
 export interface LoadedSave {
@@ -59,7 +59,7 @@ export async function loadSave(file: File): Promise<LoadResult> {
   }
 }
 
-/** Runs `edit` on the session and rebuilds the view. */
+/** Runs `edit` on the session; the new view keeps every table it left unchanged. */
 export function applyEdit(
   save: LoadedSave,
   edit: (session: SaveSession) => void,
@@ -67,7 +67,7 @@ export function applyEdit(
   edit(save.session);
   return {
     ...save,
-    view: buildView(save.session.save),
+    view: reconcileView(save.view, buildView(save.session.save)),
     issues: validate(save.session),
     edited: true,
   };

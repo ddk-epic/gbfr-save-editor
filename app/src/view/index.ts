@@ -6,6 +6,7 @@ import { isUnresolved } from "./cell";
 import type { EquipmentSetView, SaveView, Table } from "./types";
 
 export * from "./types";
+export { reconcileView } from "./reconcile";
 
 const equipmentSetTables = (set: EquipmentSetView): Table[] => [
   set.weapon,
