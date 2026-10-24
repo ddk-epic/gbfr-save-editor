@@ -85,6 +85,28 @@ The wrightstone unit holds no level data. Wrightstones occupy 5000 entities, `WR
 
 A wrightstone's trait list holds the main trait, then the two subs.
 
+### Trait rolls
+
+`item_pendulum` has one row per stone key. `MainSkill` is the main trait. A level comes from `LvPrimarySkill` or `LvSubSkill<n>` when set, otherwise from the `skill_level_lot` row its `SkillLevelLotFor…` column names. A sub is a fixed `SubSkill<n>` when set, otherwise present when `WeightSubSkill<n>` is above 0 and drawn from the `skill_type_lot` row `QuestExBaseDataId` names: one of up to six `skill_lot` groups by its chance, then one trait of the group.
+
+The top stones, `ITEM_2<f>_0130` and `_0131`, roll as follows:
+
+| Family    | Main trait                       |
+| --------- | -------------------------------- |
+| `ITEM_25` | `SKILL_004_00` Stun Power        |
+| `ITEM_26` | `SKILL_003_00` Critical Hit Rate |
+| `ITEM_27` | `SKILL_001_00` HP                |
+| `ITEM_28` | `SKILL_014_00` Weak Point DMG    |
+
+| Key     | Main     | Sub 1   | Sub 2  |
+| ------- | -------- | ------- | ------ |
+| `_0131` | 20       | 15      | 10     |
+| `_0130` | 10 or 15 | 7 or 10 | 5 or 7 |
+
+- Each `_0130` level is drawn on its own, so all eight combinations occur.
+- The subs of all four families come from one set of 71 traits, `skill_type_lot` 22-25: ATK, HP, Critical Hit Rate and Stun Power; 21 attack traits; 21 defense traits and resistances; two groups of 8; and 9 Endless Ragnarok traits (`SKILL_144_00` to `SKILL_166_00`). The family's own main trait is the one left out.
+- The two subs are drawn independently and can be the same trait.
+
 ## Applied stones
 
 An applied stone has no inventory unit. Applying a wrightstone moves its traits onto the weapon. The weapon keeps the stone's `item.Key` in `WEAPON_WRIGHTSTONE`, and the traits become the weapon's `TRAIT_WEAPON` list. Nothing remains under `WRIGHTSTONE_FIRST` for it.
