@@ -1,27 +1,27 @@
 import type { SaveIssue } from "gbfr-save-editor";
 import { AlertTriangle, ChevronDown, XCircle } from "lucide-react";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import type { SaveView } from "../save/view";
-import { ValidationIssueText } from "./ValidationIssueText";
+import { ValidationIssueText } from "../issues/ValidationIssueText";
+import { useSave } from "../state/save";
+
+const NO_ISSUES: SaveIssue[] = [];
 
 /** Title bar summary of the validation report. */
-export function ValidationMenu({
-  view,
-  issues,
-  open,
-  setOpen,
-}: {
-  view: SaveView;
-  issues: SaveIssue[];
-  open: boolean;
-  setOpen: (open: boolean) => void;
-}) {
+export function ValidationMenu() {
+  const unresolved = useSave((save) => save?.view.unresolved);
+  if (unresolved === undefined) return null;
+  return <Menu unresolved={unresolved} />;
+}
+
+function Menu({ unresolved }: { unresolved: number }) {
   const { t } = useTranslation();
+  const issues = useSave((save) => save?.issues ?? NO_ISSUES);
+  const [open, setOpen] = useState(false);
   const rejects = issues.filter((issue) => issue.severity === "reject");
   const warnings = issues.filter((issue) => issue.severity === "warning");
-  // The unresolved count is its own line until key resolution reports issues.
-  const warningCount = warnings.length + (view.unresolved ? 1 : 0);
+  // Unresolved keys count as one warning.
+  const warningCount = warnings.length + (unresolved ? 1 : 0);
 
   useEffect(() => {
     if (!open) return;
@@ -30,7 +30,7 @@ export function ValidationMenu({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, setOpen]);
+  }, [open]);
 
   return (
     <div className="relative">
@@ -60,10 +60,10 @@ export function ValidationMenu({
               )}
             </Section>
             <Section title={t("validation.warnings")}>
-              {view.unresolved ? (
+              {unresolved ? (
                 <p className="flex gap-1.5 text-warning">
                   <AlertTriangle size={13} className="mt-0.5 shrink-0" />
-                  {t("validation.unresolved", { count: view.unresolved })}
+                  {t("validation.unresolved", { count: unresolved })}
                 </p>
               ) : null}
               {warnings.length ? <IssueList issues={warnings} /> : null}

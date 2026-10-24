@@ -1,9 +1,9 @@
 import { Lock, X } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { useGameText } from "../game-text";
-import { cellKeys, useRenderCell } from "./DataTable";
-import type { Row, Table } from "../save/view";
+import { useGameText } from "../i18n/game-text";
+import { cellKeys, useRenderCell } from "./render-cell";
+import type { Row, Table } from "../view/types";
 
 /** The edit panel above the tables. */
 export function RowPanel({

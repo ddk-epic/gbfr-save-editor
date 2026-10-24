@@ -1,12 +1,10 @@
 import {
-  characterOrder,
   compareSigils,
   itemOrder,
   itemTab,
   questOrder,
   questPower,
   readArchives,
-  readCharacterData,
   readConflux,
   readCounterQuests,
   readFieldNotes,
@@ -24,151 +22,20 @@ import {
   QUEST_DIFFICULTIES,
   ITEM_TABS,
   TROPHY_TABS,
-  type Captain,
+  type CharacterData,
   type Conflux,
   type CounterQuest,
   type Curio,
-  type Equipment,
   type Save,
   type FieldNoteCategory,
   type ItemTab,
-  type Trait,
   type Trophy,
   type TrophyTab,
 } from "gbfr-save-editor";
-import { equippableWeapons } from "gbfr-save-editor/edit";
-import type { GameTextTable } from "../game-text";
-import type en from "../i18n/en.json";
-
-/** An archive key gt() names at render, with an optional "Lv" suffix. */
-export interface KeyCell {
-  text: GameTextTable;
-  key: string;
-  level?: number;
-  /** Numbers for the text's {0}, {1}… placeholders. */
-  values?: number[];
-}
-
-/** Key cells shown in one cell, joined by `separator`. */
-export interface KeyList {
-  keys: KeyCell[];
-  separator: string;
-}
-
-/** A value the save does not hold, shown in italics rather than as empty. */
-export interface UnknownCell {
-  unknown: true;
-}
-
-export const unknownCell: UnknownCell = { unknown: true };
-
-export type Cell =
-  string | number | boolean | undefined | KeyCell | KeyList | UnknownCell;
-
-export interface Row {
-  id: string;
-  /** One cell per table column. */
-  cells: Cell[];
-}
-
-/** Message keys under `sections` and `columns`. */
-export type SectionId = keyof typeof en.sections;
-export type ColumnId = keyof typeof en.columns;
-export type TableLabelId = keyof typeof en.tables;
-
-/** A column and its width in letters. */
-export type Column = [id: ColumnId, width: number];
-
-export interface Table {
-  id: string;
-  section: SectionId;
-  /** Tab name when the section holds several tables; tables sharing a tab sit side by side. */
-  tab?: string;
-  /** Label above the table when it shares its tab. */
-  label?: TableLabelId;
-  /** Each column with its width in letters on a wide screen, padding aside. */
-  columns: Column[];
-  /** The column that also takes the width the others leave. */
-  stretch: ColumnId;
-  rows: Row[];
-}
-
-/** A column shrinks down to this share of its width, rounded up, before the table scrolls. */
-export const SHRINK_FACTOR = 0.5;
-
-/** The equipped set or one loadout: skills and sigils on the left, weapon on the right. */
-export interface EquipmentSetView {
-  id: string;
-  /** Loadout name, undefined for what the character has equipped. */
-  name: string | undefined;
-  /** From 1. */
-  partySet?: number;
-  weapon: Table;
-  /** Weapons the character can equip, empty on a set that is not the live one. */
-  weaponOptions: { id: number; key: string; series: number | undefined }[];
-  /** The character entity the live gear sits on, undefined on a loadout or party set. */
-  characterEntity: number | undefined;
-  wrightstone: Table;
-  wrightstoneWeaponId: number | undefined;
-  skills: Table;
-  sigils: Table;
-}
-
-export const equipmentSetTables = (set: EquipmentSetView): Table[] => [
-  set.weapon,
-  set.wrightstone,
-  set.skills,
-  set.sigils,
-];
-
-export interface CharacterView {
-  /** chara.CharId */
-  key: string;
-  /** The character's own entity. */
-  entity: number;
-  level: number;
-  overMasteryRolled: boolean;
-  fateEpisodesIncomplete: boolean;
-  tables: Table[];
-  equipment: EquipmentSetView[];
-}
-
-export interface SaveView {
-  shared: Table[];
-  /** The characters landing page. */
-  party: Table[];
-  characters: CharacterView[];
-  captain: Captain | undefined;
-  /** SlotData VersionMaybe. */
-  slotVersion: number | undefined;
-  /** Cells holding a hash the key tables could not resolve. */
-  unresolved: number;
-}
-
-/** Key cells of a cell, none for plain values. */
-export const keyCells = (cell: Cell): KeyCell[] =>
-  typeof cell !== "object"
-    ? []
-    : "keys" in cell
-      ? cell.keys
-      : "unknown" in cell
-        ? []
-        : [cell];
-
-/** True for a key the tables could not resolve, shown as "#" and 8 hex digits. */
-const isUnresolvedKey = (key: string) => /^#[0-9a-f]{8}$/.test(key);
-
-const isUnresolved = (cell: Cell) =>
-  keyCells(cell).some((k) => isUnresolvedKey(k.key));
-
-const keyCell = (
-  text: GameTextTable,
-  key: string | undefined,
-  level?: number,
-): KeyCell | undefined =>
-  key === undefined ? undefined : { text, key, level };
-
-const trait = (t: Trait | undefined) => t && keyCell("trait", t.key, t.level);
+import type { GameTextTable } from "../i18n/game-text";
+import { keyCell, trait, unknownCell } from "./cell";
+import { table } from "./table";
+import type { Cell, Table } from "./types";
 
 /** profile 4706, from 1. */
 const SKYFARER_GRADES = [
@@ -178,7 +45,7 @@ const SKYFARER_GRADES = [
   "Fatebreaker (Infinity)",
 ];
 
-/** A curio's reward when it is a sigil, for the columns only sigils fill. */
+/** A curio's reward when it is a sigil. */
 const sigilReward = (c: Curio) =>
   c.reward?.type === "sigil" ? c.reward : undefined;
 
@@ -186,7 +53,7 @@ const counterQuestTables = (quests: CounterQuest[]): Table[] =>
   [...QUEST_DIFFICULTIES, undefined]
     .map((difficulty) => ({
       difficulty,
-      // Ids the counter never fills sort last, and are left out entirely.
+      // Leaves out ids the counter never fills.
       quests: quests
         .filter(
           (q) => q.difficulty === difficulty && questOrder(q.id) !== Infinity,
@@ -366,37 +233,10 @@ const duration = (seconds: number) =>
     .map((n) => String(Math.floor(n)).padStart(2, "0"))
     .join(":")}`;
 
-const MASTER_TRAIT_TABS: Record<string, string> = {
-  SB_DEF: "insight",
-  SB_ATK: "essence",
-  SB_LIMIT: "crux",
-};
-
-const table = (
-  id: string,
-  section: SectionId,
-  columns: Column[],
-  rows: Cell[][],
-  { stretch, tab, label }: Pick<Table, "stretch" | "tab" | "label">,
-): Table => {
-  if (!columns.some(([id]) => id === stretch))
-    throw new Error(`${id}: stretch column ${stretch} is not a column`);
-  return {
-    id,
-    section,
-    tab,
-    label,
-    columns,
-    stretch,
-    rows: rows.map((cells, i) => ({ id: `${id}:${i}`, cells })),
-  };
-};
-
-/** Every domain the reader knows, as tables. */
-export function buildView(save: Save): SaveView {
+/** The save page's tables. */
+export function buildShared(save: Save, data: CharacterData): Table[] {
   const units = save.slotData.units;
   const inventory = readInventory(units);
-  const data = readCharacterData(units);
   const profile = readProfile(units);
   const conflux = readConflux(units);
   const user = readUser(units);
@@ -404,7 +244,7 @@ export function buildView(save: Save): SaveView {
   const unseen = new Set(inventory.unseenItems);
   const wished = new Set(inventory.wishList);
 
-  const shared: Table[] = [
+  return [
     table(
       "profile",
       "profile",
@@ -724,323 +564,4 @@ export function buildView(save: Save): SaveView {
       { stretch: "mostUsed" },
     ),
   ];
-
-  const party: Table[] = [
-    table(
-      "party:current",
-      "party",
-      [
-        ["index", 2],
-        ["character", 24],
-        ["level", 5],
-      ],
-      data.party.map((key, i) => [
-        i + 1,
-        keyCell("character", key),
-        data.characters.find((c) => c.character === key)?.level,
-      ]),
-      { stretch: "character", tab: "party", label: "currentParty" },
-    ),
-    table(
-      "party:sets",
-      "party",
-      [
-        ["set", 4],
-        ["members", 60],
-      ],
-      data.partySets.flatMap((members, set): Cell[][] =>
-        members
-          ? [
-              [
-                set + 1,
-                {
-                  keys: members.flatMap((m) =>
-                    m ? [{ text: "character", key: m.character }] : [],
-                  ),
-                  separator: ", ",
-                },
-              ],
-            ]
-          : [],
-      ),
-      { stretch: "members", tab: "party", label: "partySets" },
-    ),
-    table(
-      "party:summons",
-      "equippedSummons",
-      [
-        ["index", 2],
-        ["summon", 36],
-        ["trait", 36],
-        ["equipBonus", 36],
-      ],
-      data.summons.map((s, i) => [
-        i + 1,
-        keyCell("summon", s?.key),
-        trait(s?.trait),
-        s?.equipBonus &&
-          keyCell("summonBonus", s.equipBonus.key, s.equipBonus.level + 1),
-      ]),
-      { stretch: "summon" },
-    ),
-  ];
-
-  const equipmentSet = (
-    id: string,
-    name: string | undefined,
-    e: Equipment & { skills: (string | undefined)[] },
-    characterEntity?: number,
-  ): EquipmentSetView => {
-    const w = e.weapon;
-    return {
-      id,
-      name,
-      characterEntity,
-      weaponOptions:
-        characterEntity === undefined
-          ? []
-          : equippableWeapons(units, characterEntity).map(
-              ({ id, key, series }) => ({
-                id,
-                key,
-                series,
-              }),
-            ),
-      weapon: table(
-        `${id}:weapon`,
-        "gear",
-        [
-          ["field", 12],
-          ["value", 30],
-        ],
-        w
-          ? [
-              ["weapon", keyCell("weapon", w.key)],
-              ["appearance", keyCell("weapon", w.appearance)],
-              ["xp", w.xp],
-              ["uncap", w.uncap],
-              ["plus", w.plus],
-              ["awakening", w.awakening],
-              ["transcendence", w.transcendence],
-              ...w.traits.map((key, i): Cell[] => [
-                `trait ${i + 1}`,
-                keyCell("trait", key),
-              ]),
-              ["quests used", w.questsUsed],
-            ]
-          : [],
-        { stretch: "value" },
-      ),
-      wrightstoneWeaponId: w?.wrightstone ? w.id : undefined,
-      wrightstone: table(
-        `${id}:wrightstone`,
-        "gear",
-        [
-          ["field", 12],
-          ["value", 30],
-        ],
-        [
-          ["wrightstone", keyCell("item", w?.wrightstone?.key)],
-          ["main", trait(w?.wrightstone?.traits[0])],
-          ["sub 1", trait(w?.wrightstone?.traits[1])],
-          ["sub 2", trait(w?.wrightstone?.traits[2])],
-        ],
-        { stretch: "value" },
-      ),
-      skills: table(
-        `${id}:skills`,
-        "gear",
-        [
-          ["slot", 4],
-          ["skill", 40],
-        ],
-        e.skills.map((key, i) => [i + 1, keyCell("skill", key)]),
-        { stretch: "skill" },
-      ),
-      sigils: table(
-        `${id}:sigils`,
-        "gear",
-        [
-          ["slot", 4],
-          ["sigil", 36],
-          ["level", 6],
-          ["primary", 32],
-          ["secondary", 32],
-          ["locked", 6],
-          ["new", 3],
-        ],
-        e.sigils.map((s, i) => [
-          i + 1,
-          keyCell("sigil", s?.key),
-          s?.level,
-          keyCell("trait", s?.primaryTrait?.key),
-          keyCell("trait", s?.secondaryTrait?.key),
-          s?.locked,
-          s && !s.seen,
-        ]),
-        { stretch: "sigil" },
-      ),
-    };
-  };
-
-  const characters = [...data.characters]
-    .sort((a, b) => characterOrder(a.character) - characterOrder(b.character))
-    .map((c): CharacterView => ({
-      key: c.character,
-      entity: c.entity,
-      level: c.level,
-      overMasteryRolled: c.overMasteries.some((o) => o !== undefined),
-      fateEpisodesIncomplete: c.fateEpisodes.some((f) => !f.completed),
-      tables: [
-        table(
-          `${c.character}:level`,
-          "stats",
-          [
-            ["field", 32],
-            ["value", 14],
-          ],
-          [
-            ["level", c.level],
-            ["xp", c.xp],
-            ["base HP", c.baseHp],
-            ["base ATK", c.baseAttack],
-            ["quests used", c.questsUsed],
-            ["master level", c.masterLevel],
-            ["master XP", c.masterXp],
-          ],
-          { stretch: "field" },
-        ),
-        table(
-          `${c.character}:fateEpisodes`,
-          "stats",
-          [
-            ["episode", 40],
-            ["completed", 10],
-          ],
-          c.fateEpisodes.map((f) => [
-            keyCell("fateEpisode", f.key),
-            f.completed,
-          ]),
-          { stretch: "episode" },
-        ),
-        table(
-          `${c.character}:masteries`,
-          "masteries",
-          [
-            ["tree", 20],
-            ["nodes", 10],
-            ["msp", 8],
-          ],
-          Object.entries(c.masteries).map(([section, m]) => [
-            section,
-            `${m.taken}/${m.total}`,
-            m.msp,
-          ]),
-          { stretch: "tree", tab: "all", label: "summary" },
-        ),
-        table(
-          `${c.character}:overMasteries`,
-          "masteries",
-          [
-            ["index", 2],
-            ["bonus", 40],
-            ["level", 5],
-          ],
-          c.overMasteries.map((o, i) => [
-            i + 1,
-            keyCell("mastery", o?.key),
-            o?.level,
-          ]),
-          { stretch: "bonus", tab: "all", label: "overMasteries" },
-        ),
-        ...Object.entries(c.masteries).map(([section, m]) =>
-          table(
-            `${c.character}:masteries:${section}`,
-            "masteries",
-            [
-              ["node", 32],
-              ["effect", 60],
-              ["msp", 6],
-              ["taken", 5],
-            ],
-            m.nodes.map((n): Cell[] => [
-              keyCell("masteryNode", n.key),
-              n.params.length
-                ? {
-                    keys: n.params.map((p) => ({
-                      text: "masteryEffect",
-                      key: p.key,
-                      values:
-                        p.bonus === undefined ? [p.value] : [p.value, p.bonus],
-                    })),
-                    separator: " / ",
-                  }
-                : undefined,
-              n.msp,
-              n.taken,
-            ]),
-            { stretch: "effect", tab: section },
-          ),
-        ),
-        ...Object.entries(MASTER_TRAIT_TABS).map(([style, tab]) =>
-          table(
-            `${c.character}:masterTraits:${tab}`,
-            "masterTraits",
-            [
-              ["rank", 10],
-              ["trait", 36],
-              ["chosen", 6],
-            ],
-            c.masterTraits
-              .filter((t) => t.style === style)
-              .map((t): Cell[] => [
-                t.perk ? `${t.rank} perk` : t.rank,
-                {
-                  text: "masterTrait",
-                  key: t.key,
-                  values: t.values.map((v, i) => v * (t.valueScales[i] ?? 1)),
-                },
-                t.chosen,
-              ]),
-            { stretch: "trait", tab },
-          ),
-        ),
-      ],
-      equipment: [
-        equipmentSet(`${c.character}:equipped`, undefined, c, c.entity),
-        ...data.loadouts
-          .filter((l) => l.character === c.character)
-          .map((l, i) =>
-            equipmentSet(`${c.character}:loadout:${i}`, l.name, l),
-          ),
-        ...data.partySets.flatMap((members, set) =>
-          (members ?? [])
-            .filter((m) => m?.character === c.character)
-            .map((m) => ({
-              ...equipmentSet(`${c.character}:partySet:${set}`, undefined, m!),
-              partySet: set + 1,
-            })),
-        ),
-      ],
-    }));
-
-  const unresolved = [
-    ...shared,
-    ...party,
-    ...characters.flatMap((c) => [
-      ...c.tables,
-      ...c.equipment.flatMap(equipmentSetTables),
-    ]),
-  ]
-    .flatMap((t) => t.rows)
-    .reduce((n, r) => n + r.cells.filter(isUnresolved).length, 0);
-
-  return {
-    shared,
-    party,
-    characters,
-    captain: data.captain,
-    slotVersion: save.slotData.version,
-    unresolved,
-  };
 }

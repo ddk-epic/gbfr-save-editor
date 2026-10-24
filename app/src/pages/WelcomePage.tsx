@@ -1,20 +1,14 @@
 import { Upload } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { NEWS } from "../content";
-import { LoadErrorText } from "../components/LoadErrorText";
-import type { LoadError } from "../save/load";
+import { LoadErrorText } from "../issues/LoadErrorText";
+import { openFile, pickFile } from "../state/actions";
+import { useLoadError } from "../state/save";
+import { NEWS } from "./news";
 
-export function WelcomePage({
-  loadError,
-  onPick,
-  onFile,
-}: {
-  loadError: LoadError | undefined;
-  onPick: () => void;
-  onFile: (file: File) => void;
-}) {
+export function WelcomePage() {
   const { t } = useTranslation();
+  const loadError = useLoadError();
   const [dragging, setDragging] = useState(false);
 
   return (
@@ -24,7 +18,7 @@ export function WelcomePage({
       <div className="mt-8 grid gap-10 lg:grid-cols-2">
         <div>
           <button
-            onClick={onPick}
+            onClick={pickFile}
             onDragOver={(e) => {
               e.preventDefault();
               setDragging(true);
@@ -34,7 +28,7 @@ export function WelcomePage({
               e.preventDefault();
               setDragging(false);
               const file = e.dataTransfer.files[0];
-              if (file) onFile(file);
+              if (file) void openFile(file);
             }}
             className={`flex min-h-48 w-full flex-col items-center justify-center gap-2 rounded-sm border-2 border-dashed py-8 ${
               dragging

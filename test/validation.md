@@ -10,7 +10,7 @@ Save content never makes it throw. A reader throwing `SaveFormatError` on the wa
 
 ## Issues
 
-An issue is a `code` and that check's parameters, in the shape `SaveFormatError` uses, plus a severity. The library holds no text for them; callers phrase the message in their own language, as `app/src/components/ValidationIssueText.tsx` does.
+An issue is a `code` and that check's parameters, in the shape `SaveFormatError` uses, plus a severity. The library holds no text for them; callers phrase the message in their own language, as `app/src/issues/ValidationIssueText.tsx` does.
 
 ```ts
 { severity: "warning", code: "tableCount", table: "item", held: 447, expected: 448 }

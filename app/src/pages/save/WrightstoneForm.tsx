@@ -11,7 +11,7 @@ import {
 import { Check } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useGameText } from "../game-text";
+import { useGameText } from "../../i18n/game-text";
 
 const FAMILIES = Object.keys(WRIGHTSTONE_MAINS).map(
   Number,

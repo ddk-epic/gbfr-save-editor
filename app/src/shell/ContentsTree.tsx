@@ -1,9 +1,10 @@
 import { isPlayable } from "gbfr-save-editor";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useGameText } from "../game-text";
-import type { Page } from "../navigation";
-import type { SaveView, SectionId } from "../save/view";
+import { useGameText } from "../i18n/game-text";
+import { go, goToSection, usePage, type Page } from "../state/navigation";
+import { useSave, useView } from "../state/save";
+import type { SectionId } from "../view";
 
 type Tab = "save" | "characters";
 
@@ -14,18 +15,10 @@ const tabOf = (page: Page): Tab | undefined =>
       ? "characters"
       : undefined;
 
-export function ContentsTree({
-  view,
-  page,
-  onPage,
-  onSection,
-}: {
-  view: SaveView | undefined;
-  page: Page;
-  onPage: (page: Page) => void;
-  /** Open a section on the save or a character page. */
-  onSection: (page: Page, section: SectionId) => void;
-}) {
+export function ContentsTree() {
+  const view = useView();
+  const page = usePage();
+  const session = useSave((save) => save?.session);
   const { t } = useTranslation();
   const gt = useGameText();
   const character = page.startsWith("char:") ? page.slice(5) : undefined;
@@ -40,14 +33,15 @@ export function ContentsTree({
     if (next) setTab(next);
     if (page.startsWith("char:")) setLastCharacter(page);
   }
-  const [prevView, setPrevView] = useState(view);
-  if (view !== prevView) {
-    setPrevView(view);
+  // Forgotten on a new save.
+  const [prevSession, setPrevSession] = useState(session);
+  if (session !== prevSession) {
+    setPrevSession(session);
     setLastCharacter(undefined);
   }
 
   const isDisabled = (key: string) => !isPlayable(key, view?.captain);
-  const openCharacters = () => onPage(lastCharacter ?? "characters");
+  const openCharacters = () => go(lastCharacter ?? "characters");
 
   return (
     <nav className="sticky top-0 h-fit space-y-4 py-6 text-sidebar-foreground">
@@ -57,7 +51,7 @@ export function ContentsTree({
             <TabButton
               label={t("contents.save")}
               active={tab === "save"}
-              onClick={() => onPage("save")}
+              onClick={() => go("save")}
             />
             <TabButton
               label={t("contents.characters")}
@@ -71,7 +65,8 @@ export function ContentsTree({
                 <Link
                   key={section}
                   label={t(`sections.${section}`)}
-                  onClick={() => onSection("save", section)}
+                  to="save"
+                  section={section}
                 />
               ),
             )}
@@ -79,7 +74,7 @@ export function ContentsTree({
             <Link
               label={t("sections.party")}
               active={page === "characters"}
-              onClick={() => onPage("characters")}
+              to="characters"
             />
           )}
           {tab === "characters" &&
@@ -90,7 +85,7 @@ export function ContentsTree({
                 title={c.key}
                 disabled={isDisabled(c.key)}
                 active={character === c.key}
-                onClick={() => onPage(`char:${c.key}`)}
+                to={`char:${c.key}`}
               />
             ))}
         </div>
@@ -120,22 +115,25 @@ function TabButton({
   );
 }
 
-function Link({
+/** A page link, or with `section` a link to that section of the page. */
+const Link = memo(function Link({
   label,
   title,
   active,
   disabled,
-  onClick,
+  to,
+  section,
 }: {
   label: string;
   title?: string;
   active?: boolean;
   disabled?: boolean;
-  onClick: () => void;
+  to: Page;
+  section?: SectionId;
 }) {
   return (
     <button
-      onClick={onClick}
+      onClick={() => (section ? goToSection(to, section) : go(to))}
       title={title}
       disabled={disabled}
       className={`flex w-full items-center pt-px pb-0.5 text-left ${
@@ -149,4 +147,4 @@ function Link({
       <span className="truncate">{label}</span>
     </button>
   );
-}
+});

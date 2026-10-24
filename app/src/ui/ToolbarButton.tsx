@@ -1,6 +1,9 @@
 import type { ButtonHTMLAttributes } from "react";
 
-export function ToolbarButton({ className = "", ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
+export function ToolbarButton({
+  className = "",
+  ...props
+}: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       {...props}

@@ -1,26 +1,25 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { scrollPageTop, sectionId, type Selection } from "../navigation";
-import type { SectionId, Table } from "../save/view";
-import { DataTable, TableLabel } from "./DataTable";
+import { scrollPageTop, sectionId } from "../state/navigation";
+import {
+  closeSections,
+  openSections,
+  toggleSection,
+  useSectionOpen,
+} from "../state/sections";
+import { TableLabel } from "../ui/DataTable";
+import type { SectionId, Table } from "../view";
+import { SelectableTable } from "./SelectableTable";
 
-/** Tables as sections that open and close by their header; tables sharing a section are its tabs, tables sharing a tab its halves. */
-export function CollapsibleTables({
+/** Tables as collapsible sections; a section's tables are tabs, a tab's tables halves. */
+export function TableSections({
   tables,
-  isOpen,
-  onToggle,
-  selection,
-  onSelect,
   menuOf,
   before,
   children,
 }: {
   tables: Table[];
-  isOpen: (section: SectionId) => boolean;
-  onToggle: (section: SectionId) => void;
-  selection: Selection | undefined;
-  onSelect: (selection: Selection) => void;
   /** An edit menu beside a table's label. */
   menuOf?: (table: Table) => ReactNode;
   /** Sections with their own layout, before the table sections. */
@@ -42,10 +41,6 @@ export function CollapsibleTables({
           key={section}
           section={section}
           tables={group}
-          open={isOpen(section)}
-          onToggle={() => onToggle(section)}
-          selection={selection}
-          onSelect={onSelect}
           menuOf={menuOf}
         />
       ))}
@@ -57,27 +52,24 @@ export function CollapsibleTables({
 export function CollapsibleSection({
   section,
   count,
-  open,
-  onToggle,
   menu,
   children,
 }: {
   section: SectionId;
   count: number;
-  open: boolean;
-  onToggle: () => void;
   /** An edit menu over the right end of the header. */
   menu?: ReactNode;
   children: ReactNode;
 }) {
   const { t } = useTranslation();
+  const open = useSectionOpen(section);
   return (
     <section id={sectionId(section)} className="relative">
       {open && menu && (
         <div className="absolute top-2 right-0 z-20">{menu}</div>
       )}
       <button
-        onClick={onToggle}
+        onClick={() => toggleSection(section)}
         className="flex w-full items-center gap-2 py-2 text-left hover:bg-muted"
       >
         {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
@@ -94,18 +86,10 @@ export function CollapsibleSection({
 function Section({
   section,
   tables,
-  open,
-  onToggle,
-  selection,
-  onSelect,
   menuOf,
 }: {
   section: SectionId;
   tables: Table[];
-  open: boolean;
-  onToggle: () => void;
-  selection: Selection | undefined;
-  onSelect: (selection: Selection) => void;
   menuOf?: (table: Table) => ReactNode;
 }) {
   const { t } = useTranslation();
@@ -132,47 +116,34 @@ function Section({
       ))}
     </div>
   );
-  const tableOf = (table: Table, heading: ReactNode) => (
-    <DataTable
-      table={table}
-      flush
-      heading={heading}
-      selectedRowId={selection?.row.id}
-      onSelect={(rowId) =>
-        onSelect({
-          table,
-          row: table.rows.find((r) => r.id === rowId)!,
-        })
-      }
-    />
-  );
   return (
     <CollapsibleSection
       section={section}
       count={tables.reduce((n, table) => n + table.rows.length, 0)}
-      open={open}
-      onToggle={onToggle}
       menu={shown.length === 1 && menuOf?.(shown[0]!)}
     >
       {shown.length === 1 ? (
-        tableOf(shown[0]!, tabBar)
+        <SelectableTable table={shown[0]!} heading={tabBar} flush />
       ) : (
         <>
           {tabBar && <div className="flex items-end pb-1">{tabBar}</div>}
           <div className="grid gap-4 pb-1 sm:grid-cols-2">
             {shown.map((table) => (
               <div key={table.id} className="min-w-0">
-                {tableOf(
-                  table,
-                  <>
-                    {table.label && (
-                      <TableLabel>{t(`tables.${table.label}`)}</TableLabel>
-                    )}
-                    {menuOf?.(table) && (
-                      <div className="ml-auto">{menuOf(table)}</div>
-                    )}
-                  </>,
-                )}
+                <SelectableTable
+                  table={table}
+                  flush
+                  heading={
+                    <>
+                      {table.label && (
+                        <TableLabel>{t(`tables.${table.label}`)}</TableLabel>
+                      )}
+                      {menuOf?.(table) && (
+                        <div className="ml-auto">{menuOf(table)}</div>
+                      )}
+                    </>
+                  }
+                />
               </div>
             ))}
           </div>
@@ -182,26 +153,20 @@ function Section({
   );
 }
 
-export function ExpandCollapseActions({
-  onExpandAll,
-  onCollapseAll,
-}: {
-  onExpandAll: () => void;
-  onCollapseAll: () => void;
-}) {
+export function ExpandCollapseActions({ sections }: { sections: string[] }) {
   const { t } = useTranslation();
   return (
     <>
       <button
         className="text-subtle-foreground hover:text-strong-foreground"
-        onClick={onExpandAll}
+        onClick={() => openSections(sections)}
       >
         {t("tables.expandAll")}
       </button>
       <button
         className="text-subtle-foreground hover:text-strong-foreground"
         onClick={() => {
-          onCollapseAll();
+          closeSections(sections);
           scrollPageTop();
         }}
       >

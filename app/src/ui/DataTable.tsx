@@ -1,34 +1,30 @@
 import {
-  Fragment,
+  memo,
   useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type ReactNode,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { useGameText } from "../game-text";
-import {
-  SHRINK_FACTOR,
-  keyCells,
-  type Cell,
-  type ColumnId,
-  type Table,
-} from "../save/view";
+import { useGameText } from "../i18n/game-text";
+import type { ColumnId, Row, Table } from "../view/types";
+import { cellKeys, useRenderCell } from "./render-cell";
+
+/** Narrowest share of a column's width. */
+const SHRINK_FACTOR = 0.5;
 
 const ROW_BATCH = 200;
 const VISIBLE_ROWS = 20;
 
 const TABLE_MAX_HEIGHT = `calc(${VISIBLE_ROWS} * 1.5em + ${VISIBLE_ROWS} * 0.25rem)`;
 
-/**
- * Heading, gap and column header span exactly 3 rows (row 1.5em + 0.25rem,
- * header 1.5em + 0.5rem + 2px border), so rows of side-by-side tables line up.
- */
+/** Heading, gap and column header: 3 rows. */
 export const HEADING_HEIGHT = "calc(3em + 0.25rem - 2px)";
 
-/** Horizontal padding of a cell, both sides together. */
+/** Horizontal cell padding, both sides. */
 const CELL_PADDING = "1.5rem";
 
 const width = (letters: number) => `calc(${letters}ch + ${CELL_PADDING})`;
@@ -53,64 +49,6 @@ export const TableLabel = ({ children }: { children: string }) => (
   </span>
 );
 
-/** Renders cells for the current language: key cells by game text, the raw key faint when it has none. */
-export function useRenderCell() {
-  const { t, i18n } = useTranslation();
-  const gt = useGameText();
-  return useMemo(() => {
-    const number = new Intl.NumberFormat(i18n.language);
-    const yes = t("table.yes");
-    const no = t("table.no");
-    return (cell: Cell): ReactNode => {
-      if (cell === undefined) return "—";
-      if (typeof cell === "boolean") return cell ? yes : no;
-      if (typeof cell === "number") return number.format(cell);
-      if (typeof cell === "string") return cell;
-      if ("unknown" in cell)
-        return <span className="italic">{t("table.unknown")}</span>;
-      const separator = "separator" in cell ? cell.separator : "";
-      return keyCells(cell).map((k, i) => {
-        const text = gt(k.text, k.key);
-        const values = k.values;
-        return (
-          <Fragment key={i}>
-            {i > 0 && separator}
-            <span className={text === undefined ? "text-faint-foreground" : ""}>
-              {text === undefined
-                ? k.key
-                : values
-                  ? (k.text === "masteryEffect"
-                      ? // <d>…<d> marks the transcendence bonus; dropped without one.
-                        text.replace(/<d>(.*?)<d>/g, (_, part: string) =>
-                          /\{(\d+)\}/
-                            .exec(part)
-                            ?.slice(1)
-                            .every((n) => values[Number(n)] !== undefined)
-                            ? part
-                            : "",
-                        )
-                      : text
-                    )
-                      .replace(/\{(\d+)\}/g, (_, n: string) =>
-                        number.format(values[Number(n)] ?? 0),
-                      )
-                      .replace(/\s+/g, " ")
-                  : text}
-            </span>
-            {k.level !== undefined && ` Lv ${k.level}`}
-          </Fragment>
-        );
-      });
-    };
-  }, [t, i18n.language, gt]);
-}
-
-/** The archive keys behind a cell, for a tooltip; undefined for plain values. */
-export const cellKeys = (cell: Cell) =>
-  keyCells(cell)
-    .map((k) => k.key)
-    .join(", ") || undefined;
-
 export function DataTable({
   table,
   selectedRowId,
@@ -128,7 +66,6 @@ export function DataTable({
 }) {
   const { t } = useTranslation();
   const gt = useGameText();
-  const renderCell = useRenderCell();
   const [shown, setShown] = useState({ tableId: table.id, limit: ROW_BATCH });
   const selectedIndex = table.rows.findIndex((r) => r.id === selectedRowId);
   const limit = Math.max(
@@ -228,24 +165,13 @@ export function DataTable({
       >
         <div ref={rowGroup} role="rowgroup">
           {table.rows.slice(0, limit).map((row) => (
-            <div
+            <TableRow
               key={row.id}
-              role="row"
-              onClick={() => onSelect(row.id)}
-              style={layout}
-              className={`grid cursor-pointer ${row.id === selectedRowId ? "bg-selection text-strong-foreground" : "even:bg-card hover:bg-accent hover:text-accent-foreground"}`}
-            >
-              {row.cells.map((cell, i) => (
-                <div
-                  key={i}
-                  role="cell"
-                  title={cellKeys(cell)}
-                  className={`truncate px-3 py-0.5 ${typeof cell === "number" ? "text-right tabular-nums" : ""}`}
-                >
-                  {renderCell(cell)}
-                </div>
-              ))}
-            </div>
+              row={row}
+              layout={layout}
+              selected={row.id === selectedRowId}
+              onSelect={onSelect}
+            />
           ))}
         </div>
         {hasMore && <div ref={sentinel} className="h-px" />}
@@ -253,3 +179,36 @@ export function DataTable({
     </div>
   );
 }
+
+const TableRow = memo(function TableRow({
+  row,
+  layout,
+  selected,
+  onSelect,
+}: {
+  row: Row;
+  layout: CSSProperties;
+  selected: boolean;
+  onSelect: (rowId: string) => void;
+}) {
+  const renderCell = useRenderCell();
+  return (
+    <div
+      role="row"
+      onClick={() => onSelect(row.id)}
+      style={layout}
+      className={`grid cursor-pointer ${selected ? "bg-selection text-strong-foreground" : "even:bg-card hover:bg-accent hover:text-accent-foreground"}`}
+    >
+      {row.cells.map((cell, i) => (
+        <div
+          key={i}
+          role="cell"
+          title={cellKeys(cell)}
+          className={`truncate px-3 py-0.5 ${typeof cell === "number" ? "text-right tabular-nums" : ""}`}
+        >
+          {renderCell(cell)}
+        </div>
+      ))}
+    </div>
+  );
+});

@@ -1,7 +1,8 @@
 import { FileBox } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import type { SaveView } from "../save/view";
+import { go } from "../state/navigation";
+import { useSave } from "../state/save";
 
 /** Full-width bars whose content lines up with the page column. */
 function Bar({
@@ -24,24 +25,21 @@ function Bar({
 
 export function TitleBar({
   gutter,
-  fileName,
-  onHome,
   children,
 }: {
   gutter: number;
-  fileName: string | undefined;
-  onHome: () => void;
   children: ReactNode;
 }) {
   const { t } = useTranslation();
+  const fileName = useSave((save) => save?.fileName);
   return (
-    // z-200 keeps the bar, and the validation popover in it, above the pages' sticky headers.
+    // Above the pages' sticky headers.
     <Bar
       gutter={gutter}
       className="relative z-200 border-b border-border bg-card py-1.5 text-card-foreground"
     >
       <button
-        onClick={onHome}
+        onClick={() => go("welcome")}
         className="flex items-center gap-3 text-strong-foreground hover:text-primary"
       >
         <FileBox size={15} className="text-primary" />
@@ -55,14 +53,9 @@ export function TitleBar({
   );
 }
 
-export function StatusBar({
-  gutter,
-  view,
-}: {
-  gutter: number;
-  view: SaveView | undefined;
-}) {
+export function StatusBar({ gutter }: { gutter: number }) {
   const { t } = useTranslation();
+  const view = useSave((save) => save?.view);
   return (
     <Bar
       gutter={gutter}

@@ -1,17 +1,16 @@
 import { Download } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ToolbarButton } from "./ToolbarButton";
+import { download } from "../state/actions";
+import { useSave } from "../state/save";
+import { ToolbarButton } from "../ui/ToolbarButton";
 
-export function ExportMenu({
-  fileName,
-  onDownload,
-}: {
-  /** Undefined while there is nothing to export. */
-  fileName: string | undefined;
-  onDownload: () => void;
-}) {
+export function ExportMenu() {
   const { t } = useTranslation();
+  // Undefined while there is nothing to export.
+  const fileName = useSave((save) =>
+    save?.edited ? save.fileName : undefined,
+  );
   const [open, setOpen] = useState(false);
   if (open && fileName === undefined) setOpen(false);
   const shown = open && fileName !== undefined;
@@ -44,7 +43,7 @@ export function ExportMenu({
             <button
               onClick={() => {
                 setOpen(false);
-                onDownload();
+                download();
               }}
               className="flex items-center gap-1.5 rounded-sm border border-input px-3 py-1 hover:bg-accent hover:text-accent-foreground"
             >

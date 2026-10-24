@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import type { LoadError } from "../save/load";
+import type { LoadError } from "../state/save";
 
 const hex = (n: number | bigint) => `0x${n.toString(16)}`;
 
