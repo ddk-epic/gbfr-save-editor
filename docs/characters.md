@@ -21,7 +21,7 @@ Characters occupy 41 entities, `CHARACTER_FIRST` (10000) to 10040, one per `char
 | 1312      | `CHARACTER_BASE_STUN`          | `float`     | Base Stun Power, `chara_status.Stun`                         |
 | 1313      | `CHARACTER_BASE_CRIT`          | `int`       | Base Critical Hit Rate, `chara_status.CritRate`              |
 | 1314      | `CHARACTER_QUESTS_USED`        | `uint`      | Number of quests the character was used in                   |
-| 1315      | not named                      | `uint`      | Always the empty hash                                        |
+| 1315      | `CHARACTER_STAND_IN`           | `uint`      | `chara.CharId` the character plays as, or the empty hash     |
 | 1316      | not named                      | `uint`      |                                                              |
 | 1317      | not named                      | `uint`      |                                                              |
 | 1318      | not named                      | `uint`      | Bitmask, up to 6 bits                                        |
@@ -42,6 +42,7 @@ Characters occupy 41 entities, `CHARACTER_FIRST` (10000) to 10040, one per `char
 - 1309, 1310, 1312 and 1313 are the character's own stats. They leave out gear, fate episodes and masteries, and none of them is the stat the game displays. Characters with no `chara_status` rows hold 0.
 - 1323 equals a `chara_master_exp.TotalMSP` row, and the row index is the master level. 0 reads as master level 1.
 - The delegate is the character set in the Backup Characters menu for other players to enlist. The message is set there after picking one.
+- 1315 is set while a story party holds the character. On a new game `PL1200` plays as `NP0000`, with the `AB_NP0000_*` skills. The game reads 1315 in place of the character's own key (`FUN_1402e4800`), and every party preset resets it to the empty hash (`FUN_1402e38e0`).
 - A character unit holds the character's current gear, apart from its saved loadouts.
 - 1402 holds `WEAPON_ID` (2802), not the weapon's entity. It is the only place a live weapon is equipped: the weapon unit itself carries no mark. Switching a weapon writes this unit, and 5815 index 1015 when the character's power rating crosses 45,000, see [trophies](trophies.md).
 
@@ -135,16 +136,40 @@ Not every unit is a playable character.
 
 ## Party
 
-| Entities                    | Name              | Holds                                                 |
-| --------------------------- | ----------------- | ----------------------------------------------------- |
-| 103000-103003               | `PARTY_FIRST`     | `PARTY_CHARACTER` (2201), `chara.CharId` per position |
-| 104000-104003               | not named         | Four members in the equipment shape, use not known    |
-| 105000 + set \* 10 + member | `PARTY_SET_FIRST` | Party set 0-29, member 0-3, in the equipment shape    |
+| Entities                    | Name              | Holds                                              |
+| --------------------------- | ----------------- | -------------------------------------------------- |
+| 103000-103003               | `PARTY_FIRST`     | The party slots, one per position                  |
+| 104000-104003               | not named         | Four members in the equipment shape, use not known |
+| 105000 + set \* 10 + member | `PARTY_SET_FIRST` | Party set 0-29, member 0-3, in the equipment shape |
 
 - The equipment shape is the one loadouts use: `EQUIP_CHARACTER` (3003), `EQUIP_WEAPON` (1402), `EQUIP_SIGILS` (1403) and `EQUIP_SKILLS` (1404).
 - An unused party set member holds the empty hash in 3003.
 - 104000-104003 matches neither the current party nor a saved set. It is likely a leftover of a deleted set.
 - 3004, 3005 and 3007 sit here as on loadouts, with no meaning assigned.
+
+| Attribute | Name                  | Type   | Holds                                                |
+| --------- | --------------------- | ------ | ---------------------------------------------------- |
+| 2201      | `PARTY_CHARACTER`     | `uint` | `chara.CharId`                                       |
+| 2202      | `PARTY_SLOT_LOCKED`   | `bool` | The story fixes the slot's character                 |
+| 2203      | `PARTY_SLOT_REQUIRED` | `bool` | The story requires the slot's character in the party |
+
+2401 `PARTY_KEPT`, a `bool` at `PARTY_KEPT_ENTITY` (10400), is set while the player's own party is set aside for a story party (`stage::quest::PushCurrentPartyKeep`), and cleared when it is restored (`PopCurrentPartyKeep`).
+
+### Party presets
+
+The story sets the party from a `formation_slot` row (`FUN_1402f2860`). It first clears 2202 and 2203 on every slot and 1315 on every character, then applies `LockPartySlot1` to `LockPartySlot4`, one per slot:
+
+| `LockPartySlot` | Character placed                                             | Sets |
+| --------------- | ------------------------------------------------------------ | ---- |
+| 0               | None                                                         |      |
+| 1               | The row's, in this slot                                      | 2202 |
+| 2               | The row's, in the slot already holding it, else in this slot | 2203 |
+| 3               | None, the current one stays                                  | 2202 |
+| 4               | The row's, in this slot                                      |      |
+
+- `PL0000` in a row stands for the captain picked at the start.
+- The town row `4FA6A50B` holds `PL0000` in slot 0 with mode 2, so between story quests 2203 is set on 103000 alone.
+- The Party menu refuses changes to a slot with 2202 set (`ui::fsm::action::PlayerSlotLockDialog`).
 
 ## Loadouts
 

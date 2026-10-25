@@ -28,6 +28,8 @@ Rupies are 1104 and mastery points 1112, each an `int` at entity 0. The game cap
 
 All four attributes cover entities 0-499. 1805 `ITEM_ACQUIRED_LAST`, a `uint` at entity 0, is the acquisition counter: gaining an item adds 1 to it and stores the new value in the item's 1804. It equals the highest 1804.
 
+1806 `INVENTORY_TABS`, a `uint` at entity 0, holds bits that add item menu tabs (`ui::component::ControllerInventoryList`): bit 0 adds the first tab, bit 1 the third and bit 2 a later one. The second tab is always there, and bit 3 is read elsewhere (`FUN_140441510`). Bit 0 is set with the first items gained on a new game.
+
 - Units 0-447 hold the 448 `item` rows, each row exactly once.
 - Units 448-499 hold the empty hash, with count 0 and flags 0.
 - A row never held still has its unit, with count 0.

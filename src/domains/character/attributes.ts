@@ -11,10 +11,7 @@ export const CHARACTER_FIRST = 10000;
 export const CHARACTER_MAX_LEVEL = 100;
 export const CHARACTER_MAX_XP = 8_400_000;
 
-/**
- * The mastery block holds Over Masteries, mastery nodes and master trait
- * cells. Level, experience and base stats sit on the character's own entity.
- */
+/** Over Masteries, mastery nodes and master trait cells. */
 export const MASTERY_FIRST = 10000000;
 export const MASTERY_ENTRIES = 400;
 
@@ -27,6 +24,8 @@ export const CHARACTER_LEVEL = Attribute.int(1308);
 export const CHARACTER_BASE_HP = Attribute.int(1309);
 export const CHARACTER_BASE_ATTACK = Attribute.int(1310);
 export const CHARACTER_QUESTS_USED = Attribute.uint(1314);
+/** The character this one plays as in a story party. */
+export const CHARACTER_STAND_IN = keyAttribute(1315, CHARACTERS);
 export const CHARACTER_MASTER_XP = Attribute.int(1323);
 /** New marks of two menus, 0 once viewed. */
 export const CHARACTER_MASTER_BREAK_MARKS = Attribute.intList(1504);

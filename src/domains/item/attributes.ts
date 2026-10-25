@@ -15,3 +15,5 @@ export const ITEM_FLAGS = Attribute.flags(1803, ITEM_FLAG_BITS);
 export const ITEM_ACQUIRED = Attribute.uint(1804);
 /** The acquisition counter, at entity 0. */
 export const ITEM_ACQUIRED_LAST = Attribute.uint(1805);
+/** Bits that add item menu tabs, at entity 0. */
+export const INVENTORY_TABS = Attribute.rawFlags(1806);

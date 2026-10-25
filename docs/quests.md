@@ -1,6 +1,6 @@
 # Quests
 
-Side quests, quest counter quests and fate quests are parallel arrays at entity 0, one entry per quest.
+Story quests, side quests, quest counter quests and fate quests are parallel arrays at entity 0, one entry per quest.
 
 ## Quest ids
 
@@ -8,11 +8,40 @@ A quest id is a `quest_baseinfo_ex_data.Key`, 8 hex digits, stored as the uint t
 
 | Prefix | Quests               |
 | ------ | -------------------- |
+| `001`  | Story quests         |
 | `002`  | Side quests          |
 | `0030` | Fate quests          |
 | `0040` | Quest counter quests |
 
 - A quest's title is `TXT_QR_<id without the leading 00>` in `text_stage.msg`.
+- The sixth digit is the quest's family: `FUN_14061d110`, which copies the game's quest records into the save, sorts them by it. 1 is story, 2 side, 3 fate, 4 quest counter and 7 the 150 entries of 2580.
+
+## Story quests
+
+| Attribute | Name              | Type        | Holds                          |
+| --------- | ----------------- | ----------- | ------------------------------ |
+| 2510      | `STORY_QUEST_IDS` | `uint[100]` | Quest id, 0 on an unused entry |
+
+- 2510 holds 59 ids, `00100000` to `0010d001`.
+- Each story quest record has three parts, each a flag and 200 values: 2511 with 2513, 2512 with 2514 and 2522 with 2515. Entry `i` of 2513-2515 starts at `i` \* 200. 2516 holds 32 values per quest.
+- The quest underway keeps checkpoint hashes in its 2513 part. At its clear 2511, 2512 and 2522 go to 1 and the 2513 part is zeroed.
+
+## Chapters
+
+Chapter select lists the chapters reached, by `chapter_select.Key`: chapter group \* 20 + chapter within the group.
+
+| Attribute | Name              | Type     | Holds                                           |
+| --------- | ----------------- | -------- | ----------------------------------------------- |
+| 2506      | `CURRENT_CHAPTER` | `int[2]` | Chapter key underway, solo then online, -1 none |
+| 2590      | `CHAPTER_KEYS`    | `int[]`  | Chapter key, one per chapter reached            |
+| 2591      | `CHAPTER_FLAGS`   | `int[]`  | 1 on a chapter chapter select offers            |
+
+- 2590-2596 are parallel lists apart from 2595 and 2596, which run shorter.
+- Chapter select (`FUN_1403f4140`) offers the chapter groups in order. It stops at the first chapter missing from 2590, or listed with bit 0 of its flags clear and a negative second value.
+
+## Quest seed
+
+2504 `QUEST_SEED`, a `uint`, is drawn at each quest start from `timeGetTime` through a xorshift (`FUN_141fa76c0`), or kept when a quest resumes.
 
 ## Side quests
 
@@ -86,5 +115,6 @@ Two arrays of 100, for the episodes that are a quest (`fate_episode.MissionQuest
 - 2551 is 2 only on a repeat quest, likely a clear count.
 - 2505 at entity 0 lists the accepted side quests again, in another order. 2554 is false on every entry.
 - 2575 is true on every cleared quest apart from the On the Threshold quests. 2576 is true on every cleared quest. 2577 holds three bools per quest that do not follow the first clear rewards. 2578 is mostly true alongside a 2579 time.
+- 2511, 2512 and 2522 all turn 1 at a story quest's clear. Which one marks the clear is not settled.
 - 2580-2583 and 2501-2651 apart from the attributes above have no meaning assigned.
 - 7351 at 0-127 holds quest counter ids of `infomation_quest`, with 7352 beside it. No meaning is assigned.
