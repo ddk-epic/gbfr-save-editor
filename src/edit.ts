@@ -15,3 +15,11 @@ export {
   type WrightstonePreset,
   type WrightstoneRoll,
 } from "./domains/wrightstone/rolls";
+export { addSigil, editSigil } from "./domains/sigil/edit";
+export {
+  SIGIL_LEVELS,
+  sigilGem,
+  sigilPrimaries,
+  sigilSecondaries,
+  type SigilRoll,
+} from "./domains/sigil/rolls";

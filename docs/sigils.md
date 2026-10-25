@@ -78,3 +78,11 @@ The game's add (`FUN_140334950`, called from the transmarvel's `ui::fsm::action:
 5. Sets bit 0 of 2708.
 
 No item count moves for the sigil itself. `addSigil` and `editSigil` write the same units; `editSigil` keeps the entry, id and flags.
+
+## Levels and second traits
+
+A gem's level range is `gem_rare` at its `gem.Rarity`, `DefaultLevel` to `MaxedLevel`: I at 1, II at 2-3, III at 4-6, IV at 7-10, V at 11-15. The ranges do not overlap, so a level names its rarity. Gems with `HideLevelNumber` set hold levels outside these ranges.
+
+A gem with neither `SkillId2` nor a `SkillTypeLotIdForRandom2ndSkill` carries one trait; its second entry stays the empty hash. Every other gem carries a second trait, which is not bound to its own pool: sigils hold `SkillId2` gems with another skill, lot gems with a skill outside the lot, and another gem's `SkillId1` as the second trait.
+
+A level, a primary and a second trait therefore pick the gem. `sigilGem` takes the one-trait gem of that primary and rarity when there is no second trait. With one, it takes the gem whose `SkillId2` is that skill, then a gem that rolls its second trait from a lot, then any two-trait gem of that primary and rarity. `editSigil` keeps the current gem while it still fits.

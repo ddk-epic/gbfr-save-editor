@@ -152,9 +152,8 @@ A save editor for Granblue Fantasy: Relink. Still work in progress and planned w
 
 #### Sigils
 
-- [ ] Add sigil: key, traits and level
-- [ ] Edit sigil traits and level
-- [ ] Max sigil level
+- [x] Add sigil: key, traits and level
+- [x] Edit sigil traits and level
 - [ ] Lock or unlock
 - [ ] Clear new mark
 - [ ] Remove sigil
