@@ -8,6 +8,9 @@ export const CHARACTERS = keyTable("chara", CHARACTER_KEYS);
 
 export const CHARACTER_FIRST = 10000;
 
+export const CHARACTER_MAX_LEVEL = 100;
+export const CHARACTER_MAX_XP = 8_400_000;
+
 /**
  * The mastery block holds Over Masteries, mastery nodes and master trait
  * cells. Level, experience and base stats sit on the character's own entity.

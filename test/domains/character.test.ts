@@ -1,12 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { hashId } from "../../src/core/xxhash32-custom";
 import {
+  CHARACTER_BASE_ATTACK,
+  CHARACTER_BASE_HP,
   CHARACTER_FIRST,
   CHARACTER_FLAGS,
   CHARACTER_KEY,
+  CHARACTER_LEVEL,
   CHARACTER_MASTER_XP,
+  CHARACTER_XP,
   masteryRange,
 } from "../../src/domains/character/attributes";
+import { maxCharacterLevel } from "../../src/domains/character/edit";
 import {
   characterEntities,
   joinedCharacters,
@@ -15,7 +20,8 @@ import {
   readMasterLevel,
 } from "../../src/domains/character/read";
 import { SAVE_ENTITY, USER_CAPTAIN } from "../../src/domains/user/attributes";
-import { unitStore } from "../../src/testing";
+import { SaveSession } from "../../src/save/session";
+import { fixtureFile, unitStore } from "../../src/testing";
 
 describe("characterEntities", () => {
   it("gives each character's id with its coordinates, skipping empty entities", () => {
@@ -95,5 +101,41 @@ describe("joinedCharacters", () => {
       ],
     });
     expect(joinedCharacters(units).map((c) => c.character)).toEqual(["PL0300"]);
+  });
+});
+
+describe("maxCharacterLevel", () => {
+  const open = (key: string, level: number) =>
+    SaveSession.open(
+      fixtureFile({
+        [CHARACTER_FIRST]: [
+          [CHARACTER_KEY, hashId(key)],
+          [CHARACTER_XP, 1000],
+          [CHARACTER_LEVEL, level],
+          [CHARACTER_BASE_HP, 150],
+          [CHARACTER_BASE_ATTACK, 10],
+        ],
+      }),
+    );
+
+  it("sets XP, level and the chara_status HP and ATK of level 100", () => {
+    const session = open("PL1500", 5);
+    maxCharacterLevel(session, CHARACTER_FIRST);
+    const at = session.save.slotData.units.of(CHARACTER_FIRST);
+    expect([
+      at.get(CHARACTER_XP),
+      at.get(CHARACTER_LEVEL),
+      at.get(CHARACTER_BASE_HP),
+      at.get(CHARACTER_BASE_ATTACK),
+    ]).toEqual([8400000, 100, 3739, 741]);
+  });
+
+  it("refuses a character at max level or with no level cap", () => {
+    expect(() =>
+      maxCharacterLevel(open("PL1500", 100), CHARACTER_FIRST),
+    ).toThrow("already level 100");
+    expect(() => maxCharacterLevel(open("NP0100", 1), CHARACTER_FIRST)).toThrow(
+      "no max level",
+    );
   });
 });

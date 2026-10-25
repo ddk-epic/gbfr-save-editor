@@ -45,6 +45,21 @@ Characters occupy 41 entities, `CHARACTER_FIRST` (10000) to 10040, one per `char
 - A character unit holds the character's current gear, apart from its saved loadouts.
 - 1402 holds `WEAPON_ID` (2802), not the weapon's entity. It is the only place a live weapon is equipped: the weapon unit itself carries no mark. Switching a weapon writes this unit, and 5815 index 1015 when the character's power rating crosses 45,000, see [trophies](trophies.md).
 
+### Level
+
+Gaining XP (`FUN_1402b51f0`, applied in `FUN_1402b5ad0`) writes 1303, then sets 1308 to the number of `chara_exp` rows of the character's `chara.CharaExp` curve at or below the XP. On a level change it recomputes 1309 to 1313 from `chara_status`:
+
+- Each stat is interpolated linearly between the character's two rows around the level. Rows that hold 0 for a stat are skipped, so Stun Power and Critical Hit Rate stay at their level 1 values of 8 and 5.
+- `chara_status` has a row at `chara.MaxLevelMaybe` (100) for every playable character, so the max level stats are that row's. Every curve reaches 8,400,000 XP at level 100.
+
+A level-up in a quest also:
+
+- Adds the `chara_exp.MSPReward` of each level gained to MSP (1112), capped at 9,999,999.
+- Sets or clears bit 0 of each of the character's fate episodes by its `ReqLevel` (`FUN_14032a920`). The fate episode menu does the same check when it opens.
+- Shows notices on crossing level 80, 90 and 100, and when the open sigil slots go up. These write no unit.
+
+`maxCharacterLevel` sets 1303 to 8,400,000, 1308 to 100, and 1309 and 1310 to the `CHARACTER_MAX_STATS` row. It awards no MSP.
+
 ### Sigil slots
 
 The save holds no slot count. The game works out a character's open slots (`FUN_1402b5990`) from two sources:
