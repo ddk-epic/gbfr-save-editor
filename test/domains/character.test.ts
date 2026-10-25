@@ -7,11 +7,15 @@ import {
   CHARACTER_FLAGS,
   CHARACTER_KEY,
   CHARACTER_LEVEL,
+  CHARACTER_MASTER_BREAK_MARKS,
   CHARACTER_MASTER_XP,
   CHARACTER_XP,
   masteryRange,
 } from "../../src/domains/character/attributes";
-import { maxCharacterLevel } from "../../src/domains/character/edit";
+import {
+  maxCharacterLevel,
+  maxMasterLevel,
+} from "../../src/domains/character/edit";
 import {
   characterEntities,
   joinedCharacters,
@@ -19,6 +23,10 @@ import {
   readCaptain,
   readMasterLevel,
 } from "../../src/domains/character/read";
+import {
+  TROPHY_EARNED,
+  TROPHY_PROGRESS,
+} from "../../src/domains/trophy/attributes";
 import { SAVE_ENTITY, USER_CAPTAIN } from "../../src/domains/user/attributes";
 import { SaveSession } from "../../src/save/session";
 import { fixtureFile, unitStore } from "../../src/testing";
@@ -137,5 +145,55 @@ describe("maxCharacterLevel", () => {
     expect(() => maxCharacterLevel(open("NP0100", 1), CHARACTER_FIRST)).toThrow(
       "no max level",
     );
+  });
+});
+
+describe("maxMasterLevel", () => {
+  const open = (key: string, masterXp: number, marks: number[]) =>
+    SaveSession.open(
+      fixtureFile({
+        [SAVE_ENTITY]: [
+          [TROPHY_EARNED, Array<boolean>(1700).fill(false)],
+          [TROPHY_PROGRESS, Array<bigint>(1200).fill(0n)],
+        ],
+        [CHARACTER_FIRST]: [
+          [CHARACTER_KEY, hashId(key)],
+          [CHARACTER_FLAGS, 0x4001],
+          [CHARACTER_MASTER_XP, masterXp],
+          [CHARACTER_MASTER_BREAK_MARKS, marks],
+        ],
+      }),
+    );
+
+  it("sets master level 55 with the cap break marks and badges, MSP untouched", () => {
+    const session = open("PL0200", 0, [0, 2]);
+    maxMasterLevel(session, CHARACTER_FIRST);
+    const units = session.save.slotData.units;
+    const at = units.of(CHARACTER_FIRST);
+    expect(at.get(CHARACTER_MASTER_XP)).toBe(3309499);
+    expect(at.get(CHARACTER_FLAGS)).toBe(0x6001);
+    expect(at.get(CHARACTER_MASTER_BREAK_MARKS)).toEqual([5, 2]);
+
+    const earned = units.of(SAVE_ENTITY).get(TROPHY_EARNED);
+    const progress = units.of(SAVE_ENTITY).get(TROPHY_PROGRESS);
+    expect(earned.flatMap((e, i) => (e ? [i] : []))).toEqual([
+      846, 855, 856, 857, 858, 859, 860, 861, 862, 1464, 1465,
+    ]);
+    expect([
+      progress[650],
+      progress[654],
+      progress[655],
+      progress[656],
+    ]).toEqual([0n, 50n, 0n, 0n]);
+    expect([progress[1053], progress[1054]]).toEqual([50n, 5n]);
+  });
+
+  it("refuses a character at master level 55 or with no master level", () => {
+    expect(() =>
+      maxMasterLevel(open("PL0200", 3309499, [0, 0]), CHARACTER_FIRST),
+    ).toThrow("already master level 55");
+    expect(() =>
+      maxMasterLevel(open("NP0100", 0, [0, 0]), CHARACTER_FIRST),
+    ).toThrow("no master level");
   });
 });
