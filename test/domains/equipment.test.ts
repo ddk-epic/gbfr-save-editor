@@ -6,6 +6,7 @@ import {
 } from "../../src/domains/character/attributes";
 import {
   EQUIP_CHARACTER,
+  EQUIP_SIGIL_SLOTS,
   EQUIP_SIGILS,
   EQUIP_WEAPON,
   LOADOUT_FIRST,
@@ -23,7 +24,6 @@ import {
   SIGIL_FIRST,
   SIGIL_ID,
   SIGIL_KEY,
-  SIGIL_POSITIONS,
 } from "../../src/domains/sigil/attributes";
 import {
   WEAPON_FIRST,
@@ -60,11 +60,11 @@ describe("readEquipment", () => {
     )!;
     expect(equipment.character).toBe("PL0300");
     expect(equipment.weapon).toBeUndefined();
-    expect(equipment.sigils).toHaveLength(SIGIL_POSITIONS);
+    expect(equipment.sigils).toHaveLength(EQUIP_SIGIL_SLOTS);
     // Id 0 is an empty position; an id with no sigil behind it reads as empty too.
     expect(equipment.sigils.map((sigil) => sigil?.id)).toEqual([
       71,
-      ...Array(SIGIL_POSITIONS - 1).fill(undefined),
+      ...Array(EQUIP_SIGIL_SLOTS - 1).fill(undefined),
     ]);
   });
 
@@ -100,7 +100,7 @@ describe("readCharacterEquipment", () => {
     expect(equipment.sigils.map((sigil) => sigil?.entity)).toEqual([
       undefined,
       SIGIL_FIRST + 4,
-      ...Array(SIGIL_POSITIONS - 2).fill(undefined),
+      ...Array(EQUIP_SIGIL_SLOTS - 2).fill(undefined),
     ]);
   });
 });

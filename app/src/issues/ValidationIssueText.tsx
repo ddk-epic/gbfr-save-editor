@@ -12,6 +12,7 @@ const VALIDATION_CODES = new Set<string>([
   "masterTraitPool",
   "overMasteryOverMax",
   "duplicateFateEpisode",
+  "sigilSlotClosed",
   "negativeResonancePoints",
   "resonanceRootNotTaken",
   "auraSeenNotObtained",
@@ -172,6 +173,17 @@ export function ValidationIssueText({ issue }: { issue: SaveIssue }) {
           {t("validationIssues.itemNotHeld", {
             list: issue.list,
             key: issue.key,
+          })}
+        </>
+      );
+    case "sigilSlotClosed":
+      return (
+        <>
+          {t("validationIssues.sigilSlotClosed", {
+            character: issue.character,
+            where: issue.where,
+            position: issue.position,
+            slots: issue.slots,
           })}
         </>
       );

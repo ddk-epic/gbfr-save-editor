@@ -45,6 +45,14 @@ export type ValidationIssue =
       level: number;
     }
   | { code: "duplicateFateEpisode"; character: string; key: string }
+  /** A sigil equipped past the character's open slots; position counts from 1. */
+  | {
+      code: "sigilSlotClosed";
+      character: string;
+      where: string;
+      position: number;
+      slots: number;
+    }
   | { code: "negativeResonancePoints"; points: number }
   /** A Resonance node taken while the root is not. */
   | { code: "resonanceRootNotTaken" }

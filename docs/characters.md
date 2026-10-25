@@ -45,6 +45,22 @@ Characters occupy 41 entities, `CHARACTER_FIRST` (10000) to 10040, one per `char
 - A character unit holds the character's current gear, apart from its saved loadouts.
 - 1402 holds `WEAPON_ID` (2802), not the weapon's entity. It is the only place a live weapon is equipped: the weapon unit itself carries no mark. Switching a weapon writes this unit, and 5815 index 1015 when the character's power rating crosses 45,000, see [trophies](trophies.md).
 
+### Sigil slots
+
+The save holds no slot count. The game works out a character's open slots (`FUN_1402b5990`) from two sources:
+
+- The `chara_gem` rows of the character's `chara.CharaGemId`. A row counts once both of its conditions hold: `Unk1` 0 or at most the character's level, and `Unk2` other than 3, or `Unk3` non-zero and at most the number of the character's fate episodes completed.
+- The "Unlock Sigil Slot" mastery nodes unlocked, one slot each (`limit_bonus` rows with `TXT_LB_NAME_CMN_PARAM_GNS`).
+
+| `CharaGemId` | Rows (`Unk1`, `Unk2`, `Unk3`)   | Mastery nodes | Characters           |
+| ------------ | ------------------------------- | ------------- | -------------------- |
+| `GEMSLOT_01` | (1, 0, 0), (0, 3, 5), (0, 3, 9) | 9             | Every one but PL2900 |
+| `GEMSLOT_02` | (1, 0, 0)                       | 11            | PL2900               |
+
+`GEMSLOT_01` opens one slot from level 1 and one each at 5 and 9 fate episodes completed. Every character reaches 12 slots at most, `EQUIP_SIGIL_SLOTS`.
+
+`sigilSlots` counts the same from the save: 1308 for the level, the completed bit of the character's fate episodes, and the mastery nodes taken. A sigil equipped past the open slots, on the character or on one of its loadouts, is the `sigilSlotClosed` issue.
+
 ### Flags
 
 1305 uses bits 0, 3, 4, 13 and 14.

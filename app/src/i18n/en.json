@@ -227,6 +227,7 @@
     "masterTraitPool": "{{character}} {{rank}}: {{chosen}} cells chosen of {{pool}}",
     "overMasteryOverMax": "{{character}}: Over Mastery at level {{level}}",
     "duplicateFateEpisode": "{{character}}: fate episode {{key}} twice",
+    "sigilSlotClosed": "{{character}} {{where}}: sigil in position {{position}}, only {{slots}} open",
     "negativeResonancePoints": "Resonance points are {{points}}",
     "resonanceRootNotTaken": "Resonance nodes taken without the root",
     "auraSeenNotObtained": "aura {{key}} is seen but not obtained",

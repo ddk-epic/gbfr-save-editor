@@ -6,6 +6,7 @@ import type {
   MasterySection,
 } from "../../src/domains/mastery/read";
 import type { CounterQuest } from "../../src/domains/quest/read";
+import type { Sigil } from "../../src/domains/sigil/read";
 import type { Weapon } from "../../src/domains/weapon/read";
 import type { Wrightstone } from "../../src/domains/wrightstone/read";
 import type {
@@ -51,6 +52,7 @@ const character = (
   masterTraits: [],
   masteries: noMasteries(),
   fateEpisodes: [],
+  sigilSlots: 12,
   weapons: new Map(),
   ...fields,
 });
@@ -148,6 +150,33 @@ describe("validateCharacterData", () => {
         key: "PL9999",
       },
     ]);
+  });
+
+  it("rejects a sigil past the open slots, on the character and its loadouts", () => {
+    const sigil = {} as Sigil;
+    const sigils = [sigil, undefined, sigil];
+    const characters = Object.values(CHARACTER_KEYS).map((key) =>
+      character(key, key === "PL0000" ? { sigils, sigilSlots: 2 } : {}),
+    );
+    const issue = (where: string) => ({
+      severity: "reject",
+      code: "sigilSlotClosed",
+      character: "PL0000",
+      where,
+      position: 3,
+      slots: 2,
+    });
+    expect(
+      validateCharacterData(
+        characterData({
+          characters,
+          loadouts: [
+            { ...loadout("PL0000"), sigils: [sigil, sigil] },
+            { ...loadout("PL0000"), sigils },
+          ],
+        }),
+      ),
+    ).toEqual([issue("character"), issue("loadout")]);
   });
 });
 

@@ -2,7 +2,6 @@ import type { UnitEntity } from "../../core/save-data-binary";
 import type { Attribute } from "../../core/attribute";
 import type { UnitStore } from "../../core/unit-store";
 import { CHARACTER_KEY } from "../character/attributes";
-import { SIGIL_POSITIONS } from "../sigil/attributes";
 import {
   findSigilById,
   readSigil,
@@ -15,7 +14,7 @@ import {
   readWeapons,
   type Weapon,
 } from "../weapon/read";
-import { EQUIP_SIGILS, EQUIP_WEAPON } from "./attributes";
+import { EQUIP_SIGIL_SLOTS, EQUIP_SIGILS, EQUIP_WEAPON } from "./attributes";
 
 export interface Equipment {
   /** The gear entity for live equipment, the loadout entity for a loadout. */
@@ -73,7 +72,7 @@ export function readEquipment(
     entity,
     character,
     weapon: weaponId ? lookup.weapon(weaponId) : undefined,
-    sigils: Array.from({ length: SIGIL_POSITIONS }, (_, i) => {
+    sigils: Array.from({ length: EQUIP_SIGIL_SLOTS }, (_, i) => {
       const id = sigilIds[i];
       return id ? lookup.sigil(id) : undefined;
     }),

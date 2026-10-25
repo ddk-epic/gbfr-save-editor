@@ -342,6 +342,21 @@ ${rewards.sort().join("\n")}
 };`,
 );
 
+// Mastery params that add sigil slots.
+const slotParams = (
+  db
+    .prepare(
+      "select Key from limit_bonus_param where NameFormat = 'TXT_LBP_INFO_CMN_PARAM_GNS'",
+    )
+    .all() as { Key: string }[]
+).map(({ Key }) => Key);
+emit(
+  "masteries",
+  `/** limit_bonus_param.Key of "Sigil Slot +{0}". */
+export const SIGIL_SLOT_PARAMS: readonly string[] = ${JSON.stringify(slotParams.sort())};`,
+);
+console.log(`SIGIL_SLOT_PARAMS: ${slotParams.length}`);
+
 // Menu order: playable 0-102, NPCs 500+, empty slots 1000+, dev rows 2000+.
 const uiOrder = (
   db.prepare("select CharId, UIOrder from chara").all() as {

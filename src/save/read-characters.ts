@@ -48,6 +48,7 @@ import {
   readPartySets,
   type PartyMember,
 } from "../domains/party/read";
+import { sigilSlots } from "../domains/equipment/slots";
 import { readEquippedSkills } from "../domains/skill/read";
 import { readEquippedSummons, type Summon } from "../domains/summon/read";
 import { readOwnedWeapons, type Weapon } from "../domains/weapon/read";
@@ -75,6 +76,8 @@ export interface Character extends Equipment {
   masteries: Record<MasterySection, MasteryProgress>;
   /** The character's fate episodes, in save order. */
   fateEpisodes: FateEpisode[];
+  /** Open sigil slots. */
+  sigilSlots: number;
   /** Owned weapons of the Collection series, by series. */
   weapons: Map<number, Weapon>;
 }
@@ -110,11 +113,14 @@ export function readCharacterData(units: UnitStore): CharacterData {
     if (!equipment) continue;
     const at = units.of(where.gear);
     const masterXp = at.get(CHARACTER_MASTER_XP);
+    const level = at.get(CHARACTER_LEVEL);
+    const masteries = readMasteries(units, where.mastery, equipment.character);
+    const episodes = fateEpisodes.get(equipment.character) ?? [];
     characters.push({
       ...equipment,
       entity: where.gear,
       skills: readEquippedSkills(units, where.gear),
-      level: at.get(CHARACTER_LEVEL),
+      level,
       xp: at.get(CHARACTER_XP),
       baseHp: at.get(CHARACTER_BASE_HP),
       baseAttack: at.get(CHARACTER_BASE_ATTACK),
@@ -123,8 +129,9 @@ export function readCharacterData(units: UnitStore): CharacterData {
       masterLevel: masterLevelOf(masterXp),
       overMasteries: readOverMasteries(units, where.mastery),
       masterTraits: readMasterTraits(units, where.mastery),
-      masteries: readMasteries(units, where.mastery, equipment.character),
-      fateEpisodes: fateEpisodes.get(equipment.character) ?? [],
+      masteries,
+      fateEpisodes: episodes,
+      sigilSlots: sigilSlots(equipment.character, level, episodes, masteries),
       weapons: ownedWeapons.get(equipment.character) ?? new Map(),
     });
   }

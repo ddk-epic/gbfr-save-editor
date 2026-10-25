@@ -24,6 +24,8 @@ export function buildCharacters(
     id: string,
     name: string | undefined,
     e: Equipment & { skills: (string | undefined)[] },
+    /** Open sigil slots. */
+    slots: number,
     characterEntity?: number,
   ): EquipmentSetView => {
     const w = e.weapon;
@@ -104,15 +106,21 @@ export function buildCharacters(
           ["locked", 6],
           ["new", 3],
         ],
-        e.sigils.map((s, i) => [
-          i + 1,
-          keyCell("sigil", s?.key),
-          s?.level,
-          keyCell("trait", s?.primaryTrait?.key),
-          keyCell("trait", s?.secondaryTrait?.key),
-          s?.locked,
-          s && !s.seen,
-        ]),
+        e.sigils.flatMap((s, i): Cell[][] =>
+          i < slots || s
+            ? [
+                [
+                  i + 1,
+                  keyCell("sigil", s?.key),
+                  s?.level,
+                  keyCell("trait", s?.primaryTrait?.key),
+                  keyCell("trait", s?.secondaryTrait?.key),
+                  s?.locked,
+                  s && !s.seen,
+                ],
+              ]
+            : [],
+        ),
         { stretch: "sigil" },
       ),
     };
@@ -242,17 +250,33 @@ export function buildCharacters(
         ),
       ],
       equipment: [
-        equipmentSet(`${c.character}:equipped`, undefined, c, c.entity),
+        equipmentSet(
+          `${c.character}:equipped`,
+          undefined,
+          c,
+          c.sigilSlots,
+          c.entity,
+        ),
         ...data.loadouts
           .filter((l) => l.character === c.character)
           .map((l, i) =>
-            equipmentSet(`${c.character}:loadout:${i}`, l.name, l),
+            equipmentSet(
+              `${c.character}:loadout:${i}`,
+              l.name,
+              l,
+              c.sigilSlots,
+            ),
           ),
         ...data.partySets.flatMap((members, set) =>
           (members ?? [])
             .filter((m) => m?.character === c.character)
             .map((m) => ({
-              ...equipmentSet(`${c.character}:partySet:${set}`, undefined, m!),
+              ...equipmentSet(
+                `${c.character}:partySet:${set}`,
+                undefined,
+                m!,
+                c.sigilSlots,
+              ),
               partySet: set + 1,
             })),
         ),

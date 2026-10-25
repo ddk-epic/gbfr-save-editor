@@ -33,8 +33,24 @@ export function validateCharacterData(data: CharacterData): SaveIssue[] {
       ...validateMasterTraits(name, character.masterTraits),
       ...validateOverMasteries(name, character.overMasteries),
       ...validateFateEpisodes(name, character.fateEpisodes),
+      ...closedSlots(name, "character", character.sigils, character.sigilSlots),
     );
   }
+  const slots = new Map(
+    data.characters.map((character) => [
+      character.character,
+      character.sigilSlots,
+    ]),
+  );
+  for (const loadout of data.loadouts)
+    issues.push(
+      ...closedSlots(
+        loadout.character,
+        "loadout",
+        loadout.sigils,
+        slots.get(loadout.character) ?? 0,
+      ),
+    );
   for (const key of data.party)
     if (key !== undefined && !known(key))
       issues.push(warning({ code: "unknownCharacter", where: "party", key }));
@@ -49,6 +65,27 @@ export function validateCharacterData(data: CharacterData): SaveIssue[] {
       );
   return issues;
 }
+
+/** Sigils equipped past the open slots. */
+const closedSlots = (
+  character: string,
+  where: string,
+  sigils: readonly unknown[],
+  slots: number,
+): SaveIssue[] =>
+  sigils.flatMap((sigil, i) =>
+    sigil !== undefined && i >= slots
+      ? [
+          reject({
+            code: "sigilSlotClosed",
+            character,
+            where,
+            position: i + 1,
+            slots,
+          }),
+        ]
+      : [],
+  );
 
 export function validateInventory(inventory: Inventory): SaveIssue[] {
   const { items } = inventory;
