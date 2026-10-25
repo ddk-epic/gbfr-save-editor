@@ -15,7 +15,7 @@ Every list has its full unit count in every save, a new game included. Curios, s
 
 ## Currencies
 
-Rupies are 1104 and mastery points 1112, each an `int` at entity 0. The item rows Rupie, Mastery Point, Conflux Point and Resonance Point (`ItemCategoryId` 10) hold a count of 0.
+Rupies are 1104 and mastery points 1112, each an `int` at entity 0. The game caps rupies at 999,999,999 (`FUN_140382750` clamps every change) and MSP at 9,999,999. The item rows Rupie, Mastery Point, Conflux Point and Resonance Point (`ItemCategoryId` 10) hold a count of 0.
 
 ## Items
 

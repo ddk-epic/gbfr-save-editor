@@ -10,6 +10,11 @@ export {
   maxMasterLevel,
 } from "./domains/character/edit";
 export { CHARACTER_MAX_LEVEL } from "./domains/character/attributes";
+export { maxMasteryPoints, maxRupies } from "./domains/user/edit";
+export {
+  USER_MAX_MASTERY_POINTS,
+  USER_MAX_RUPIES,
+} from "./domains/user/attributes";
 export { completeFateEpisodes } from "./domains/fate-episode/edit";
 export { addWrightstone, editWrightstone } from "./domains/wrightstone/edit";
 export {

@@ -8,11 +8,15 @@ import {
   SAVE_SLOT_VERSION,
   SYSTEM_PLAY_TIME,
   USER_COMMENDATIONS,
+  USER_MASTERY_POINTS,
   USER_ONLINE_STATUS_FLAGS,
   USER_PLAYER_NAME,
+  USER_RUPIES,
 } from "../../src/domains/user/attributes";
+import { maxMasteryPoints, maxRupies } from "../../src/domains/user/edit";
 import { readSystem, readUser } from "../../src/domains/user/read";
-import { unitStore } from "../../src/testing";
+import { SaveSession } from "../../src/save/session";
+import { fixtureFile, unitStore } from "../../src/testing";
 
 /** Text is stored as char codes, terminated by a zero. */
 const text = (value: string) =>
@@ -60,5 +64,33 @@ describe("readSystem", () => {
       [SAVE_ENTITY]: [[SYSTEM_PLAY_TIME, 123_456n]],
     });
     expect(readSystem(units)).toEqual({ playTime: 123_456 });
+  });
+});
+
+describe("maxRupies and maxMasteryPoints", () => {
+  const open = (rupies: number, msp: number) =>
+    SaveSession.open(
+      fixtureFile({
+        [SAVE_ENTITY]: [
+          [USER_RUPIES, rupies],
+          [USER_MASTERY_POINTS, msp],
+        ],
+      }),
+    );
+
+  it("sets each to the game's cap, leaving the other", () => {
+    const session = open(5, 7);
+    maxRupies(session);
+    const at = session.save.slotData.units.of(SAVE_ENTITY);
+    expect([at.get(USER_RUPIES), at.get(USER_MASTERY_POINTS)]).toEqual([
+      999999999, 7,
+    ]);
+    maxMasteryPoints(session);
+    expect(at.get(USER_MASTERY_POINTS)).toBe(9999999);
+  });
+
+  it("refuses a value already at the cap", () => {
+    expect(() => maxRupies(open(999999999, 0))).toThrow("already");
+    expect(() => maxMasteryPoints(open(0, 9999999))).toThrow("already");
   });
 });
