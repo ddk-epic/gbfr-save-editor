@@ -4,6 +4,8 @@ import {
   addWrightstone,
   editSigil,
   editWrightstone,
+  maxMasteryPoints,
+  maxRupies,
   wrightstoneRoll,
   wrightstoneSubs,
   WRIGHTSTONE_MAINS,
@@ -16,6 +18,7 @@ import { useTranslation } from "react-i18next";
 import { useGameText } from "../../i18n/game-text";
 import { edit } from "../../state/actions";
 import { go } from "../../state/navigation";
+import { useSave } from "../../state/save";
 import {
   clearSelection,
   useSelectedRef,
@@ -120,6 +123,10 @@ export function SavePage({
   const selection = useSelection();
   const ref = useSelectedRef();
   const [adding, setAdding] = useState<Editable>();
+  const belowMaxRupies = useSave((save) => save?.view.belowMaxRupies);
+  const belowMaxMasteryPoints = useSave(
+    (save) => save?.view.belowMaxMasteryPoints,
+  );
   // Selecting a row leaves the add form.
   const [prevRef, setPrevRef] = useState(ref);
   if (ref !== prevRef) {
@@ -211,6 +218,22 @@ export function SavePage({
                   label: t("edit.addWrightstone"),
                   run: () => setAdding("wrightstones"),
                 },
+              ]}
+            />
+          ) : table.id === "profile" ? (
+            <EditMenu
+              actions={[
+                ...(belowMaxRupies
+                  ? [{ label: t("edit.maxRupies"), run: () => edit(maxRupies) }]
+                  : []),
+                ...(belowMaxMasteryPoints
+                  ? [
+                      {
+                        label: t("edit.maxMasteryPoints"),
+                        run: () => edit(maxMasteryPoints),
+                      },
+                    ]
+                  : []),
               ]}
             />
           ) : table.id === "sigils" ? (

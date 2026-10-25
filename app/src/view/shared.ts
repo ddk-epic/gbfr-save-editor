@@ -9,7 +9,6 @@ import {
   readCounterQuests,
   readFieldNotes,
   readGlossary,
-  readInventory,
   readMainStory,
   readMusic,
   readProfile,
@@ -31,6 +30,7 @@ import {
   type ItemTab,
   type Trophy,
   type TrophyTab,
+  type Inventory,
 } from "gbfr-save-editor";
 import type { GameTextTable } from "../i18n/game-text";
 import { keyCell, trait, unknownCell } from "./cell";
@@ -234,9 +234,12 @@ const duration = (seconds: number) =>
     .join(":")}`;
 
 /** The save page's tables. */
-export function buildShared(save: Save, data: CharacterData): Table[] {
+export function buildShared(
+  save: Save,
+  data: CharacterData,
+  inventory: Inventory,
+): Table[] {
   const units = save.slotData.units;
-  const inventory = readInventory(units);
   const profile = readProfile(units);
   const conflux = readConflux(units);
   const user = readUser(units);

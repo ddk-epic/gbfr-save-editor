@@ -1,4 +1,8 @@
-import { readCharacterData, type Save } from "gbfr-save-editor";
+import { readCharacterData, readInventory, type Save } from "gbfr-save-editor";
+import {
+  USER_MAX_MASTERY_POINTS,
+  USER_MAX_RUPIES,
+} from "gbfr-save-editor/edit";
 import { buildCharacters } from "./character";
 import { buildParty } from "./party";
 import { buildShared } from "./shared";
@@ -29,8 +33,11 @@ export const allTables = (view: SaveView): Table[] => [
 export function buildView(save: Save): SaveView {
   const units = save.slotData.units;
   const data = readCharacterData(units);
+  const inventory = readInventory(units);
   const view: SaveView = {
-    shared: buildShared(save, data),
+    shared: buildShared(save, data, inventory),
+    belowMaxRupies: inventory.rupies < USER_MAX_RUPIES,
+    belowMaxMasteryPoints: inventory.masteryPoints < USER_MAX_MASTERY_POINTS,
     party: buildParty(data),
     characters: buildCharacters(units, data),
     captain: data.captain,

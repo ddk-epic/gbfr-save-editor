@@ -68,6 +68,8 @@
     "completeFateEpisodes": "Complete all fate episodes",
     "maxCharacterLevel": "Max level",
     "maxMasterLevel": "Max master level",
+    "maxRupies": "Max rupies",
+    "maxMasteryPoints": "Max MSP",
     "addWrightstone": "Add wrightstone",
     "addSigil": "Add sigil"
   },

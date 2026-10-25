@@ -87,6 +87,8 @@ export interface CharacterView {
 
 export interface SaveView {
   shared: Table[];
+  belowMaxRupies: boolean;
+  belowMaxMasteryPoints: boolean;
   /** The characters landing page. */
   party: Table[];
   characters: CharacterView[];
