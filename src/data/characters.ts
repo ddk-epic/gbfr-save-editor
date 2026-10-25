@@ -843,3 +843,38 @@ export const CHARACTER_UI_ORDER: Readonly<Record<string, number>> = {
 
 /** chara_master_exp.TotalMSP, index = master level. */
 export const MASTER_LEVEL_MSP: readonly number[] = [0, 0, 3000, 6000, 9000, 12000, 15000, 20000, 25000, 30000, 37500, 45000, 52500, 60000, 67500, 77500, 87500, 97500, 109500, 121500, 136500, 151500, 166500, 181500, 198500, 215500, 232500, 249500, 269500, 289500, 339500, 389500, 439500, 489500, 539500, 589500, 639500, 689500, 739500, 789500, 864500, 939500, 1014500, 1089500, 1164500, 1239500, 1314500, 1389500, 1464500, 1539500, 1639499, 1839499, 2089499, 2409499, 2809499, 3309499];
+
+/** chara_status Hp and Attack at level 100 by chara.CharId. */
+export const CHARACTER_MAX_STATS: Readonly<
+  Record<string, { hp: number; attack: number }>
+> = {
+  PL0000: { hp: 3430, attack: 677 },
+  PL0100: { hp: 3430, attack: 677 },
+  PL0200: { hp: 3499, attack: 656 },
+  PL0300: { hp: 3570, attack: 631 },
+  PL0400: { hp: 3156, attack: 666 },
+  PL0500: { hp: 3637, attack: 699 },
+  PL0600: { hp: 3327, attack: 642 },
+  PL0700: { hp: 3256, attack: 620 },
+  PL0800: { hp: 3462, attack: 652 },
+  PL0900: { hp: 3704, attack: 689 },
+  PL1000: { hp: 3604, attack: 707 },
+  PL1100: { hp: 3535, attack: 739 },
+  PL1200: { hp: 3399, attack: 665 },
+  PL1300: { hp: 3197, attack: 730 },
+  PL1400: { hp: 3361, attack: 708 },
+  PL1500: { hp: 3739, attack: 741 },
+  PL1600: { hp: 3293, attack: 728 },
+  PL1700: { hp: 3773, attack: 720 },
+  PL1800: { hp: 3227, attack: 636 },
+  PL1900: { hp: 3394, attack: 687 },
+  PL2100: { hp: 3630, attack: 688 },
+  PL2200: { hp: 3530, attack: 709 },
+  PL2300: { hp: 3260, attack: 686 },
+  PL2400: { hp: 3704, attack: 730 },
+  PL2500: { hp: 3154, attack: 636 },
+  PL2600: { hp: 3534, attack: 700 },
+  PL2700: { hp: 3604, attack: 728 },
+  PL2800: { hp: 3324, attack: 707 },
+  PL2900: { hp: 3404, attack: 730 },
+};

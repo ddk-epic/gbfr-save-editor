@@ -495,6 +495,26 @@ export const MASTER_LEVEL_MSP: readonly number[] = [${masterMsp.join(", ")}];`,
 );
 console.log(`MASTER_LEVEL_MSP: ${masterMsp.length} levels`);
 
+const maxStats = (
+  db
+    .prepare(
+      `select c.CharId, s.Hp, s.Attack
+       from chara c join chara_status s on s.Key = c.CharId and s.Level = c.MaxLevelMaybe
+       where c.MaxLevelMaybe > 0`,
+    )
+    .all() as { CharId: string; Hp: number; Attack: number }[]
+).map((r) => `  ${r.CharId}: { hp: ${r.Hp}, attack: ${r.Attack} },`);
+emit(
+  "characters",
+  `/** chara_status Hp and Attack at level 100 by chara.CharId. */
+export const CHARACTER_MAX_STATS: Readonly<
+  Record<string, { hp: number; attack: number }>
+> = {
+${maxStats.sort().join("\n")}
+};`,
+);
+console.log(`CHARACTER_MAX_STATS: ${maxStats.length} characters`);
+
 // Masteries nodes: per character and limit_bonus key, a [section, MspCost,
 // NodeGridLocation, series] cell per LimitBonusParamIndex, the bit 1602 sets
 // when the node is taken. Collection and Transcendence rows name their weapon,
