@@ -16,12 +16,12 @@ Sigils occupy 5100 entities, `SIGIL_FIRST` (30000) to 35099. Every save has all 
 
 Two more units sit at entity 0:
 
-| Attribute | Name      | Type   | Holds                              |
-| --------- | --------- | ------ | ---------------------------------- |
-| 2701      | not named | `uint` | The highest id in use, 0 when none |
-| 2708      | not named | `uint` | Bitmask, no meaning assigned       |
+| Attribute | Name               | Type   | Holds                                |
+| --------- | ------------------ | ------ | ------------------------------------ |
+| 2701      | `SIGIL_LAST_ID`    | `uint` | The last id handed out, 0 when none  |
+| 2708      | `SIGIL_LIST_FLAGS` | `uint` | Bitmask, bit 0 set on adding a sigil |
 
-2708 is one value for the whole save, not a per-sigil field: it exists only at entity 0. It holds 0 in a new game and 7 (bits 0, 1 and 2) in the saves that hold sigils, the same in saves with different sigil counts. No save holds any other value, so the meaning of each bit is not known.
+2708 is one value for the whole save, not a per-sigil field: it exists only at entity 0. It holds 0 in a new game and 7 (bits 0, 1 and 2) in the saves that hold sigils, the same in saves with different sigil counts. Bit 0 is `SIGIL_LIST_ADDED`; bits 1 and 2 have no meaning assigned.
 
 - Ids are unique. They are not dense: the highest is far above the number of sigils.
 - Sigils in use can have empty units between them.
@@ -66,3 +66,15 @@ A sigil's traits sit at `TRAIT_FIRST + (entity - SIGIL_FIRST) * TRAIT_STRIDE + i
 | set            | -1                                | `SkillId2` or another skill |
 
 The secondary can be the same skill as the primary.
+
+## Adding a sigil
+
+The game's add (`FUN_140334950`, called from the transmarvel's `ui::fsm::action::GemGacha`) does, in order:
+
+1. Refuses when 5000 sigils are held, though the list has 5100 entries.
+2. Takes the first empty entry, the lowest entity with id 0.
+3. Raises 2701 by 1 and gives the sigil that id.
+4. Clears bit 3 of 2707 and writes the key, level and traits. 2707 stays 0 otherwise: a new sigil is unlocked and unseen.
+5. Sets bit 0 of 2708.
+
+No item count moves for the sigil itself. `addSigil` and `editSigil` write the same units; `editSigil` keeps the entry, id and flags.
