@@ -1,4 +1,4 @@
-import { GEM_TRAITS } from "../../data/sigils";
+import { GEM_ROWS } from "../../data/sigils";
 import { keyOf } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { UnitStore } from "../../core/unit-store";
@@ -53,7 +53,7 @@ function readCurioReward(
         type: "sigil",
         key,
         level: at.get(CURIO_REWARD_LEVEL),
-        traits: [...(GEM_TRAITS[key] ?? [])],
+        traits: [...(GEM_ROWS[key]?.traits ?? [])],
         seed,
       };
     }
