@@ -1,6 +1,7 @@
 import {
   completeFateEpisodes,
   maxCharacterLevel,
+  maxMasterLevel,
   removeOverMasteries,
 } from "gbfr-save-editor/edit";
 import { useTranslation } from "react-i18next";
@@ -86,8 +87,8 @@ export function CharacterPage({
                     flush
                     menu={
                       <EditMenu
-                        actions={
-                          character.belowMaxLevel
+                        actions={[
+                          ...(character.belowMaxLevel
                             ? [
                                 {
                                   label: t("edit.maxCharacterLevel"),
@@ -100,8 +101,19 @@ export function CharacterPage({
                                     ),
                                 },
                               ]
-                            : []
-                        }
+                            : []),
+                          ...(character.belowMaxMasterLevel
+                            ? [
+                                {
+                                  label: t("edit.maxMasterLevel"),
+                                  run: () =>
+                                    edit((session) =>
+                                      maxMasterLevel(session, character.entity),
+                                    ),
+                                },
+                              ]
+                            : []),
+                        ]}
                       />
                     }
                   />

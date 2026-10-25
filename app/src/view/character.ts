@@ -6,7 +6,9 @@ import {
 } from "gbfr-save-editor";
 import {
   CHARACTER_MAX_LEVEL,
+  MAX_MASTER_LEVEL,
   characterLevels,
+  characterMasterLevels,
   equippableWeapons,
 } from "gbfr-save-editor/edit";
 import { keyCell, trait } from "./cell";
@@ -138,6 +140,8 @@ export function buildCharacters(
       level: c.level,
       belowMaxLevel:
         characterLevels(c.character) && c.level < CHARACTER_MAX_LEVEL,
+      belowMaxMasterLevel:
+        characterMasterLevels(c.character) && c.masterLevel < MAX_MASTER_LEVEL,
       overMasteryRolled: c.overMasteries.some((o) => o !== undefined),
       fateEpisodesIncomplete: c.fateEpisodes.some((f) => !f.completed),
       tables: [

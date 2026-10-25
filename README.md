@@ -122,7 +122,7 @@ A save editor for Granblue Fantasy: Relink. Still work in progress and planned w
 - [x] Remove Over Mastery
 - [ ] Edit Over Mastery: bonus and value per line
 - [x] Max character level
-- [ ] Edit master level
+- [x] Max master level
 - [ ] Take or remove all offensive mastery nodes
 - [ ] Take or remove all defensive mastery nodes
 - [ ] Take or remove all base collection nodes

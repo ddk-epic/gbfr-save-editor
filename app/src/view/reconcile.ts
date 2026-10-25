@@ -106,6 +106,7 @@ function reuseCharacter(prev: CharacterView, next: CharacterView) {
     prev.entity === next.entity &&
     prev.level === next.level &&
     prev.belowMaxLevel === next.belowMaxLevel &&
+    prev.belowMaxMasterLevel === next.belowMaxMasterLevel &&
     prev.overMasteryRolled === next.overMasteryRolled &&
     prev.fateEpisodesIncomplete === next.fateEpisodesIncomplete &&
     merged.tables === prev.tables &&
