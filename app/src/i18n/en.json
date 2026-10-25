@@ -66,6 +66,7 @@
     "equipWeapon": "Equip {{weapon}}",
     "removeOverMasteries": "Remove Over Mastery",
     "completeFateEpisodes": "Complete all fate episodes",
+    "maxCharacterLevel": "Max level",
     "addWrightstone": "Add wrightstone",
     "addSigil": "Add sigil"
   },

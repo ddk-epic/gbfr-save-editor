@@ -1,5 +1,6 @@
 import {
   completeFateEpisodes,
+  maxCharacterLevel,
   removeOverMasteries,
 } from "gbfr-save-editor/edit";
 import { useTranslation } from "react-i18next";
@@ -79,7 +80,31 @@ export function CharacterPage({
             >
               <div className="grid gap-4 pb-1 sm:grid-cols-2">
                 <div className="min-w-0">
-                  <LabeledTable label={t("stats.level")} table={level!} flush />
+                  <LabeledTable
+                    label={t("stats.level")}
+                    table={level!}
+                    flush
+                    menu={
+                      <EditMenu
+                        actions={
+                          character.belowMaxLevel
+                            ? [
+                                {
+                                  label: t("edit.maxCharacterLevel"),
+                                  run: () =>
+                                    edit((session) =>
+                                      maxCharacterLevel(
+                                        session,
+                                        character.entity,
+                                      ),
+                                    ),
+                                },
+                              ]
+                            : []
+                        }
+                      />
+                    }
+                  />
                 </div>
                 <div className="min-w-0">
                   <LabeledTable

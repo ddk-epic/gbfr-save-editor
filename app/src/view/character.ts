@@ -4,7 +4,11 @@ import {
   type Equipment,
   type UnitStore,
 } from "gbfr-save-editor";
-import { equippableWeapons } from "gbfr-save-editor/edit";
+import {
+  CHARACTER_MAX_LEVEL,
+  characterLevels,
+  equippableWeapons,
+} from "gbfr-save-editor/edit";
 import { keyCell, trait } from "./cell";
 import { table } from "./table";
 import type { Cell, CharacterView, EquipmentSetView } from "./types";
@@ -132,6 +136,8 @@ export function buildCharacters(
       key: c.character,
       entity: c.entity,
       level: c.level,
+      belowMaxLevel:
+        characterLevels(c.character) && c.level < CHARACTER_MAX_LEVEL,
       overMasteryRolled: c.overMasteries.some((o) => o !== undefined),
       fateEpisodesIncomplete: c.fateEpisodes.some((f) => !f.completed),
       tables: [

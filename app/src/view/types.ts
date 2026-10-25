@@ -77,6 +77,7 @@ export interface CharacterView {
   /** The character's own entity. */
   entity: number;
   level: number;
+  belowMaxLevel: boolean;
   overMasteryRolled: boolean;
   fateEpisodesIncomplete: boolean;
   tables: Table[];
