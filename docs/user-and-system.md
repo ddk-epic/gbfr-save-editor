@@ -84,17 +84,19 @@ A Transmutation pull adds its `gacha.TransmarvelEarned` to 1105, 15 per pull at 
 
 Location uses attributes 1201-1207.
 
-| Attribute | Name                | Type        | Holds                                                                              |
-| --------- | ------------------- | ----------- | ---------------------------------------------------------------------------------- |
-| 1201      | `LOCATION_STAGE`    | `int`       | Current stage, a `stagename.PhaseId`                                               |
-| 1202      | `LOCATION_SPOT`     | `ubyte[32]` | Spot name, ASCII padded with 0                                                     |
-| 1203      | not named           | `uint`      |                                                                                    |
-| 1204      | not named           | `float[4]`  |                                                                                    |
-| 1205      | not named           | `float[4]`  |                                                                                    |
-| 1206      | `LOCATION_PARTY_HP` | `int[4]`    | HP per party slot. Only the player's slot holds a value, AI and empty slots hold 0 |
-| 1207      | not named           | `int[4]`    |                                                                                    |
+| Attribute | Name                | Type        | Holds                                                                          |
+| --------- | ------------------- | ----------- | ------------------------------------------------------------------------------ |
+| 1201      | `LOCATION_STAGE`    | `int`       | Current stage, a `stagename.PhaseId`                                           |
+| 1202      | `LOCATION_SPOT`     | `ubyte[32]` | Spot name, ASCII padded with 0                                                 |
+| 1203      | not named           | `uint`      |                                                                                |
+| 1204      | not named           | `float[4]`  |                                                                                |
+| 1205      | not named           | `float[4]`  |                                                                                |
+| 1206      | `LOCATION_PARTY_HP` | `int[4]`    | Current HP per party slot at the save, 0 on a slot with nothing to restore     |
+| 1207      | not named           | `int[4]`    | A combat gauge per party slot at the save, 0 on a slot with nothing to restore |
 
-1206 is a cache. The game recomputes it from the party's gear and writes it on every save, so a value left stale by an edit corrects itself and the HP shows right in the meantime.
+Spawning a party member (`FUN_1406c6680`, the player in `FUN_1406c5ea0`) restores both from its slot. HP takes the 1206 value capped at the character's maximum, so a value left stale by an edit corrects itself. The gauge gains the 1207 value through `FUN_140bb2940`, which caps at the gauge's maximum. Other callers pass it a percentage times 0.01. A value of 0 skips the restore. `FUN_1436e1dd0`, on `EtEndlessModeShop`, zeroes both on the slots where `FUN_140373970` is false.
+
+Live, both hold 0 apart from the moment of a save. 1207 rises through a story quest, stops at 1000 and can drop to 0 on one slot. Which gauge it is has not been confirmed in game; the Skybound Art gauge fits.
 
 `stagename.PhaseId` spells the stage as 8 hex digits, so stage `0xC00` is PhaseId `00000C00`, Folca, Frontier Town. `stagename.Name` is a text key in `text_telop` or `text_ui`. The opening stage `0xA01` has no `stagename` row.
 

@@ -16,17 +16,26 @@ Sigils occupy 5100 entities, `SIGIL_FIRST` (30000) to 35099. Every save has all 
 
 Two more units sit at entity 0:
 
-| Attribute | Name               | Type   | Holds                                |
-| --------- | ------------------ | ------ | ------------------------------------ |
-| 2701      | `SIGIL_LAST_ID`    | `uint` | The last id handed out, 0 when none  |
-| 2708      | `SIGIL_LIST_FLAGS` | `uint` | Bitmask, bit 0 set on adding a sigil |
+| Attribute | Name               | Type   | Holds                               |
+| --------- | ------------------ | ------ | ----------------------------------- |
+| 2701      | `SIGIL_LAST_ID`    | `uint` | The last id handed out, 0 when none |
+| 2708      | `SIGIL_LIST_FLAGS` | `uint` | Bitmask of sigil menu unlocks       |
 
-2708 is one value for the whole save, not a per-sigil field: it exists only at entity 0. It holds 0 in a new game and 7 (bits 0, 1 and 2) in the saves that hold sigils, the same in saves with different sigil counts. Bit 0 is `SIGIL_LIST_ADDED`; bits 1 and 2 have no meaning assigned.
+2708 is one value for the whole save, not a per-sigil field: it exists only at entity 0. It holds 0 in a new game, 5 (bits 0 and 2) after a first sigil from a quest reward, and 7 (bits 0, 1 and 2) further on, the same at different sigil counts. Bit 1 sets with a first uncommon sigil at level 2 from a quest reward; which of rarity or level decides it has not been separated. The bits unlock sigil menus:
+
+| Bit | Value | Name               | Read by                                                   |
+| --- | ----- | ------------------ | --------------------------------------------------------- |
+| 0   | 1     | `SIGIL_LIST_ADDED` | `FUN_143f24250`, shows a menu's fourth tab                |
+| 1   | 2     | not named          | `FUN_140441510`, `menu_unlock` key `BlacksmithGemBuildup` |
+| 2   | 4     | not named          | `FUN_140441510`, `menu_unlock` key `ShopSellGeen`         |
+
+Only the game's add sets a bit by this offset in the decompiles, and only bit 0. The code that sets bits 1 and 2 has not been found.
 
 - Ids are unique. They are not dense: the highest is far above the number of sigils.
 - Sigils in use can have empty units between them.
 - A unit with id 0 has the empty hash in 2703 and 2706, and flags 0.
 - A unit with an id always has a key that resolves in `gem`.
+- 8001 and 8002, `uint` at entities 0-1099, are a separate list of `gem.Key` hashes and flags. 8002 goes 0 to 1 at the entity of a sigil's key on first getting it. `FUN_140333920` indexes 8001 at load, walks every entry and maps each hash to its entry. What reads 8002 has not been found.
 - 2704 is not reset on an empty unit. It holds 0 in a new game and can hold a non-zero level otherwise.
 
 ## Wearer
@@ -77,7 +86,7 @@ The game's add (`FUN_140334950`, called from the transmarvel's `ui::fsm::action:
 4. Clears bit 3 of 2707 and writes the key, level and traits. 2707 stays 0 otherwise: a new sigil is unlocked and unseen.
 5. Sets bit 0 of 2708.
 
-No item count moves for the sigil itself. `addSigil` and `editSigil` write the same units; `editSigil` keeps the entry, id and flags.
+No item count moves for the sigil itself. `addSigil` and `editSigil` write the same units; `editSigil` keeps the entry, id and flags. `addSigil` sets bit 0 of 2708 only, so it does not set the `ShopSellGeen` unlock that a first sigil from a quest reward does.
 
 ## Levels and second traits
 

@@ -27,6 +27,22 @@ A quest id is a `quest_baseinfo_ex_data.Key`, 8 hex digits, stored as the uint t
 - 2510 holds 59 ids, `00100000` to `0010d001`.
 - Each story quest record has three parts, each a flag and 200 values: 2511 with 2513, 2512 with 2514 and 2522 with 2515. Entry `i` of 2513-2515 starts at `i` \* 200. 2516 holds 32 values per quest.
 - The quest underway keeps checkpoint hashes in its 2513 and 2514 parts. At its clear 2511, 2512 and 2522 go to 1 and both parts are zeroed.
+- Quests played as one run share a single record change. `00101003`, `00101004` and `00101005` all turn 1 in one write at the end of the run, and the later two never hold a checkpoint. Other story quests clear singly, each with its own record change, such as `00102000`, `00102f00`, `00102002` and `00103f00`.
+
+### Restart point
+
+| Attribute | Type      | Holds                                  |
+| --------- | --------- | -------------------------------------- |
+| 2517      | `uint[2]` | Quest id, 0 when none                  |
+| 2518      | `uint[2]` | Checkpoint hash                        |
+| 2519      | `int[2]`  | Chapter key, -1 when none              |
+| 2520      | `bool[2]` | Likely the flag `FUN_140631c20` checks |
+
+Two entries each, solo then online as in 2506. `FUN_14061d110` and `FUN_14061e0a0` copy them to and from runtime fields.
+
+`FUN_140631c20` restarts from them: it does nothing when the 2517 id has no family digit, sets the current chapter to 2519 and starts the quest in 2517 at the checkpoint in 2518. With the flag set, it first drops entries of a list whose key lies from 2519 up to the current chapter. `FUN_14063d2a0` clears 2517, 2519 and the flag, leaving 2518.
+
+They are set at a checkpoint inside `00101003`, hold through the rest of that run and clear at the record change. What calls `FUN_140631c20` has not been found.
 
 ## Chapters
 
@@ -39,11 +55,14 @@ Chapter select lists the chapters reached, by `chapter_select.Key`: chapter grou
 | 2591      | `CHAPTER_FLAGS`   | `int[]`  | 1 on a chapter chapter select offers            |
 
 - 2590-2596 are parallel lists apart from 2595 and 2596, which run shorter.
+- A key joins 2590 as 2506 moves past it, together with any keys skipped. This can fall at a quest's clear or at a checkpoint with no clear.
+- `chapter_select.QuestId` can give several keys one quest, as 101-104 share `00103001`. That quest's record clears once, and keys never current in 2506 still join 2590 at the clear.
+- 2502, an `int`, is the current town, by `chapter_select.TownStageMaybe`: 3072 (`0xC00`) from a new game, then 3328 (`0xD00`, Seedhollow) as `00104f00` clears, ahead of key 121. 2503, a `uint`, takes a new checkpoint hash in the same write.
 - Chapter select (`FUN_1403f4140`) offers the chapter groups in order. It stops at the first chapter missing from 2590, or listed with bit 0 of its flags clear and a negative second value.
 
 ## Quest seed
 
-2504 `QUEST_SEED`, a `uint`, is drawn at each quest start from `timeGetTime` through a xorshift (`FUN_141fa76c0`), or kept when a quest resumes.
+2504 `QUEST_SEED`, a `uint`, is drawn at a quest start from `timeGetTime` through a xorshift (`FUN_141fa76c0`), or kept when a quest resumes. Within a run of story quests it is drawn once, at the record change at the end of the run, while 7601 is replaced at the end of each quest.
 
 ## Side quests
 
@@ -57,6 +76,7 @@ Three arrays of 200.
 
 - 2550 holds every side quest from a new game on, accepted or not.
 - An accepted quest at 0 in 2551 is underway.
+- 2552, a `uint[12800]`, holds 64 values per side quest. Its first value takes a hash on quests not yet accepted, as a story chapter ends. The hashes match no table text or message key, and no meaning is assigned.
 - A completed repeat quest stays accepted in 2555. The game lists it only once it is accepted again.
 
 ## Quest counter
@@ -127,9 +147,9 @@ Two arrays of 100, for the episodes that are a quest (`fate_episode.MissionQuest
 - 2575 is true on every cleared quest apart from the On the Threshold quests. 2576 is true on every cleared quest. 2577 holds three bools per quest that do not follow the first clear rewards. 2578 is mostly true alongside a 2579 time.
 - 2511, 2512 and 2522 all turn 1 at a story quest's clear. Which one marks the clear is not settled.
 - 2580-2583 and 2501-2651 apart from the attributes above have no meaning assigned.
-- 7352 and 6102 have no meaning assigned. 7352 goes from 0 to 1 on some information quests during story play, before the quest underway clears. 6102 goes from false to true on an island during story play.
-- 2502, an `int`, takes 3072 (`0xC00`, `chapter_select.TownStageMaybe`) and 2503, a `uint`, a checkpoint hash at the start of a new game. Neither has a meaning assigned.
+- 7352 has no meaning assigned. It goes from 0 to 1 on some information quests during story play, before the quest underway clears.
+- 6102 goes from false to true on an island during story play, likely by `island.ChapterIdMaybe`: `ISLAND_2ST` (4) in story Chapter 4 and `ISLAND_3ST` (5) one poll before `00103f00` clears. `island.QuestID` does not decide it, since a town island can be true with its quest not cleared.
 - 2592 and 2594 gain an entry of 0 when a chapter joins 2590. 2593 is registered as a `SaveDataUnitVariable`, but a save can hold no unit for it. None has a meaning assigned.
-- 2595 and 2596 gain an entry when a chapter joins 2590. 2595 takes 1 and 2596 takes 0 on the new entry. Neither has a meaning assigned.
-- 2605, a `uint[2]`, copies 7601 index 130 into index 1 at each quest start. Index 0 stays 0.
-- 2903 and 2904, `ulong` lists, empty at a story quest clear, from four values each. 2905 and 2906 have the same type. None has a meaning assigned.
+- 2595 and 2596 gain an entry when a chapter group's last chapter joins 2590, not on every chapter. 2595 takes the group (key / 20) and 2596 takes 0. Neither has a meaning assigned.
+- 2605, a `uint[2]`, copies 7601 index 130 into index 1 as 2504 is drawn. Index 0 stays 0.
+- 2903 and 2904, `ulong` lists, go from four values each to empty at a story quest clear, and from empty to four values each one poll before the record change that ends a run of quests. 2905 and 2906, the same type, go from empty to four and six values one poll before the record change of `00104f00`. None has a meaning assigned.

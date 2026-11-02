@@ -9,7 +9,7 @@ Characters occupy 41 entities, `CHARACTER_FIRST` (10000) to 10040, one per `char
 | Attribute | Name                           | Type        | Holds                                                        |
 | --------- | ------------------------------ | ----------- | ------------------------------------------------------------ |
 | 1301      | `CHARACTER_KEY`                | `uint`      | `chara.CharId` hash                                          |
-| 1302      | not named                      | `int`       | Always 0                                                     |
+| 1302      | not named                      | `int`       | 0, or 1 on `PL0000` and `PL0100` early in the story          |
 | 1303      | `CHARACTER_XP`                 | `int`       | XP, 8,400,000 at level 100                                   |
 | 1304      | not named                      | `int`       | Always 0                                                     |
 | 1305      | `CHARACTER_FLAGS`              | `uint`      | Flags                                                        |
@@ -25,7 +25,7 @@ Characters occupy 41 entities, `CHARACTER_FIRST` (10000) to 10040, one per `char
 | 1316      | not named                      | `uint`      |                                                              |
 | 1317      | not named                      | `uint`      |                                                              |
 | 1318      | not named                      | `uint`      | Bitmask, up to 6 bits                                        |
-| 1321      | not named                      | `uint`      | Possibly the highest single hit, unconfirmed                 |
+| 1321      | `CHARACTER_OVERFLOW_XP`        | `uint`      | XP earned at level 100, see below                            |
 | 1322      | not named                      | `uint`      | 0 on NPCs, 1 or 3 on playable characters and the `SLOT` rows |
 | 1323      | `CHARACTER_MASTER_XP`          | `int`       | MSP spent on master levels                                   |
 | 1324      | `CHARACTER_DELEGATE_ENLISTED`  | `int`       | Probably the times the character was enlisted as a delegate  |
@@ -41,9 +41,11 @@ Characters occupy 41 entities, `CHARACTER_FIRST` (10000) to 10040, one per `char
 
 - 1503 goes from `-1, -1` to `2, -1` on the captain as a second skill goes into 1404. What the 2 stands for is not settled.
 - 1309, 1310, 1312 and 1313 are the character's own stats. They leave out gear, fate episodes and masteries, and none of them is the stat the game displays. Characters with no `chara_status` rows hold 0.
+- 1321 takes each XP gain above level 99 (`FUN_1402b4040`), and holds 0 below level 100. Each `constant.MaxLevelRepeatXP` (400,000) it crosses pays `MaxLevelVoucherReward` (3) `ITEM_21_0000` Knickknack Vouchers and `MaxLevelMSPReward` (100) MSP. It wraps at 400,000, or with feature `0x2b` (`FUN_140442780`, not identified) at 4,000,000, where each 10th cycle pays one `ITEM_21_0001` Transmarvel Voucher in place of the Knickknack Vouchers.
 - 1323 equals a `chara_master_exp.TotalMSP` row, and the row index is the master level. 0 reads as master level 1.
 - The delegate is the character set in the Backup Characters menu for other players to enlist. The message is set there after picking one.
-- 1315 is set while a story party holds the character. On a new game `PL1200` plays as `NP0000`, with the `AB_NP0000_*` skills. The game reads 1315 in place of the character's own key (`FUN_1402e4800`), and every party preset resets it to the empty hash (`FUN_1402e38e0`).
+- 1315 is set while a story party holds the character. On a new game `PL1200` plays as `NP0000`, with the `AB_NP0000_*` skills. The game reads 1315 in place of the character's own key (`FUN_1402e4800`), and every party preset resets it to the empty hash (`FUN_1402e38e0`). It empties and returns within about 2 s each time a preset applies with the stand-in in it, as at a story quest clear, where the character's XP rises to a new level between, and with no clear at times that fit a restart after a party defeat. It stays empty after a preset without one.
+- A story stand-in's 1308-1313 fill a few seconds after a load, from a level of 1 and stats of 0, with 1303 unmoved.
 - A character unit holds the character's current gear, apart from its saved loadouts.
 - 1402 holds `WEAPON_ID` (2802), not the weapon's entity. It is the only place a live weapon is equipped: the weapon unit itself carries no mark. Switching a weapon writes this unit, and 5815 index 1015 when the character's power rating crosses 45,000, see [trophies](trophies.md).
 
@@ -140,12 +142,12 @@ Not every unit is a playable character.
 | Entities                    | Name              | Holds                                              |
 | --------------------------- | ----------------- | -------------------------------------------------- |
 | 103000-103003               | `PARTY_FIRST`     | The party slots, one per position                  |
-| 104000-104003               | not named         | Four members in the equipment shape, use not known |
+| 104000-104003               | not named         | Copy of the party kept aside, see below            |
 | 105000 + set \* 10 + member | `PARTY_SET_FIRST` | Party set 0-29, member 0-3, in the equipment shape |
 
 - The equipment shape is the one loadouts use: `EQUIP_CHARACTER` (3003), `EQUIP_WEAPON` (1402), `EQUIP_SIGILS` (1403) and `EQUIP_SKILLS` (1404).
 - An unused party set member holds the empty hash in 3003.
-- 104000-104003 matches neither the current party nor a saved set. It is likely a leftover of a deleted set.
+- 104000-104003 takes the party's characters, weapons and skills in the poll where 2401 goes true. The party returns when 2401 goes false, likely from this copy, and a weapon replaced in the meantime changes in the copy in that poll. Later party changes do not reach it, so it can match neither the current party nor a saved set. The code that writes it has not been found.
 - 3004, 3005 and 3007 sit here as on loadouts, with no meaning assigned.
 
 | Attribute | Name                  | Type   | Holds                                                |
