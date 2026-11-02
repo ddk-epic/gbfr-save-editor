@@ -39,6 +39,7 @@ Characters occupy 41 entities, `CHARACTER_FIRST` (10000) to 10040, one per `char
 | 1503      | not named                      | `int[2]`    | -1, -1 on characters not recruited                           |
 | 1504      | `CHARACTER_MASTER_BREAK_MARKS` | `int[2]`    | New marks of the master level cap breaks                     |
 
+- 1503 goes from `-1, -1` to `2, -1` on the captain as a second skill goes into 1404. What the 2 stands for is not settled.
 - 1309, 1310, 1312 and 1313 are the character's own stats. They leave out gear, fate episodes and masteries, and none of them is the stat the game displays. Characters with no `chara_status` rows hold 0.
 - 1323 equals a `chara_master_exp.TotalMSP` row, and the row index is the master level. 0 reads as master level 1.
 - The delegate is the character set in the Backup Characters menu for other players to enlist. The message is set there after picking one.

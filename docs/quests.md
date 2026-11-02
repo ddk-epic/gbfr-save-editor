@@ -18,13 +18,15 @@ A quest id is a `quest_baseinfo_ex_data.Key`, 8 hex digits, stored as the uint t
 
 ## Story quests
 
-| Attribute | Name              | Type        | Holds                          |
-| --------- | ----------------- | ----------- | ------------------------------ |
-| 2510      | `STORY_QUEST_IDS` | `uint[100]` | Quest id, 0 on an unused entry |
+| Attribute | Name                           | Type          | Holds                                                 |
+| --------- | ------------------------------ | ------------- | ----------------------------------------------------- |
+| 2510      | `STORY_QUEST_IDS`              | `uint[100]`   | Quest id, 0 on an unused entry                        |
+| 2513      | `STORY_QUEST_CHECKPOINTS`      | `uint[20000]` | 200 checkpoint hashes per quest                       |
+| 2514      | `STORY_QUEST_CHECKPOINTS_LIVE` | `uint[20000]` | As 2513, entries going to 4294967295 during the quest |
 
 - 2510 holds 59 ids, `00100000` to `0010d001`.
 - Each story quest record has three parts, each a flag and 200 values: 2511 with 2513, 2512 with 2514 and 2522 with 2515. Entry `i` of 2513-2515 starts at `i` \* 200. 2516 holds 32 values per quest.
-- The quest underway keeps checkpoint hashes in its 2513 part. At its clear 2511, 2512 and 2522 go to 1 and the 2513 part is zeroed.
+- The quest underway keeps checkpoint hashes in its 2513 and 2514 parts. At its clear 2511, 2512 and 2522 go to 1 and both parts are zeroed.
 
 ## Chapters
 
@@ -110,6 +112,14 @@ Two arrays of 100, for the episodes that are a quest (`fate_episode.MissionQuest
 - 2560 holds every fate quest from a new game on, 56 ids for the 58 quest episodes: the captain's two characters share theirs.
 - 2561 is set on returning from the quest, after the episode's completion.
 
+## Information quests
+
+7351 `INFORMATION_QUEST_ID`, a `uint` at entities 0-127, holds the quest counter ids of `infomation_quest`, 0 on an unused entity. 7352 sits beside it.
+
+## Islands
+
+6101 `ISLAND_KEY`, a `uint` at entities 0-31, holds the hash of each `island.Key`, the empty hash on an unused entity. 6102 is a `bool` beside it.
+
 ## Open
 
 - 2551 is 2 only on a repeat quest, likely a clear count.
@@ -117,4 +127,9 @@ Two arrays of 100, for the episodes that are a quest (`fate_episode.MissionQuest
 - 2575 is true on every cleared quest apart from the On the Threshold quests. 2576 is true on every cleared quest. 2577 holds three bools per quest that do not follow the first clear rewards. 2578 is mostly true alongside a 2579 time.
 - 2511, 2512 and 2522 all turn 1 at a story quest's clear. Which one marks the clear is not settled.
 - 2580-2583 and 2501-2651 apart from the attributes above have no meaning assigned.
-- 7351 at 0-127 holds quest counter ids of `infomation_quest`, with 7352 beside it. No meaning is assigned.
+- 7352 and 6102 have no meaning assigned. 7352 goes from 0 to 1 on some information quests during story play, before the quest underway clears. 6102 goes from false to true on an island during story play.
+- 2502, an `int`, takes 3072 (`0xC00`, `chapter_select.TownStageMaybe`) and 2503, a `uint`, a checkpoint hash at the start of a new game. Neither has a meaning assigned.
+- 2592 and 2594 gain an entry of 0 when a chapter joins 2590. 2593 is registered as a `SaveDataUnitVariable`, but a save can hold no unit for it. None has a meaning assigned.
+- 2595 and 2596 gain an entry when a chapter joins 2590. 2595 takes 1 and 2596 takes 0 on the new entry. Neither has a meaning assigned.
+- 2605, a `uint[2]`, copies 7601 index 130 into index 1 at each quest start. Index 0 stays 0.
+- 2903 and 2904, `ulong` lists, empty at a story quest clear, from four values each. 2905 and 2906 have the same type. None has a meaning assigned.

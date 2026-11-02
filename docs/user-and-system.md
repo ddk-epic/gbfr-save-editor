@@ -1,6 +1,6 @@
 # User and system data
 
-SystemData and the start of SlotData hold the save-wide state: save versions, the play timer, the current stage, the player name, currencies and a few unnamed counters and flag sets. Every attribute here has a single unit at entity 0.
+SystemData and the start of SlotData hold the save-wide state: save versions, the play timer, the current stage, the player name, currencies and a few unnamed counters and flag sets. Every attribute here has a single unit at entity 0, apart from the list in [Story play units](#story-play-units).
 
 ## SystemData
 
@@ -99,3 +99,18 @@ Location uses attributes 1201-1207.
 `stagename.PhaseId` spells the stage as 8 hex digits, so stage `0xC00` is PhaseId `00000C00`, Folca, Frontier Town. `stagename.Name` is a text key in `text_telop` or `text_ui`. The opening stage `0xA01` has no `stagename` row.
 
 A teleport changes 1201 and SystemData 813 and 819 together. At the start of a new game, 813 and 819 hold `0x800`, Grandcypher Deck, while 1201 holds the opening stage. 1202 stays the same after a teleport.
+
+## Story play units
+
+Units that move during story play, with no meaning assigned and no domain of their own yet.
+
+| Attribute | Name      | Type   | Entities | Holds                                                  |
+| --------- | --------- | ------ | -------- | ------------------------------------------------------ |
+| 4201      | not named | `uint` | 0-63     | A hash, or the empty hash on an unused entity          |
+| 4202      | not named | `uint` | 0-63     | 0 or 1, beside 4201                                    |
+| 4331      | not named | `bool` | 0        | Goes from false to true in a story quest               |
+| 8901      | not named | `uint` | 0        | Goes from 0 to 1 as a story party's slots are released |
+
+- The 4201 hashes match no table text or message key.
+- 4331 sits among 4328-4334, a run of `bool` and `byte` units at entity 0.
+- 8901 sits beside 8902 and 8904, the counters that climb by one per save.
