@@ -44,6 +44,8 @@ export type SaveUnit = {
     values: ValueOf[T][];
     /** Position of the first value in its FlatBuffer, absent on units built in memory. */
     valuesAt?: number;
+    /** Position of the offset to this unit in its root vector, absent on units built in memory. */
+    tableEntryAt?: number;
   };
 }[ValueType];
 
@@ -155,9 +157,10 @@ function vectorAt(
 
 function readUnit<T extends ValueType>(
   reader: ByteReader,
-  table: number,
+  tableEntryAt: number,
   valueType: T,
 ): SaveUnit {
+  const table = deref(reader, tableEntryAt);
   const attributeAt = fieldAt(reader, table, UNIT_ATTRIBUTE);
   const entityAt = fieldAt(reader, table, UNIT_ENTITY);
   const valuesField = fieldAt(reader, table, UNIT_VALUES);
@@ -184,6 +187,7 @@ function readUnit<T extends ValueType>(
     entity: entityAt === undefined ? 0 : reader.u32(entityAt),
     values,
     valuesAt: first,
+    tableEntryAt,
   } as SaveUnit;
 }
 
@@ -207,7 +211,7 @@ export function decodeSaveDataBinary(bytes: Uint8Array): SaveDataBinary {
       `${valueType} table`,
     );
     for (let k = 0; k < length; k++) {
-      units.push(readUnit(reader, deref(reader, start + k * 4), valueType));
+      units.push(readUnit(reader, start + k * 4, valueType));
     }
   });
 

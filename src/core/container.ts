@@ -6,6 +6,7 @@ export const HEADER_SIZE = 0x34;
 export const CHECKSUM_COUNT = 10;
 /** Checksum offset u64, checksum byte count u64, u32 always 1. */
 export const FOOTER_SIZE = 0x14;
+export const SLOT_DATA_SIZE_AT = 0x2c;
 
 export interface SaveHeader {
   mainVersion: number;
@@ -37,7 +38,7 @@ export function readHeader(reader: ByteReader): SaveHeader {
     systemDataOffset: reader.u64Number(0x14, "SystemData offset"),
     slotDataOffset: reader.u64Number(0x1c, "SlotData offset"),
     systemDataSize: reader.u64Number(0x24, "SystemData size"),
-    slotDataSize: reader.u64Number(0x2c, "SlotData size"),
+    slotDataSize: reader.u64Number(SLOT_DATA_SIZE_AT, "SlotData size"),
   };
 }
 
