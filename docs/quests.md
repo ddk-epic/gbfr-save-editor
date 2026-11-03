@@ -32,7 +32,7 @@ A quest id is a `quest_baseinfo_ex_data.Key`, 8 hex digits, stored as the uint t
 - Quests played as one run share a single record change. `00101003`, `00101004` and `00101005` all turn 1 in one write at the end of the run, and the later two never hold a checkpoint. `00106001` and `00106002` run the same way. Two keyless quests clear in another quest's write without being a run: `00107002` with `00107f00`, before `00107001` is played, and `00107003` with `00107001`. The Final Chapter clears `00108f00`, `00108000`, `00108002` and `00108001` in that order, each in its own write with its own 2504. Other story quests clear singly, each with its own record change, such as `00102000`, `00102f00`, `00102002` and `00103f00`.
 - 2516 takes 1 at entries 1 and 2 of `00106001` for one checkpoint, the only move seen.
 - 2515 takes the 2513 hash of `0010A000` at its second section and zeroes at its clear, the only move seen.
-- 2501, a `uint`, goes 0 to 1 in the write of the first quest counter clear after `00109002` and `0010A002`. Those two take 2511 and 2522 only, and every 2512 part at 1 goes to 0. As the next story quest begins, `0010A000` and `0010A010`, 2501 goes back to 0 and the 2512 parts return to 1. `FUN_14061d110` copies 2501 from the play mode at quest object `+0xdd4`, and a new game sets it to 1.
+- 2501, a `uint`, goes 0 to 1 in the write of the first quest counter clear after `00109002`, `0010A002` and `0010A031`. Those three take 2511 and 2522 only, and every 2512 part at 1 goes to 0. As the next story quest begins, `0010A000` and `0010A010`, 2501 goes back to 0 and the 2512 parts return to 1. No return has been seen after `0010A031`. `FUN_14061d110` copies 2501 from the play mode at quest object `+0xdd4`, and a new game sets it to 1.
 
 ### Restart point
 
@@ -150,15 +150,16 @@ Family 7, script quests with no story or quest counter entry, cleared by `ClearQ
 | 2582      | `SHORT_STORY_CHECKPOINTS` | `uint[9600]` | 64 values per quest            |
 
 - The first 2582 value holds the current `BeginSection` guid of a quest underway, and goes to 0 as 2581 rises.
-- `occurrenceList_` in `baseinfo.msg` opens each one: type 1 entries name quests that must be cleared, and type 4 entries count clears of quest counter quests at the difficulty digit in `id_`, `count_` of them. First clears only have been seen, so clears and distinct quests are not told apart. Several can run and clear beside a story or quest counter quest.
+- `occurrenceList_` in `baseinfo.msg` opens each one: type 1 entries name quests that must be cleared, type 2 entries a town, and type 4 entries count clears of quest counter quests at the difficulty digit in `id_`, `count_` of them. First clears only have been seen, so clears and distinct quests are not told apart. Several can run and clear beside a story or quest counter quest.
 - `00705001`-`00705007` run `UnlockArchive` for `ARC_ROLANNOTE_*` notes.
 - `00703000` and `00703001` open on `00705004`, and `0010A000` opens on those two, so the story moves on with notes still missing. `0010A010` needs `00704000`, `00704001`, `0010A002`, `00705006` and `00705007`. `00705006` and `00705007` count 11 Extreme clears, `00705005` 8.
+- `00725100` needs `0010A025`, `00725101` needs `0010A031` and 10 Maniac clears, and `00710010` needs `00407101` and `0010A031`. Each also has a type 5 entry. `00710010` clears 3 s after its section. `00710000` needs `00407315`-`00407317` and has a type 5 entry. `00710001` needs `00407318`, `00710000` and town `0xD00`, and writes its section as 2502 returns to `0xD00`. Side quest `00230391` has the same `0010A031` and 10 Maniac conditions and writes with `00725101`.
 - `00704000` and `00704001`, and `00705006` and `00705007`, are pairs with one quest per town, `0xC00` and `0xD00`. Each runs `ClearShortStory` on its partner, so one town is enough and all four clear in one write.
 - `00704000` and `00704001` test `IsArchiveWatched` eight times, which fits every `ARC_ROLANNOTE_*` note read.
 
 ## Information quests
 
-7351 `INFORMATION_QUEST_ID`, a `uint` at entities 0-127, holds the quest counter ids of `infomation_quest`, 0 on an unused entity. 7352 `INFORMATION_QUEST_SHOWN`, a `uint` beside it, goes from 0 to 1 one record write ahead of 2575 on the same quest, on some information quests.
+7351 `INFORMATION_QUEST_ID`, a `uint` at entities 0-127, holds the quest counter ids of `infomation_quest`, 0 on an unused entity. 7352 `INFORMATION_QUEST_SHOWN`, a `uint` beside it, goes from 0 to 1 one record write ahead of 2575 on the same quest. 2575 can also turn true with no 7352 move seen.
 
 ## Islands
 
@@ -181,13 +182,15 @@ Family 7, script quests with no story or quest counter entry, cleared by `ClearQ
 
 - 2551 is 2 only on a repeat quest, likely a clear count.
 - 2505 at entity 0 lists the accepted side quests again, in another order. 2554 is false on every entry.
-- 2575 is true on every cleared quest apart from the On the Threshold quests. It also turns true on uncleared quests of one difficulty, in stages at record writes: a block at the first after 7303 rises, `00403` at 3, `00404` at 4, `00405` at 5, and in `00405` more at the third and eighth clears. Quests whose clear leads to a Rolan note stay false until that clear. 2576 is true on every cleared quest. 2577 holds three bools per quest that do not follow the first clear rewards. 2578 is mostly true alongside a 2579 time.
-- 2511, 2512 and 2522 all turn 1 at a story quest's clear. Which one marks the clear is not settled. `00109002` and `0010A002` are the exceptions, see 2501.
+- 2575 is true on every cleared quest apart from the On the Threshold quests. It also turns true on uncleared quests of one difficulty, in stages at record writes: a block at the first after 7303 rises, `00403` at 3, `00404` at 4, `00405` at 5, `00406` at 6, `00407301`-`00407309` at 7, and in `00405` more at the third and eighth clears. Quests whose clear leads to a Rolan note stay false until that clear. `00407101`, the first Proud quest, opens on the eight `00406` Saga quests, `00406330`-`00406335`, `00406337` and `00406338`. `00407305` and `00407309` open on it, `00407310` on `00407301`-`00407304`, `00407317` on `00407310` and `00407311`, `00407319` on `00407315`-`00407317`, `00407318` on `00407319` and `00710010`, `00407322` on `00407318`, `00407320` on `00407318`, `00710001` and `00710010`, and `00407321` and `00407325` on `00407320`. 2576 is true on every cleared quest. 2577 holds three bools per quest that do not follow the first clear rewards. 2578 is mostly true alongside a 2579 time.
+- 2511, 2512 and 2522 all turn 1 at a story quest's clear. Which one marks the clear is not settled. `00109002`, `0010A002` and `0010A031` are the exceptions, see 2501.
+- The objective moves on with no story quest begun: `TXT_QT_TRYMANIAC_00` "Progress through Maniac quests" after `0010A031`, `TXT_QT_TRYPROUD_00` "Progress through Proud quests" after `00407101`. What sets them has not been found.
 - 2583, 4800 values beside 2580-2582, has no meaning assigned.
-- 2508, an `int`, goes from 0 to 1 at a checkpoint early in `00104000`. It goes 1 to 2, 2 to 3 and 3 to 4 at the next checkpoint or record write after 7303 reaches 3, 4 and 5. No meaning is assigned.
+- 2508, an `int`, goes from 0 to 1 at a checkpoint early in `00104000`. It goes 1 to 2, 2 to 3, 3 to 4 and 4 to 5 at the next checkpoint or record write after 7303 reaches 3, 4, 5 and 6, and 5 to 6 in the record write that takes 7303 to 7. No meaning is assigned.
 - 2501-2651 apart from the attributes above have no meaning assigned.
 - 2592 and 2594 gain an entry of 0 when a chapter joins 2590. 2593 is registered as a `SaveDataUnitVariable`, but a save can hold no unit for it. None has a meaning assigned.
-- 2595 and 2596 gain an entry when a chapter group's last chapter joins 2590, not on every chapter. 2596 takes 0 and has no meaning assigned.
+- 2595 and 2596 gain an entry when a chapter group's last chapter joins 2590, not on every chapter. 2596 takes 0, and 1 on group 11, which closes with key 222. It has no meaning assigned. 2506 stays 222 as key 222 joins 2590.
+- 2502 moves in the record writes of `00407317`, `0xC00` to `0xD00`, and `00407318`, back to `0xC00` and to `0xD00` again 31 s later. 2606, an `int`, took the new town 28 s after that move, as 2636, an `int`, went 0 to 2 and back to 0 within 4 s. Each is one case, and neither has a meaning assigned.
 - 2605, a `uint[2]`, copies 7601 index 130 into index 1 at a record write, a story quest's or a quest counter quest's. It stays when 7601 has not moved, even with 2504 drawn. Index 0 stays 0.
 - 2907 goes down by 1 at each quest end, and to 999 from 1 or at a story quest clear, as 2903 and 2904 empty. It takes 5 as they fill.
 - 2903 and 2904, `ulong` lists, go from four values each to empty at a story quest clear, and from empty to four values each one poll before the record change that ends a run of quests, and one poll before that of `00108001`, which ends no run. 2905 and 2906, the same type, go from empty to four and six values one poll before the record change of `00104f00`, and back to empty one poll before that of `00104002`. They fill again, with other values, one poll before the record change of `00106001` and `00106002`, and empty one poll before that of `00107001`. None has a meaning assigned.
