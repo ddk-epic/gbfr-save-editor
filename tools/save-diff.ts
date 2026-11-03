@@ -4,7 +4,7 @@ import { EMPTY_HASH } from "../src/core/keys";
 import { decodeSaveDataBinary } from "../src/core/save-data-binary";
 import type { SaveHeader, SaveUnit, ValueType } from "../src/index";
 
-/** Missing keys read as # so the key tables staying quiet does not hide units. */
+/** Silences missing key warnings. */
 console.warn = () => {};
 
 type Section = "systemData" | "slotData";
@@ -38,7 +38,7 @@ for (const mod of await load("../src/data"))
       for (const [hash, key] of Object.entries(table as Record<string, string>))
         keys.set(Number(hash), key);
 
-/** Units every save rewrites whatever the action, see research/action-diffs.md. */
+/** Units every save rewrites whatever the action. */
 const NOISE: Record<Section, Record<number, readonly number[] | "all">> = {
   systemData: { 803: "all", 811: "all", 812: "all" },
   slotData: {

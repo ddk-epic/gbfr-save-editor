@@ -25,7 +25,11 @@ Weapons occupy 256 entities, `WEAPON_FIRST` (40000) to 40255. `WEAPON_ID` (2802)
 
 ## Ownership
 
-`WEAPON_OWNED`, bit 0 of the flags, marks a weapon the player holds. An entry without it is one the game keeps for its own use: a `_A0` or `_99` key standing in for a weapon's look, a copy held for the captain not in play, and the starter weapon of a character not yet recruited. Only an owned weapon can be equipped.
+`WEAPON_OWNED`, bit 0 of the flags, marks a weapon the player holds. An entry without it is one the game keeps for its own use: a `_A0` or `_99` key standing in for a weapon's look, a story stand-in's weapon such as `WEP_NP0300_01`, a copy held for the captain not in play, and the starter weapon of a character not yet recruited.
+
+Early in the story the bit does not follow this. The captains' `_03` weapons the game gives at the start of story Chapter 4 are equipped without it. The captain in play's gains it a second after `TUTORIAL_EQUIP`, shown on opening the equip menu, and the other captain's stays without. `_01` starters at 0 XP can hold it with the menu never opened, and what sets it on them is not settled. Bit 7 (128) has no meaning assigned; a save early in the story holds it on every entry.
+
+A `_99` key is also a weapon for a story fight. `WEP_PL0000_99` and `WEP_PL0100_99`, XP 162540 and uncap 6, are added and equipped on both captains for the fight in story Chapter 8, without `WEAPON_OWNED`. After it the captain in play returns to `_03`, which the game raises to XP 1740 and uncap 3, and the other captain stays on `_99`. Both entries stay in the list.
 
 The save holds no owner. A weapon belongs to the character in the `weapon` table's `CharaId`, as `WEAPON_CHARACTERS` in `src/data/weapons.ts`, read into `Weapon.character`. For a `WEP_<CharId>_*` key this is the character the key names. A DLC weapon's key is a bare hash, such as `219EE448`, and only the table names its owner. The inventory keeps a separate entry per character even where two hold the same weapon, so the two captains never share one.
 

@@ -53,6 +53,7 @@ Unit order does not follow `item.SortOrder`, and it is not the same in every sav
 - Every item with bit 3 has bit 2.
 - Every item with bit 0 has bit 3 and sits in the treasures tab. At most 20 items have bit 0.
 - Held potions (`ItemCategoryId` 5), wrightstone items (6) and the Gold Badge Ticket (13) never have bit 3. At a count of 0 their flags are 0 or 4.
+- A held potion's count goes down on use and returns to a set number at the end of a story quest, such as 3 for `ITEM_13_0000`. Each use adds 1 to `TROPHY_PROGRESS` (5815) at 445.
 
 ### Tabs
 

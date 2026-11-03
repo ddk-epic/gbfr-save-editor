@@ -126,3 +126,4 @@ The list covers entities 0-511.
 - 8402 and 8502 bits above 0 have no meaning assigned. They are not cumulative: bit 1 clears as a higher bit sets.
 - 8102 bits 5-8 do not show a paragraph, and no save has a seen row without them.
 - 7403 bit 0 is set without bit 2 on some weapons. 7402 climbs with progress, but nothing ties it to a new mark.
+- 7403 bit 2 also sets on story weapons outside the Weapons list, all with `unk52` 0: `WEP_PL1900_A0`, `WEP_NP0300_01`, `WEP_PL0000_99` and `WEP_PL0100_99`.

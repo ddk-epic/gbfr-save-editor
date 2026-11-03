@@ -102,17 +102,33 @@ Live, both hold 0 apart from the moment of a save. 1207 rises through a story qu
 
 A teleport changes 1201 and SystemData 813 and 819 together. At the start of a new game, 813 and 819 hold `0x800`, Grandcypher Deck, while 1201 holds the opening stage. 1202 stays the same after a teleport.
 
+## Slimes
+
+| Attribute | Name             | Type   | Entities | Holds                                 |
+| --------- | ---------------- | ------ | -------- | ------------------------------------- |
+| 7801      | `SLIME_ID`       | `uint` | 0-255    | Slime id, `0x10X000NN`, 0 when unused |
+| 7802      | not named        | `uint` | 0-255    | A separate list of ids, `0x209000NN`  |
+| 7803      | `SLIME_DEFEATED` | `uint` | 0-255    | 1 once the slime in 7801 is defeated  |
+
+7801 holds 25 ids, the `ReqQuantity` of badge 91 "Defeat every slime". A slime's first defeat in the main story sets its 7803 and adds 1 to `TROPHY_PROGRESS` (5815) at 52 and 53.
+
 ## Story play units
 
 Units that move during story play, with no meaning assigned and no domain of their own yet.
 
-| Attribute | Name      | Type   | Entities | Holds                                                  |
-| --------- | --------- | ------ | -------- | ------------------------------------------------------ |
-| 4201      | not named | `uint` | 0-63     | A hash, or the empty hash on an unused entity          |
-| 4202      | not named | `uint` | 0-63     | 0 or 1, beside 4201                                    |
-| 4331      | not named | `bool` | 0        | Goes from false to true in a story quest               |
-| 8901      | not named | `uint` | 0        | Goes from 0 to 1 as a story party's slots are released |
+| Attribute | Name      | Type      | Entities | Holds                                                  |
+| --------- | --------- | --------- | -------- | ------------------------------------------------------ |
+| 4103      | not named | `uint[3]` | 0        | Three 4001 keys, see below                             |
+| 4201      | not named | `uint`    | 0-63     | A hash, or the empty hash on an unused entity          |
+| 4202      | not named | `uint`    | 0-63     | 0 or 1, beside 4201                                    |
+| 4331      | not named | `bool`    | 0        | Goes from false to true in a story quest               |
+| 7301      | not named | `uint`    | 0-63     | A hash                                                 |
+| 7302      | not named | `uint`    | 0-63     | 0 or 1, beside 7301                                    |
+| 7303      | not named | `int`     | 0        | No meaning assigned                                    |
+| 8901      | not named | `uint`    | 0        | Goes from 0 to 1 as a story party's slots are released |
 
+- 4103 changes at a story quest's end, and the three 4001 rows it names take 10 in 4003 seconds later, the rows it no longer names going back to 8.
+- 7302 at one entity goes from 0 to 1 at a Crewmate Card reward in `00106000`. The hash beside it matches no table key.
 - The 4201 hashes match no table text or message key.
 - 4331 sits among 4328-4334, a run of `bool` and `byte` units at entity 0.
 - 8901 sits beside 8902 and 8904, the counters that climb by one per save.

@@ -129,13 +129,17 @@ The save holds no slot count. The game works out a character's open slots (`FUN_
 
 Not every unit is a playable character.
 
-| `chara` rows              | Level | Holds                                                                |
-| ------------------------- | ----- | -------------------------------------------------------------------- |
-| Gran and Djeeta           | any   | Both captains keep a unit. The one not picked stays at level 1       |
-| `NP*`, `PL000B`, `PL2000` | 1     | No `chara_status` rows, HP and ATK 0                                 |
-| `SLOT01` to `SLOT04`      | 1     | XP, and another character's starter weapon and skills with no sigils |
+| `chara` rows              | Level | Holds                                                          |
+| ------------------------- | ----- | -------------------------------------------------------------- |
+| Gran and Djeeta           | any   | Both captains keep a unit. The one not picked stays at level 1 |
+| `NP*`, `PL000B`, `PL2000` | 1     | No `chara_status` rows, HP and ATK 0                           |
+| `SLOT01` to `SLOT04`      | any   | XP, and another character's weapon, skills and sigils          |
 
-`USER_CAPTAIN` (1103) holds the captain picked at the start. The `SLOT` rows have no name, element -1 and UI order 1000-1003. What they are for is not known.
+`USER_CAPTAIN` (1103) holds the captain picked at the start. The `SLOT` rows have no name, element -1 and UI order 1000-1003. They stand in for a character during the story: `SLOT01` plays as the character in `CHARACTER_STAND_IN` (1315), at a level and with a weapon and sigils of its own, such as `PL1900` with `WEP_PL1900_A0` or `NP0300` with `WEP_NP0300_01`. They can also sit at level 1 with a starter weapon and no sigils.
+
+A stand-in lasts part of a quest or a whole one, and can end with no checkpoint. As it ends, 1315 and the sigils clear, including the sigil entries' keys and wearer. XP, level, HP, attack, the equipped weapon id and the skills stay until the next stand-in overwrites them, and the weapon stays in the weapon list. A load puts level back to 1 and HP and attack to 0, and keeps XP, the weapon id and the skills.
+
+A character returning as a stand-in reuses its weapon entry, with new XP. A stand-in can run with no weapon, such as `NP0000` with `EQUIP_WEAPON` 0. A checkpoint can reissue a stand-in's sigil ids, moving `SIGIL_LAST_ID` on.
 
 ## Party
 
