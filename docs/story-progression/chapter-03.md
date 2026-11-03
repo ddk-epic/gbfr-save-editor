@@ -39,15 +39,6 @@ Trophies earned by 5801, by `badge.Key`:
 | 3    | Pacifier of the Divine Gale | Complete Chapter 3: Creations of the Stars |
 | 1407 | Creation of the Stars       | Complete Chapter 3 of the main story       |
 
-Tutorial and tip rows, by entity:
-
-| Unit | Name                    | Entity | Row                     | Chapter 3 start | Patched |
-| ---- | ----------------------- | ------ | ----------------------- | --------------- | ------- |
-| 5902 | `TUTORIAL_WINDOW_FLAGS` | 52     | `TU_BOSSARTSAURA`       | 0               | 1       |
-| 6002 | `TUTORIAL_MENU_FLAGS`   | 24     | `TUTORIAL_GN`           | 0               | 1       |
-| 6002 | `TUTORIAL_MENU_FLAGS`   | 83     | `TUTORIAL_BOSSARTSAURA` | 0               | 1       |
-| 8702 | `TIP_FLAGS`             | 109    | `NOTE_WINDOW_TIPS_43`   | 2               | 3       |
-
 Quest records cleared by indexes 42, 43 and 44:
 
 | Index | Quest      |
@@ -63,10 +54,10 @@ Quest records cleared by indexes 42, 43 and 44:
 - 2502 and 2503 did not move through the traced chapter.
 - 5801 at 3 and 1407 are the Chapter 3 trophies. Trophy 3 counts in 501 and 1407 in 1018.
 - 5815 at 2 went 6 to 7, 7 to 8 and 8 to 9 in the traced chapter, and holds 9 at the start of `00102000`.
-- The tutorial and tip rows are every row of 5902, 6002 and 8702 that moved in the traced chapter, up to the first checkpoint of `00102000`.
 
 ### Not patched
 
+- Hints, a separate edit, see [`tutorials.md`](../tutorials.md).
 - Character level, weapons, abilities, party, items, and the journal rows the chapter sets: 8102, 8202, 8302, 8402, 8502.
 - 2201, 2202, 2203 and 2401, the story party. In the traced clear 2202 is set on all four slots and 2203 cleared in the record write, and 2201 and 2401 move 7 s later.
 - Trophy 1442 "No Cap" and trophy 1443 "Knickknack Shack Regular", earned in the traced clear with the action not done on the save.

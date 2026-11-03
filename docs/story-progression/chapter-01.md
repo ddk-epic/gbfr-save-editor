@@ -50,16 +50,11 @@ Trophies earned by 5801, by `badge.Key`:
 | 1    | Visitor from Beyond  | Complete Chapter 1: The Western Frontier |
 | 1405 | The Western Frontier | Complete Chapter 1 of the main story     |
 
-Tutorial, tip and island rows, by entity:
+Island rows, by entity:
 
-| Unit | Name                    | Entity | Row                   | New save | Patched |
-| ---- | ----------------------- | ------ | --------------------- | -------- | ------- |
-| 5902 | `TUTORIAL_WINDOW_FLAGS` | 94     | `TU_MAP`              | 0        | 1       |
-| 6002 | `TUTORIAL_MENU_FLAGS`   | 88     | `TUTORIAL_MAP`        | 0        | 1       |
-| 6002 | `TUTORIAL_MENU_FLAGS`   | 91     | `TUTORIAL_PAD_ASSSGN` | 0        | 1       |
-| 8702 | `TIP_FLAGS`             | 229    | 8701 hash 594130054   | 2        | 3       |
-| 8702 | `TIP_FLAGS`             | 230    | 8701 hash 2065024838  | 2        | 3       |
-| 6102 | `ISLAND_UNLOCKED`       | 2      | `ISLAND_1ST`          | False    | True    |
+| Unit | Name              | Entity | Row          | New save | Patched |
+| ---- | ----------------- | ------ | ------------ | -------- | ------- |
+| 6102 | `ISLAND_UNLOCKED` | 2      | `ISLAND_1ST` | False    | True    |
 
 Quest records cleared by indexes 47-53:
 
@@ -81,7 +76,6 @@ Quest records cleared by indexes 47-53:
 - 2513 and 2514 at 8200 take the first `BeginSection` guid in `quest_101f00_0_fsm_ingame`. Entry 10200 is the same value for `00100002`, which a new save has begun.
 - 2503 takes the value logged with 2502 at `0xC00`, not one read at this point in the story.
 - 2592 and 2594 take 0 as these keys join, as in [`quests.md`](../quests.md).
-- `TU_MAP` and `TUTORIAL_MAP` move together in every load of a patched save without them, and in the traced prologue. 8702 at 229 and 230 move in that poll on a patched load. `TUTORIAL_PAD_ASSSGN`, `MultiPurposeId` `FirstControllerTypeSetting`, moves up to 2 s later. It is taken as the interact and check mapping window by its timing and row, not by its text.
 - 6102 at 2 turns true in the traced clear, and the game does not set it on a patched save.
 - 5801 and 5815 come from the traced clear, and 1 and 1405 are the two Chapter 1 trophies. Trophy 1 counts in 501 and 1405 in 1018. 5815 at 2 is the chapter key count, 3 to 4 in that clear, and a patched load left it at 0 through the checkpoint where the game set the trophies.
 
@@ -93,11 +87,12 @@ A load without the 5801 and 5815 patches set them itself, in the poll where 2513
 
 - `CURRENT_CHAPTER` (2506) at 1, the online entry, stays -1.
 - 2501, unnamed, stays 0. `QUEST_SEED` (2504) and the 7601 seeds stay as they are.
-- Character level, weapons, abilities, party, items, and the tutorial, journal and archive rows a played prologue sets.
+- Hints, a separate edit, see [`tutorials.md`](../tutorials.md).
+- Character level, weapons, abilities, party, items, and the journal and archive rows a played prologue sets.
 - Trophy 194 "Room for Improvement", "Unlock the captain's first Mastery node", and its counters, earned by spending MSP in the traced clear.
 
 ### Status
 
-The patch loads in game into the fade-in, with 2591 taking system unit 817, the story difficulty, which reads 2 on a save on Hard. Without the tutorial and tip rows the save shows the map and interact and check mapping windows; with them neither window shows. In a load with 2591 at a fixed 1, 5801 and 5815 hold their patched values through the checkpoint with no further move, so the trophies are not counted twice, and 2513 and 2514 at 8200, 2552 and 2591 move as in a load without them.
+The patch loads in game into the fade-in, with 2591 taking system unit 817, the story difficulty, which reads 2 on a save on Hard. In a load with 2591 at a fixed 1, 5801 and 5815 hold their patched values through the checkpoint with no further move, so the trophies are not counted twice, and 2513 and 2514 at 8200, 2552 and 2591 move as in a load without them.
 
 Open: whether 5815 at 2 rises from 4 as later chapter keys clear.

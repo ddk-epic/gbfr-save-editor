@@ -17,10 +17,6 @@ export interface StoryCheckpoint {
   trophies: readonly number[];
   /** `TROPHY_PROGRESS` index and the value it holds at this checkpoint. */
   trophyProgress: readonly (readonly [number, bigint])[];
-  tutorialWindows: readonly number[];
-  tutorialMenus: readonly number[];
-  /** Tip key hash and the flags it holds at this checkpoint. */
-  tips: readonly (readonly [number, number])[];
   /** `ISLAND_KEY` hashes. */
   islands: readonly number[];
 }
@@ -46,12 +42,6 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
       [501, 1n],
       [1018, 1n],
     ],
-    tutorialWindows: [hashId("TU_MAP")],
-    tutorialMenus: [hashId("TUTORIAL_MAP"), hashId("TUTORIAL_PAD_ASSSGN")],
-    tips: [
-      [594130054, 3],
-      [2065024838, 3],
-    ],
     islands: [hashId("ISLAND_1ST")],
   },
   // Start of Chapter 3
@@ -70,19 +60,6 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
       [2, 6n],
       [501, 2n],
       [1018, 2n],
-    ],
-    tutorialWindows: [
-      hashId("TUTORIAL_WIN_07"),
-      hashId("TUTORIAL_WIN_32"),
-      hashId("TU_ACT_PL0000"),
-      hashId("TU_ACT_PL0100"),
-      hashId("TU_GN"),
-    ],
-    tutorialMenus: [],
-    tips: [
-      [hashId("NOTE_WINDOW_TIPS_48"), 3],
-      [hashId("NOTE_WINDOW_TIPS_55"), 3],
-      [0x1c841dc4, 3],
     ],
     islands: [],
   },
@@ -103,9 +80,6 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
       [501, 3n],
       [1018, 3n],
     ],
-    tutorialWindows: [hashId("TU_BOSSARTSAURA")],
-    tutorialMenus: [hashId("TUTORIAL_BOSSARTSAURA"), hashId("TUTORIAL_GN")],
-    tips: [[hashId("NOTE_WINDOW_TIPS_43"), 3]],
     islands: [],
   },
   // Start of Chapter 5
@@ -124,13 +98,6 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
       [2, 13n],
       [501, 4n],
       [1018, 4n],
-    ],
-    tutorialWindows: [hashId("TU_SHOPFUNC"), hashId("TU_CHARATICKET")],
-    tutorialMenus: [],
-    tips: [
-      [0x6f1a2d86, 3],
-      [hashId("NOTE_WINDOW_TIPS_65"), 3],
-      [hashId("NOTE_WINDOW_TIPS_80"), 3],
     ],
     islands: [hashId("ISLAND_2ST"), hashId("ISLAND_3ST")],
   },

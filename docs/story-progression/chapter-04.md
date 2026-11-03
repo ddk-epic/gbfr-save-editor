@@ -39,17 +39,12 @@ Trophies earned by 5801, by `badge.Key`:
 | 4    | Destroyer of the Armada | Complete Chapter 4: Skies Forever Blue |
 | 1408 | Skies Forever Blue      | Complete Chapter 4 of the main story   |
 
-Tutorial, tip and island rows, by entity:
+Island rows, by entity:
 
-| Unit | Name                    | Entity | Row                    | Chapter 4 start | Patched |
-| ---- | ----------------------- | ------ | ---------------------- | --------------- | ------- |
-| 5902 | `TUTORIAL_WINDOW_FLAGS` | 37     | `TU_CHARATICKET`       | 0               | 1       |
-| 5902 | `TUTORIAL_WINDOW_FLAGS` | 40     | `TU_SHOPFUNC`          | 0               | 1       |
-| 8702 | `TIP_FLAGS`             | 133    | 8701 hash `0x6F1A2D86` | 2               | 3       |
-| 8702 | `TIP_FLAGS`             | 235    | `NOTE_WINDOW_TIPS_65`  | 2               | 3       |
-| 8702 | `TIP_FLAGS`             | 248    | `NOTE_WINDOW_TIPS_80`  | 2               | 3       |
-| 6102 | `ISLAND_UNLOCKED`       | 3      | `ISLAND_2ST`           | False           | True    |
-| 6102 | `ISLAND_UNLOCKED`       | 4      | `ISLAND_3ST`           | False           | True    |
+| Unit | Name              | Entity | Row          | Chapter 4 start | Patched |
+| ---- | ----------------- | ------ | ------------ | --------------- | ------- |
+| 6102 | `ISLAND_UNLOCKED` | 3      | `ISLAND_2ST` | False           | True    |
+| 6102 | `ISLAND_UNLOCKED` | 4      | `ISLAND_3ST` | False           | True    |
 
 Quest records cleared by indexes 36, 38, 39 and 40:
 
@@ -67,7 +62,6 @@ Quest records cleared by indexes 36, 38, 39 and 40:
 - 2502 and 2503 did not move through the traced chapter.
 - 5801 at 4 and 1408 are the Chapter 4 trophies. Trophy 4 counts in 501 and 1408 in 1018.
 - 5815 at 2 went 9 to 13 from the start of `00102000` to the clear of `00103F00`, and holds 13 at the start of `00103001`.
-- The tutorial and tip rows are every row of 5902, 6002 and 8702 that moved in the traced chapter, up to the first checkpoint of `00103001`.
 - 6102 at 3 and 4 turn true in the traced clear. On a loaded save the game set 6102 at 4 itself at the end of `00103F00` and did not set 6102 at 3.
 
 ### Not patched
@@ -75,7 +69,7 @@ Quest records cleared by indexes 36, 38, 39 and 40:
 - Character level, weapons, abilities, party, items, and the journal rows the chapter sets: 8102, 8202, 8302, 8402, 8502.
 - Trophy 76 "Casual Scribe", "Discover an archive entry for the first time", and 7902 at 35.
 - 5815 at 446, the count for destroying enemy cannons in Chapter 4.
-- `TU_SETTING`, `TUTORIAL_SETTING` and tips 76, 222, 295, 307 and 308, set by the game as the System menu first opens.
+- Hints, a separate edit, see [`tutorials.md`](../tutorials.md).
 - 2504, 2605 and the 7601 seeds.
 
 ### Status

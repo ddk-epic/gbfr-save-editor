@@ -39,19 +39,6 @@ Trophies earned by 5801, by `badge.Key`:
 | 2    | Savior of the Windswept Isle | Complete Chapter 2: Tempest on the Horizon |
 | 1406 | Tempest on the Horizon       | Complete Chapter 2 of the main story       |
 
-Tutorial and tip rows, by entity:
-
-| Unit | Name                    | Entity | Row                    | Chapter 2 start | Patched |
-| ---- | ----------------------- | ------ | ---------------------- | --------------- | ------- |
-| 5902 | `TUTORIAL_WINDOW_FLAGS` | 34     | `TUTORIAL_WIN_07`      | 0               | 1       |
-| 5902 | `TUTORIAL_WINDOW_FLAGS` | 35     | `TUTORIAL_WIN_32`      | 0               | 1       |
-| 5902 | `TUTORIAL_WINDOW_FLAGS` | 36     | `TU_GN`                | 0               | 1       |
-| 5902 | `TUTORIAL_WINDOW_FLAGS` | 128    | `TU_ACT_PL0000`        | 0               | 1       |
-| 5902 | `TUTORIAL_WINDOW_FLAGS` | 129    | `TU_ACT_PL0100`        | 0               | 1       |
-| 8702 | `TIP_FLAGS`             | 131    | `NOTE_WINDOW_TIPS_48`  | 2               | 3       |
-| 8702 | `TIP_FLAGS`             | 204    | 8701 hash `0x1C841DC4` | 2               | 3       |
-| 8702 | `TIP_FLAGS`             | 214    | `NOTE_WINDOW_TIPS_55`  | 2               | 3       |
-
 Quest records cleared by indexes 41, 45 and 46:
 
 | Index | Quest      |
@@ -67,7 +54,6 @@ Quest records cleared by indexes 41, 45 and 46:
 - 2502 and 2503 did not move through the traced chapter.
 - 5801 at 2 and 1406 are the Chapter 2 trophies. Trophy 2 counts in 501 and 1406 in 1018.
 - 5815 at 2 went 4 to 5 and 5 to 6 in the traced chapter, and holds 6 until `00101003` ends.
-- The tutorial and tip rows are every row of the two units that moved in the traced chapter, 5902 and 8702, up to the first checkpoint of `00101003`. They are patched so that their windows do not show on load.
 
 ### Set by the game
 
@@ -75,10 +61,11 @@ After the load, 1303-1315 and 1404 at 10015 fill from the stand-in row: `NP0000`
 
 ### Not patched
 
+- Hints, a separate edit, see [`tutorials.md`](../tutorials.md).
 - Character level, weapons, abilities, party, items, and the journal rows the chapter sets: 8102, 8202, 8302, 8402, 8502.
 - Trophy 374 "Available Everywhere", "Obtain a common sigil", earned with the first sigil in the traced clear, and 5815 at 192. 1701, 2701-2704, 2708 and 8002, which hold that sigil.
 - 2504, 2605 and the 7601 seeds.
 
 ### Status
 
-The patch, applied to a save at the start of Chapter 2 that the game has saved, loads in game into the fade-in. No tutorial or tip row moves after the load. No window was reported.
+The patch, applied to a save at the start of Chapter 2 that the game has saved, loads in game into the fade-in.

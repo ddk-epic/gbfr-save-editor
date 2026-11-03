@@ -1,6 +1,5 @@
 import type { Attribute } from "../../core/attribute";
 import type { Patch, SaveSession } from "../../save/session";
-import { TIP_FLAGS, TIP_KEY } from "../journal/attributes";
 import { TROPHY_EARNED, TROPHY_PROGRESS } from "../trophy/attributes";
 import { SAVE_ENTITY } from "../user/attributes";
 import {
@@ -24,10 +23,6 @@ import {
   STORY_QUEST_LIVE_CLEARED,
   STORY_QUEST_THIRD_CLEARED,
   SYSTEM_STORY_DIFFICULTY,
-  TUTORIAL_MENU_FLAGS,
-  TUTORIAL_MENU_KEY,
-  TUTORIAL_WINDOW_FLAGS,
-  TUTORIAL_WINDOW_KEY,
 } from "./attributes";
 import { STORY_CHECKPOINTS, type StoryCheckpoint } from "./checkpoints";
 
@@ -130,24 +125,6 @@ export function advanceStory(session: SaveSession, key: number) {
     return found[0]!;
   };
   for (const step of steps) {
-    for (const hash of step.tutorialWindows)
-      patches.push({
-        attribute: TUTORIAL_WINDOW_FLAGS,
-        entity: onlyEntity(TUTORIAL_WINDOW_KEY, hash),
-        values: [1],
-      });
-    for (const hash of step.tutorialMenus)
-      patches.push({
-        attribute: TUTORIAL_MENU_FLAGS,
-        entity: onlyEntity(TUTORIAL_MENU_KEY, hash),
-        values: [1],
-      });
-    for (const [hash, flags] of step.tips)
-      patches.push({
-        attribute: TIP_FLAGS,
-        entity: onlyEntity(TIP_KEY, hash),
-        values: [flags],
-      });
     for (const hash of step.islands)
       patches.push({
         attribute: ISLAND_UNLOCKED,

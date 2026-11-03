@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readSave } from "../../src/core/read-save";
 import { hashId } from "../../src/core/xxhash32-custom";
-import { TIP_FLAGS, TIP_KEY } from "../../src/domains/journal/attributes";
 import {
   CHAPTER_BEST_DIFFICULTY,
   CHAPTER_GROUP_FLAGS,
@@ -21,10 +20,6 @@ import {
   STORY_QUEST_LIVE_CLEARED,
   STORY_QUEST_THIRD_CLEARED,
   SYSTEM_STORY_DIFFICULTY,
-  TUTORIAL_MENU_FLAGS,
-  TUTORIAL_MENU_KEY,
-  TUTORIAL_WINDOW_FLAGS,
-  TUTORIAL_WINDOW_KEY,
 } from "../../src/domains/story/attributes";
 import { advanceStory, storyTargets } from "../../src/domains/story/edit";
 import {
@@ -77,74 +72,6 @@ const newSave = (overrides: { chapter?: number[]; section?: number } = {}) => {
         [TROPHY_EARNED, Array<boolean>(1700).fill(false)],
         [TROPHY_PROGRESS, Array<bigint>(1200).fill(0n)],
       ],
-      94: [
-        [TUTORIAL_WINDOW_KEY, hashId("TU_MAP")],
-        [TUTORIAL_WINDOW_FLAGS, 0],
-      ],
-      88: [
-        [TUTORIAL_MENU_KEY, hashId("TUTORIAL_MAP")],
-        [TUTORIAL_MENU_FLAGS, 0],
-      ],
-      91: [
-        [TUTORIAL_MENU_KEY, hashId("TUTORIAL_PAD_ASSSGN")],
-        [TUTORIAL_MENU_FLAGS, 0],
-      ],
-      229: [
-        [TIP_KEY, 594130054],
-        [TIP_FLAGS, 2],
-      ],
-      230: [
-        [TIP_KEY, 2065024838],
-        [TIP_FLAGS, 2],
-      ],
-      34: [
-        [TUTORIAL_WINDOW_KEY, hashId("TUTORIAL_WIN_07")],
-        [TUTORIAL_WINDOW_FLAGS, 0],
-      ],
-      35: [
-        [TUTORIAL_WINDOW_KEY, hashId("TUTORIAL_WIN_32")],
-        [TUTORIAL_WINDOW_FLAGS, 0],
-      ],
-      36: [
-        [TUTORIAL_WINDOW_KEY, hashId("TU_GN")],
-        [TUTORIAL_WINDOW_FLAGS, 0],
-      ],
-      128: [
-        [TUTORIAL_WINDOW_KEY, hashId("TU_ACT_PL0000")],
-        [TUTORIAL_WINDOW_FLAGS, 0],
-      ],
-      129: [
-        [TUTORIAL_WINDOW_KEY, hashId("TU_ACT_PL0100")],
-        [TUTORIAL_WINDOW_FLAGS, 0],
-      ],
-      131: [
-        [TIP_KEY, hashId("NOTE_WINDOW_TIPS_48")],
-        [TIP_FLAGS, 2],
-      ],
-      204: [
-        [TIP_KEY, 0x1c841dc4],
-        [TIP_FLAGS, 2],
-      ],
-      214: [
-        [TIP_KEY, hashId("NOTE_WINDOW_TIPS_55")],
-        [TIP_FLAGS, 2],
-      ],
-      52: [
-        [TUTORIAL_WINDOW_KEY, hashId("TU_BOSSARTSAURA")],
-        [TUTORIAL_WINDOW_FLAGS, 0],
-      ],
-      24: [
-        [TUTORIAL_MENU_KEY, hashId("TUTORIAL_GN")],
-        [TUTORIAL_MENU_FLAGS, 0],
-      ],
-      83: [
-        [TUTORIAL_MENU_KEY, hashId("TUTORIAL_BOSSARTSAURA")],
-        [TUTORIAL_MENU_FLAGS, 0],
-      ],
-      109: [
-        [TIP_KEY, hashId("NOTE_WINDOW_TIPS_43")],
-        [TIP_FLAGS, 2],
-      ],
       2: [
         [ISLAND_KEY, hashId("ISLAND_1ST")],
         [ISLAND_UNLOCKED, false],
@@ -156,26 +83,6 @@ const newSave = (overrides: { chapter?: number[]; section?: number } = {}) => {
       4: [
         [ISLAND_KEY, hashId("ISLAND_3ST")],
         [ISLAND_UNLOCKED, false],
-      ],
-      37: [
-        [TUTORIAL_WINDOW_KEY, hashId("TU_CHARATICKET")],
-        [TUTORIAL_WINDOW_FLAGS, 0],
-      ],
-      40: [
-        [TUTORIAL_WINDOW_KEY, hashId("TU_SHOPFUNC")],
-        [TUTORIAL_WINDOW_FLAGS, 0],
-      ],
-      133: [
-        [TIP_KEY, 0x6f1a2d86],
-        [TIP_FLAGS, 2],
-      ],
-      235: [
-        [TIP_KEY, hashId("NOTE_WINDOW_TIPS_65")],
-        [TIP_FLAGS, 2],
-      ],
-      248: [
-        [TIP_KEY, hashId("NOTE_WINDOW_TIPS_80")],
-        [TIP_FLAGS, 2],
       ],
     },
     { 0: [[SYSTEM_STORY_DIFFICULTY, 2]] },
@@ -225,11 +132,6 @@ describe("advanceStory", () => {
     expect(at.get(TROPHY_PROGRESS)[501]).toBe(1n);
     expect(at.get(TROPHY_PROGRESS)[1018]).toBe(1n);
 
-    expect(units.values(TUTORIAL_WINDOW_FLAGS, 94)).toEqual([1]);
-    expect(units.values(TUTORIAL_MENU_FLAGS, 88)).toEqual([1]);
-    expect(units.values(TUTORIAL_MENU_FLAGS, 91)).toEqual([1]);
-    expect(units.values(TIP_FLAGS, 229)).toEqual([3]);
-    expect(units.values(TIP_FLAGS, 230)).toEqual([3]);
     expect(units.values(ISLAND_UNLOCKED, 2)).toEqual([true]);
   });
 
@@ -273,11 +175,6 @@ describe("advanceStory", () => {
     expect(at.get(TROPHY_PROGRESS)[2]).toBe(6n);
     expect(at.get(TROPHY_PROGRESS)[501]).toBe(2n);
     expect(at.get(TROPHY_PROGRESS)[1018]).toBe(2n);
-
-    for (const entity of [34, 35, 36, 94, 128, 129])
-      expect(units.values(TUTORIAL_WINDOW_FLAGS, entity)).toEqual([1]);
-    for (const entity of [131, 204, 214, 229, 230])
-      expect(units.values(TIP_FLAGS, entity)).toEqual([3]);
   });
 
   it.each([
@@ -322,11 +219,6 @@ describe("advanceStory", () => {
     expect(at.get(TROPHY_PROGRESS)[2]).toBe(9n);
     expect(at.get(TROPHY_PROGRESS)[501]).toBe(3n);
     expect(at.get(TROPHY_PROGRESS)[1018]).toBe(3n);
-
-    expect(units.values(TUTORIAL_WINDOW_FLAGS, 52)).toEqual([1]);
-    expect(units.values(TUTORIAL_MENU_FLAGS, 24)).toEqual([1]);
-    expect(units.values(TUTORIAL_MENU_FLAGS, 83)).toEqual([1]);
-    expect(units.values(TIP_FLAGS, 109)).toEqual([3]);
   });
 
   it.each([
@@ -370,10 +262,6 @@ describe("advanceStory", () => {
     expect(at.get(TROPHY_PROGRESS)[501]).toBe(4n);
     expect(at.get(TROPHY_PROGRESS)[1018]).toBe(4n);
 
-    for (const entity of [37, 40])
-      expect(units.values(TUTORIAL_WINDOW_FLAGS, entity)).toEqual([1]);
-    for (const entity of [133, 235, 248])
-      expect(units.values(TIP_FLAGS, entity)).toEqual([3]);
     expect(units.values(ISLAND_UNLOCKED, 3)).toEqual([true]);
     expect(units.values(ISLAND_UNLOCKED, 4)).toEqual([true]);
   });
