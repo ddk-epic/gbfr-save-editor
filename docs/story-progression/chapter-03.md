@@ -28,7 +28,7 @@ Chapter key 80, quest `00102000` "Nightmare". Units are at entity 0 unless liste
 | 5815 | `TROPHY_PROGRESS`              | 2          | 6               | 9                   |
 | 5815 | `TROPHY_PROGRESS`              | 501, 1018  | 2               | 3                   |
 
-`TROPHY_PROGRESS` holds separate counters, not a count of trophies. Index 2 counts chapter keys cleared, for trophy 12 "Complete all chapters on Action difficulty", which needs 41 and stays unearned. Index 501 counts earned trophies outside Keys 1395-1453, here trophies 1, 2 and 3. Index 1018 counts earned trophies inside that range, here trophies 1405, 1406 and 1407.
+`TROPHY_PROGRESS` holds separate counters, not a count of trophies. Index 2 counts chapter keys cleared, for trophy 12 "Complete all chapters on Action difficulty", which needs 41 and stays unearned. Index 501 counts earned trophies outside Keys 1395-1453, here trophies 1, 2 and 3. Index 1018 counts earned trophies inside that range, here trophies 1405, 1406 and 1407. The Patched column is for a save with no other trophies: the patch adds 1 to 501 or 1018 per trophy it newly earns, and index 2 only rises.
 
 `CURRENT_TOWN` (2502) and `CURRENT_TOWN_CHECKPOINT` (2503) are written with the values they already hold, 3072 and 939223336.
 

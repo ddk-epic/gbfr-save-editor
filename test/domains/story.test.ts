@@ -266,6 +266,29 @@ describe("advanceStory", () => {
     expect(units.values(ISLAND_UNLOCKED, 4)).toEqual([true]);
   });
 
+  it("adds to the trophy counters and never lowers them", () => {
+    const session = newSave();
+    advanceStory(session, 40);
+    const at = session.save.slotData.units.of(0);
+    const progress = [...at.get(TROPHY_PROGRESS)];
+    progress[2] = 50n;
+    progress[501] = 7n;
+    progress[1018] = 31n;
+    const earned = [...at.get(TROPHY_EARNED)];
+    earned[1406] = true;
+    session.patch([
+      { attribute: TROPHY_PROGRESS, entity: 0, values: progress },
+      { attribute: TROPHY_EARNED, entity: 0, values: earned },
+    ]);
+
+    advanceStory(session, 60);
+
+    expect(at.get(TROPHY_EARNED)[2]).toBe(true);
+    expect(at.get(TROPHY_PROGRESS)[2]).toBe(50n);
+    expect(at.get(TROPHY_PROGRESS)[501]).toBe(8n);
+    expect(at.get(TROPHY_PROGRESS)[1018]).toBe(31n);
+  });
+
   it("accepts the section the game moves a chapter start to", () => {
     const session = newSave({ chapter: [40, -1], section: 18604228 });
     expect(storyTargets(session).map(({ key }) => key)).toEqual([60, 80, 100]);

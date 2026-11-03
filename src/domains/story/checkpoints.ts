@@ -15,8 +15,8 @@ export interface StoryCheckpoint {
   chapterKeys: readonly number[];
   chapterGroups: readonly number[];
   trophies: readonly number[];
-  /** `TROPHY_PROGRESS` index and the value it holds at this checkpoint. */
-  trophyProgress: readonly (readonly [number, bigint])[];
+  /** `CHAPTER_KEYS_CLEARED` at this checkpoint. */
+  chapterKeysCleared: bigint;
   /** `ISLAND_KEY` hashes. */
   islands: readonly number[];
 }
@@ -37,11 +37,7 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     chapterKeys: [0, 1, 20, 21, 22],
     chapterGroups: [0, 1],
     trophies: [1, 1405],
-    trophyProgress: [
-      [2, 4n],
-      [501, 1n],
-      [1018, 1n],
-    ],
+    chapterKeysCleared: 4n,
     islands: [hashId("ISLAND_1ST")],
   },
   // Start of Chapter 3
@@ -56,11 +52,7 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     chapterKeys: [40, 41],
     chapterGroups: [2],
     trophies: [2, 1406],
-    trophyProgress: [
-      [2, 6n],
-      [501, 2n],
-      [1018, 2n],
-    ],
+    chapterKeysCleared: 6n,
     islands: [],
   },
   // Start of Chapter 4
@@ -75,11 +67,7 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     chapterKeys: [60, 61, 62],
     chapterGroups: [3],
     trophies: [3, 1407],
-    trophyProgress: [
-      [2, 9n],
-      [501, 3n],
-      [1018, 3n],
-    ],
+    chapterKeysCleared: 9n,
     islands: [],
   },
   // Start of Chapter 5
@@ -94,11 +82,7 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     chapterKeys: [80, 81, 82],
     chapterGroups: [4],
     trophies: [4, 1408],
-    trophyProgress: [
-      [2, 13n],
-      [501, 4n],
-      [1018, 4n],
-    ],
+    chapterKeysCleared: 13n,
     islands: [hashId("ISLAND_2ST"), hashId("ISLAND_3ST")],
   },
 ];

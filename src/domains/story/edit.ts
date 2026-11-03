@@ -1,6 +1,14 @@
 import type { Attribute } from "../../core/attribute";
 import type { Patch, SaveSession } from "../../save/session";
-import { TROPHY_EARNED, TROPHY_PROGRESS } from "../trophy/attributes";
+import {
+  CHAPTER_KEYS_CLEARED,
+  TROPHIES_EARNED_IN_RANGE,
+  TROPHIES_EARNED_OUTSIDE_RANGE,
+  TROPHY_EARNED,
+  TROPHY_PROGRESS,
+  TROPHY_RANGE_FIRST,
+  TROPHY_RANGE_LAST,
+} from "../trophy/attributes";
 import { SAVE_ENTITY } from "../user/attributes";
 import {
   CHAPTER_BEST_DIFFICULTY,
@@ -112,8 +120,17 @@ export function advanceStory(session: SaveSession, key: number) {
   const earned = [...at.get(TROPHY_EARNED)];
   const progress = [...at.get(TROPHY_PROGRESS)];
   for (const step of steps) {
-    for (const trophy of step.trophies) earned[trophy] = true;
-    for (const [index, value] of step.trophyProgress) progress[index] = value;
+    for (const trophy of step.trophies) {
+      if (earned[trophy]) continue;
+      earned[trophy] = true;
+      const counter =
+        trophy >= TROPHY_RANGE_FIRST && trophy <= TROPHY_RANGE_LAST
+          ? TROPHIES_EARNED_IN_RANGE
+          : TROPHIES_EARNED_OUTSIDE_RANGE;
+      progress[counter] = progress[counter]! + 1n;
+    }
+    if (step.chapterKeysCleared > progress[CHAPTER_KEYS_CLEARED]!)
+      progress[CHAPTER_KEYS_CLEARED] = step.chapterKeysCleared;
   }
   set(TROPHY_EARNED, earned);
   set(TROPHY_PROGRESS, progress);

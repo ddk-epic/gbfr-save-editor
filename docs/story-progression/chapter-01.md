@@ -41,7 +41,7 @@ Chapter key 40, quest `00101F00` "Please Save Tempeal". The save loads into the 
 | 5815 | `TROPHY_PROGRESS`              | 501, 1018 | 0         | 1                   |
 | 5815 | `TROPHY_PROGRESS`              | 2         | 0         | 4                   |
 
-`TROPHY_PROGRESS` holds separate counters, not a count of trophies. Index 2 counts chapter keys cleared, for trophy 12 "Complete all chapters on Action difficulty", which needs 41 and stays unearned. Index 501 counts earned trophies outside Keys 1395-1453, here trophy 1. Index 1018 counts earned trophies inside that range, here trophy 1405.
+`TROPHY_PROGRESS` holds separate counters, not a count of trophies. Index 2 counts chapter keys cleared, for trophy 12 "Complete all chapters on Action difficulty", which needs 41 and stays unearned. Index 501 counts earned trophies outside Keys 1395-1453, here trophy 1. Index 1018 counts earned trophies inside that range, here trophy 1405. The Patched column is for a save with no other trophies: the patch adds 1 to 501 or 1018 per trophy it newly earns, and index 2 only rises.
 
 Trophies earned by 5801, by `badge.Key`:
 
