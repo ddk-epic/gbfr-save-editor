@@ -4,7 +4,7 @@ A character is one unit per `chara` row.
 
 ## The character unit
 
-Characters occupy 41 entities, `CHARACTER_FIRST` (10000) to 10040, one per `chara` row. The character index is the entity minus 10000. Every save has all 41 units, a new game included.
+Characters occupy 41 entities, `CHARACTER_FIRST` (10000) to 10040, one per `chara` row. The character index is the entity minus 10000. Every save has all 41 units, a new game included. The order can differ between saves, with `PL1900` at 10021 or 10023, so 1301 is what names a unit.
 
 | Attribute | Name                           | Type        | Holds                                                        |
 | --------- | ------------------------------ | ----------- | ------------------------------------------------------------ |
@@ -115,15 +115,31 @@ The save holds no slot count. The game works out a character's open slots (`FUN_
 
 ### Flags
 
-1305 uses bits 0, 3, 4, 13 and 14.
+1305 uses bits 0, 1, 3, 4, 13 and 14.
 
 | Bit | Value    | Name                         | Set on                                                                                               |
 | --- | -------- | ---------------------------- | ---------------------------------------------------------------------------------------------------- |
 | 0   | `0x1`    | `CHARACTER_JOINED`           | In the crew: the starting cast from a new game on, both captains included, and others once they join |
-| 3   | `0x8`    | not named                    | Set in place of bit 4 on one character                                                               |
+| 1   | `0x2`    | not named                    | `PL1900` while the story plays it, see below                                                         |
+| 3   | `0x8`    | not named                    | `PL1900`, in place of bit 4, from its story stretch on                                               |
 | 4   | `0x10`   | not named                    | Probably characters recruited outside the main story, set before they join, DLC ones included        |
 | 13  | `0x2000` | `CHARACTER_MASTER_BREAK_NEW` | New mark of a master level cap break                                                                 |
 | 14  | `0x4000` | not named                    | Only on recruited characters, and not in every save                                                  |
+
+Bit 0 can clear again, as it does on `PL1900` when its story stretch ends, and it returns when the character rejoins.
+
+### `PL1900` story stretch
+
+`PL1900` is played on its own unit for part of `00107001`, after a `SLOT` stand-in of it. One checkpoint:
+
+- Copies the stand-in's XP, level and stats into 1303 and 1308-1310, which can lower them.
+- Sets 1305 to bits 0, 1 and 3.
+- Fills 1404 with the stand-in's four skills, and sets 3904 bit 0 on `AB_PL1900_02`, `_05`, `_07` and `_08`.
+- Fills 1602 on 70 entries of the mastery block, 0-42 and 108-134, and sets `TROPHY_PROGRESS` (5815) at 714 to 1.
+
+The unit then gains XP and levels as usual. Just before the clear of `00107001`, 1305 drops to bit 3 alone. The XP, level, skills and 1602 values stay.
+
+Early in `00109001`, bit 0 returns and the unit takes a higher XP and level, with MSP for the levels gained. These match neither the stand-in's values nor the unit's. Where they come from has not been settled.
 
 ## Special units
 
@@ -135,11 +151,11 @@ Not every unit is a playable character.
 | `NP*`, `PL000B`, `PL2000` | 1     | No `chara_status` rows, HP and ATK 0                           |
 | `SLOT01` to `SLOT04`      | any   | XP, and another character's weapon, skills and sigils          |
 
-`USER_CAPTAIN` (1103) holds the captain picked at the start. The `SLOT` rows have no name, element -1 and UI order 1000-1003. They stand in for a character during the story: `SLOT01` plays as the character in `CHARACTER_STAND_IN` (1315), at a level and with a weapon and sigils of its own, such as `PL1900` with `WEP_PL1900_A0` or `NP0300` with `WEP_NP0300_01`. They can also sit at level 1 with a starter weapon and no sigils.
+`USER_CAPTAIN` (1103) holds the captain picked at the start. The `SLOT` rows have no name, element -1 and UI order 1000-1003. They stand in for a character during the story: A `SLOT` row plays as the character in `CHARACTER_STAND_IN` (1315), at a level and with a weapon and sigils of its own, such as `PL1900` with `WEP_PL1900_A0` or `NP0300` with `WEP_NP0300_01`. `SLOT01` and `SLOT02` can run at once. They can also sit at level 1 with a starter weapon and no sigils.
 
-A stand-in lasts part of a quest or a whole one, and can end with no checkpoint. As it ends, 1315 and the sigils clear, including the sigil entries' keys and wearer. XP, level, HP, attack, the equipped weapon id and the skills stay until the next stand-in overwrites them, and the weapon stays in the weapon list. A load puts level back to 1 and HP and attack to 0, and keeps XP, the weapon id and the skills.
+A stand-in lasts part of a quest or a whole one, and can end with no checkpoint. As it ends, 1315 and the sigils clear, including the sigil entries' keys and wearer. XP, level, HP, attack, the equipped weapon id and the skills stay until the next stand-in overwrites them, and the weapon stays in the weapon list. A row can take a different character next, as `SLOT02` goes from `PL1900` to `NP0300`. A load puts level back to 1 and HP and attack to 0, and keeps XP, the weapon id and the skills.
 
-A character returning as a stand-in reuses its weapon entry, with new XP. A stand-in can run with no weapon, such as `NP0000` with `EQUIP_WEAPON` 0. A checkpoint can reissue a stand-in's sigil ids, moving `SIGIL_LAST_ID` on.
+A character returning as a stand-in reuses its weapon entry, with new XP and uncap. A stand-in can run with no weapon, such as `NP0000` with `EQUIP_WEAPON` 0. A checkpoint can reissue a stand-in's sigil ids, moving `SIGIL_LAST_ID` on. Sigil entries a stand-in frees can go to a later sigil drop.
 
 ## Party
 
@@ -175,7 +191,7 @@ The story sets the party from a `formation_slot` row (`FUN_1402f2860`). It first
 | 4               | The row's, in this slot                                      |      |
 
 - `PL0000` in a row stands for the captain picked at the start.
-- The town row `4FA6A50B` holds `PL0000` in slot 0 with mode 2, so between story quests 2203 is set on 103000 alone.
+- The town row `4FA6A50B` holds `PL0000` in slot 0 with mode 2, so between story quests 2203 is set on 103000 alone. It goes false just before `00108001` clears.
 - The Party menu refuses changes to a slot with 2202 set (`ui::fsm::action::PlayerSlotLockDialog`).
 
 ## Loadouts

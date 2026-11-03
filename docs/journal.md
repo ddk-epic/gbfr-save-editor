@@ -34,6 +34,8 @@ Three categories, `story_note_archive_category`, each listing the rows of its `C
 | 0   | 1     | `ARCHIVE_UNLOCKED` | Obtained. A document without it shows ??? |
 | 1   | 2     | `ARCHIVE_SEEN`     | The new mark is cleared                   |
 
+Bit 1 can move on several rows in one poll, as five Rolan notes do when the journal is read. `0010A010` waits on these notes, see `quests.md`.
+
 ## Glossary
 
 Six tabs: General, Peoples, Primal Beasts, Skydoms, Places and Organizations. They are the `story_note_wordlist` column the extractor names `ShownByDefault`, 0-5, and each lists its rows in table order. `CategoryId` does not match the tabs.
@@ -123,7 +125,7 @@ The list covers entities 0-511.
 
 ## Open
 
-- 8402 and 8502 bits above 0 have no meaning assigned. They are not cumulative: bit 1 clears as a higher bit sets.
+- 8402 and 8502 bits above 0 have no meaning assigned. They are not cumulative: bit 1 clears as a higher bit sets. 8402 reaches bit 13 on `PL1900` as its story stretch ends, then bits 4 and 6 early in `00109001`.
 - 8102 bits 5-8 do not show a paragraph, and no save has a seen row without them.
 - 7403 bit 0 is set without bit 2 on some weapons. 7402 climbs with progress, but nothing ties it to a new mark.
 - 7403 bit 2 also sets on story weapons outside the Weapons list, all with `unk52` 0: `WEP_PL1900_A0`, `WEP_NP0300_01`, `WEP_PL0000_99` and `WEP_PL0100_99`.
