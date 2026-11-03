@@ -16,8 +16,8 @@ Chapter key 60, quest `00101003` "The Mines of Tempeal". Units are at entity 0 u
 | 2522 | `STORY_QUEST_THIRD_CLEARED`    | 41, 45, 46 | 0               | 1                   |
 | 2513 | `STORY_QUEST_CHECKPOINTS`      | 8800       | 0               | 2130360527          |
 | 2514 | `STORY_QUEST_CHECKPOINTS_LIVE` | 8800       | 0               | 2130360527          |
-| 2513 | `STORY_QUEST_CHECKPOINTS`      | 8200       | Section         | 0                   |
-| 2514 | `STORY_QUEST_CHECKPOINTS_LIVE` | 8200       | Section         | 0                   |
+| 2513 | `STORY_QUEST_CHECKPOINTS`      | 8200       | 1299620138      | 0                   |
+| 2514 | `STORY_QUEST_CHECKPOINTS_LIVE` | 8200       | 1299620138      | 0                   |
 | 2590 | `CHAPTER_KEYS`                 | List, adds |                 | `40, 41`            |
 | 2591 | `CHAPTER_BEST_DIFFICULTY`      | List, adds |                 | System 817, 2 times |
 | 2592 | `CHAPTER_ULTIMATE_CLEARED`     | List, adds |                 | `0, 0`              |
@@ -31,8 +31,6 @@ Chapter key 60, quest `00101003` "The Mines of Tempeal". Units are at entity 0 u
 `TROPHY_PROGRESS` holds separate counters, not a count of trophies. Index 2 counts chapter keys cleared, for trophy 12 "Complete all chapters on Action difficulty", which needs 41 and stays unearned. Index 501 counts earned trophies outside Keys 1395-1453, here trophies 1 and 2. Index 1018 counts earned trophies inside that range, here trophies 1405 and 1406.
 
 `CURRENT_TOWN` (2502) and `CURRENT_TOWN_CHECKPOINT` (2503) are written with the values they already hold, 3072 and 939223336.
-
-The Chapter 2 start value at 8200 is 1299620138 or 18604228, the two sections of `00101F00`.
 
 Trophies earned by 5801, by `badge.Key`:
 

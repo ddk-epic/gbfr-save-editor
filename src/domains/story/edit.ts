@@ -48,7 +48,8 @@ function storyPosition(session: SaveSession): number | undefined {
   const section = at.get(STORY_QUEST_CHECKPOINTS)[
     record * STORY_QUEST_CHECKPOINT_COUNT
   ];
-  return section !== undefined && checkpoint.sections.includes(section)
+  return section === checkpoint.entrySection ||
+    (section !== undefined && checkpoint.laterSections.includes(section))
     ? position
     : undefined;
 }
@@ -103,7 +104,7 @@ export function advanceStory(session: SaveSession, key: number) {
         record * STORY_QUEST_CHECKPOINT_COUNT,
         (record + 1) * STORY_QUEST_CHECKPOINT_COUNT,
       );
-    sections[begun] = destination.sections[0];
+    sections[begun] = destination.entrySection;
     set(attribute, sections);
   }
 

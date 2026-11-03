@@ -5,8 +5,10 @@ export interface StoryCheckpoint {
   /** `chapter_select.Key`. */
   key: number;
   quest: number;
-  /** `BeginSection` guids of `quest`, the first one written. */
-  sections: readonly [number, ...number[]];
+  /** `BeginSection` guid of `quest` the patch writes. */
+  entrySection: number;
+  /** `BeginSection` guids the game moves to after a load, identifying a saved checkpoint. */
+  laterSections: readonly number[];
   town: number;
   townCheckpoint: number;
   cleared: readonly number[];
@@ -27,7 +29,8 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
   {
     key: 40,
     quest: 0x101f00,
-    sections: [1299620138, 18604228],
+    entrySection: 1299620138,
+    laterSections: [18604228],
     town: 0xc00,
     townCheckpoint: 939223336,
     cleared: [
@@ -52,7 +55,8 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
   {
     key: 60,
     quest: 0x101003,
-    sections: [2130360527, 1974310874],
+    entrySection: 2130360527,
+    laterSections: [1974310874],
     town: 0xc00,
     townCheckpoint: 939223336,
     cleared: [0x101f00, 0x101001, 0x101002],
@@ -77,5 +81,26 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
       [hashId("NOTE_WINDOW_TIPS_55"), 3],
       [0x1c841dc4, 3],
     ],
+  },
+  // Start of Chapter 4
+  {
+    key: 80,
+    quest: 0x102000,
+    entrySection: 240333228,
+    laterSections: [1087048104],
+    town: 0xc00,
+    townCheckpoint: 939223336,
+    cleared: [0x101003, 0x101004, 0x101005],
+    chapterKeys: [60, 61, 62],
+    chapterGroups: [3],
+    trophies: [3, 1407],
+    trophyProgress: [
+      [2, 9n],
+      [501, 3n],
+      [1018, 3n],
+    ],
+    tutorialWindows: [hashId("TU_BOSSARTSAURA")],
+    tutorialMenus: [hashId("TUTORIAL_BOSSARTSAURA"), hashId("TUTORIAL_GN")],
+    tips: [[hashId("NOTE_WINDOW_TIPS_43"), 3]],
   },
 ];
