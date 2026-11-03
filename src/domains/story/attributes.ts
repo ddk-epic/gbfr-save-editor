@@ -24,6 +24,9 @@ export const CHAPTER_ULTIMATE_CLEARS = Attribute.intList(2594);
 export const CHAPTER_GROUPS = Attribute.intList(2595);
 export const CHAPTER_GROUP_FLAGS = Attribute.intList(2596);
 
+export const ISLAND_KEY = Attribute.uint(6101);
+export const ISLAND_UNLOCKED = Attribute.bool(6102);
+
 export const TUTORIAL_WINDOW_KEY = Attribute.uint(5901);
 export const TUTORIAL_WINDOW_FLAGS = Attribute.uint(5902);
 export const TUTORIAL_MENU_KEY = Attribute.uint(6001);

@@ -21,6 +21,8 @@ export interface StoryCheckpoint {
   tutorialMenus: readonly number[];
   /** Tip key hash and the flags it holds at this checkpoint. */
   tips: readonly (readonly [number, number])[];
+  /** `ISLAND_KEY` hashes. */
+  islands: readonly number[];
 }
 
 /** In story order. */
@@ -50,6 +52,7 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
       [594130054, 3],
       [2065024838, 3],
     ],
+    islands: [hashId("ISLAND_1ST")],
   },
   // Start of Chapter 3
   {
@@ -81,6 +84,7 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
       [hashId("NOTE_WINDOW_TIPS_55"), 3],
       [0x1c841dc4, 3],
     ],
+    islands: [],
   },
   // Start of Chapter 4
   {
@@ -102,5 +106,32 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     tutorialWindows: [hashId("TU_BOSSARTSAURA")],
     tutorialMenus: [hashId("TUTORIAL_BOSSARTSAURA"), hashId("TUTORIAL_GN")],
     tips: [[hashId("NOTE_WINDOW_TIPS_43"), 3]],
+    islands: [],
+  },
+  // Start of Chapter 5
+  {
+    key: 100,
+    quest: 0x103001,
+    entrySection: 528160042,
+    laterSections: [1958916885],
+    town: 0xc00,
+    townCheckpoint: 939223336,
+    cleared: [0x102000, 0x102f00, 0x102002, 0x103f00],
+    chapterKeys: [80, 81, 82],
+    chapterGroups: [4],
+    trophies: [4, 1408],
+    trophyProgress: [
+      [2, 13n],
+      [501, 4n],
+      [1018, 4n],
+    ],
+    tutorialWindows: [hashId("TU_SHOPFUNC"), hashId("TU_CHARATICKET")],
+    tutorialMenus: [],
+    tips: [
+      [0x6f1a2d86, 3],
+      [hashId("NOTE_WINDOW_TIPS_65"), 3],
+      [hashId("NOTE_WINDOW_TIPS_80"), 3],
+    ],
+    islands: [hashId("ISLAND_2ST"), hashId("ISLAND_3ST")],
   },
 ];

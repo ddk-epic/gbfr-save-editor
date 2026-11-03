@@ -50,7 +50,7 @@ Trophies earned by 5801, by `badge.Key`:
 | 1    | Visitor from Beyond  | Complete Chapter 1: The Western Frontier |
 | 1405 | The Western Frontier | Complete Chapter 1 of the main story     |
 
-Tutorial and tip rows, by entity:
+Tutorial, tip and island rows, by entity:
 
 | Unit | Name                    | Entity | Row                   | New save | Patched |
 | ---- | ----------------------- | ------ | --------------------- | -------- | ------- |
@@ -59,6 +59,7 @@ Tutorial and tip rows, by entity:
 | 6002 | `TUTORIAL_MENU_FLAGS`   | 91     | `TUTORIAL_PAD_ASSSGN` | 0        | 1       |
 | 8702 | `TIP_FLAGS`             | 229    | 8701 hash 594130054   | 2        | 3       |
 | 8702 | `TIP_FLAGS`             | 230    | 8701 hash 2065024838  | 2        | 3       |
+| 6102 | `ISLAND_UNLOCKED`       | 2      | `ISLAND_1ST`          | False    | True    |
 
 Quest records cleared by indexes 47-53:
 
@@ -81,6 +82,7 @@ Quest records cleared by indexes 47-53:
 - 2503 takes the value logged with 2502 at `0xC00`, not one read at this point in the story.
 - 2592 and 2594 take 0 as these keys join, as in [`quests.md`](../quests.md).
 - `TU_MAP` and `TUTORIAL_MAP` move together in every load of a patched save without them, and in the traced prologue. 8702 at 229 and 230 move in that poll on a patched load. `TUTORIAL_PAD_ASSSGN`, `MultiPurposeId` `FirstControllerTypeSetting`, moves up to 2 s later. It is taken as the interact and check mapping window by its timing and row, not by its text.
+- 6102 at 2 turns true in the traced clear, and the game does not set it on a patched save.
 - 5801 and 5815 come from the traced clear, and 1 and 1405 are the two Chapter 1 trophies. Trophy 1 counts in 501 and 1405 in 1018. 5815 at 2 is the chapter key count, 3 to 4 in that clear, and a patched load left it at 0 through the checkpoint where the game set the trophies.
 
 ### Set by the game

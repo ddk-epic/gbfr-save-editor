@@ -13,6 +13,8 @@ import {
   CURRENT_CHAPTER,
   CURRENT_TOWN,
   CURRENT_TOWN_CHECKPOINT,
+  ISLAND_KEY,
+  ISLAND_UNLOCKED,
   NO_CHAPTER,
   STORY_QUEST_CHECKPOINT_COUNT,
   STORY_QUEST_CHECKPOINTS,
@@ -145,6 +147,12 @@ export function advanceStory(session: SaveSession, key: number) {
         attribute: TIP_FLAGS,
         entity: onlyEntity(TIP_KEY, hash),
         values: [flags],
+      });
+    for (const hash of step.islands)
+      patches.push({
+        attribute: ISLAND_UNLOCKED,
+        entity: onlyEntity(ISLAND_KEY, hash),
+        values: [true],
       });
   }
   session.patch(patches);
