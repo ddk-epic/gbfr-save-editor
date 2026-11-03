@@ -22,6 +22,9 @@ A quest id is a `quest_baseinfo_ex_data.Key`, 8 hex digits, stored as the uint t
 | Attribute | Name                           | Type          | Holds                                                 |
 | --------- | ------------------------------ | ------------- | ----------------------------------------------------- |
 | 2510      | `STORY_QUEST_IDS`              | `uint[100]`   | Quest id, 0 on an unused entry                        |
+| 2511      | `STORY_QUEST_CLEARED`          | `uint[100]`   | 1 once cleared                                        |
+| 2512      | `STORY_QUEST_LIVE_CLEARED`     | `uint[100]`   | 1 once cleared, reset in some play modes              |
+| 2522      | `STORY_QUEST_THIRD_CLEARED`    | `uint[100]`   | 1 once cleared                                        |
 | 2513      | `STORY_QUEST_CHECKPOINTS`      | `uint[20000]` | 200 checkpoint hashes per quest                       |
 | 2514      | `STORY_QUEST_CHECKPOINTS_LIVE` | `uint[20000]` | As 2513, entries going to 4294967295 during the quest |
 
@@ -53,19 +56,25 @@ They are set at a checkpoint inside a quest, such as `00101003`, `00104001` or `
 
 Chapter select lists the chapters reached, by `chapter_select.Key`: chapter group \* 20 + chapter within the group.
 
-| Attribute | Name              | Type     | Holds                                           |
-| --------- | ----------------- | -------- | ----------------------------------------------- |
-| 2502      | `CURRENT_TOWN`    | `int`    | Town, by `chapter_select.TownStageMaybe`        |
-| 2506      | `CURRENT_CHAPTER` | `int[2]` | Chapter key underway, solo then online, -1 none |
-| 2590      | `CHAPTER_KEYS`    | `int[]`  | Chapter key, one per chapter reached            |
-| 2591      | `CHAPTER_FLAGS`   | `int[]`  | 1 on a chapter chapter select offers            |
-| 2595      | `CHAPTER_GROUPS`  | `int[]`  | Chapter group, key / 20, one per group finished |
+| Attribute | Name                       | Type     | Holds                                              |
+| --------- | -------------------------- | -------- | -------------------------------------------------- |
+| 2502      | `CURRENT_TOWN`             | `int`    | Town, by `chapter_select.TownStageMaybe`           |
+| 2503      | `CURRENT_TOWN_CHECKPOINT`  | `uint`   | Checkpoint hash in the town                        |
+| 2506      | `CURRENT_CHAPTER`          | `int[2]` | Chapter key underway, solo then online, -1 none    |
+| 2590      | `CHAPTER_KEYS`             | `int[]`  | Chapter key, one per chapter reached               |
+| 2591      | `CHAPTER_BEST_DIFFICULTY`  | `int[]`  | Best difficulty cleared: 0 Story, 1 Action, 2 Hard |
+| 2592      | `CHAPTER_ULTIMATE_CLEARED` | `int[]`  | 1 once cleared on Ultimate                         |
+| 2594      | `CHAPTER_ULTIMATE_CLEARS`  | `int[]`  | Clears on Ultimate                                 |
+| 2595      | `CHAPTER_GROUPS`           | `int[]`  | Chapter group, key / 20, one per group finished    |
+| 2596      | `CHAPTER_GROUP_FLAGS`      | `int[]`  | One per group finished, no meaning assigned        |
 
-- 2590-2596 are parallel lists apart from 2595 and 2596, which run shorter.
+- 2590-2594 are parallel lists. 2595 and 2596 run shorter.
+- At runtime each chapter is a 16-byte entry at story object `+0xc70`: key, best difficulty, Ultimate flag and Ultimate clears. Matching these fields to 2591, 2592 and 2594 follows registration order and the values in saves; the copying code has not been found. 2592 and 2594 have held the same values so far.
+- `MenuEpisodeDifficulty` (`FUN_1441ae950`) offers difficulty 3, Ultimate, on bit 0 of the flag, and a lower difficulty on the flag or when it is at most the best difficulty. `FUN_140aa1910` counts chapters whose clears reach a threshold. `cPTown` (`FUN_1437131c0`) raises the clears to 1 where the flag is set and they are below 1.
 - A key joins 2590 as 2506 moves past it, together with any keys skipped. This can fall at a quest's clear or at a checkpoint with no clear. A key's own quest can clear with the key still current, when a quest with no `chapter_select` row follows it: key 143 names `00105f01` and joins at the clear of `00105002`, and key 160 names `00106f00` and joins at the clear of `00106000`. Key 220 names `00109001` and joins as `0010A000` begins, well after that clear.
 - `chapter_select.QuestId` can give several keys one quest, as 101-104 share `00103001`. That quest's record clears once, and keys never current in 2506 still join 2590 at the clear.
 - 2502 follows `chapter_select.TownStageMaybe`, moving at the clear ahead of the key that changes it. It holds 3072 (`0xC00`) from a new game, 3328 (`0xD00`, Seedhollow) as `00104f00` clears, ahead of key 121, 3329 (`0xD01`) as `00106f00` clears and 3330 (`0xD02`) as `00106002` clears. Key 200 is the one miss so far: it names `0xD00`, and 2502 stays `0xD02` through it, going to 3072 (`0xC00`) as `00108001` clears, ahead of key 220. 2503, a `uint`, takes a new checkpoint hash in the same write, and again at a checkpoint with 2502 unchanged.
-- Chapter select (`FUN_1403f4140`) offers the chapter groups in order. It stops at the first chapter missing from 2590, or listed with bit 0 of its flags clear and a negative second value.
+- Chapter select (`FUN_1403f4140`) offers the chapter groups in order. It stops at the first chapter missing from 2590, or with bit 0 of 2592 clear and a negative 2591.
 
 ## Quest seed
 
@@ -188,8 +197,8 @@ Family 7, script quests with no story or quest counter entry, cleared by `ClearQ
 - 2583, 4800 values beside 2580-2582, has no meaning assigned.
 - 2508, an `int`, goes from 0 to 1 at a checkpoint early in `00104000`. It goes 1 to 2, 2 to 3, 3 to 4 and 4 to 5 at the next checkpoint or record write after 7303 reaches 3, 4, 5 and 6, and 5 to 6 in the record write that takes 7303 to 7. No meaning is assigned.
 - 2501-2651 apart from the attributes above have no meaning assigned.
-- 2592 and 2594 gain an entry of 0 when a chapter joins 2590. 2593 is registered as a `SaveDataUnitVariable`, but a save can hold no unit for it. None has a meaning assigned.
-- 2595 and 2596 gain an entry when a chapter group's last chapter joins 2590, not on every chapter. 2596 takes 0, and 1 on group 11, which closes with key 222. It has no meaning assigned. 2506 stays 222 as key 222 joins 2590.
+- 2592 and 2594 gain an entry of 0 when a chapter joins 2590. 2593 is registered as a `SaveDataUnitVariable`, but a save can hold no unit for it, and it has no meaning assigned.
+- 2595 and 2596 gain an entry when a chapter group's last chapter joins 2590, not on every chapter. 2596 takes 0, and 1 on group 11, which closes with key 222, though a save can also hold 0 there. No code reading it has been found. 2506 stays 222 as key 222 joins 2590.
 - 2502 moves in the record writes of `00407317`, `0xC00` to `0xD00`, and `00407318`, back to `0xC00` and to `0xD00` again 31 s later. 2606, an `int`, took the new town 28 s after that move, as 2636, an `int`, went 0 to 2 and back to 0 within 4 s. Each is one case, and neither has a meaning assigned.
 - 2605, a `uint[2]`, copies 7601 index 130 into index 1 at a record write, a story quest's or a quest counter quest's. It stays when 7601 has not moved, even with 2504 drawn. Index 0 stays 0.
 - 2907 goes down by 1 at each quest end, and to 999 from 1 or at a story quest clear, as 2903 and 2904 empty. It takes 5 as they fill.
