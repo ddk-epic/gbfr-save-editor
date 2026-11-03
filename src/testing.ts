@@ -193,9 +193,12 @@ export function encodeSaveDataBinary(
  * A whole save file around the given SlotData units, with the checksum the
  * seed at SAVE_HASHSEED picks computed and the other nine left stale at 1.
  */
-export function fixtureFile(entities: Record<number, EntityUnits>): Uint8Array {
+export function fixtureFile(
+  entities: Record<number, EntityUnits>,
+  systemEntities: Record<number, EntityUnits> = {},
+): Uint8Array {
   const units = saveUnits(entities);
-  const systemData = encodeSaveDataBinary([]);
+  const systemData = encodeSaveDataBinary(saveUnits(systemEntities));
   const slotData = encodeSaveDataBinary(units, 1);
   const seed = units.find(
     (unit) =>

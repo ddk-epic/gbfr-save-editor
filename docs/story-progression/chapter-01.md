@@ -1,6 +1,6 @@
-# Story progression, Chapters 1 to 6
+# Chapter 1
 
-Patches that move a new save to the start of a chapter. Each section lists every value a patch writes, starting from a new save at the prologue's first quest. Unit meanings are in [`quests.md`](../quests.md) and [`trophies.md`](../trophies.md).
+The patch that takes a new save through the prologue and Chapter 1 to the start of Chapter 2. It lists every value written, starting from a new save at the prologue's first quest. Each later chapter has its own file. Unit meanings are in [`quests.md`](../quests.md) and [`trophies.md`](../trophies.md).
 
 ## Chapter lists
 
@@ -19,27 +19,27 @@ Chapter key 40, quest `00101F00` "Please Save Tempeal". The save loads into the 
 
 ### Patched
 
-| Unit | Name                           | Index     | New save  | Patched            |
-| ---- | ------------------------------ | --------- | --------- | ------------------ |
-| 2502 | `CURRENT_TOWN`                 | 0         | 3872      | 3072 (`0xC00`)     |
-| 2503 | `CURRENT_TOWN_CHECKPOINT`      | 0         | 528045455 | 939223336          |
-| 2506 | `CURRENT_CHAPTER`              | 0         | -1        | 40                 |
-| 2511 | `STORY_QUEST_CLEARED`          | 47-53     | 0         | 1                  |
-| 2512 | `STORY_QUEST_LIVE_CLEARED`     | 47-53     | 0         | 1                  |
-| 2522 | `STORY_QUEST_THIRD_CLEARED`    | 47-53     | 0         | 1                  |
-| 2513 | `STORY_QUEST_CHECKPOINTS`      | 8200      | 0         | 1299620138         |
-| 2514 | `STORY_QUEST_CHECKPOINTS_LIVE` | 8200      | 0         | 1299620138         |
-| 2513 | `STORY_QUEST_CHECKPOINTS`      | 10200     | 792562208 | 0                  |
-| 2514 | `STORY_QUEST_CHECKPOINTS_LIVE` | 10200     | 792562208 | 0                  |
-| 2590 | `CHAPTER_KEYS`                 | List      | Empty     | `0, 1, 20, 21, 22` |
-| 2591 | `CHAPTER_BEST_DIFFICULTY`      | List      | Empty     | `1, 1, 1, 1, 1`    |
-| 2592 | `CHAPTER_ULTIMATE_CLEARED`     | List      | Empty     | `0, 0, 0, 0, 0`    |
-| 2594 | `CHAPTER_ULTIMATE_CLEARS`      | List      | Empty     | `0, 0, 0, 0, 0`    |
-| 2595 | `CHAPTER_GROUPS`               | List      | Empty     | `0, 1`             |
-| 2596 | `CHAPTER_GROUP_FLAGS`          | List      | Empty     | `0, 0`             |
-| 5801 | `TROPHY_EARNED`                | 1, 1405   | False     | True               |
-| 5815 | `TROPHY_PROGRESS`              | 501, 1018 | 0         | 1                  |
-| 5815 | `TROPHY_PROGRESS`              | 2         | 0         | 4                  |
+| Unit | Name                           | Index     | New save  | Patched             |
+| ---- | ------------------------------ | --------- | --------- | ------------------- |
+| 2502 | `CURRENT_TOWN`                 | 0         | 3872      | 3072 (`0xC00`)      |
+| 2503 | `CURRENT_TOWN_CHECKPOINT`      | 0         | 528045455 | 939223336           |
+| 2506 | `CURRENT_CHAPTER`              | 0         | -1        | 40                  |
+| 2511 | `STORY_QUEST_CLEARED`          | 47-53     | 0         | 1                   |
+| 2512 | `STORY_QUEST_LIVE_CLEARED`     | 47-53     | 0         | 1                   |
+| 2522 | `STORY_QUEST_THIRD_CLEARED`    | 47-53     | 0         | 1                   |
+| 2513 | `STORY_QUEST_CHECKPOINTS`      | 8200      | 0         | 1299620138          |
+| 2514 | `STORY_QUEST_CHECKPOINTS_LIVE` | 8200      | 0         | 1299620138          |
+| 2513 | `STORY_QUEST_CHECKPOINTS`      | 10200     | 792562208 | 0                   |
+| 2514 | `STORY_QUEST_CHECKPOINTS_LIVE` | 10200     | 792562208 | 0                   |
+| 2590 | `CHAPTER_KEYS`                 | List      | Empty     | `0, 1, 20, 21, 22`  |
+| 2591 | `CHAPTER_BEST_DIFFICULTY`      | List      | Empty     | System 817, 5 times |
+| 2592 | `CHAPTER_ULTIMATE_CLEARED`     | List      | Empty     | `0, 0, 0, 0, 0`     |
+| 2594 | `CHAPTER_ULTIMATE_CLEARS`      | List      | Empty     | `0, 0, 0, 0, 0`     |
+| 2595 | `CHAPTER_GROUPS`               | List      | Empty     | `0, 1`              |
+| 2596 | `CHAPTER_GROUP_FLAGS`          | List      | Empty     | `0, 0`              |
+| 5801 | `TROPHY_EARNED`                | 1, 1405   | False     | True                |
+| 5815 | `TROPHY_PROGRESS`              | 501, 1018 | 0         | 1                   |
+| 5815 | `TROPHY_PROGRESS`              | 2         | 0         | 4                   |
 
 Tutorial and tip rows, by entity:
 
@@ -87,6 +87,6 @@ A load without the 5801 and 5815 patches set them itself, in the poll where 2513
 
 ### Status
 
-The patch without the tutorial and tip rows has loaded in game, into the fade-in, and showed the map and interact and check mapping windows. Whether those rows suppress the windows has not been tested. 5801 and 5815 hold their patched values through the checkpoint with no further move, so the trophies are not counted twice. 2513 and 2514 at 8200, 2552 and 2591 move as in the load without them.
+The patch loads in game into the fade-in, with 2591 taking system unit 817, the story difficulty, which reads 2 on a save on Hard. Without the tutorial and tip rows the save shows the map and interact and check mapping windows; with them neither window shows. In a load with 2591 at a fixed 1, 5801 and 5815 hold their patched values through the checkpoint with no further move, so the trophies are not counted twice, and 2513 and 2514 at 8200, 2552 and 2591 move as in a load without them.
 
 Open: whether 5815 at 2 rises from 4 as later chapter keys clear.

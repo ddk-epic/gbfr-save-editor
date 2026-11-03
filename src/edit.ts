@@ -16,6 +16,8 @@ export {
   USER_MAX_RUPIES,
 } from "./domains/user/attributes";
 export { completeFateEpisodes } from "./domains/fate-episode/edit";
+export { advanceStory, storyTargets } from "./domains/story/edit";
+export type { StoryCheckpoint } from "./domains/story/checkpoints";
 export { addWrightstone, editWrightstone } from "./domains/wrightstone/edit";
 export {
   WRIGHTSTONE_MAINS,
