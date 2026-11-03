@@ -23,6 +23,7 @@ export interface StoryCheckpoint {
 
 /** In story order. */
 export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
+  // Start of Chapter 2
   {
     key: 40,
     quest: 0x101f00,
@@ -45,6 +46,36 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     tips: [
       [594130054, 3],
       [2065024838, 3],
+    ],
+  },
+  // Start of Chapter 3
+  {
+    key: 60,
+    quest: 0x101003,
+    sections: [2130360527, 1974310874],
+    town: 0xc00,
+    townCheckpoint: 939223336,
+    cleared: [0x101f00, 0x101001, 0x101002],
+    chapterKeys: [40, 41],
+    chapterGroups: [2],
+    trophies: [2, 1406],
+    trophyProgress: [
+      [2, 6n],
+      [501, 2n],
+      [1018, 2n],
+    ],
+    tutorialWindows: [
+      hashId("TUTORIAL_WIN_07"),
+      hashId("TUTORIAL_WIN_32"),
+      hashId("TU_ACT_PL0000"),
+      hashId("TU_ACT_PL0100"),
+      hashId("TU_GN"),
+    ],
+    tutorialMenus: [],
+    tips: [
+      [hashId("NOTE_WINDOW_TIPS_48"), 3],
+      [hashId("NOTE_WINDOW_TIPS_55"), 3],
+      [0x1c841dc4, 3],
     ],
   },
 ];

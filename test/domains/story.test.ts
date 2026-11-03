@@ -35,12 +35,14 @@ import { fixtureFile } from "../../src/testing";
 
 const QUESTS = [
   0x101f00, 0x101000, 0x100006, 0x100005, 0x100003, 0x100002, 0x100001,
-  0x100000,
+  0x100000, 0x101001, 0x101002, 0x101003,
 ];
 const PART = 200;
 const NEW_GAME_RECORD = 5;
 const NEW_GAME_SECTION = 792562208;
 const FIRST_SECTION = 1299620138;
+const CHAPTER_3_RECORD = 10;
+const CHAPTER_3_SECTION = 2130360527;
 
 const newSave = (overrides: { chapter?: number[]; section?: number } = {}) => {
   const sections = Array<number>(QUESTS.length * PART).fill(0);
@@ -88,6 +90,38 @@ const newSave = (overrides: { chapter?: number[]; section?: number } = {}) => {
         [TIP_KEY, 2065024838],
         [TIP_FLAGS, 2],
       ],
+      34: [
+        [TUTORIAL_WINDOW_KEY, hashId("TUTORIAL_WIN_07")],
+        [TUTORIAL_WINDOW_FLAGS, 0],
+      ],
+      35: [
+        [TUTORIAL_WINDOW_KEY, hashId("TUTORIAL_WIN_32")],
+        [TUTORIAL_WINDOW_FLAGS, 0],
+      ],
+      36: [
+        [TUTORIAL_WINDOW_KEY, hashId("TU_GN")],
+        [TUTORIAL_WINDOW_FLAGS, 0],
+      ],
+      128: [
+        [TUTORIAL_WINDOW_KEY, hashId("TU_ACT_PL0000")],
+        [TUTORIAL_WINDOW_FLAGS, 0],
+      ],
+      129: [
+        [TUTORIAL_WINDOW_KEY, hashId("TU_ACT_PL0100")],
+        [TUTORIAL_WINDOW_FLAGS, 0],
+      ],
+      131: [
+        [TIP_KEY, hashId("NOTE_WINDOW_TIPS_48")],
+        [TIP_FLAGS, 2],
+      ],
+      204: [
+        [TIP_KEY, 0x1c841dc4],
+        [TIP_FLAGS, 2],
+      ],
+      214: [
+        [TIP_KEY, hashId("NOTE_WINDOW_TIPS_55")],
+        [TIP_FLAGS, 2],
+      ],
     },
     { 0: [[SYSTEM_STORY_DIFFICULTY, 2]] },
   );
@@ -118,7 +152,7 @@ describe("advanceStory", () => {
       STORY_QUEST_LIVE_CLEARED,
       STORY_QUEST_THIRD_CLEARED,
     ])
-      expect(at.get(flags)).toEqual([0, 1, 1, 1, 1, 1, 1, 1]);
+      expect(at.get(flags)).toEqual([0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0]);
 
     for (const sections of [
       STORY_QUEST_CHECKPOINTS,
@@ -141,11 +175,62 @@ describe("advanceStory", () => {
     expect(units.values(TIP_FLAGS, 230)).toEqual([3]);
   });
 
+  it.each([
+    ["a new save", []],
+    ["the start of Chapter 2", [40]],
+  ])("moves %s to the start of Chapter 3", (_, before) => {
+    const session = newSave();
+    for (const key of before) advanceStory(session, key);
+    advanceStory(session, 60);
+    const units = readSave(session.export()).slotData.units;
+    const at = units.of(0);
+
+    expect(at.get(CURRENT_CHAPTER)).toEqual([60, -1]);
+    expect(at.get(CHAPTER_KEYS)).toEqual([0, 1, 20, 21, 22, 40, 41]);
+    expect(at.get(CHAPTER_BEST_DIFFICULTY)).toEqual([2, 2, 2, 2, 2, 2, 2]);
+    expect(at.get(CHAPTER_ULTIMATE_CLEARED)).toEqual([0, 0, 0, 0, 0, 0, 0]);
+    expect(at.get(CHAPTER_ULTIMATE_CLEARS)).toEqual([0, 0, 0, 0, 0, 0, 0]);
+    expect(at.get(CHAPTER_GROUPS)).toEqual([0, 1, 2]);
+    expect(at.get(CHAPTER_GROUP_FLAGS)).toEqual([0, 0, 0]);
+
+    for (const flags of [
+      STORY_QUEST_CLEARED,
+      STORY_QUEST_LIVE_CLEARED,
+      STORY_QUEST_THIRD_CLEARED,
+    ])
+      expect(at.get(flags)).toEqual([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]);
+
+    for (const sections of [
+      STORY_QUEST_CHECKPOINTS,
+      STORY_QUEST_CHECKPOINTS_LIVE,
+    ]) {
+      expect(at.get(sections)[0]).toBe(0);
+      expect(at.get(sections)[CHAPTER_3_RECORD * PART]).toBe(CHAPTER_3_SECTION);
+    }
+
+    for (const trophy of [1, 2, 1405, 1406])
+      expect(at.get(TROPHY_EARNED)[trophy]).toBe(true);
+    expect(at.get(TROPHY_PROGRESS)[2]).toBe(6n);
+    expect(at.get(TROPHY_PROGRESS)[501]).toBe(2n);
+    expect(at.get(TROPHY_PROGRESS)[1018]).toBe(2n);
+
+    for (const entity of [34, 35, 36, 94, 128, 129])
+      expect(units.values(TUTORIAL_WINDOW_FLAGS, entity)).toEqual([1]);
+    for (const entity of [131, 204, 214, 229, 230])
+      expect(units.values(TIP_FLAGS, entity)).toEqual([3]);
+  });
+
+  it("accepts the section the game moves a chapter start to", () => {
+    const session = newSave({ chapter: [40, -1], section: 18604228 });
+    expect(storyTargets(session).map(({ key }) => key)).toEqual([60]);
+  });
+
   it("refuses staying in place and offers nothing behind the save", () => {
     const session = newSave();
-    expect(storyTargets(session).map(({ key }) => key)).toEqual([40]);
-    advanceStory(session, 40);
+    expect(storyTargets(session).map(({ key }) => key)).toEqual([40, 60]);
+    advanceStory(session, 60);
     expect(() => advanceStory(session, 40)).toThrow("already at or past");
+    expect(() => advanceStory(session, 60)).toThrow("already at or past");
     expect(storyTargets(session)).toEqual([]);
   });
 

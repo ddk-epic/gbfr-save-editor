@@ -41,6 +41,15 @@ Chapter key 40, quest `00101F00` "Please Save Tempeal". The save loads into the 
 | 5815 | `TROPHY_PROGRESS`              | 501, 1018 | 0         | 1                   |
 | 5815 | `TROPHY_PROGRESS`              | 2         | 0         | 4                   |
 
+`TROPHY_PROGRESS` holds separate counters, not a count of trophies. Index 2 counts chapter keys cleared, for trophy 12 "Complete all chapters on Action difficulty", which needs 41 and stays unearned. Index 501 counts earned trophies outside Keys 1395-1453, here trophy 1. Index 1018 counts earned trophies inside that range, here trophy 1405.
+
+Trophies earned by 5801, by `badge.Key`:
+
+| Key  | Name                 | Description                              |
+| ---- | -------------------- | ---------------------------------------- |
+| 1    | Visitor from Beyond  | Complete Chapter 1: The Western Frontier |
+| 1405 | The Western Frontier | Complete Chapter 1 of the main story     |
+
 Tutorial and tip rows, by entity:
 
 | Unit | Name                    | Entity | Row                   | New save | Patched |
@@ -83,7 +92,7 @@ A load without the 5801 and 5815 patches set them itself, in the poll where 2513
 - `CURRENT_CHAPTER` (2506) at 1, the online entry, stays -1.
 - 2501, unnamed, stays 0. `QUEST_SEED` (2504) and the 7601 seeds stay as they are.
 - Character level, weapons, abilities, party, items, and the tutorial, journal and archive rows a played prologue sets.
-- Trophy 194 "Unlock the captain's first Mastery node" and its counters, earned by spending MSP in the traced clear.
+- Trophy 194 "Room for Improvement", "Unlock the captain's first Mastery node", and its counters, earned by spending MSP in the traced clear.
 
 ### Status
 
