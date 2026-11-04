@@ -29,6 +29,9 @@ const HINT_WINDOWS = [
   "TU_PHOTO",
   "TUTORIAL_WIN_31",
   "TU_MOVETOWN",
+  "TUTORIAL_WIN_29",
+  "TU_ITEM",
+  "TU_NOTE",
 ].map(hashId);
 
 const HINT_MENUS = [
@@ -40,6 +43,9 @@ const HINT_MENUS = [
   "TUTORIAL_LIMITBREAK",
   "TUTORIAL_PHOTO",
   "TUTORIAL_EQUIP",
+  "TUTORIAL_ABILITYEQ",
+  "TUTORIAL_ITEM",
+  "TUTORIAL_NOTE",
 ].map(hashId);
 
 const HINT_TIPS = [
@@ -59,6 +65,14 @@ const HINT_TIPS = [
   hashId("NOTE_WINDOW_TIPS_80"),
   hashId("NOTE_WINDOW_TIPS_110"),
   3720559472,
+  hashId("NOTE_WINDOW_TIPS_117"),
+  hashId("NOTE_WINDOW_TIPS_118"),
+  hashId("NOTE_WINDOW_TIPS_119"),
+  hashId("NOTE_WINDOW_TIPS_121"),
+  hashId("NOTE_WINDOW_TIPS_131"),
+  2043388923,
+  951310505,
+  4077825340,
 ];
 
 /** `infomation_dialog.Key`. */
