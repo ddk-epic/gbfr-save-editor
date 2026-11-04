@@ -13,10 +13,14 @@ import {
   COUNTER_QUEST_FLAGS,
   COUNTER_QUEST_IDS,
   COUNTER_QUEST_OPENED,
+  SHORT_STORY_CHECKPOINTS,
+  SHORT_STORY_CLEARS,
+  SHORT_STORY_IDS,
 } from "./attributes";
 
 const LOWEST_GRADE = 0;
 const PROUD = 7;
+const SHORT_STORY_CHECKPOINT_VALUES = 64;
 
 /** Marks quest counter quests with no clears as cleared once, with no rewards, and returns those it changed. */
 export function clearCounterQuests(
@@ -63,6 +67,37 @@ export function clearCounterQuests(
       attribute: PROFILE_QUESTS_CLEARED,
       entity: PROFILE_FIRST,
       values: [questsCleared],
+    },
+  ]);
+  return added;
+}
+
+/** Marks short stories with no clears as played, and returns those it changed. */
+export function clearShortStories(
+  session: SaveSession,
+  quests: readonly number[],
+): string[] {
+  const at = session.save.slotData.units.of(SAVE_ENTITY);
+  const ids = at.get(SHORT_STORY_IDS);
+  const clears = [...at.get(SHORT_STORY_CLEARS)];
+  const checkpoints = [...at.get(SHORT_STORY_CHECKPOINTS)];
+  const added: string[] = [];
+
+  for (const quest of quests) {
+    const row = ids.indexOf(quest);
+    if (row === -1 || clears[row] !== 0) continue;
+    clears[row] = 1;
+    checkpoints[row * SHORT_STORY_CHECKPOINT_VALUES] = 0;
+    added.push(`short story ${quest.toString(16)}`);
+  }
+
+  if (added.length === 0) return added;
+  session.patch([
+    { attribute: SHORT_STORY_CLEARS, entity: SAVE_ENTITY, values: clears },
+    {
+      attribute: SHORT_STORY_CHECKPOINTS,
+      entity: SAVE_ENTITY,
+      values: checkpoints,
     },
   ]);
   return added;

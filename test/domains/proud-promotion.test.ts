@@ -12,11 +12,15 @@ import {
   COUNTER_QUEST_IDS,
   COUNTER_QUEST_OPENED,
   QUEST_DIFFICULTY_UNLOCKED,
+  SHORT_STORY_CHECKPOINTS,
   SHORT_STORY_CLEARS,
   SHORT_STORY_IDS,
 } from "../../src/domains/quest/attributes";
 import { UI_FEATURE_UNLOCKED } from "../../src/domains/story/attributes";
-import { promoteToProud } from "../../src/domains/story/fill";
+import {
+  promoteToProud,
+  unlockProudQuests,
+} from "../../src/domains/story/fill";
 import {
   TROPHY_EARNED,
   TROPHY_PROGRESS,
@@ -113,5 +117,61 @@ describe("promoteToProud", () => {
 
   it("refuses a save without Maniac quests", () => {
     expect(() => promoteToProud(save(5))).toThrow("Maniac");
+  });
+});
+
+describe("unlockProudQuests", () => {
+  const PREREQUISITES = [
+    0x407301, 0x407302, 0x407303, 0x407304, 0x407310, 0x407311, 0x407312,
+    0x407313, 0x407314, 0x407315, 0x407316, 0x407317, 0x407318, 0x407319,
+    0x407320,
+  ];
+  const proudSave = (difficulty: number) =>
+    SaveSession.open(
+      fixtureFile({
+        0: [
+          [SAVE_HASHSEED, 23],
+          [QUEST_DIFFICULTY_UNLOCKED, difficulty],
+          [TROPHY_PROGRESS, Array<bigint>(1200).fill(0n)],
+          [SHORT_STORY_IDS, [0x705001, 0x710000, 0x710001]],
+          [SHORT_STORY_CLEARS, [0, 0, 0]],
+          [
+            SHORT_STORY_CHECKPOINTS,
+            Array.from({ length: 192 }, (_, index) =>
+              index === 128 || index === 0 ? 77 : 0,
+            ),
+          ],
+          [COUNTER_QUEST_IDS, [0x407321, ...PREREQUISITES]],
+          [COUNTER_QUEST_CLEARS, Array<number>(16).fill(0)],
+          [COUNTER_QUEST_FLAGS, Array<number>(16).fill(7)],
+          [COUNTER_QUEST_OPENED, Array<boolean>(16).fill(false)],
+          [COUNTER_QUEST_CLEARED, Array<boolean>(16).fill(false)],
+        ],
+        [PROFILE_FIRST]: [[PROFILE_QUESTS_CLEARED, 3]],
+      }),
+    );
+
+  it("clears the quests that open others, and only once", () => {
+    const session = proudSave(7);
+    expect(unlockProudQuests(session)).toHaveLength(17);
+    const at = readSave(session.export()).slotData.units.of(0);
+
+    expect(at.get(COUNTER_QUEST_CLEARS)).toEqual([
+      0,
+      ...PREREQUISITES.map(() => 1),
+    ]);
+    expect(at.get(SHORT_STORY_CLEARS)).toEqual([0, 1, 1]);
+    expect(at.get(SHORT_STORY_CHECKPOINTS)[0]).toBe(77);
+    expect(at.get(SHORT_STORY_CHECKPOINTS)[128]).toBe(0);
+    expect(at.get(TROPHY_PROGRESS)[238]).toBe(15n);
+    expect(at.get(TROPHY_PROGRESS)[20]).toBe(15n);
+
+    const first = session.export();
+    expect(unlockProudQuests(session)).toEqual([]);
+    expect(session.export()).toEqual(first);
+  });
+
+  it("refuses a save without Proud quests", () => {
+    expect(() => unlockProudQuests(proudSave(6))).toThrow("Proud");
   });
 });

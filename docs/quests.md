@@ -164,6 +164,24 @@ The game pays the trophy 25 and 542 rewards by itself after a load.
 
 The other `00406` rows in 2570 have no `baseinfo.msg`.
 
+`unlockProudQuests` works on a save with 7303 at 7. It marks the 15 quests that open another Proud quest as cleared, written the same way with 5815 at 238: `00407301`-`00407304`, `00407310`-`00407320`. The other 10 are listed with no clears.
+
+It also takes 2581 to 1 and the first 2582 value to 0 on `00710000` and `00710001`, so neither plays. `00710000` runs at stage `0xD00`, calling event 5921 and talk event `VT_MS17_0015`, and writes nothing else. A load at `0xC00` with its conditions met plays it there, part broken. `00710001` runs at `0xD00`, calling event 32768 and dialog `DLG_STG_LUCILIUS_VISION`, and `00407320` opens on it.
+
+| Quest                                          | Opens on                           |
+| ---------------------------------------------- | ---------------------------------- |
+| `00407301`-`00407309`                          | `00407101`                         |
+| `00407310`, `00407311`, `00407312`             | `00407301`-`00407304`              |
+| `00407313`                                     | `00407312`                         |
+| `00407314`                                     | `00407313`                         |
+| `00407315`                                     | `00407314`                         |
+| `00407316`, `00407317`                         | `00407310`, `00407311`             |
+| `00407319`                                     | `00407315`, `00407316`, `00407317` |
+| `00407318`                                     | `00407319`, `00710010`             |
+| `00407322`                                     | `00407318`                         |
+| `00407320`                                     | `00407318`, `00710001`, `00710010` |
+| `00407321`, `00407323`, `00407324`, `00407325` | `00407320`                         |
+
 ## Fate quests
 
 Two arrays of 100, for the episodes that are a quest (`fate_episode.MissionQuestId`).

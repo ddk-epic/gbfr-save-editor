@@ -31,7 +31,7 @@ import {
   FIELD_NOTE_WEAPON_KEY,
 } from "../journal/attributes";
 import { MASTERY_NODE_BITS } from "../mastery/attributes";
-import { clearCounterQuests } from "../quest/clear";
+import { clearCounterQuests, clearShortStories } from "../quest/clear";
 import {
   COUNTER_QUEST_IDS,
   COUNTER_QUEST_OPENED,
@@ -264,6 +264,15 @@ const PROUD_PROMOTION: StoryFillEntry = {
   questDifficulty: PROUD,
 };
 
+const PROUD_PREREQUISITES = [
+  0x407301, 0x407302, 0x407303, 0x407304, 0x407310, 0x407311, 0x407312,
+  0x407313, 0x407314, 0x407315, 0x407316, 0x407317, 0x407318, 0x407319,
+  0x407320,
+];
+
+/** The cutscenes `00407320` opens on. */
+const PROUD_SHORT_STORIES = [0x710000, 0x710001];
+
 const ID_MAX_JOIN_LEVEL = 42;
 /** XP, base HP and base attack per level. */
 const ID_LEVELS: Readonly<Record<number, readonly [number, number, number]>> = {
@@ -367,6 +376,17 @@ export function promoteToProud(session: SaveSession): string[] {
   if (at.get(QUEST_DIFFICULTY_UNLOCKED) < MANIAC)
     throw new Error("the save has not unlocked Maniac quests");
   return applyFill(session, [PROUD_PROMOTION]);
+}
+
+/** Lists every Proud quest by clearing the ones that open others, and returns what it added. */
+export function unlockProudQuests(session: SaveSession): string[] {
+  const at = session.save.slotData.units.of(SAVE_ENTITY);
+  if (at.get(QUEST_DIFFICULTY_UNLOCKED) < PROUD)
+    throw new Error("the save has not unlocked Proud quests");
+  return [
+    ...clearShortStories(session, PROUD_SHORT_STORIES),
+    ...clearCounterQuests(session, PROUD_PREREQUISITES),
+  ];
 }
 
 function applyFill(
