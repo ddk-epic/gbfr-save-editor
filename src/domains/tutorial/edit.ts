@@ -39,6 +39,7 @@ const HINT_WINDOWS = [
   "TU_GHOST_AI_DISPATCH",
   "TU_MENU_QUESTSELECT",
   "TU_FAST_TRAVEL",
+  "TU_STATION",
 ].map(hashId);
 
 const HINT_MENUS = [
@@ -99,10 +100,14 @@ const HINT_TIPS = [
   2615852220,
   3949543317,
   2588951308,
+  0xa8f08e0e,
+  0xad03fd1f,
 ];
 
 /** `infomation_dialog.Key`. */
-const HINT_DIALOGS = [0xa60431d1, 0x64574a34, 0xb4b28aa5, 0x9818071c];
+const HINT_DIALOGS = [
+  0xa60431d1, 0x64574a34, 0xb4b28aa5, 0x9818071c, 0x28c2a532,
+];
 
 /** Marks every found hint as shown, at any point in the story. */
 export function disableHints(session: SaveSession) {
