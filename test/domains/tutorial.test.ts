@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { hashId } from "../../src/core/xxhash32-custom";
 import { TIP_FLAGS, TIP_KEY } from "../../src/domains/journal/attributes";
 import {
+  INFORMATION_DIALOG_KEY,
+  INFORMATION_DIALOG_SHOWN,
   TUTORIAL_MENU_FLAGS,
   TUTORIAL_MENU_KEY,
   TUTORIAL_WINDOW_FLAGS,
@@ -36,6 +38,14 @@ const save = () =>
         [TIP_KEY, hashId("NOTE_WINDOW_TIPS_127")],
         [TIP_FLAGS, 2],
       ],
+      6: [
+        [INFORMATION_DIALOG_KEY, 0xa60431d1],
+        [INFORMATION_DIALOG_SHOWN, 0],
+      ],
+      7: [
+        [INFORMATION_DIALOG_KEY, 0xf88c0d9a],
+        [INFORMATION_DIALOG_SHOWN, 0],
+      ],
     }),
   );
 
@@ -50,5 +60,7 @@ describe("disableHints", () => {
     expect(units.values(TUTORIAL_WINDOW_FLAGS, 3)).toEqual([0]);
     expect(units.values(TUTORIAL_MENU_FLAGS, 4)).toEqual([1]);
     expect(units.values(TIP_FLAGS, 5)).toEqual([3]);
+    expect(units.values(INFORMATION_DIALOG_SHOWN, 6)).toEqual([1]);
+    expect(units.values(INFORMATION_DIALOG_SHOWN, 7)).toEqual([0]);
   });
 });

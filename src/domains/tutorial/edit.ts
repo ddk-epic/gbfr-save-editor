@@ -3,6 +3,8 @@ import { hashId } from "../../core/xxhash32-custom";
 import type { Patch, SaveSession } from "../../save/session";
 import { TIP_FLAGS, TIP_KEY } from "../journal/attributes";
 import {
+  INFORMATION_DIALOG_KEY,
+  INFORMATION_DIALOG_SHOWN,
   TUTORIAL_MENU_FLAGS,
   TUTORIAL_MENU_KEY,
   TUTORIAL_WINDOW_FLAGS,
@@ -26,6 +28,7 @@ const HINT_WINDOWS = [
   "TU_LIMITBREAK",
   "TU_PHOTO",
   "TUTORIAL_WIN_31",
+  "TU_MOVETOWN",
 ].map(hashId);
 
 const HINT_MENUS = [
@@ -55,7 +58,11 @@ const HINT_TIPS = [
   hashId("NOTE_WINDOW_TIPS_65"),
   hashId("NOTE_WINDOW_TIPS_80"),
   hashId("NOTE_WINDOW_TIPS_110"),
+  3720559472,
 ];
+
+/** `infomation_dialog.Key`. */
+const HINT_DIALOGS = [0xa60431d1, 0x64574a34];
 
 /** Marks every found hint as shown, at any point in the story. */
 export function disableHints(session: SaveSession) {
@@ -77,5 +84,6 @@ export function disableHints(session: SaveSession) {
   markShown(TUTORIAL_WINDOW_KEY, TUTORIAL_WINDOW_FLAGS, HINT_WINDOWS);
   markShown(TUTORIAL_MENU_KEY, TUTORIAL_MENU_FLAGS, HINT_MENUS);
   markShown(TIP_KEY, TIP_FLAGS, HINT_TIPS);
+  markShown(INFORMATION_DIALOG_KEY, INFORMATION_DIALOG_SHOWN, HINT_DIALOGS);
   session.patch(patches);
 }

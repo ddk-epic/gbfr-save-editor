@@ -123,8 +123,6 @@ Units that move during story play, with no meaning assigned and no domain of the
 | 4202      | not named                   | `uint`    | 0-63     | 0 or 1, beside 4201                                               |
 | 4318      | not named                   | `bool`    | 0        | Goes from false to true in `00107001`                             |
 | 4331      | not named                   | `bool`    | 0        | Goes from false to true in a story quest                          |
-| 7301      | not named                   | `uint`    | 0-63     | A hash                                                            |
-| 7302      | not named                   | `uint`    | 0-63     | 0 or 1, beside 7301                                               |
 | 7303      | `QUEST_DIFFICULTY_UNLOCKED` | `int`     | 0        | Highest quest difficulty unlocked, by the id digit in `quests.md` |
 | 8901      | not named                   | `uint`    | 0        | Goes from 0 to 1 as a story party's slots are released            |
 | 8907      | not named                   | `uint[7]` | 0        | Value 2 goes from 0 to 1 just after `ITEM_70_0010`                |
@@ -132,7 +130,7 @@ Units that move during story play, with no meaning assigned and no domain of the
 - 4103 changes at the end of a story or quest counter quest. The three 4001 rows it names take 8 in 4003 if they held 0, then 10 seconds later, the rows it no longer names going back to 8.
 - 7303 goes 2 to 3 with trophy 22 "Unlock Hard quests", 3 to 4 with trophy 23 "Unlock Very Hard quests", 4 to 5 with trophy 24 "Unlock Extreme quests", 5 to 6 with trophy 25 "Unlock Maniac quests" and 6 to 7 with trophy 542 "Unlock Proud quests". 22 and 23 arrive just after a Rolan note moves, well after their `badge.QuestId` clears; 24 just after `0010A001` clears; 25 with its `QuestId`, `0010A031`, underway; 542 in the record write of its `QuestId`, `00407101`, the first Proud quest.
 - 7313, a `uint`, goes 0 to 1 8 s after the record write of `00407318`, in the poll where 7103 takes `ShopWeaponLimitBreak`. It has no meaning assigned.
-- 7302 goes from 0 to 1 at one entity at a Crewmate Card reward in `00106000`, at another as `PL1900`'s story stretch begins, and at two more just after the first checkpoint of `00109001`. None of the hashes beside them matches a table key.
+- 7301 and 7302 are the information dialogs, see [`tutorials.md`](tutorials.md).
 - The 4201 hashes match no table text or message key.
 - 4331 sits among 4328-4334, a run of `bool` and `byte` units at entity 0.
 - 8901 sits beside 8902 and 8904, the counters that climb by one per save.
