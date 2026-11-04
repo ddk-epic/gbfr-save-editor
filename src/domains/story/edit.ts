@@ -1,14 +1,5 @@
 import type { Attribute } from "../../core/attribute";
 import type { Patch, SaveSession } from "../../save/session";
-import {
-  CHAPTER_KEYS_CLEARED,
-  TROPHIES_EARNED_IN_RANGE,
-  TROPHIES_EARNED_OUTSIDE_RANGE,
-  TROPHY_EARNED,
-  TROPHY_PROGRESS,
-  TROPHY_RANGE_FIRST,
-  TROPHY_RANGE_LAST,
-} from "../trophy/attributes";
 import { SAVE_ENTITY } from "../user/attributes";
 import {
   CHAPTER_BEST_DIFFICULTY,
@@ -33,6 +24,7 @@ import {
   SYSTEM_STORY_DIFFICULTY,
 } from "./attributes";
 import { STORY_CHECKPOINTS, type StoryCheckpoint } from "./checkpoints";
+import { onlyEntity } from "./only-entity";
 
 /** The checkpoints a save can advance to, in story order. */
 export function storyTargets(session: SaveSession): readonly StoryCheckpoint[] {
@@ -117,35 +109,11 @@ export function advanceStory(session: SaveSession, key: number) {
   set(CURRENT_TOWN_CHECKPOINT, [destination.townCheckpoint]);
   set(CURRENT_CHAPTER, [destination.key, at.get(CURRENT_CHAPTER)[1]]);
 
-  const earned = [...at.get(TROPHY_EARNED)];
-  const progress = [...at.get(TROPHY_PROGRESS)];
-  for (const step of steps) {
-    for (const trophy of step.trophies) {
-      if (earned[trophy]) continue;
-      earned[trophy] = true;
-      const counter =
-        trophy >= TROPHY_RANGE_FIRST && trophy <= TROPHY_RANGE_LAST
-          ? TROPHIES_EARNED_IN_RANGE
-          : TROPHIES_EARNED_OUTSIDE_RANGE;
-      progress[counter] = progress[counter]! + 1n;
-    }
-    if (step.chapterKeysCleared > progress[CHAPTER_KEYS_CLEARED]!)
-      progress[CHAPTER_KEYS_CLEARED] = step.chapterKeysCleared;
-  }
-  set(TROPHY_EARNED, earned);
-  set(TROPHY_PROGRESS, progress);
-
-  const onlyEntity = (attribute: Attribute<unknown>, hash: number) => {
-    const found = units.entitiesWhere(attribute, hash);
-    if (found.length !== 1)
-      throw new Error(`${found.length} units of ${attribute.id} hold ${hash}`);
-    return found[0]!;
-  };
   for (const step of steps) {
     for (const hash of step.islands)
       patches.push({
         attribute: ISLAND_UNLOCKED,
-        entity: onlyEntity(ISLAND_KEY, hash),
+        entity: onlyEntity(units, ISLAND_KEY, hash),
         values: [true],
       });
   }

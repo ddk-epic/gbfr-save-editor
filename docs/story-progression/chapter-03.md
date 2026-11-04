@@ -24,20 +24,8 @@ Chapter key 80, quest `00102000` "Nightmare". Units are at entity 0 unless liste
 | 2594 | `CHAPTER_ULTIMATE_CLEARS`      | List, adds |                 | `0, 0, 0`           |
 | 2595 | `CHAPTER_GROUPS`               | List, adds |                 | `3`                 |
 | 2596 | `CHAPTER_GROUP_FLAGS`          | List, adds |                 | `0`                 |
-| 5801 | `TROPHY_EARNED`                | 3, 1407    | False           | True                |
-| 5815 | `TROPHY_PROGRESS`              | 2          | 6               | 9                   |
-| 5815 | `TROPHY_PROGRESS`              | 501, 1018  | 2               | 3                   |
-
-`TROPHY_PROGRESS` holds separate counters, not a count of trophies. Index 2 counts chapter keys cleared, for trophy 12 "Complete all chapters on Action difficulty", which needs 41 and stays unearned. Index 501 counts earned trophies outside Keys 1395-1453, here trophies 1, 2 and 3. Index 1018 counts earned trophies inside that range, here trophies 1405, 1406 and 1407. The Patched column is for a save with no other trophies: the patch adds 1 to 501 or 1018 per trophy it newly earns, and index 2 only rises.
 
 `CURRENT_TOWN` (2502) and `CURRENT_TOWN_CHECKPOINT` (2503) are written with the values they already hold, 3072 and 939223336.
-
-Trophies earned by 5801, by `badge.Key`:
-
-| Key  | Name                        | Description                                |
-| ---- | --------------------------- | ------------------------------------------ |
-| 3    | Pacifier of the Divine Gale | Complete Chapter 3: Creations of the Stars |
-| 1407 | Creation of the Stars       | Complete Chapter 3 of the main story       |
 
 Quest records cleared by indexes 42, 43 and 44:
 
@@ -52,16 +40,14 @@ Quest records cleared by indexes 42, 43 and 44:
 - 2506, 2511, 2512, 2522, 2513, 2514, 2590-2592, 2594-2596 come from the record write that ends the `00101003` run in a traced clear.
 - 2513 and 2514 at 8000 take the value that write gave them, a `BeginSection` guid in `quest_102000_0_fsm_ingame`.
 - 2502 and 2503 did not move through the traced chapter.
-- 5801 at 3 and 1407 are the Chapter 3 trophies. Trophy 3 counts in 501 and 1407 in 1018.
-- 5815 at 2 went 6 to 7, 7 to 8 and 8 to 9 in the traced chapter, and holds 9 at the start of `00102000`.
 
 ### Not patched
 
+- Story trophies and their counters, items and archives, see [`fill.md`](fill.md).
 - Hints, a separate edit, see [`tutorials.md`](../tutorials.md).
 - Character level, weapons, abilities, party, items, and the journal rows the chapter sets: 8102, 8202, 8302, 8402, 8502.
 - 2201, 2202, 2203 and 2401, the story party. In the traced clear 2202 is set on all four slots and 2203 cleared in the record write, and 2201 and 2401 move 7 s later.
 - Trophy 1442 "No Cap" and trophy 1443 "Knickknack Shack Regular", earned in the traced clear with the action not done on the save.
-- 5815 at 74, the count for trophy 112 "Primal Beast Hunter".
 - 2552 at 7488, the second `GEEN_001_00` sigil, 2903 and 2904, 2504, 2605 and the 7601 seeds.
 
 ### Set by the game

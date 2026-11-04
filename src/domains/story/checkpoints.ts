@@ -14,9 +14,6 @@ export interface StoryCheckpoint {
   cleared: readonly number[];
   chapterKeys: readonly number[];
   chapterGroups: readonly number[];
-  trophies: readonly number[];
-  /** `CHAPTER_KEYS_CLEARED` at this checkpoint. */
-  chapterKeysCleared: bigint;
   /** `ISLAND_KEY` hashes. */
   islands: readonly number[];
 }
@@ -36,8 +33,6 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     ],
     chapterKeys: [0, 1, 20, 21, 22],
     chapterGroups: [0, 1],
-    trophies: [1, 1405],
-    chapterKeysCleared: 4n,
     islands: [hashId("ISLAND_1ST")],
   },
   // Start of Chapter 3
@@ -51,8 +46,6 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     cleared: [0x101f00, 0x101001, 0x101002],
     chapterKeys: [40, 41],
     chapterGroups: [2],
-    trophies: [2, 1406],
-    chapterKeysCleared: 6n,
     islands: [],
   },
   // Start of Chapter 4
@@ -66,8 +59,6 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     cleared: [0x101003, 0x101004, 0x101005],
     chapterKeys: [60, 61, 62],
     chapterGroups: [3],
-    trophies: [3, 1407],
-    chapterKeysCleared: 9n,
     islands: [],
   },
   // Start of Chapter 5
@@ -81,8 +72,6 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     cleared: [0x102000, 0x102f00, 0x102002, 0x103f00],
     chapterKeys: [80, 81, 82],
     chapterGroups: [4],
-    trophies: [4, 1408],
-    chapterKeysCleared: 13n,
     islands: [hashId("ISLAND_2ST"), hashId("ISLAND_3ST")],
   },
   // Start of Chapter 6
@@ -96,8 +85,6 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     cleared: [0x103001, 0x104f00],
     chapterKeys: [100, 101, 102, 103, 104],
     chapterGroups: [5],
-    trophies: [5, 1409],
-    chapterKeysCleared: 18n,
     islands: [],
   },
   // Start of Chapter 7
@@ -111,8 +98,6 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     cleared: [0x104000, 0x104f01, 0x104003, 0x104001, 0x104002, 0x105f00],
     chapterKeys: [120, 121, 122, 123],
     chapterGroups: [6],
-    trophies: [6, 1410],
-    chapterKeysCleared: 22n,
     islands: [hashId("ISLAND_4ST"), hashId("ISLAND_5ST")],
   },
   // Start of Chapter 8
@@ -126,8 +111,6 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     cleared: [0x105001, 0x105f01, 0x105002, 0x106f00],
     chapterKeys: [140, 141, 142, 143],
     chapterGroups: [7],
-    trophies: [7, 1411],
-    chapterKeysCleared: 26n,
     islands: [hashId("ISLAND_6ST")],
   },
   // Start of Chapter 9
@@ -141,8 +124,6 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     cleared: [0x106000, 0x106001, 0x106002],
     chapterKeys: [160, 161, 162, 163, 164],
     chapterGroups: [8],
-    trophies: [8, 1412],
-    chapterKeysCleared: 30n,
     islands: [],
   },
   // Start of Chapter 10
@@ -156,8 +137,6 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     cleared: [0x107000, 0x107f00, 0x107002, 0x107001, 0x107003],
     chapterKeys: [180, 181, 182, 183, 184, 185],
     chapterGroups: [9],
-    trophies: [9, 1413],
-    chapterKeysCleared: 36n,
     islands: [hashId("ISLAND_7ST")],
   },
   // Start of Chapter Ø
@@ -171,8 +150,6 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     cleared: [0x108f00, 0x108000, 0x108002, 0x108001, 0x109001, 0x109000],
     chapterKeys: [200],
     chapterGroups: [10],
-    trophies: [11, 1397],
-    chapterKeysCleared: 38n,
     islands: [hashId("ISLAND_8ST")],
   },
 ];

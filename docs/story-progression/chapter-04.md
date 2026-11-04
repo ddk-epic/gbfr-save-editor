@@ -24,20 +24,8 @@ Chapter key 100 "Mt. Neigelith", quest `00103001`, the quest holding the chapter
 | 2594 | `CHAPTER_ULTIMATE_CLEARS`      | List, adds     |                 | `0, 0, 0`           |
 | 2595 | `CHAPTER_GROUPS`               | List, adds     |                 | `4`                 |
 | 2596 | `CHAPTER_GROUP_FLAGS`          | List, adds     |                 | `0`                 |
-| 5801 | `TROPHY_EARNED`                | 4, 1408        | False           | True                |
-| 5815 | `TROPHY_PROGRESS`              | 2              | 9               | 13                  |
-| 5815 | `TROPHY_PROGRESS`              | 501, 1018      | 3               | 4                   |
-
-`TROPHY_PROGRESS` holds separate counters, not a count of trophies. Index 2 counts chapter keys cleared, for trophy 12 "Complete all chapters on Action difficulty", which needs 41 and stays unearned. Index 501 counts earned trophies outside Keys 1395-1453, here trophies 1, 2, 3 and 4. Index 1018 counts earned trophies inside that range, here trophies 1405, 1406, 1407 and 1408. The Patched column is for a save with no other trophies: the patch adds 1 to 501 or 1018 per trophy it newly earns, and index 2 only rises.
 
 `CURRENT_TOWN` (2502) and `CURRENT_TOWN_CHECKPOINT` (2503) are written with the values they already hold, 3072 and 939223336.
-
-Trophies earned by 5801, by `badge.Key`:
-
-| Key  | Name                    | Description                            |
-| ---- | ----------------------- | -------------------------------------- |
-| 4    | Destroyer of the Armada | Complete Chapter 4: Skies Forever Blue |
-| 1408 | Skies Forever Blue      | Complete Chapter 4 of the main story   |
 
 Island rows, by entity:
 
@@ -60,15 +48,13 @@ Quest records cleared by indexes 36, 38, 39 and 40:
 - 2506, 2511, 2512, 2522, 2513, 2514, 2590-2592, 2594-2596 come from the record writes of `00102000`, `00102F00`, `00102002` and `00103F00` in a traced clear.
 - 2513 and 2514 at 7400 take the value the record write of `00103F00` gave them, a `BeginSection` guid in `quest_103001_0_fsm_ingame`.
 - 2502 and 2503 did not move through the traced chapter.
-- 5801 at 4 and 1408 are the Chapter 4 trophies. Trophy 4 counts in 501 and 1408 in 1018.
-- 5815 at 2 went 9 to 13 from the start of `00102000` to the clear of `00103F00`, and holds 13 at the start of `00103001`.
 - 6102 at 3 and 4 turn true in the traced clear. On a loaded save the game set 6102 at 4 itself at the end of `00103F00` and did not set 6102 at 3.
 
 ### Not patched
 
+- Story trophies and their counters, items and archives, see [`fill.md`](fill.md).
 - Character level, weapons, abilities, party, items, and the journal rows the chapter sets: 8102, 8202, 8302, 8402, 8502.
 - Trophy 76 "Casual Scribe", "Discover an archive entry for the first time", and 7902 at 35.
-- 5815 at 446, the count for destroying enemy cannons in Chapter 4.
 - Hints, a separate edit, see [`tutorials.md`](../tutorials.md).
 - 2504, 2605 and the 7601 seeds.
 

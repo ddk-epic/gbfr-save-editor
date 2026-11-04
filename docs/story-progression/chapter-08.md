@@ -25,20 +25,8 @@ Chapter key 180, quest `00107000`, the quest holding the chapter title `TELOP_CH
 | 2594 | `CHAPTER_ULTIMATE_CLEARS`      | List, adds |                 | `0, 0, 0, 0, 0`           |
 | 2595 | `CHAPTER_GROUPS`               | List, adds |                 | `8`                       |
 | 2596 | `CHAPTER_GROUP_FLAGS`          | List, adds |                 | `0`                       |
-| 5801 | `TROPHY_EARNED`                | 8, 1412    | False           | True                      |
-| 5815 | `TROPHY_PROGRESS`              | 2          | 26              | 30                        |
-| 5815 | `TROPHY_PROGRESS`              | 501, 1018  | 7               | 8                         |
-
-`TROPHY_PROGRESS` holds separate counters, not a count of trophies. Index 2 counts chapter keys cleared, for trophy 12 "Complete all chapters on Action difficulty", which needs 41 and stays unearned. Index 501 counts earned trophies outside Keys 1395-1453, here trophies 1 to 8. Index 1018 counts earned trophies inside that range, here trophies 1405 to 1412. The Patched column is for a save with no other trophies: the patch adds 1 to 501 or 1018 per trophy it newly earns, and index 2 only rises.
 
 `CURRENT_TOWN_CHECKPOINT` (2503) is written with the value it already holds, 528045455.
-
-Trophies earned by 5801, by `badge.Key`:
-
-| Key  | Name              | Description                          |
-| ---- | ----------------- | ------------------------------------ |
-| 8    | One with the Blue | Complete Chapter 8: Relink           |
-| 1412 | Relink            | Complete Chapter 8 of the main story |
 
 Quest records cleared by indexes 23, 24 and 25:
 
@@ -53,11 +41,10 @@ Quest records cleared by indexes 23, 24 and 25:
 - 2502, 2506, 2511, 2512, 2522, 2513, 2514, 2590-2592, 2594-2596 come from the record writes of these quests in a traced clear. One write clears `00106001` and `00106002`.
 - 2513 and 2514 at 4200 take the value that write gave them, a `BeginSection` guid in `quest_107000_0_fsm_ingame`.
 - 2503 did not move through the traced chapter.
-- 5801 at 8 and 1412 are the Chapter 8 trophies. Trophy 8 counts in 501 and 1412 in 1018. The traced clear earned them at the first checkpoint of `00107000`.
-- 5815 at 2 went 26 to 29 and 29 to 30 in `00106001` and `00106002`, and holds 30 at the start of `00107000`.
 
 ### Not patched
 
+- Story trophies and their counters, items and archives, see [`fill.md`](fill.md).
 - Crewmate Card `ITEM_23_0000`, `ITEM_02_0050`, and other items and quest rewards.
 - `WEP_PL0000_99` and `WEP_PL0100_99`, the weapons the chapter's last fight adds, the `NP0300` and `NP0000` stand-ins at 10015, and the captain in play's `_03` raised to XP 1740 and uncap 3.
 - Trophies outside the chapter: 88 "Defeat a slime", 136 "Destroy an enemy part", 364, 420, and their 5815 counters, 7801, 7803.

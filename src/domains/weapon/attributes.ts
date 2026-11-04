@@ -7,6 +7,7 @@ export const WEAPONS = keyTable("weapon", WEAPON_KEYS);
 
 export const WEAPON_FIRST = 40000;
 
+export const WEAPON_LAST_ID = Attribute.uint(2801);
 export const WEAPON_ID = Attribute.uint(2802);
 export const WEAPON_KEY = keyAttribute(2803, WEAPONS);
 export const WEAPON_XP = Attribute.uint(2804);

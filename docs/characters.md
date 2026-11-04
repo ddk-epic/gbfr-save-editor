@@ -139,7 +139,7 @@ Bit 0 can clear again, as it does on `PL1900` when its story stretch ends, and i
 
 The unit then gains XP and levels as usual. Just before the clear of `00107001`, 1305 drops to bit 3 alone. The XP, level, skills and 1602 values stay.
 
-Early in `00109001`, the quest's `IdoEntry` step (`FUN_143212080`, `maxCharacterLevel_` 42) sets bit 0. It does nothing if bit 0 is already set. It then takes the highest level among the characters it counts, capped at 42, and raises the unit to that level if the unit is below it, with MSP for the levels gained. Which characters it counts has not been read.
+Early in `00109001`, the quest's `IdoEntry` step (`FUN_143212080`, `maxCharacterLevel_` 42) sets bit 0. It does nothing if bit 0 is already set. It then takes the highest level among the characters it counts, capped at 42, and raises the unit to that level if the unit is below it, with MSP for the levels gained. Which characters it counts has not been read. [`fillSkippedStory`](story-progression/fill.md) applies the same rule to a save that skipped the step.
 
 ## Special units
 

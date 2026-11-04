@@ -22,10 +22,6 @@ import {
   SYSTEM_STORY_DIFFICULTY,
 } from "../../src/domains/story/attributes";
 import { advanceStory, storyTargets } from "../../src/domains/story/edit";
-import {
-  TROPHY_EARNED,
-  TROPHY_PROGRESS,
-} from "../../src/domains/trophy/attributes";
 import { SAVE_HASHSEED } from "../../src/domains/user/attributes";
 import { SaveSession } from "../../src/save/session";
 import { fixtureFile } from "../../src/testing";
@@ -85,8 +81,6 @@ const newSave = (overrides: { chapter?: number[]; section?: number } = {}) => {
         [CHAPTER_ULTIMATE_CLEARS, []],
         [CHAPTER_GROUPS, []],
         [CHAPTER_GROUP_FLAGS, []],
-        [TROPHY_EARNED, Array<boolean>(1700).fill(false)],
-        [TROPHY_PROGRESS, Array<bigint>(1200).fill(0n)],
       ],
       2: [
         [ISLAND_KEY, hashId("ISLAND_1ST")],
@@ -163,12 +157,6 @@ describe("advanceStory", () => {
       expect(at.get(sections)[NEW_GAME_RECORD * PART]).toBe(0);
     }
 
-    expect(at.get(TROPHY_EARNED)[1]).toBe(true);
-    expect(at.get(TROPHY_EARNED)[1405]).toBe(true);
-    expect(at.get(TROPHY_PROGRESS)[2]).toBe(4n);
-    expect(at.get(TROPHY_PROGRESS)[501]).toBe(1n);
-    expect(at.get(TROPHY_PROGRESS)[1018]).toBe(1n);
-
     expect(units.values(ISLAND_UNLOCKED, 2)).toEqual([true]);
   });
 
@@ -207,12 +195,6 @@ describe("advanceStory", () => {
       expect(at.get(sections)[0]).toBe(0);
       expect(at.get(sections)[CHAPTER_3_RECORD * PART]).toBe(CHAPTER_3_SECTION);
     }
-
-    for (const trophy of [1, 2, 1405, 1406])
-      expect(at.get(TROPHY_EARNED)[trophy]).toBe(true);
-    expect(at.get(TROPHY_PROGRESS)[2]).toBe(6n);
-    expect(at.get(TROPHY_PROGRESS)[501]).toBe(2n);
-    expect(at.get(TROPHY_PROGRESS)[1018]).toBe(2n);
   });
 
   it.each([
@@ -252,12 +234,6 @@ describe("advanceStory", () => {
       expect(at.get(sections)[CHAPTER_3_RECORD * PART]).toBe(0);
       expect(at.get(sections)[CHAPTER_4_RECORD * PART]).toBe(CHAPTER_4_SECTION);
     }
-
-    for (const trophy of [1, 2, 3, 1405, 1406, 1407])
-      expect(at.get(TROPHY_EARNED)[trophy]).toBe(true);
-    expect(at.get(TROPHY_PROGRESS)[2]).toBe(9n);
-    expect(at.get(TROPHY_PROGRESS)[501]).toBe(3n);
-    expect(at.get(TROPHY_PROGRESS)[1018]).toBe(3n);
   });
 
   it.each([
@@ -295,12 +271,6 @@ describe("advanceStory", () => {
       expect(at.get(sections)[CHAPTER_4_RECORD * PART]).toBe(0);
       expect(at.get(sections)[CHAPTER_5_RECORD * PART]).toBe(CHAPTER_5_SECTION);
     }
-
-    for (const trophy of [4, 1408])
-      expect(at.get(TROPHY_EARNED)[trophy]).toBe(true);
-    expect(at.get(TROPHY_PROGRESS)[2]).toBe(13n);
-    expect(at.get(TROPHY_PROGRESS)[501]).toBe(4n);
-    expect(at.get(TROPHY_PROGRESS)[1018]).toBe(4n);
 
     expect(units.values(ISLAND_UNLOCKED, 3)).toEqual([true]);
     expect(units.values(ISLAND_UNLOCKED, 4)).toEqual([true]);
@@ -342,12 +312,6 @@ describe("advanceStory", () => {
       expect(at.get(sections)[CHAPTER_5_RECORD * PART]).toBe(0);
       expect(at.get(sections)[CHAPTER_6_RECORD * PART]).toBe(CHAPTER_6_SECTION);
     }
-
-    for (const trophy of [5, 1409])
-      expect(at.get(TROPHY_EARNED)[trophy]).toBe(true);
-    expect(at.get(TROPHY_PROGRESS)[2]).toBe(18n);
-    expect(at.get(TROPHY_PROGRESS)[501]).toBe(5n);
-    expect(at.get(TROPHY_PROGRESS)[1018]).toBe(5n);
   });
 
   it.each([
@@ -388,12 +352,6 @@ describe("advanceStory", () => {
       expect(at.get(sections)[CHAPTER_6_RECORD * PART]).toBe(0);
       expect(at.get(sections)[CHAPTER_7_RECORD * PART]).toBe(CHAPTER_7_SECTION);
     }
-
-    for (const trophy of [6, 1410])
-      expect(at.get(TROPHY_EARNED)[trophy]).toBe(true);
-    expect(at.get(TROPHY_PROGRESS)[2]).toBe(22n);
-    expect(at.get(TROPHY_PROGRESS)[501]).toBe(6n);
-    expect(at.get(TROPHY_PROGRESS)[1018]).toBe(6n);
 
     expect(units.values(ISLAND_UNLOCKED, 5)).toEqual([true]);
     expect(units.values(ISLAND_UNLOCKED, 6)).toEqual([true]);
@@ -438,12 +396,6 @@ describe("advanceStory", () => {
       expect(at.get(sections)[CHAPTER_8_RECORD * PART]).toBe(CHAPTER_8_SECTION);
     }
 
-    for (const trophy of [7, 1411])
-      expect(at.get(TROPHY_EARNED)[trophy]).toBe(true);
-    expect(at.get(TROPHY_PROGRESS)[2]).toBe(26n);
-    expect(at.get(TROPHY_PROGRESS)[501]).toBe(7n);
-    expect(at.get(TROPHY_PROGRESS)[1018]).toBe(7n);
-
     expect(units.values(ISLAND_UNLOCKED, 7)).toEqual([true]);
   });
 
@@ -484,12 +436,6 @@ describe("advanceStory", () => {
       expect(at.get(sections)[CHAPTER_8_RECORD * PART]).toBe(0);
       expect(at.get(sections)[CHAPTER_9_RECORD * PART]).toBe(CHAPTER_9_SECTION);
     }
-
-    for (const trophy of [8, 1412])
-      expect(at.get(TROPHY_EARNED)[trophy]).toBe(true);
-    expect(at.get(TROPHY_PROGRESS)[2]).toBe(30n);
-    expect(at.get(TROPHY_PROGRESS)[501]).toBe(8n);
-    expect(at.get(TROPHY_PROGRESS)[1018]).toBe(8n);
   });
 
   it.each([
@@ -534,12 +480,6 @@ describe("advanceStory", () => {
       );
     }
 
-    for (const trophy of [9, 1413])
-      expect(at.get(TROPHY_EARNED)[trophy]).toBe(true);
-    expect(at.get(TROPHY_PROGRESS)[2]).toBe(36n);
-    expect(at.get(TROPHY_PROGRESS)[501]).toBe(9n);
-    expect(at.get(TROPHY_PROGRESS)[1018]).toBe(9n);
-
     expect(units.values(ISLAND_UNLOCKED, 8)).toEqual([true]);
   });
 
@@ -582,36 +522,7 @@ describe("advanceStory", () => {
       );
     }
 
-    for (const trophy of [11, 1397])
-      expect(at.get(TROPHY_EARNED)[trophy]).toBe(true);
-    expect(at.get(TROPHY_PROGRESS)[2]).toBe(38n);
-    expect(at.get(TROPHY_PROGRESS)[501]).toBe(10n);
-    expect(at.get(TROPHY_PROGRESS)[1018]).toBe(10n);
-
     expect(units.values(ISLAND_UNLOCKED, 9)).toEqual([true]);
-  });
-
-  it("adds to the trophy counters and never lowers them", () => {
-    const session = newSave();
-    advanceStory(session, 40);
-    const at = session.save.slotData.units.of(0);
-    const progress = [...at.get(TROPHY_PROGRESS)];
-    progress[2] = 50n;
-    progress[501] = 7n;
-    progress[1018] = 31n;
-    const earned = [...at.get(TROPHY_EARNED)];
-    earned[1406] = true;
-    session.patch([
-      { attribute: TROPHY_PROGRESS, entity: 0, values: progress },
-      { attribute: TROPHY_EARNED, entity: 0, values: earned },
-    ]);
-
-    advanceStory(session, 60);
-
-    expect(at.get(TROPHY_EARNED)[2]).toBe(true);
-    expect(at.get(TROPHY_PROGRESS)[2]).toBe(50n);
-    expect(at.get(TROPHY_PROGRESS)[501]).toBe(8n);
-    expect(at.get(TROPHY_PROGRESS)[1018]).toBe(31n);
   });
 
   it("accepts the section the game moves a chapter start to", () => {

@@ -25,20 +25,8 @@ Chapter key 140, quest `00105001`, the quest holding the chapter title `TELOP_CH
 | 2594 | `CHAPTER_ULTIMATE_CLEARS`      | List, adds             |                 | `0, 0, 0, 0`         |
 | 2595 | `CHAPTER_GROUPS`               | List, adds             |                 | `6`                  |
 | 2596 | `CHAPTER_GROUP_FLAGS`          | List, adds             |                 | `0`                  |
-| 5801 | `TROPHY_EARNED`                | 6, 1410                | False           | True                 |
-| 5815 | `TROPHY_PROGRESS`              | 2                      | 18              | 22                   |
-| 5815 | `TROPHY_PROGRESS`              | 501, 1018              | 5               | 6                    |
-
-`TROPHY_PROGRESS` holds separate counters, not a count of trophies. Index 2 counts chapter keys cleared, for trophy 12 "Complete all chapters on Action difficulty", which needs 41 and stays unearned. It holds 22 with key 140 counted before it joins 2590. Index 501 counts earned trophies outside Keys 1395-1453, here trophies 1 to 6. Index 1018 counts earned trophies inside that range, here trophies 1405 to 1410. The Patched column is for a save with no other trophies: the patch adds 1 to 501 or 1018 per trophy it newly earns, and index 2 only rises.
 
 `CURRENT_TOWN` (2502) is written with the value it already holds, 3328.
-
-Trophies earned by 5801, by `badge.Key`:
-
-| Key  | Name                         | Description                           |
-| ---- | ---------------------------- | ------------------------------------- |
-| 6    | Saboteur of the Divine Tower | Complete Chapter 6: In Search of Hope |
-| 1410 | In Search of Hope            | Complete Chapter 6 of the main story  |
 
 Island rows, by entity:
 
@@ -63,12 +51,11 @@ Quest records cleared by indexes 27, 30, 32, 33, 34 and 35:
 - 2506, 2511, 2512, 2522, 2513, 2514, 2590-2592, 2594-2596 come from the record writes of these quests in a traced clear.
 - 2513 and 2514 at 5800 take the value the record write of `00105F00` gave them, a `BeginSection` guid in `quest_105001_0_fsm_ingame`.
 - 2503 takes the value it reached at the first checkpoint of `00104000` and held to the start of `00105001`.
-- 5801 at 6 and 1410 are the Chapter 6 trophies. Trophy 6 counts in 501 and 1410 in 1018. The traced clear earned them at the first checkpoint of `00105001`.
-- 5815 at 2 went 18 to 20 in `00104001`, 20 to 21 in `00104002` and 21 to 22 just before the clear of `00105F00`, and holds 22 at the start of `00105001`.
 - 6102 at 5 and 6 turn true in the traced clear, one between the clears of `00104000` and `00104F01`, the other one poll before the clear of `00105F00`.
 
 ### Not patched
 
+- Story trophies and their counters, items and archives, see [`fill.md`](fill.md).
 - 2508, which the traced clear took from 0 to 1 at the first checkpoint of `00104000`.
 - 2517-2520, the restart point. They return to their empty values at the clear of `00104001`, 2518 keeping its hash.
 - Trophies 124 "Perform a link attack for the first time" and 132 "Break a foe for the first time".

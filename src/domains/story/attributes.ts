@@ -26,3 +26,5 @@ export const CHAPTER_GROUP_FLAGS = Attribute.intList(2596);
 
 export const ISLAND_KEY = Attribute.uint(6101);
 export const ISLAND_UNLOCKED = Attribute.bool(6102);
+/** By `UnlockUIAction.feature_`. */
+export const UI_FEATURE_UNLOCKED = Attribute.boolList(2600);

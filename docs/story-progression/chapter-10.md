@@ -26,18 +26,6 @@ Chapter key 220 "New Mr. Fix It", quest `00109002`, the quest holding the chapte
 | 2594 | `CHAPTER_ULTIMATE_CLEARS`      | List, adds             |                  | `0`                |
 | 2595 | `CHAPTER_GROUPS`               | List, adds             |                  | `10`               |
 | 2596 | `CHAPTER_GROUP_FLAGS`          | List, adds             |                  | `0`                |
-| 5801 | `TROPHY_EARNED`                | 11, 1397               | False            | True               |
-| 5815 | `TROPHY_PROGRESS`              | 2                      | 36               | 38                 |
-| 5815 | `TROPHY_PROGRESS`              | 501, 1018              | 9                | 10                 |
-
-`TROPHY_PROGRESS` holds separate counters, not a count of trophies. Index 2 counts chapter keys cleared, for trophy 12 "Complete all chapters on Action difficulty", which needs 41 and stays unearned. Index 501 counts earned trophies outside Keys 1395-1453, here trophies 1 to 9 and 11. Index 1018 counts earned trophies inside that range, here trophies 1405 to 1413 and 1397. The Patched column is for a save with no other trophies: the patch adds 1 to 501 or 1018 per trophy it newly earns, and index 2 only rises.
-
-Trophies earned by 5801, by `badge.Key`:
-
-| Key  | Name               | Description                              |
-| ---- | ------------------ | ---------------------------------------- |
-| 11   | Eternal Adventurer | Complete the main story                  |
-| 1397 | Id                 | Complete Final Chapter of the main story |
 
 Island rows, by entity:
 
@@ -61,15 +49,13 @@ Quest records cleared by indexes 11-16:
 - 2506, 2511, 2512, 2522, 2513, 2514, 2590-2592, 2594-2596 come from the record writes of these quests in a traced clear. The quests clear in the order `00108F00`, `00108000`, `00108002`, `00108001`, `00109001`, `00109000`, each in its own write. Key 200 joins 2590, group 10 joins 2595 and 2506 takes 220 at the clear of `00108001`.
 - 2513 and 2514 at 2000 take the value the clear of `00109000` gave them, a `BeginSection` guid in `quest_109002_0_fsm_ingame`, which also holds the `DispChapter` of `TELOP_CHAPTER_MAIN_110`. `chapter_select` names `00109001` for key 220.
 - 2502 and 2503 move at the clear of `00108001` and hold through `00109000`.
-- 5801 at 11 and 1397 are the story trophies. Trophy 11 counts in 501 and 1397 in 1018. The traced clear earned them at the first checkpoint of `00109001`.
-- 5815 at 2 went 36 to 37 in `00108F00` and 37 to 38 at the clear of `00108001`, and holds 38 at the start of `00109002`.
 - 6102 at 9 turns true in the traced clear, before `00108F00` clears.
 
 ### Not patched
 
+- Story trophies and their counters, items and archives, see [`fill.md`](fill.md).
 - The party: 2201, 2202, 2203 and 2401. `00109001` moves slot 0 at 103000 from `PL0000` to `PL1900`, and 2202 is false again as `00109000` clears.
 - Id's own entry at 10023, set by `IdoEntry` in `00109001`, see [`characters.md`](../characters.md), with MSP at 1112, 5802 and 5803 at 16, and 5815 at 149, 184, 185, 219, 377, 378, 380, 998.
-- 2600, indexes 0-6 true at a checkpoint early in `00109001`.
 - Trophies 1447 "Get an appraisal from Zathba", 116, 120, 128, 322, 365, 430 and 431, and 5821 at 3, 19, 53. Trophy 22 "Unlock Hard quests" arrives after the start of `00109002`.
 - `ITEM_10_0002`, `ITEM_14_0011` and other items and quest rewards, with MSP at 1112.
 - The `NP0000` and `PL1900` stand-ins at 10015 and 10033.
@@ -80,4 +66,4 @@ Quest records cleared by indexes 11-16:
 
 ### Status
 
-The patch, applied to a new save through every checkpoint, loads in game. `00109002` opens with an event, then the chapter title, so a load plays the event first: 274192714 holds the event and the title, and the next saved section, 694722356, comes after the title. The objective reads 1/8, without note 08 from `00107F00`, and Id stays out of the crew.
+The patch, applied to a new save through every checkpoint, loads in game. `00109002` opens with an event, then the chapter title, so a load plays the event first: 274192714 holds the event and the title, and the next saved section, 694722356, comes after the title. Without [`fillSkippedStory`](fill.md) the objective reads 1/8, without note 08 from `00107F00`, and Id stays out of the crew.

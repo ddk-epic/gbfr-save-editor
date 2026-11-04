@@ -25,20 +25,8 @@ Chapter key 160, quest `00106000`, the quest holding the chapter title `TELOP_CH
 | 2594 | `CHAPTER_ULTIMATE_CLEARS`      | List, adds     |                 | `0, 0, 0, 0`         |
 | 2595 | `CHAPTER_GROUPS`               | List, adds     |                 | `7`                  |
 | 2596 | `CHAPTER_GROUP_FLAGS`          | List, adds     |                 | `0`                  |
-| 5801 | `TROPHY_EARNED`                | 7, 1411        | False           | True                 |
-| 5815 | `TROPHY_PROGRESS`              | 2              | 22              | 26                   |
-| 5815 | `TROPHY_PROGRESS`              | 501, 1018      | 6               | 7                    |
-
-`TROPHY_PROGRESS` holds separate counters, not a count of trophies. Index 2 counts chapter keys cleared, for trophy 12 "Complete all chapters on Action difficulty", which needs 41 and stays unearned. It holds 26 with key 160 counted before it joins 2590. Index 501 counts earned trophies outside Keys 1395-1453, here trophies 1 to 7. Index 1018 counts earned trophies inside that range, here trophies 1405 to 1411. The Patched column is for a save with no other trophies: the patch adds 1 to 501 or 1018 per trophy it newly earns, and index 2 only rises.
 
 `CURRENT_TOWN_CHECKPOINT` (2503) is written with the value it already holds, 528045455.
-
-Trophies earned by 5801, by `badge.Key`:
-
-| Key  | Name                             | Description                          |
-| ---- | -------------------------------- | ------------------------------------ |
-| 7    | Extinguisher of the Divine Flame | Complete Chapter 7: Warning Signs    |
-| 1411 | Warning Signs                    | Complete Chapter 7 of the main story |
 
 Island rows, by entity:
 
@@ -60,12 +48,11 @@ Quest records cleared by indexes 22, 26, 28 and 29:
 - 2502, 2506, 2511, 2512, 2522, 2513, 2514, 2590-2592, 2594-2596 come from the record writes of these quests in a traced clear.
 - 2513 and 2514 at 5000 take the value the record write of `00106F00` gave them, a `BeginSection` guid in `quest_106000_0_fsm_ingame`.
 - 2503 did not move through the traced chapter.
-- 5801 at 7 and 1411 are the Chapter 7 trophies. Trophy 7 counts in 501 and 1411 in 1018. The traced clear earned them at the first checkpoint of `00106000`.
-- 5815 at 2 went 22 to 24 in `00105001`, 24 to 25 just before the clear of `00105F01` and 25 to 26 just before the clear of `00106F00`, and holds 26 at the start of `00106000`.
 - 6102 at 7 turns true in the traced clear, one poll before the clear of `00106F00`.
 
 ### Not patched
 
+- Story trophies and their counters, items and archives, see [`fill.md`](fill.md).
 - Story items `ITEM_70_0008` Dehg's Catalyst Stone, taken at a checkpoint of `00105001`, and `ITEM_70_0006` Elpis, the Mind Sealer, given at its clear.
 - Other items and quest rewards.
 - The `NP0300` stand-in at 10015 and its weapon `WEP_NP0300_01`.

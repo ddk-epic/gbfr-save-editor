@@ -19,36 +19,24 @@ Chapter key 40, quest `00101F00` "Please Save Tempeal". The save loads into the 
 
 ### Patched
 
-| Unit | Name                           | Index     | New save  | Patched             |
-| ---- | ------------------------------ | --------- | --------- | ------------------- |
-| 2502 | `CURRENT_TOWN`                 | 0         | 3872      | 3072 (`0xC00`)      |
-| 2503 | `CURRENT_TOWN_CHECKPOINT`      | 0         | 528045455 | 939223336           |
-| 2506 | `CURRENT_CHAPTER`              | 0         | -1        | 40                  |
-| 2511 | `STORY_QUEST_CLEARED`          | 47-53     | 0         | 1                   |
-| 2512 | `STORY_QUEST_LIVE_CLEARED`     | 47-53     | 0         | 1                   |
-| 2522 | `STORY_QUEST_THIRD_CLEARED`    | 47-53     | 0         | 1                   |
-| 2513 | `STORY_QUEST_CHECKPOINTS`      | 8200      | 0         | 1299620138          |
-| 2514 | `STORY_QUEST_CHECKPOINTS_LIVE` | 8200      | 0         | 1299620138          |
-| 2513 | `STORY_QUEST_CHECKPOINTS`      | 10200     | 792562208 | 0                   |
-| 2514 | `STORY_QUEST_CHECKPOINTS_LIVE` | 10200     | 792562208 | 0                   |
-| 2590 | `CHAPTER_KEYS`                 | List      | Empty     | `0, 1, 20, 21, 22`  |
-| 2591 | `CHAPTER_BEST_DIFFICULTY`      | List      | Empty     | System 817, 5 times |
-| 2592 | `CHAPTER_ULTIMATE_CLEARED`     | List      | Empty     | `0, 0, 0, 0, 0`     |
-| 2594 | `CHAPTER_ULTIMATE_CLEARS`      | List      | Empty     | `0, 0, 0, 0, 0`     |
-| 2595 | `CHAPTER_GROUPS`               | List      | Empty     | `0, 1`              |
-| 2596 | `CHAPTER_GROUP_FLAGS`          | List      | Empty     | `0, 0`              |
-| 5801 | `TROPHY_EARNED`                | 1, 1405   | False     | True                |
-| 5815 | `TROPHY_PROGRESS`              | 501, 1018 | 0         | 1                   |
-| 5815 | `TROPHY_PROGRESS`              | 2         | 0         | 4                   |
-
-`TROPHY_PROGRESS` holds separate counters, not a count of trophies. Index 2 counts chapter keys cleared, for trophy 12 "Complete all chapters on Action difficulty", which needs 41 and stays unearned. Index 501 counts earned trophies outside Keys 1395-1453, here trophy 1. Index 1018 counts earned trophies inside that range, here trophy 1405. The Patched column is for a save with no other trophies: the patch adds 1 to 501 or 1018 per trophy it newly earns, and index 2 only rises.
-
-Trophies earned by 5801, by `badge.Key`:
-
-| Key  | Name                 | Description                              |
-| ---- | -------------------- | ---------------------------------------- |
-| 1    | Visitor from Beyond  | Complete Chapter 1: The Western Frontier |
-| 1405 | The Western Frontier | Complete Chapter 1 of the main story     |
+| Unit | Name                           | Index | New save  | Patched             |
+| ---- | ------------------------------ | ----- | --------- | ------------------- |
+| 2502 | `CURRENT_TOWN`                 | 0     | 3872      | 3072 (`0xC00`)      |
+| 2503 | `CURRENT_TOWN_CHECKPOINT`      | 0     | 528045455 | 939223336           |
+| 2506 | `CURRENT_CHAPTER`              | 0     | -1        | 40                  |
+| 2511 | `STORY_QUEST_CLEARED`          | 47-53 | 0         | 1                   |
+| 2512 | `STORY_QUEST_LIVE_CLEARED`     | 47-53 | 0         | 1                   |
+| 2522 | `STORY_QUEST_THIRD_CLEARED`    | 47-53 | 0         | 1                   |
+| 2513 | `STORY_QUEST_CHECKPOINTS`      | 8200  | 0         | 1299620138          |
+| 2514 | `STORY_QUEST_CHECKPOINTS_LIVE` | 8200  | 0         | 1299620138          |
+| 2513 | `STORY_QUEST_CHECKPOINTS`      | 10200 | 792562208 | 0                   |
+| 2514 | `STORY_QUEST_CHECKPOINTS_LIVE` | 10200 | 792562208 | 0                   |
+| 2590 | `CHAPTER_KEYS`                 | List  | Empty     | `0, 1, 20, 21, 22`  |
+| 2591 | `CHAPTER_BEST_DIFFICULTY`      | List  | Empty     | System 817, 5 times |
+| 2592 | `CHAPTER_ULTIMATE_CLEARED`     | List  | Empty     | `0, 0, 0, 0, 0`     |
+| 2594 | `CHAPTER_ULTIMATE_CLEARS`      | List  | Empty     | `0, 0, 0, 0, 0`     |
+| 2595 | `CHAPTER_GROUPS`               | List  | Empty     | `0, 1`              |
+| 2596 | `CHAPTER_GROUP_FLAGS`          | List  | Empty     | `0, 0`              |
 
 Island rows, by entity:
 
@@ -77,7 +65,6 @@ Quest records cleared by indexes 47-53:
 - 2503 takes the value logged with 2502 at `0xC00`, not one read at this point in the story.
 - 2592 and 2594 take 0 as these keys join, as in [`quests.md`](../quests.md).
 - 6102 at 2 turns true in the traced clear, and the game does not set it on a patched save.
-- 5801 and 5815 come from the traced clear, and 1 and 1405 are the two Chapter 1 trophies. Trophy 1 counts in 501 and 1405 in 1018. 5815 at 2 is the chapter key count, 3 to 4 in that clear, and a patched load left it at 0 through the checkpoint where the game set the trophies.
 
 ### Set by the game
 
@@ -85,6 +72,7 @@ A load without the 5801 and 5815 patches set them itself, in the poll where 2513
 
 ### Not patched
 
+- Story trophies and their counters, items and archives, see [`fill.md`](fill.md).
 - `CURRENT_CHAPTER` (2506) at 1, the online entry, stays -1.
 - 2501, unnamed, stays 0. `QUEST_SEED` (2504) and the 7601 seeds stay as they are.
 - Hints, a separate edit, see [`tutorials.md`](../tutorials.md).
