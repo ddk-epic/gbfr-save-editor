@@ -100,8 +100,8 @@ const HINT_TIPS = [
   2615852220,
   3949543317,
   2588951308,
-  0xa8f08e0e,
-  0xad03fd1f,
+  hashId("NOTE_WINDOW_TIPS_96"),
+  hashId("NOTE_WINDOW_TIPS_47"),
 ];
 
 /** `infomation_dialog.Key`. */

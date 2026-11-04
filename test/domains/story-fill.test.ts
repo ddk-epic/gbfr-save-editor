@@ -38,10 +38,28 @@ import {
 } from "../../src/domains/story/attributes";
 import { fillSkippedStory } from "../../src/domains/story/fill";
 import {
+  PROFILE_FIRST,
+  PROFILE_QUESTS_CLEARED,
+} from "../../src/domains/profile/attributes";
+import {
+  COUNTER_QUEST_CLEARED,
+  COUNTER_QUEST_CLEARS,
+  COUNTER_QUEST_FLAGS,
+  COUNTER_QUEST_IDS,
+  COUNTER_QUEST_OPENED,
+  QUEST_DIFFICULTY_UNLOCKED,
+  SHORT_STORY_CLEARS,
+  SHORT_STORY_IDS,
+} from "../../src/domains/quest/attributes";
+import {
   TROPHY_EARNED,
   TROPHY_PROGRESS,
 } from "../../src/domains/trophy/attributes";
-import { SAVE_HASHSEED, USER_CAPTAIN } from "../../src/domains/user/attributes";
+import {
+  SAVE_HASHSEED,
+  USER_CAPTAIN,
+  USER_RUPIES,
+} from "../../src/domains/user/attributes";
 import {
   WEAPON_FLAGS,
   WEAPON_ID,
@@ -58,6 +76,9 @@ const ITEMS = [
   "ITEM_70_0005",
   "ITEM_70_0006",
   "ITEM_70_0010",
+  "ITEM_10_0001",
+  "ITEM_10_0002",
+  "ITEM_10_0003",
 ] as const;
 const ITEM_ENTITY = 300;
 const ARCHIVES = [
@@ -67,9 +88,27 @@ const ARCHIVES = [
   "ARC_OTHER_059",
   "ARC_OTHER_060",
   "ARC_ROLANNOTE_08",
+  "ARC_ROLANNOTE_02",
+  "ARC_ROLANNOTE_03",
+  "ARC_ROLANNOTE_06",
+  "ARC_ROLANNOTE_01",
+  "ARC_ROLANNOTE_04",
+  "ARC_ROLANNOTE_05",
+  "ARC_ROLANNOTE_07",
 ] as const;
 const ARCHIVE_ENTITY = 400;
 const NOTE_08_ENTITY = ARCHIVE_ENTITY + 5;
+const SHORT_STORIES = [
+  0x705001, 0x705002, 0x705003, 0x705004, 0x705005, 0x705006, 0x705007,
+  0x703000, 0x703001, 0x720000, 0x720001, 0x720002, 0x720003, 0x720004,
+];
+const COUNTER_QUESTS = [
+  0x403301, 0x403302, 0x403201, 0x403202, 0x403307, 0x403308, 0x403309,
+  0x403312, 0x404101, 0x404310, 0x404309, 0x404313, 0x404316, 0x404311,
+  0x405101, 0x405201, 0x405206, 0x405207, 0x405202, 0x405203, 0x405208,
+  0x405302, 0x405303, 0x405304, 0x405305,
+];
+const COUNTER_ROWS = COUNTER_QUESTS.length + 2;
 const ID_ENTITY = 10023;
 const ID_MASTERY_BLOCK = 10023000;
 const ID_MASTERY_OFFSETS = [
@@ -116,6 +155,15 @@ const save = (
       [ITEM_ACQUIRED_LAST, 7],
       [WEAPON_LAST_ID, 3],
       [USER_CAPTAIN, overrides.captain ?? 1],
+      [USER_RUPIES, 1000],
+      [QUEST_DIFFICULTY_UNLOCKED, 2],
+      [COUNTER_QUEST_IDS, [0x405204, 0x401301, ...COUNTER_QUESTS]],
+      [COUNTER_QUEST_CLEARS, Array<number>(COUNTER_ROWS).fill(0)],
+      [COUNTER_QUEST_FLAGS, Array<number>(COUNTER_ROWS).fill(7)],
+      [COUNTER_QUEST_OPENED, Array<boolean>(COUNTER_ROWS).fill(false)],
+      [COUNTER_QUEST_CLEARED, Array<boolean>(COUNTER_ROWS).fill(false)],
+      [SHORT_STORY_IDS, [0x704000, 0x704001, ...SHORT_STORIES]],
+      [SHORT_STORY_CLEARS, Array<number>(SHORT_STORIES.length + 2).fill(0)],
     ],
     ...Object.fromEntries(
       ITEMS.map((item, index) => [
@@ -162,6 +210,7 @@ const save = (
       [FIELD_NOTE_WEAPON_KEY, hashId("WEP_PL0100_99")],
       [FIELD_NOTE_WEAPON_FLAGS, 0],
     ],
+    [PROFILE_FIRST]: [[PROFILE_QUESTS_CLEARED, 0]],
     10000: [
       [CHARACTER_KEY, hashId("PL0000")],
       [CHARACTER_FLAGS, 1],
@@ -235,10 +284,10 @@ describe("fillSkippedStory", () => {
     const at = units.of(0);
 
     expect(added).toContain("PL1900");
-    for (const trophy of [1, 1405, 9, 1413, 11, 1397])
+    for (const trophy of [0, 10, 1, 1405, 9, 1413, 11, 1397])
       expect(at.get(TROPHY_EARNED)[trophy]).toBe(true);
     expect(at.get(TROPHY_PROGRESS)[2]).toBe(38n);
-    expect(at.get(TROPHY_PROGRESS)[501]).toBe(10n);
+    expect(at.get(TROPHY_PROGRESS)[501]).toBe(12n);
     expect(at.get(TROPHY_PROGRESS)[1018]).toBe(10n);
 
     expect(units.values(ITEM_COUNT, ITEM_ENTITY)).toEqual([1]);
@@ -248,7 +297,7 @@ describe("fillSkippedStory", () => {
     expect(units.values(ITEM_ACQUIRED, ITEM_ENTITY + 3)).toEqual([11]);
     expect(at.get(ITEM_ACQUIRED_LAST)).toBe(11);
 
-    for (let index = 0; index < ARCHIVES.length - 1; index++)
+    for (let index = 0; index < 5; index++)
       expect(units.values(ARCHIVE_FLAGS, ARCHIVE_ENTITY + index)).toEqual([1]);
     expect(units.values(ARCHIVE_FLAGS, NOTE_08_ENTITY)).toEqual([3]);
     expect(at.get(TROPHY_PROGRESS)[46]).toBe(6n);
@@ -281,6 +330,81 @@ describe("fillSkippedStory", () => {
     expect(units.values(EQUIP_WEAPON, 10001)).toEqual([7]);
   });
 
+  it("marks the counter quests the story needs as cleared once", () => {
+    const session = save({ chapter: 222 });
+    fillSkippedStory(session);
+    const units = reread(session);
+    const at = units.of(0);
+    const rows = COUNTER_QUESTS.map(() => 1);
+
+    expect(at.get(COUNTER_QUEST_CLEARS)).toEqual([0, 0, ...rows]);
+    expect(at.get(COUNTER_QUEST_FLAGS)).toEqual([7, 7, ...rows.map(() => 0)]);
+    expect(at.get(COUNTER_QUEST_OPENED)).toEqual([
+      false,
+      true,
+      ...rows.map(() => true),
+    ]);
+    expect(at.get(COUNTER_QUEST_CLEARED)).toEqual([
+      false,
+      false,
+      ...rows.map(() => true),
+    ]);
+    expect(at.get(TROPHY_PROGRESS)[16]).toBe(8n);
+    expect(at.get(TROPHY_PROGRESS)[17]).toBe(6n);
+    expect(at.get(TROPHY_PROGRESS)[18]).toBe(11n);
+    expect(at.get(TROPHY_PROGRESS)[20]).toBe(25n);
+    expect(units.of(PROFILE_FIRST).get(PROFILE_QUESTS_CLEARED)).toBe(25);
+  });
+
+  it("adds what the end of the story should have left", () => {
+    const session = save({ chapter: 222 });
+    fillSkippedStory(session);
+    const units = reread(session);
+    const at = units.of(0);
+
+    expect(
+      ARCHIVES.slice(5).map(
+        (_, index) => units.values(ARCHIVE_FLAGS, NOTE_08_ENTITY + index)![0],
+      ),
+    ).toEqual([3, 3, 3, 1, 1, 1, 1, 1]);
+    expect(at.get(TROPHY_PROGRESS)[46]).toBe(13n);
+    expect(at.get(TROPHY_PROGRESS)[47]).toBe(13n);
+    expect(at.get(TROPHY_PROGRESS)[2]).toBe(41n);
+
+    expect(at.get(SHORT_STORY_CLEARS)).toEqual([
+      1,
+      1,
+      ...SHORT_STORIES.map(() => 1),
+    ]);
+
+    expect(at.get(QUEST_DIFFICULTY_UNLOCKED)).toBe(6);
+    for (const trophy of [0, 10, 22, 23, 24, 25, 19, 1398])
+      expect(at.get(TROPHY_EARNED)[trophy]).toBe(true);
+    expect(at.get(TROPHY_EARNED)[12]).toBe(false);
+    expect(at.get(USER_RUPIES)).toBe(81000);
+    expect(at.get(TROPHY_PROGRESS)[224]).toBe(80000n);
+    expect(units.values(ITEM_COUNT, ITEM_ENTITY + 4)).toEqual([100]);
+    expect(units.values(ITEM_COUNT, ITEM_ENTITY + 5)).toEqual([80]);
+    expect(units.values(ITEM_COUNT, ITEM_ENTITY + 6)).toEqual([10]);
+  });
+
+  it("changes nothing on a second run at the end of the story", () => {
+    const session = save({ chapter: 222 });
+    fillSkippedStory(session);
+    const first = session.export();
+    expect(fillSkippedStory(session)).toEqual([]);
+    expect(session.export()).toEqual(first);
+  });
+
+  it("keeps a quest difficulty already past the story", () => {
+    const session = save({ chapter: 222 });
+    session.patch([
+      { attribute: QUEST_DIFFICULTY_UNLOCKED, entity: 0, values: [7] },
+    ]);
+    fillSkippedStory(session);
+    expect(reread(session).of(0).get(QUEST_DIFFICULTY_UNLOCKED)).toBe(7);
+  });
+
   it("changes nothing on a second run", () => {
     const session = save();
     fillSkippedStory(session);
@@ -292,6 +416,8 @@ describe("fillSkippedStory", () => {
   it("stops at the save's current chapter", () => {
     const session = save({ chapter: 80 });
     expect(fillSkippedStory(session)).toEqual([
+      "trophy 0",
+      "trophy 10",
       "trophy 1",
       "trophy 1405",
       "UI feature 7",
@@ -424,7 +550,7 @@ describe("fillSkippedStory", () => {
     expect(units.values(ITEM_COUNT, ITEM_ENTITY)).toEqual([0]);
     expect(units.of(0).get(TROPHY_PROGRESS)[2]).toBe(50n);
     expect(units.of(0).get(TROPHY_PROGRESS)[46]).toBe(5n);
-    expect(units.of(0).get(TROPHY_PROGRESS)[501]).toBe(15n);
+    expect(units.of(0).get(TROPHY_PROGRESS)[501]).toBe(17n);
   });
 
   it("joins Id at the save's own level under a low-level crew", () => {

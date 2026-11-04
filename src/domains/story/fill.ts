@@ -31,6 +31,17 @@ import {
   FIELD_NOTE_WEAPON_KEY,
 } from "../journal/attributes";
 import { MASTERY_NODE_BITS } from "../mastery/attributes";
+import { PROFILE_FIRST, PROFILE_QUESTS_CLEARED } from "../profile/attributes";
+import {
+  COUNTER_QUEST_CLEARED,
+  COUNTER_QUEST_CLEARS,
+  COUNTER_QUEST_FLAGS,
+  COUNTER_QUEST_IDS,
+  COUNTER_QUEST_OPENED,
+  QUEST_DIFFICULTY_UNLOCKED,
+  SHORT_STORY_CLEARS,
+  SHORT_STORY_IDS,
+} from "../quest/attributes";
 import {
   EQUIP_SKILLS,
   SKILL_ACQUIRED,
@@ -40,6 +51,9 @@ import {
 import {
   ARCHIVES_UNLOCKED_COUNTERS,
   CHAPTER_KEYS_CLEARED,
+  QUEST_CLEARS_BEFORE_DIFFICULTY,
+  QUESTS_CLEARED,
+  RUPIES_EARNED,
   STORY_MASTERY_FILLED,
   TROPHIES_EARNED_IN_RANGE,
   TROPHIES_EARNED_OUTSIDE_RANGE,
@@ -48,7 +62,12 @@ import {
   TROPHY_RANGE_FIRST,
   TROPHY_RANGE_LAST,
 } from "../trophy/attributes";
-import { SAVE_ENTITY, USER_CAPTAIN } from "../user/attributes";
+import {
+  SAVE_ENTITY,
+  USER_CAPTAIN,
+  USER_MAX_RUPIES,
+  USER_RUPIES,
+} from "../user/attributes";
 import {
   WEAPON_FIRST,
   WEAPON_FLAGS,
@@ -76,6 +95,7 @@ const FIELD_NOTE_REGISTERED = 4;
 const WEAPON_ENTRIES = 256;
 const OUTFIT_MAIN = 0;
 const OUTFIT_STARTING = 1;
+const LOWEST_GRADE = 0;
 
 interface StoryFillEntry {
   /** `chapter_select.Key` of the chapter start the entry is due by. */
@@ -86,6 +106,10 @@ interface StoryFillEntry {
   items?: readonly { item: string; flags: number }[];
   archives?: readonly { archive: string; flags: number }[];
   uiFeatures?: readonly number[];
+  shortStories?: readonly number[];
+  counterQuests?: readonly number[];
+  openedQuests?: readonly number[];
+  questDifficulty?: number;
   startWeapons?: readonly { key: string; captain: number; replaces: string }[];
   fightWeapons?: readonly {
     key: string;
@@ -99,7 +123,7 @@ interface StoryFillEntry {
 const STORY_FILL: readonly StoryFillEntry[] = [
   {
     key: 40,
-    trophies: [1, 1405],
+    trophies: [0, 10, 1, 1405],
     chapterKeysCleared: 4n,
     uiFeatures: [7],
   },
@@ -170,7 +194,65 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     uiFeatures: [0, 1, 2, 3, 4, 5, 6],
     joinsId: true,
   },
+  {
+    key: 222,
+    trophies: [22, 23, 24, 25, 19, 1398],
+    chapterKeysCleared: 41n,
+    archives: [
+      { archive: "ARC_ROLANNOTE_02", flags: ARCHIVE_UNLOCKED_SEEN },
+      { archive: "ARC_ROLANNOTE_03", flags: ARCHIVE_UNLOCKED_SEEN },
+      { archive: "ARC_ROLANNOTE_06", flags: ARCHIVE_UNLOCKED },
+      { archive: "ARC_ROLANNOTE_01", flags: ARCHIVE_UNLOCKED },
+      { archive: "ARC_ROLANNOTE_04", flags: ARCHIVE_UNLOCKED },
+      { archive: "ARC_ROLANNOTE_05", flags: ARCHIVE_UNLOCKED },
+      { archive: "ARC_ROLANNOTE_07", flags: ARCHIVE_UNLOCKED },
+    ],
+    shortStories: [
+      0x705001, 0x705002, 0x705003, 0x705004, 0x705005, 0x705006, 0x705007,
+      0x703000, 0x703001, 0x720000, 0x720001, 0x720002, 0x720003, 0x720004,
+      0x704000, 0x704001,
+    ],
+    counterQuests: [
+      0x403301, 0x403302, 0x403201, 0x403202, 0x403307, 0x403308, 0x403309,
+      0x403312, 0x404101, 0x404310, 0x404309, 0x404313, 0x404316, 0x404311,
+      0x405101, 0x405201, 0x405206, 0x405207, 0x405202, 0x405203, 0x405208,
+      0x405302, 0x405303, 0x405304, 0x405305,
+    ],
+    openedQuests: [
+      0x404317, 0x404204, 0x403311, 0x403303, 0x402316, 0x402315, 0x402314,
+      0x402313, 0x402308, 0x402302, 0x402301, 0x401316, 0x401315, 0x401311,
+      0x401310, 0x401306, 0x401305, 0x401303, 0x401301,
+    ],
+    questDifficulty: 6,
+  },
 ];
+
+/** Rupies and items the game does not give for a trophy written here, by `badge.Key`. */
+const TROPHY_REWARDS: Readonly<
+  Record<number, { rupies: number; items?: readonly [string, number][] }>
+> = {
+  22: {
+    rupies: 20000,
+    items: [
+      ["ITEM_10_0001", 50],
+      ["ITEM_10_0002", 5],
+    ],
+  },
+  23: {
+    rupies: 30000,
+    items: [
+      ["ITEM_10_0001", 50],
+      ["ITEM_10_0002", 25],
+    ],
+  },
+  24: {
+    rupies: 30000,
+    items: [
+      ["ITEM_10_0002", 50],
+      ["ITEM_10_0003", 10],
+    ],
+  },
+};
 
 const ID_MAX_JOIN_LEVEL = 42;
 /** XP, base HP and base attack per level. */
@@ -271,7 +353,17 @@ export function fillSkippedStory(session: SaveSession): string[] {
   const earned = [...at.get(TROPHY_EARNED)];
   const progress = [...at.get(TROPHY_PROGRESS)];
   const uiFeatures = [...at.get(UI_FEATURE_UNLOCKED)];
+  const shortStoryIds = at.get(SHORT_STORY_IDS);
+  const shortStoryClears = [...at.get(SHORT_STORY_CLEARS)];
+  const counterQuestIds = at.get(COUNTER_QUEST_IDS);
+  const counterQuestClears = [...at.get(COUNTER_QUEST_CLEARS)];
+  const counterQuestGrades = [...at.get(COUNTER_QUEST_FLAGS)];
+  const counterQuestOpened = [...at.get(COUNTER_QUEST_OPENED)];
+  const counterQuestCleared = [...at.get(COUNTER_QUEST_CLEARED)];
+  let questsCleared = units.of(PROFILE_FIRST).get(PROFILE_QUESTS_CLEARED);
+  const rewardItems = new Map<string, number>();
   let acquired = at.get(ITEM_ACQUIRED_LAST);
+  let rupies = at.get(USER_RUPIES);
   let weaponId = at.get(WEAPON_LAST_ID);
   let weaponEntity = WEAPON_FIRST;
   const captainInPlay = at.get(USER_CAPTAIN) === 2 ? 10001 : 10000;
@@ -317,6 +409,14 @@ export function fillSkippedStory(session: SaveSession): string[] {
           : TROPHIES_EARNED_OUTSIDE_RANGE;
       progress[counter] = progress[counter]! + 1n;
       added.push(`trophy ${trophy}`);
+
+      const reward = TROPHY_REWARDS[trophy];
+      if (!reward) continue;
+      rupies = Math.min(rupies + reward.rupies, USER_MAX_RUPIES);
+      progress[RUPIES_EARNED] =
+        progress[RUPIES_EARNED]! + BigInt(reward.rupies);
+      for (const [item, count] of reward.items ?? [])
+        rewardItems.set(item, (rewardItems.get(item) ?? 0) + count);
     }
     if (entry.chapterKeysCleared > progress[CHAPTER_KEYS_CLEARED]!)
       progress[CHAPTER_KEYS_CLEARED] = entry.chapterKeysCleared;
@@ -351,6 +451,46 @@ export function fillSkippedStory(session: SaveSession): string[] {
       if (uiFeatures[feature]) continue;
       uiFeatures[feature] = true;
       added.push(`UI feature ${feature}`);
+    }
+
+    for (const quest of entry.shortStories ?? []) {
+      const row = shortStoryIds.indexOf(quest);
+      if (row === -1 || shortStoryClears[row] !== 0) continue;
+      shortStoryClears[row] = 1;
+      added.push(`short story ${quest.toString(16)}`);
+    }
+
+    for (const quest of entry.counterQuests ?? []) {
+      const row = counterQuestIds.indexOf(quest);
+      if (row === -1 || counterQuestClears[row] !== 0) continue;
+      counterQuestClears[row] = 1;
+      counterQuestGrades[row] = LOWEST_GRADE;
+      counterQuestOpened[row] = true;
+      counterQuestCleared[row] = true;
+      questsCleared++;
+      const difficulty = QUEST_CLEARS_BEFORE_DIFFICULTY + ((quest >> 12) & 0xf);
+      progress[difficulty] = progress[difficulty]! + 1n;
+      progress[QUESTS_CLEARED] = progress[QUESTS_CLEARED]! + 1n;
+      added.push(`counter quest ${quest.toString(16)}`);
+    }
+
+    for (const quest of entry.openedQuests ?? []) {
+      const row = counterQuestIds.indexOf(quest);
+      if (row === -1 || counterQuestOpened[row]) continue;
+      counterQuestOpened[row] = true;
+      added.push(`counter quest ${quest.toString(16)} opened`);
+    }
+
+    if (
+      entry.questDifficulty !== undefined &&
+      entry.questDifficulty > at.get(QUEST_DIFFICULTY_UNLOCKED)
+    ) {
+      patches.push({
+        attribute: QUEST_DIFFICULTY_UNLOCKED,
+        entity: SAVE_ENTITY,
+        values: [entry.questDifficulty],
+      });
+      added.push(`quest difficulty ${entry.questDifficulty}`);
     }
 
     for (const { key, captain, replaces } of entry.startWeapons ?? []) {
@@ -487,10 +627,57 @@ export function fillSkippedStory(session: SaveSession): string[] {
   }
 
   if (added.length === 0) return added;
+  for (const [item, count] of rewardItems) {
+    const entity = onlyEntity(units, ITEM_KEY, hashId(item));
+    const held = units.of(entity);
+    patches.push(
+      {
+        attribute: ITEM_COUNT,
+        entity,
+        values: [held.get(ITEM_COUNT) + count],
+      },
+      { attribute: ITEM_FLAGS, entity, values: [STORY_ITEM] },
+    );
+    if (held.get(ITEM_ACQUIRED) === 0) {
+      acquired++;
+      patches.push({ attribute: ITEM_ACQUIRED, entity, values: [acquired] });
+    }
+  }
   patches.push(
     { attribute: TROPHY_EARNED, entity: SAVE_ENTITY, values: earned },
     { attribute: TROPHY_PROGRESS, entity: SAVE_ENTITY, values: progress },
     { attribute: UI_FEATURE_UNLOCKED, entity: SAVE_ENTITY, values: uiFeatures },
+    {
+      attribute: SHORT_STORY_CLEARS,
+      entity: SAVE_ENTITY,
+      values: shortStoryClears,
+    },
+    {
+      attribute: COUNTER_QUEST_CLEARS,
+      entity: SAVE_ENTITY,
+      values: counterQuestClears,
+    },
+    {
+      attribute: COUNTER_QUEST_FLAGS,
+      entity: SAVE_ENTITY,
+      values: counterQuestGrades,
+    },
+    {
+      attribute: COUNTER_QUEST_OPENED,
+      entity: SAVE_ENTITY,
+      values: counterQuestOpened,
+    },
+    {
+      attribute: COUNTER_QUEST_CLEARED,
+      entity: SAVE_ENTITY,
+      values: counterQuestCleared,
+    },
+    {
+      attribute: PROFILE_QUESTS_CLEARED,
+      entity: PROFILE_FIRST,
+      values: [questsCleared],
+    },
+    { attribute: USER_RUPIES, entity: SAVE_ENTITY, values: [rupies] },
     { attribute: ITEM_ACQUIRED_LAST, entity: SAVE_ENTITY, values: [acquired] },
     { attribute: WEAPON_LAST_ID, entity: SAVE_ENTITY, values: [weaponId] },
   );

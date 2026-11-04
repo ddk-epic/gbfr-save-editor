@@ -33,7 +33,8 @@ const QUESTS = [
   0x104003, 0x104001, 0x104002, 0x105f00, 0x105001, 0x105f01, 0x105002,
   0x106f00, 0x106000, 0x106001, 0x106002, 0x107000, 0x107f00, 0x107002,
   0x107001, 0x107003, 0x108f00, 0x108000, 0x108002, 0x108001, 0x109001,
-  0x109000, 0x109002,
+  0x109000, 0x109002, 0x10a000, 0x10af00, 0x10a001, 0x10a002, 0x10a010,
+  0x10af02, 0x10a025, 0x10a031,
 ];
 const PART = 200;
 const NEW_GAME_RECORD = 5;
@@ -57,6 +58,9 @@ const CHAPTER_10_RECORD = 37;
 const CHAPTER_10_SECTION = 1349186703;
 const CHAPTER_ZERO_RECORD = 43;
 const CHAPTER_ZERO_SECTION = 274192714;
+const NOTES_RECORD = 47;
+const STORY_END_RECORD = 51;
+const STORY_END_SECTION = 1589922075;
 
 const newSave = (overrides: { chapter?: number[]; section?: number } = {}) => {
   const sections = Array<number>(QUESTS.length * PART).fill(0);
@@ -146,7 +150,8 @@ describe("advanceStory", () => {
     ])
       expect(at.get(flags)).toEqual([
         0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0,
       ]);
 
     for (const sections of [
@@ -185,7 +190,8 @@ describe("advanceStory", () => {
     ])
       expect(at.get(flags)).toEqual([
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0,
       ]);
 
     for (const sections of [
@@ -224,7 +230,8 @@ describe("advanceStory", () => {
     ])
       expect(at.get(flags)).toEqual([
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0,
       ]);
 
     for (const sections of [
@@ -261,7 +268,8 @@ describe("advanceStory", () => {
     ])
       expect(at.get(flags)).toEqual([
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0,
       ]);
 
     for (const sections of [
@@ -302,7 +310,7 @@ describe("advanceStory", () => {
     ])
       expect(at.get(flags)).toEqual([
         ...Array<number>(19).fill(1),
-        ...Array<number>(25).fill(0),
+        ...Array<number>(33).fill(0),
       ]);
 
     for (const sections of [
@@ -342,7 +350,7 @@ describe("advanceStory", () => {
     ])
       expect(at.get(flags)).toEqual([
         ...Array<number>(25).fill(1),
-        ...Array<number>(19).fill(0),
+        ...Array<number>(27).fill(0),
       ]);
 
     for (const sections of [
@@ -385,7 +393,7 @@ describe("advanceStory", () => {
     ])
       expect(at.get(flags)).toEqual([
         ...Array<number>(29).fill(1),
-        ...Array<number>(15).fill(0),
+        ...Array<number>(23).fill(0),
       ]);
 
     for (const sections of [
@@ -426,7 +434,7 @@ describe("advanceStory", () => {
     ])
       expect(at.get(flags)).toEqual([
         ...Array<number>(32).fill(1),
-        ...Array<number>(12).fill(0),
+        ...Array<number>(20).fill(0),
       ]);
 
     for (const sections of [
@@ -467,7 +475,7 @@ describe("advanceStory", () => {
     ])
       expect(at.get(flags)).toEqual([
         ...Array<number>(37).fill(1),
-        ...Array<number>(7).fill(0),
+        ...Array<number>(15).fill(0),
       ]);
 
     for (const sections of [
@@ -510,7 +518,10 @@ describe("advanceStory", () => {
       STORY_QUEST_LIVE_CLEARED,
       STORY_QUEST_THIRD_CLEARED,
     ])
-      expect(at.get(flags)).toEqual([...Array<number>(43).fill(1), 0]);
+      expect(at.get(flags)).toEqual([
+        ...Array<number>(43).fill(1),
+        ...Array<number>(9).fill(0),
+      ]);
 
     for (const sections of [
       STORY_QUEST_CHECKPOINTS,
@@ -528,18 +539,44 @@ describe("advanceStory", () => {
   it("accepts the section the game moves a chapter start to", () => {
     const session = newSave({ chapter: [40, -1], section: 18604228 });
     expect(storyTargets(session).map(({ key }) => key)).toEqual([
-      60, 80, 100, 120, 140, 160, 180, 200, 220,
+      60, 80, 100, 120, 140, 160, 180, 200, 220, 222,
     ]);
+  });
+
+  it("moves the start of Chapter Ø to the end of the story", () => {
+    const session = newSave();
+    advanceStory(session, 220);
+    advanceStory(session, 222);
+    const at = readSave(session.export()).slotData.units.of(0);
+
+    expect(at.get(CURRENT_CHAPTER)).toEqual([222, -1]);
+    expect(at.get(CHAPTER_KEYS).at(-1)).toBe(221);
+    expect(at.get(CHAPTER_KEYS)).toHaveLength(40);
+    expect(at.get(CHAPTER_GROUPS)).toHaveLength(11);
+    for (const flags of [
+      STORY_QUEST_CLEARED,
+      STORY_QUEST_LIVE_CLEARED,
+      STORY_QUEST_THIRD_CLEARED,
+    ])
+      expect(at.get(flags)).toEqual([...Array<number>(51).fill(1), 0]);
+    for (const sections of [
+      STORY_QUEST_CHECKPOINTS,
+      STORY_QUEST_CHECKPOINTS_LIVE,
+    ]) {
+      expect(at.get(sections)[CHAPTER_ZERO_RECORD * PART]).toBe(0);
+      expect(at.get(sections)[NOTES_RECORD * PART]).toBe(0);
+      expect(at.get(sections)[STORY_END_RECORD * PART]).toBe(STORY_END_SECTION);
+    }
   });
 
   it("refuses staying in place and offers nothing behind the save", () => {
     const session = newSave();
     expect(storyTargets(session).map(({ key }) => key)).toEqual([
-      40, 60, 80, 100, 120, 140, 160, 180, 200, 220,
+      40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 222,
     ]);
-    advanceStory(session, 220);
+    advanceStory(session, 222);
     expect(() => advanceStory(session, 200)).toThrow("already at or past");
-    expect(() => advanceStory(session, 220)).toThrow("already at or past");
+    expect(() => advanceStory(session, 222)).toThrow("already at or past");
     expect(storyTargets(session)).toEqual([]);
   });
 
