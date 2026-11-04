@@ -40,6 +40,10 @@ const HINT_WINDOWS = [
   "TU_MENU_QUESTSELECT",
   "TU_FAST_TRAVEL",
   "TU_STATION",
+  "TU_ULTIMATE",
+  "TU_QUESTSTART",
+  "TU_MATCHINGSETTING",
+  "TU_RELIC",
 ].map(hashId);
 
 const HINT_MENUS = [
@@ -61,6 +65,11 @@ const HINT_MENUS = [
   "TUTORIAL_GHOST_AI_DISPATCH",
   "TUTORIAL_MENU_QUESTSELECT",
   "TUTORIAL_FAST_TRAVEL",
+  "TUTORIAL_ULTIMATE",
+  "TUTORIAL_QUESTSTART",
+  "TUTORIAL_MATCHINGSETTING",
+  "TUTORIAL_REGION_SETTING",
+  "TUTORIAL_RELIC",
 ].map(hashId);
 
 const HINT_TIPS = [
@@ -102,11 +111,24 @@ const HINT_TIPS = [
   2588951308,
   hashId("NOTE_WINDOW_TIPS_96"),
   hashId("NOTE_WINDOW_TIPS_47"),
+  hashId("NOTE_WINDOW_TIPS_49"),
+  hashId("NOTE_WINDOW_TIPS_93"),
+  hashId("NOTE_WINDOW_TIPS_98"),
+  hashId("NOTE_WINDOW_TIPS_61"),
+  0xbc721835,
+  0x0a2b64b3,
+  0xd880f0b7,
+  0xde5da575,
+  0xd3d37684,
+  0x98471314,
+  0x9bff336c,
+  0xc6d546d5,
 ];
 
 /** `infomation_dialog.Key`. */
 const HINT_DIALOGS = [
-  0xa60431d1, 0x64574a34, 0xb4b28aa5, 0x9818071c, 0x28c2a532,
+  0xa60431d1, 0x64574a34, 0xb4b28aa5, 0x9818071c, 0x28c2a532, 0x5fb06d4c,
+  0x2b1905b3,
 ];
 
 /** Marks every found hint as shown, at any point in the story. */
