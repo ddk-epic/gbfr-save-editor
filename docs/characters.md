@@ -9,7 +9,7 @@ Characters occupy 41 entities, `CHARACTER_FIRST` (10000) to 10040, one per `char
 | Attribute | Name                           | Type        | Holds                                                        |
 | --------- | ------------------------------ | ----------- | ------------------------------------------------------------ |
 | 1301      | `CHARACTER_KEY`                | `uint`      | `chara.CharId` hash                                          |
-| 1302      | not named                      | `int`       | 0, or 1 on `PL0000` and `PL0100` early in the story          |
+| 1302      | `CHARACTER_OUTFIT`             | `int`       | `chara_costume.SkinType` worn                                |
 | 1303      | `CHARACTER_XP`                 | `int`       | XP, 8,400,000 at level 100                                   |
 | 1304      | not named                      | `int`       | Always 0                                                     |
 | 1305      | `CHARACTER_FLAGS`              | `uint`      | Flags                                                        |
@@ -22,7 +22,7 @@ Characters occupy 41 entities, `CHARACTER_FIRST` (10000) to 10040, one per `char
 | 1313      | `CHARACTER_BASE_CRIT`          | `int`       | Base Critical Hit Rate, `chara_status.CritRate`              |
 | 1314      | `CHARACTER_QUESTS_USED`        | `uint`      | Number of quests the character was used in                   |
 | 1315      | `CHARACTER_STAND_IN`           | `uint`      | `chara.CharId` the character plays as, or the empty hash     |
-| 1316      | not named                      | `uint`      |                                                              |
+| 1316      | `CHARACTER_OUTFITS_OWNED`      | `uint`      | One bit per `chara_costume.SkinType` owned                   |
 | 1317      | not named                      | `uint`      |                                                              |
 | 1318      | not named                      | `uint`      | Bitmask, up to 6 bits                                        |
 | 1321      | `CHARACTER_OVERFLOW_XP`        | `uint`      | XP earned at level 100, see below                            |
@@ -42,6 +42,7 @@ Characters occupy 41 entities, `CHARACTER_FIRST` (10000) to 10040, one per `char
 - 1503 goes from `-1, -1` to `2, -1` on the captain as a second skill goes into 1404. What the 2 stands for is not settled.
 - 1309, 1310, 1312 and 1313 are the character's own stats. They leave out gear, fate episodes and masteries, and none of them is the stat the game displays. Characters with no `chara_status` rows hold 0.
 - 1321 takes each XP gain above level 99 (`FUN_1402b4040`), and holds 0 below level 100. Each `constant.MaxLevelRepeatXP` (400,000) it crosses pays `MaxLevelVoucherReward` (3) `ITEM_21_0000` Knickknack Vouchers and `MaxLevelMSPReward` (100) MSP. It wraps at 400,000, or with feature `0x2b` (`FUN_140442780`, not identified) at 4,000,000, where each 10th cycle pays one `ITEM_21_0001` Transmarvel Voucher in place of the Knickknack Vouchers.
+- A new game sets 1302 to 1 on `PL0000` and `PL0100` (`FUN_1402d4c60`), with 1316 at 2. `ChangeCharacterSkin` (`FUN_1431fea70`) sets 1302 and the matching 1316 bit. `GetRelinkSword` (`FUN_143204880`) clears 1316 bit 1 on both captains unless 1302 holds 1.
 - 1323 equals a `chara_master_exp.TotalMSP` row, and the row index is the master level. 0 reads as master level 1.
 - The delegate is the character set in the Backup Characters menu for other players to enlist. The message is set there after picking one.
 - 1315 is set while a story party holds the character. On a new game `PL1200` plays as `NP0000`, with the `AB_NP0000_*` skills. The game reads 1315 in place of the character's own key (`FUN_1402e4800`), and every party preset resets it to the empty hash (`FUN_1402e38e0`). It empties and returns within about 2 s each time a preset applies with the stand-in in it, as at a story quest clear, where the character's XP rises to a new level between, and with no clear at times that fit a restart after a party defeat. It stays empty after a preset without one.

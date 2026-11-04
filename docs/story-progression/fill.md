@@ -34,12 +34,16 @@
 
 Each added weapon takes the first free entry: 2802 the next 2801, 2803, 2804, 2805 and 2815, with 7403 at its row to 4, and 2801. 7403 stays set when a weapon is later sold, so a weapon sold on a played save is not added again.
 
-| Weapon               | XP     | Uncap | Flags (2815)                                 | Also                                                                                         |
-| -------------------- | ------ | ----- | -------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `_03`, due Chapter 4 | 90     | 0     | 129 on the captain in play, 128 on the other | Clears the captain's `_01` entry. 1402 takes the new id on a captain equipping the `_01`     |
-| `_99`, due Chapter 9 | 162540 | 6     | 128                                          | 1402 on the captain not in play takes it. The captain in play's `_03` takes XP 1740, uncap 3 |
+| Weapon               | XP     | Uncap | Flags (2815)                                 | Also                                                                                                        |
+| -------------------- | ------ | ----- | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `_03`, due Chapter 4 | 90     | 0     | 129 on the captain in play, 128 on the other | Clears the captain's `_01` entry. 1402 takes the new id on a captain equipping the `_01`. See outfits below |
+| `_99`, due Chapter 9 | 162540 | 6     | 128                                          | 1402 on the captain not in play takes it. The captain in play's `_03` takes XP 1740, uncap 3                |
 
 The game sets 2815 bit 0 on the in-play `_03` as `TUTORIAL_EQUIP` opens. `disableHints` marks that hint shown, so the fill writes the bit itself.
+
+### Outfits
+
+A captain given the `_03` also takes what `ChangeCharacterSkin` and `GetRelinkSword` do across that change: 1302 moves from 1 to 0, and 1316 sets bit 0 and clears bit 1. 1302 stays when it holds another outfit, and other 1316 bits stay.
 
 ## `PL1900`
 
@@ -64,10 +68,10 @@ When 1305 bit 3 was unset, meaning the save never played the character, the fill
 - `ITEM_70_0008` Dehg's Catalyst Stone, given and taken within Chapter 7.
 - `ITEM_70_0001` and `ITEM_70_0003`, which a new save already holds.
 - `ITEM_23_0000` Crewmate Cards. The traced run gains three, and a loaded save gains one with the quest rank reward, so the count the game adds by itself is not settled.
-- 1316 and 1302 on the captains, and 5815 at 185 and 998, which move with the `_03` change.
+- 5815 at 184, 185 and 998, the weapon counts behind badges 360-368 and 1360-1362. They rise with no weapon unit moving when `PL1900` joins, and 998 can fall, so the game takes them again from the weapons held. A load does not.
 - The story party, 2201 at 103000-103003.
 - MSP for levels `PL1900` gains at the join, side trophies, XP, rupies, consumables, sigils and journal rows.
 
 ## Status
 
-Applied to a new save with `advanceStory` to key 220 and `disableHints`, the fill loads in game. The weapons, 2600, the archives and 5815 at 46 and 47 hold after a save, and 46 and 47 reach 7 at note 02, as in the traced run.
+Applied to a new save with `advanceStory` to key 220 and `disableHints`, the fill loads in game. The weapons, 2600, the archives and 5815 at 46 and 47 hold after a save, and 46 and 47 reach 7 at note 02, as in the traced run. A save with the outfit writes also loads in game.

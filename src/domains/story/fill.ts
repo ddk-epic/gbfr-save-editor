@@ -9,6 +9,8 @@ import {
   CHARACTER_JOINED,
   CHARACTER_KEY,
   CHARACTER_LEVEL,
+  CHARACTER_OUTFIT,
+  CHARACTER_OUTFITS_OWNED,
   CHARACTER_STORY_PLAYED,
   CHARACTER_XP,
   masteryRange,
@@ -72,6 +74,8 @@ const FIGHT_WEAPON_XP = 162540;
 const FIGHT_WEAPON_UNCAP = 6;
 const FIELD_NOTE_REGISTERED = 4;
 const WEAPON_ENTRIES = 256;
+const OUTFIT_MAIN = 0;
+const OUTFIT_STARTING = 1;
 
 interface StoryFillEntry {
   /** `chapter_select.Key` of the chapter start the entry is due by. */
@@ -359,6 +363,21 @@ export function fillSkippedStory(session: SaveSession): string[] {
         inPlay ? STORY_WEAPON_FLAGS | WEAPON_OWNED_BIT : STORY_WEAPON_FLAGS,
       );
       startWeaponEntities.set(captain, entity);
+      const wearer = units.of(captain);
+      if (wearer.get(CHARACTER_OUTFIT) === OUTFIT_STARTING)
+        patches.push({
+          attribute: CHARACTER_OUTFIT,
+          entity: captain,
+          values: [OUTFIT_MAIN],
+        });
+      patches.push({
+        attribute: CHARACTER_OUTFITS_OWNED,
+        entity: captain,
+        values: [
+          (wearer.get(CHARACTER_OUTFITS_OWNED) | (1 << OUTFIT_MAIN)) &
+            ~(1 << OUTFIT_STARTING),
+        ],
+      });
       for (const old of units.entitiesWhere(WEAPON_KEY, hashId(replaces))) {
         const oldId = units.of(old).get(WEAPON_ID);
         patches.push(

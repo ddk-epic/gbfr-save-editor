@@ -8,6 +8,8 @@ import {
   CHARACTER_FLAGS,
   CHARACTER_KEY,
   CHARACTER_LEVEL,
+  CHARACTER_OUTFIT,
+  CHARACTER_OUTFITS_OWNED,
   CHARACTER_XP,
 } from "../../src/domains/character/attributes";
 import { EQUIP_WEAPON } from "../../src/domains/equipment/attributes";
@@ -165,12 +167,16 @@ const save = (
       [CHARACTER_FLAGS, 1],
       [CHARACTER_LEVEL, overrides.crewLevel ?? 1],
       [EQUIP_WEAPON, 1],
+      [CHARACTER_OUTFIT, 1],
+      [CHARACTER_OUTFITS_OWNED, 2],
     ],
     10001: [
       [CHARACTER_KEY, hashId("PL0100")],
       [CHARACTER_FLAGS, 1],
       [CHARACTER_LEVEL, 1],
       [EQUIP_WEAPON, 3],
+      [CHARACTER_OUTFIT, 1],
+      [CHARACTER_OUTFITS_OWNED, 2],
     ],
     [ID_ENTITY]: [
       [CHARACTER_KEY, hashId("PL1900")],
@@ -322,6 +328,55 @@ describe("fillSkippedStory", () => {
     expect(units.values(EQUIP_WEAPON, 10001)).toEqual([5]);
     expect(units.values(WEAPON_KEY, 40000)).toEqual([hashId("")]);
     expect(units.values(WEAPON_FLAGS, 40000)).toEqual([0]);
+  });
+
+  it("moves the captains off the starting outfit with the start weapons", () => {
+    const session = save({ chapter: 80 });
+    fillSkippedStory(session);
+    const units = reread(session);
+
+    for (const captain of [10000, 10001]) {
+      expect(units.of(captain).get(CHARACTER_OUTFIT)).toBe(0);
+      expect(units.of(captain).get(CHARACTER_OUTFITS_OWNED)).toBe(1);
+    }
+  });
+
+  it("keeps the starting outfit before the start weapons are due", () => {
+    const units = reread(
+      (() => {
+        const session = save({ chapter: 60 });
+        fillSkippedStory(session);
+        return session;
+      })(),
+    );
+
+    expect(units.of(10000).get(CHARACTER_OUTFIT)).toBe(1);
+    expect(units.of(10000).get(CHARACTER_OUTFITS_OWNED)).toBe(2);
+  });
+
+  it("keeps other outfits a captain owns and wears", () => {
+    const session = save({ chapter: 80 });
+    session.patch([
+      { attribute: CHARACTER_OUTFIT, entity: 10000, values: [2] },
+      { attribute: CHARACTER_OUTFITS_OWNED, entity: 10000, values: [7] },
+    ]);
+    fillSkippedStory(session);
+    const captain = reread(session).of(10000);
+
+    expect(captain.get(CHARACTER_OUTFIT)).toBe(2);
+    expect(captain.get(CHARACTER_OUTFITS_OWNED)).toBe(5);
+  });
+
+  it("keeps the outfit of a captain already holding the start weapon", () => {
+    const session = save({ chapter: 80 });
+    session.patch([
+      { attribute: FIELD_NOTE_WEAPON_FLAGS, entity: 6, values: [4] },
+    ]);
+    fillSkippedStory(session);
+    const captain = reread(session).of(10000);
+
+    expect(captain.get(CHARACTER_OUTFIT)).toBe(1);
+    expect(captain.get(CHARACTER_OUTFITS_OWNED)).toBe(2);
   });
 
   it("keeps a captain on another weapon and skips a start weapon once held", () => {
