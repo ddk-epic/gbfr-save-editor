@@ -100,4 +100,19 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     chapterKeysCleared: 18n,
     islands: [],
   },
+  // Start of Chapter 7
+  {
+    key: 140,
+    quest: 0x105001,
+    entrySection: 72948621,
+    laterSections: [632930541],
+    town: 0xd00,
+    townCheckpoint: 528045455,
+    cleared: [0x104000, 0x104f01, 0x104003, 0x104001, 0x104002, 0x105f00],
+    chapterKeys: [120, 121, 122, 123],
+    chapterGroups: [6],
+    trophies: [6, 1410],
+    chapterKeysCleared: 22n,
+    islands: [hashId("ISLAND_4ST"), hashId("ISLAND_5ST")],
+  },
 ];
