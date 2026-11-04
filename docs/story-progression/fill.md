@@ -51,7 +51,7 @@ The row also takes 2575 to true on the 19 uncleared quests the traced run holds 
 | 23     | 30000                       | 50             | 25             |                |
 | 24     | 30000                       |                | 50             | 10             |
 
-The game pays the reward of the difficulty it finds on a load, so trophy 25 writes none.
+The game pays the trophy 25 reward by itself on a load, so trophy 25 writes none. The same load pays nothing for trophies 22-24.
 
 ## Weapons
 

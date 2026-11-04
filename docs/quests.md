@@ -136,6 +136,34 @@ Four arrays of 512.
 | 5    | S++           |
 | 7    | Never cleared |
 
+### Opening a quest
+
+`FUN_14061f4b0` tests `occurrenceList_` in `baseinfo.msg`, the same list as the short stories. A type 1 entry passes when the named quest's clear count is above 0.
+
+`promoteToProud` works on a save with 7303 at 6 or more. It marks the 18 quests that open another Maniac quest or `00407101` as cleared, and `00407101` itself, written as in the [story fill](story-progression/fill.md): 2571 to 1, 2574 to 0, 2575 and 2576 to true, 4901 at 10600 and 5815 at 20 up by 1, and 5815 at 19 up by 1, or at 238 for `00407101`. First clear rewards are not given. It sets trophy 542 and 7303 to 7. The other 9 Maniac quests are listed with no clears.
+
+The game pays the trophy 25 and 542 rewards by itself after a load.
+
+| Quest                                | Opens on                             |
+| ------------------------------------ | ------------------------------------ |
+| `00406325`, `355`-`361`, `364`-`367` | `0010A031`                           |
+| `00406351`                           | `00406356`                           |
+| `00406352`                           | `00406355`                           |
+| `00406353`                           | `00406325`                           |
+| `00406354`                           | `00406358`                           |
+| `00406324`                           | `00406357`                           |
+| `00406327`                           | `00406360`, `00406364`               |
+| `00406323`                           | `00406359`, `00406365`, `00406366`   |
+| `00406331`, `00406337`               | `00406325`, `355`-`360`, `364`-`366` |
+| `00406332`                           | `00406331`                           |
+| `00406330`                           | `00406332`                           |
+| `00406333`                           | `00406330`                           |
+| `00406334`                           | `00406337`                           |
+| `00406335`                           | `00406334`                           |
+| `00406338`                           | `00406333`, `00406335`               |
+
+The other `00406` rows in 2570 have no `baseinfo.msg`.
+
 ## Fate quests
 
 Two arrays of 100, for the episodes that are a quest (`fate_episode.MissionQuestId`).
@@ -195,7 +223,7 @@ Family 7, script quests with no story or quest counter entry, cleared by `ClearQ
 - 2511, 2512 and 2522 all turn 1 at a story quest's clear. Which one marks the clear is not settled. `00109002`, `0010A002` and `0010A031` are the exceptions, see 2501.
 - The objective moves on with no story quest begun: `TXT_QT_TRYMANIAC_00` "Progress through Maniac quests" after `0010A031`, `TXT_QT_TRYPROUD_00` "Progress through Proud quests" after `00407101`. What sets them has not been found.
 - 2583, 4800 values beside 2580-2582, has no meaning assigned.
-- 2508, an `int`, goes from 0 to 1 at a checkpoint early in `00104000`. It goes 1 to 2, 2 to 3, 3 to 4 and 4 to 5 at the next checkpoint or record write after 7303 reaches 3, 4, 5 and 6, and 5 to 6 in the record write that takes 7303 to 7. No meaning is assigned.
+- 2508, an `int`, goes from 0 to 1 at a checkpoint early in `00104000`. It goes 1 to 2, 2 to 3, 3 to 4 and 4 to 5 at the next checkpoint or record write after 7303 reaches 3, 4, 5 and 6, and 5 to 6 in the record write that takes 7303 to 7. On a load of a save at 0 it goes to 5 with the trophy 25 reward, and 5 to 6 with the trophy 542 reward once 7303 is 7. No meaning is assigned.
 - 2501-2651 apart from the attributes above have no meaning assigned.
 - 2592 and 2594 gain an entry of 0 when a chapter joins 2590. 2593 is registered as a `SaveDataUnitVariable`, but a save can hold no unit for it, and it has no meaning assigned.
 - 2595 and 2596 gain an entry when a chapter group's last chapter joins 2590, not on every chapter. 2596 takes 0, and 1 on group 11, which closes with key 222, though a save can also hold 0 there. No code reading it has been found. 2506 stays 222 as key 222 joins 2590.

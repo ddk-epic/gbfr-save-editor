@@ -31,11 +31,8 @@ import {
   FIELD_NOTE_WEAPON_KEY,
 } from "../journal/attributes";
 import { MASTERY_NODE_BITS } from "../mastery/attributes";
-import { PROFILE_FIRST, PROFILE_QUESTS_CLEARED } from "../profile/attributes";
+import { clearCounterQuests } from "../quest/clear";
 import {
-  COUNTER_QUEST_CLEARED,
-  COUNTER_QUEST_CLEARS,
-  COUNTER_QUEST_FLAGS,
   COUNTER_QUEST_IDS,
   COUNTER_QUEST_OPENED,
   QUEST_DIFFICULTY_UNLOCKED,
@@ -51,8 +48,6 @@ import {
 import {
   ARCHIVES_UNLOCKED_COUNTERS,
   CHAPTER_KEYS_CLEARED,
-  QUEST_CLEARS_BEFORE_DIFFICULTY,
-  QUESTS_CLEARED,
   RUPIES_EARNED,
   STORY_MASTERY_FILLED,
   TROPHIES_EARNED_IN_RANGE,
@@ -95,7 +90,6 @@ const FIELD_NOTE_REGISTERED = 4;
 const WEAPON_ENTRIES = 256;
 const OUTFIT_MAIN = 0;
 const OUTFIT_STARTING = 1;
-const LOWEST_GRADE = 0;
 
 interface StoryFillEntry {
   /** `chapter_select.Key` of the chapter start the entry is due by. */
@@ -254,6 +248,22 @@ const TROPHY_REWARDS: Readonly<
   },
 };
 
+const MANIAC = 6;
+const PROUD = 7;
+
+/** The Maniac quests other quests open on, then `00407101`, the first Proud quest. */
+const PROUD_PROMOTION: StoryFillEntry = {
+  key: 222,
+  trophies: [542],
+  chapterKeysCleared: 41n,
+  counterQuests: [
+    0x406325, 0x406330, 0x406331, 0x406332, 0x406333, 0x406334, 0x406335,
+    0x406337, 0x406338, 0x406355, 0x406356, 0x406357, 0x406358, 0x406359,
+    0x406360, 0x406364, 0x406365, 0x406366, 0x407101,
+  ],
+  questDifficulty: PROUD,
+};
+
 const ID_MAX_JOIN_LEVEL = 42;
 /** XP, base HP and base attack per level. */
 const ID_LEVELS: Readonly<Record<number, readonly [number, number, number]>> = {
@@ -343,12 +353,33 @@ const ID_MASTERY_BITS: Readonly<Record<number, number>> = {
 
 /** Adds what the chapters up to the save's current one should have left, and returns what it added. */
 export function fillSkippedStory(session: SaveSession): string[] {
+  const at = session.save.slotData.units.of(SAVE_ENTITY);
+  const reached = at.get(CURRENT_CHAPTER)[0]!;
+  return applyFill(
+    session,
+    STORY_FILL.filter(({ key }) => key <= reached),
+  );
+}
+
+/** Clears the quests up to the first Proud quest and unlocks Proud quests, and returns what it added. */
+export function promoteToProud(session: SaveSession): string[] {
+  const at = session.save.slotData.units.of(SAVE_ENTITY);
+  if (at.get(QUEST_DIFFICULTY_UNLOCKED) < MANIAC)
+    throw new Error("the save has not unlocked Maniac quests");
+  return applyFill(session, [PROUD_PROMOTION]);
+}
+
+function applyFill(
+  session: SaveSession,
+  due: readonly StoryFillEntry[],
+): string[] {
   const units = session.save.slotData.units;
   const at = units.of(SAVE_ENTITY);
-  const reached = at.get(CURRENT_CHAPTER)[0]!;
-  const due = STORY_FILL.filter(({ key }) => key <= reached);
   const patches: Patch[] = [];
-  const added: string[] = [];
+  const added = clearCounterQuests(
+    session,
+    due.flatMap(({ counterQuests }) => counterQuests ?? []),
+  );
 
   const earned = [...at.get(TROPHY_EARNED)];
   const progress = [...at.get(TROPHY_PROGRESS)];
@@ -356,11 +387,7 @@ export function fillSkippedStory(session: SaveSession): string[] {
   const shortStoryIds = at.get(SHORT_STORY_IDS);
   const shortStoryClears = [...at.get(SHORT_STORY_CLEARS)];
   const counterQuestIds = at.get(COUNTER_QUEST_IDS);
-  const counterQuestClears = [...at.get(COUNTER_QUEST_CLEARS)];
-  const counterQuestGrades = [...at.get(COUNTER_QUEST_FLAGS)];
   const counterQuestOpened = [...at.get(COUNTER_QUEST_OPENED)];
-  const counterQuestCleared = [...at.get(COUNTER_QUEST_CLEARED)];
-  let questsCleared = units.of(PROFILE_FIRST).get(PROFILE_QUESTS_CLEARED);
   const rewardItems = new Map<string, number>();
   let acquired = at.get(ITEM_ACQUIRED_LAST);
   let rupies = at.get(USER_RUPIES);
@@ -458,20 +485,6 @@ export function fillSkippedStory(session: SaveSession): string[] {
       if (row === -1 || shortStoryClears[row] !== 0) continue;
       shortStoryClears[row] = 1;
       added.push(`short story ${quest.toString(16)}`);
-    }
-
-    for (const quest of entry.counterQuests ?? []) {
-      const row = counterQuestIds.indexOf(quest);
-      if (row === -1 || counterQuestClears[row] !== 0) continue;
-      counterQuestClears[row] = 1;
-      counterQuestGrades[row] = LOWEST_GRADE;
-      counterQuestOpened[row] = true;
-      counterQuestCleared[row] = true;
-      questsCleared++;
-      const difficulty = QUEST_CLEARS_BEFORE_DIFFICULTY + ((quest >> 12) & 0xf);
-      progress[difficulty] = progress[difficulty]! + 1n;
-      progress[QUESTS_CLEARED] = progress[QUESTS_CLEARED]! + 1n;
-      added.push(`counter quest ${quest.toString(16)}`);
     }
 
     for (const quest of entry.openedQuests ?? []) {
@@ -653,29 +666,9 @@ export function fillSkippedStory(session: SaveSession): string[] {
       values: shortStoryClears,
     },
     {
-      attribute: COUNTER_QUEST_CLEARS,
-      entity: SAVE_ENTITY,
-      values: counterQuestClears,
-    },
-    {
-      attribute: COUNTER_QUEST_FLAGS,
-      entity: SAVE_ENTITY,
-      values: counterQuestGrades,
-    },
-    {
       attribute: COUNTER_QUEST_OPENED,
       entity: SAVE_ENTITY,
       values: counterQuestOpened,
-    },
-    {
-      attribute: COUNTER_QUEST_CLEARED,
-      entity: SAVE_ENTITY,
-      values: counterQuestCleared,
-    },
-    {
-      attribute: PROFILE_QUESTS_CLEARED,
-      entity: PROFILE_FIRST,
-      values: [questsCleared],
     },
     { attribute: USER_RUPIES, entity: SAVE_ENTITY, values: [rupies] },
     { attribute: ITEM_ACQUIRED_LAST, entity: SAVE_ENTITY, values: [acquired] },
