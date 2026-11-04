@@ -32,6 +32,13 @@ const HINT_WINDOWS = [
   "TUTORIAL_WIN_29",
   "TU_ITEM",
   "TU_NOTE",
+  "TUTORIAL_WIN_21",
+  "TU_QUESTRANK",
+  "TU_SHUFFLEQUEST",
+  "TU_CHAPTERSELECT",
+  "TU_GHOST_AI_DISPATCH",
+  "TU_MENU_QUESTSELECT",
+  "TU_FAST_TRAVEL",
 ].map(hashId);
 
 const HINT_MENUS = [
@@ -46,6 +53,13 @@ const HINT_MENUS = [
   "TUTORIAL_ABILITYEQ",
   "TUTORIAL_ITEM",
   "TUTORIAL_NOTE",
+  "TUTORIAL_QUEST_COUNTER",
+  "TUTORIAL_QUESTRANK",
+  "TUTORIAL_SHUFFLEQUEST",
+  "TUTORIAL_CHAPTERSELECT",
+  "TUTORIAL_GHOST_AI_DISPATCH",
+  "TUTORIAL_MENU_QUESTSELECT",
+  "TUTORIAL_FAST_TRAVEL",
 ].map(hashId);
 
 const HINT_TIPS = [
@@ -73,10 +87,22 @@ const HINT_TIPS = [
   2043388923,
   951310505,
   4077825340,
+  hashId("NOTE_WINDOW_TIPS_82"),
+  hashId("NOTE_WINDOW_TIPS_83"),
+  hashId("NOTE_WINDOW_TIPS_86"),
+  hashId("NOTE_WINDOW_TIPS_87"),
+  hashId("NOTE_WINDOW_TIPS_99"),
+  hashId("NOTE_WINDOW_TIPS_100"),
+  hashId("NOTE_WINDOW_TIPS_101"),
+  1762558635,
+  3309052015,
+  2615852220,
+  3949543317,
+  2588951308,
 ];
 
 /** `infomation_dialog.Key`. */
-const HINT_DIALOGS = [0xa60431d1, 0x64574a34];
+const HINT_DIALOGS = [0xa60431d1, 0x64574a34, 0xb4b28aa5, 0x9818071c];
 
 /** Marks every found hint as shown, at any point in the story. */
 export function disableHints(session: SaveSession) {
