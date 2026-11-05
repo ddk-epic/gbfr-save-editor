@@ -1,6 +1,11 @@
 /** Newest first. */
 export const NEWS = [
   {
+    date: "2026-11-05",
+    title: "Story completion",
+    body: "Advance a new save, or at the start of a chapter, to any later point of the main story.",
+  },
+  {
     date: "2026-09-22",
     title: "First edit option implemented",
     body: "Remove a weapon's wrightstone, then export the save.",
