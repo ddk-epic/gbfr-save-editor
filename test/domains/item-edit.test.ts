@@ -61,7 +61,7 @@ describe("maxTreasures", () => {
     const count = (row: number) => units.of(row + 1).get(ITEM_COUNT);
 
     expect(ROWS.map((_, row) => count(row))).toEqual([
-      999, 999, 999, 99999, 99999, 99, 1, 3, 308, 0, 0,
+      999, 999, 999, 99999, 999, 99, 1, 3, 308, 0, 0,
     ]);
   });
 

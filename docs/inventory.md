@@ -74,13 +74,13 @@ Every save holds a unit for each of the 74 wrightstone item rows, a new game inc
 
 `maxTreasures` raises every treasure below its count and lowers none. A raised row takes 1803 bits 2 and 3, and a row with 1804 at 0 takes the next 1805. 1806 takes bit 0.
 
-| Rows                                                              | Count |
-| ----------------------------------------------------------------- | ----- |
-| `ITEM_21_0000` Knickknack Voucher, `58FC9B99` Transmarvel Voucher | 99999 |
-| `ITEM_23_0000` Crewmate Card                                      | 99    |
-| `ITEM_23_0001`-`0007`, one character's Crewmate Card              | 1     |
-| `ITEM_19_0001`-`0004` Curio                                       | Kept  |
-| Every other treasure                                              | 999   |
+| Rows                                                 | Count |
+| ---------------------------------------------------- | ----- |
+| `ITEM_21_0000` Knickknack Voucher                    | 99999 |
+| `ITEM_23_0000` Crewmate Card                         | 99    |
+| `ITEM_23_0001`-`0007`, one character's Crewmate Card | 1     |
+| `ITEM_19_0001`-`0004` Curio                          | Kept  |
+| Every other treasure                                 | 999   |
 
 ### Fixed counts
 
@@ -89,6 +89,7 @@ Every save holds a unit for each of the 74 wrightstone item rows, a new game inc
 - The eleven `ITEM_50_*` rows, Windcrest to Desert Oil and the `ITEM_50_0011` Evergreen Crystal Fragment, have count 0. A save holding an Evergreen Crystal Fragment holds `ITEM_70_0011`.
 - Life Link, Lyria's Journal and Sky Map Piece have count 1.
 - Counts are never negative. They stay within `item_category.MaxHoldable`, with Wee Pincer (`ITEM_60_0000`) as the exception: its category allows 1, and the saves that hold it have 45.
+- `58FC9B99` Transmarvel Voucher caps at 999, below the 99999 of its category. `FUN_1403503a0`, the per-item cap lookup, returns 999 for it before reading the category.
 
 ## Curios
 
