@@ -27,6 +27,8 @@ const sameKey = (a: KeyCell, b: KeyCell) =>
 const sameCell = (a: Cell, b: Cell): boolean => {
   if (typeof a !== "object" || typeof b !== "object") return a === b;
   if ("unknown" in a || "unknown" in b) return "unknown" in a && "unknown" in b;
+  if ("message" in a || "message" in b)
+    return "message" in a && "message" in b && a.message === b.message;
   if ("keys" in a || "keys" in b)
     return (
       "keys" in a &&
@@ -42,6 +44,8 @@ const sameTable = (a: Table, b: Table) =>
   a.section === b.section &&
   a.tab === b.tab &&
   a.label === b.label &&
+  a.uiLabel === b.uiLabel &&
+  a.wide === b.wide &&
   a.stretch === b.stretch &&
   sameList(a.columns, b.columns, (x, y) => x[0] === y[0] && x[1] === y[1]) &&
   sameList(

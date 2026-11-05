@@ -32,10 +32,13 @@ import {
   type TrophyTab,
   type Inventory,
 } from "gbfr-save-editor";
+import { STORY_END_KEY, storyProgress } from "gbfr-save-editor/edit";
 import type { GameTextTable } from "../i18n/game-text";
 import { keyCell, trait, unknownCell } from "./cell";
 import { table } from "./table";
 import type { Cell, Table } from "./types";
+
+export const STORY_TABLE = "profile:story";
 
 /** profile 4706, from 1. */
 const SKYFARER_GRADES = [
@@ -294,6 +297,23 @@ export function buildShared(
         m?.questsUsed,
       ]),
       { stretch: "character", tab: "profile", label: "cardCharacters" },
+    ),
+    table(
+      STORY_TABLE,
+      "profile",
+      [
+        ["chapter", 36],
+        ["chapterStart", 30],
+        ["completed", 9],
+      ],
+      storyProgress(save).map(({ key, completed }) => [
+        key === STORY_END_KEY
+          ? { message: "mainStoryEnd" }
+          : keyCell("chapterStartChapter", String(key)),
+        keyCell("chapterStart", String(key)),
+        completed,
+      ]),
+      { stretch: "chapter", tab: "profile", uiLabel: "mainStory", wide: true },
     ),
     ...itemTables(inventory.items, wished, unseen),
     table(

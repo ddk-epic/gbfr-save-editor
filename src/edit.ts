@@ -16,13 +16,22 @@ export {
   USER_MAX_RUPIES,
 } from "./domains/user/attributes";
 export { completeFateEpisodes } from "./domains/fate-episode/edit";
-export { advanceStory, storyTargets } from "./domains/story/edit";
 export {
+  advanceStory,
+  storyProgress,
+  storyTargets,
+} from "./domains/story/edit";
+export {
+  canPromoteToProud,
+  canUnlockProudQuests,
   fillSkippedStory,
   promoteToProud,
   unlockProudQuests,
 } from "./domains/story/fill";
-export type { StoryCheckpoint } from "./domains/story/checkpoints";
+export {
+  STORY_END_KEY,
+  type StoryCheckpoint,
+} from "./domains/story/checkpoints";
 export { disableHints } from "./domains/tutorial/edit";
 export { addWrightstone, editWrightstone } from "./domains/wrightstone/edit";
 export {

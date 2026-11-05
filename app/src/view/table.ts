@@ -5,7 +5,13 @@ export const table = (
   section: SectionId,
   columns: Column[],
   rows: Cell[][],
-  { stretch, tab, label }: Pick<Table, "stretch" | "tab" | "label">,
+  {
+    stretch,
+    tab,
+    label,
+    uiLabel,
+    wide,
+  }: Pick<Table, "stretch" | "tab" | "label" | "uiLabel" | "wide">,
 ): Table => {
   if (!columns.some(([id]) => id === stretch))
     throw new Error(`${id}: stretch column ${stretch} is not a column`);
@@ -14,6 +20,8 @@ export const table = (
     section,
     tab,
     label,
+    uiLabel,
+    wide,
     columns,
     stretch,
     rows: rows.map((cells, i) => ({ id: `${id}:${i}`, cells })),

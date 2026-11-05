@@ -18,6 +18,9 @@ export interface StoryCheckpoint {
   islands: readonly number[];
 }
 
+/** `chapter_select.Key`. */
+export const STORY_END_KEY = 222;
+
 /** In story order. */
 export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
   // Start of Chapter 2
@@ -154,7 +157,7 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
   },
   // End of the story
   {
-    key: 222,
+    key: STORY_END_KEY,
     quest: 0x10a031,
     entrySection: 1589922075,
     laterSections: [1845682248],

@@ -538,7 +538,7 @@ describe("advanceStory", () => {
 
   it("accepts the section the game moves a chapter start to", () => {
     const session = newSave({ chapter: [40, -1], section: 18604228 });
-    expect(storyTargets(session).map(({ key }) => key)).toEqual([
+    expect(storyTargets(session.save).map(({ key }) => key)).toEqual([
       60, 80, 100, 120, 140, 160, 180, 200, 220, 222,
     ]);
   });
@@ -571,13 +571,13 @@ describe("advanceStory", () => {
 
   it("refuses staying in place and offers nothing behind the save", () => {
     const session = newSave();
-    expect(storyTargets(session).map(({ key }) => key)).toEqual([
+    expect(storyTargets(session.save).map(({ key }) => key)).toEqual([
       40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 222,
     ]);
     advanceStory(session, 222);
     expect(() => advanceStory(session, 200)).toThrow("already at or past");
     expect(() => advanceStory(session, 222)).toThrow("already at or past");
-    expect(storyTargets(session)).toEqual([]);
+    expect(storyTargets(session.save)).toEqual([]);
   });
 
   it("refuses a chapter that is no checkpoint", () => {
@@ -589,10 +589,10 @@ describe("advanceStory", () => {
   it("refuses a save in the middle of the story", () => {
     const midChapter = newSave({ chapter: [41, -1] });
     expect(() => advanceStory(midChapter, 40)).toThrow("not new or at");
-    expect(storyTargets(midChapter)).toEqual([]);
+    expect(storyTargets(midChapter.save)).toEqual([]);
 
     const midQuest = newSave({ chapter: [40, -1], section: 12345 });
     expect(() => advanceStory(midQuest, 40)).toThrow("not new or at");
-    expect(storyTargets(midQuest)).toEqual([]);
+    expect(storyTargets(midQuest.save)).toEqual([]);
   });
 });

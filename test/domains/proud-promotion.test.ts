@@ -18,6 +18,8 @@ import {
 } from "../../src/domains/quest/attributes";
 import { UI_FEATURE_UNLOCKED } from "../../src/domains/story/attributes";
 import {
+  canPromoteToProud,
+  canUnlockProudQuests,
   promoteToProud,
   unlockProudQuests,
 } from "../../src/domains/story/fill";
@@ -121,6 +123,20 @@ describe("promoteToProud", () => {
   });
 });
 
+describe("canPromoteToProud", () => {
+  it("holds only at Maniac", () => {
+    expect(canPromoteToProud(save(5).save)).toBe(false);
+    expect(canPromoteToProud(save(6).save)).toBe(true);
+    expect(canPromoteToProud(save(7).save)).toBe(false);
+  });
+
+  it("ends with the promotion", () => {
+    const session = save(6);
+    promoteToProud(session);
+    expect(canPromoteToProud(session.save)).toBe(false);
+  });
+});
+
 describe("unlockProudQuests", () => {
   const PREREQUISITES = [
     0x407301, 0x407302, 0x407303, 0x407304, 0x407310, 0x407311, 0x407312,
@@ -170,6 +186,14 @@ describe("unlockProudQuests", () => {
     const first = session.export();
     expect(unlockProudQuests(session)).toEqual([]);
     expect(session.export()).toEqual(first);
+  });
+
+  it("is offered until nothing is left to clear", () => {
+    expect(canUnlockProudQuests(proudSave(6).save)).toBe(false);
+    const session = proudSave(7);
+    expect(canUnlockProudQuests(session.save)).toBe(true);
+    unlockProudQuests(session);
+    expect(canUnlockProudQuests(session.save)).toBe(false);
   });
 
   it("refuses a save without Proud quests", () => {

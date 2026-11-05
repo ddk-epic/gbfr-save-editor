@@ -26,6 +26,12 @@ A save editor for Granblue Fantasy: Relink. Still work in progress and planned w
 - [x] Card characters: last played and most used, with level, quests used and master level
 - [x] Recent players: name, player id, last seen, quest, grade, quests cleared and card characters
 
+#### Story
+
+- [x] Advance to a chapter start
+- [x] Promote to Proud quests
+- [x] Unlock all Proud quests
+
 #### Party
 
 - [x] Current party with equipment and skills

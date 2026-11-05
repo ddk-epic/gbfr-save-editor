@@ -1,4 +1,5 @@
 import type { Attribute } from "../../core/attribute";
+import type { Save } from "../../core/read-save";
 import type { Patch, SaveSession } from "../../save/session";
 import { SAVE_ENTITY } from "../user/attributes";
 import {
@@ -27,14 +28,25 @@ import { STORY_CHECKPOINTS, type StoryCheckpoint } from "./checkpoints";
 import { onlyEntity } from "./only-entity";
 
 /** The checkpoints a save can advance to, in story order. */
-export function storyTargets(session: SaveSession): readonly StoryCheckpoint[] {
-  const position = storyPosition(session);
+export function storyTargets(save: Save): readonly StoryCheckpoint[] {
+  const position = storyPosition(save);
   return position === undefined ? [] : STORY_CHECKPOINTS.slice(position + 1);
 }
 
+/** Each checkpoint, completed once the save reaches the next one. */
+export function storyProgress(
+  save: Save,
+): readonly { key: number; completed: boolean }[] {
+  const chapter = save.slotData.units.of(SAVE_ENTITY).get(CURRENT_CHAPTER)[0]!;
+  return STORY_CHECKPOINTS.map(({ key }, index) => {
+    const next = STORY_CHECKPOINTS[index + 1];
+    return { key, completed: next !== undefined && next.key <= chapter };
+  });
+}
+
 /** Index of the checkpoint the save is at, -1 on a new save, undefined anywhere else. */
-function storyPosition(session: SaveSession): number | undefined {
-  const at = session.save.slotData.units.of(SAVE_ENTITY);
+function storyPosition(save: Save): number | undefined {
+  const at = save.slotData.units.of(SAVE_ENTITY);
   const chapter = at.get(CURRENT_CHAPTER)[0];
   if (chapter === NO_CHAPTER && at.get(CHAPTER_KEYS).length === 0) return -1;
 
@@ -53,7 +65,7 @@ function storyPosition(session: SaveSession): number | undefined {
 
 /** Moves a new save, or one at a checkpoint, forward to the start of chapter `key`. */
 export function advanceStory(session: SaveSession, key: number) {
-  const position = storyPosition(session);
+  const position = storyPosition(session.save);
   if (position === undefined)
     throw new Error("the save is not new or at a story checkpoint");
   const target = STORY_CHECKPOINTS.findIndex(

@@ -20,7 +20,7 @@ export const keyCells = (cell: Cell): KeyCell[] =>
     ? []
     : "keys" in cell
       ? cell.keys
-      : "unknown" in cell
+      : "unknown" in cell || "message" in cell
         ? []
         : [cell];
 

@@ -1,6 +1,7 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { useGameText } from "../i18n/game-text";
 import { scrollPageTop, sectionId } from "../state/navigation";
 import {
   closeSections,
@@ -93,6 +94,7 @@ function Section({
   menuOf?: (table: Table) => ReactNode;
 }) {
   const { t } = useTranslation();
+  const gt = useGameText();
   const tabs = new Map<string, Table[]>();
   for (const table of tables) {
     const tab = table.tab ?? table.id;
@@ -129,14 +131,21 @@ function Section({
           {tabBar && <div className="flex items-end pb-1">{tabBar}</div>}
           <div className="grid gap-4 pb-1 sm:grid-cols-2">
             {shown.map((table) => (
-              <div key={table.id} className="min-w-0">
+              <div
+                key={table.id}
+                className={`min-w-0 ${table.wide ? "sm:col-span-2" : ""}`}
+              >
                 <SelectableTable
                   table={table}
                   flush
                   heading={
                     <>
-                      {table.label && (
-                        <TableLabel>{t(`tables.${table.label}`)}</TableLabel>
+                      {table.uiLabel ? (
+                        <TableLabel>{gt("ui", table.uiLabel) ?? ""}</TableLabel>
+                      ) : (
+                        table.label && (
+                          <TableLabel>{t(`tables.${table.label}`)}</TableLabel>
+                        )
                       )}
                       {menuOf?.(table) && (
                         <div className="ml-auto">{menuOf(table)}</div>

@@ -22,8 +22,20 @@ export interface UnknownCell {
   unknown: true;
 }
 
+/** Text with no game text match, by key under `tables`. */
+export interface MessageCell {
+  message: TableLabelId;
+}
+
 export type Cell =
-  string | number | boolean | undefined | KeyCell | KeyList | UnknownCell;
+  | string
+  | number
+  | boolean
+  | undefined
+  | KeyCell
+  | KeyList
+  | UnknownCell
+  | MessageCell;
 
 export interface Row {
   id: string;
@@ -46,6 +58,10 @@ export interface Table {
   tab?: string;
   /** Label above the table when it shares its tab. */
   label?: TableLabelId;
+  /** Game text `ui` key for that label, used over `label`. */
+  uiLabel?: string;
+  /** Takes both sides of its tab. */
+  wide?: boolean;
   /** Each column with its width in letters on a wide screen, padding aside. */
   columns: Column[];
   /** The column that also takes the width the others leave. */
@@ -89,6 +105,10 @@ export interface SaveView {
   shared: Table[];
   belowMaxRupies: boolean;
   belowMaxMasteryPoints: boolean;
+  /** `chapter_select.Key` of the chapter starts the save can advance to. */
+  storyTargets: number[];
+  canPromoteToProud: boolean;
+  canUnlockProudQuests: boolean;
   /** The characters landing page. */
   party: Table[];
   characters: CharacterView[];

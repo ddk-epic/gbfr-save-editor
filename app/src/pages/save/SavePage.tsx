@@ -1,11 +1,16 @@
 import {
   type SaveSession,
+  STORY_END_KEY,
   addSigil,
   addWrightstone,
+  advanceStory,
   editSigil,
   editWrightstone,
+  fillSkippedStory,
   maxMasteryPoints,
   maxRupies,
+  promoteToProud,
+  unlockProudQuests,
   wrightstoneRoll,
   wrightstoneSubs,
   WRIGHTSTONE_MAINS,
@@ -33,6 +38,7 @@ import { EditMenu } from "../../ui/EditMenu";
 import { PageTop } from "../../ui/PageTop";
 import { RowPanel } from "../../ui/RowPanel";
 import type { KeyCell, Row, SaveView, Table } from "../../view";
+import { STORY_TABLE } from "../../view/shared";
 import { SigilForm } from "./SigilForm";
 import { WrightstoneForm } from "./WrightstoneForm";
 
@@ -127,6 +133,9 @@ export function SavePage({
   const belowMaxMasteryPoints = useSave(
     (save) => save?.view.belowMaxMasteryPoints,
   );
+  const storyTargets = useSave((save) => save?.view.storyTargets);
+  const canPromote = useSave((save) => save?.view.canPromoteToProud);
+  const canUnlock = useSave((save) => save?.view.canUnlockProudQuests);
   // Selecting a row leaves the add form.
   const [prevRef, setPrevRef] = useState(ref);
   if (ref !== prevRef) {
@@ -231,6 +240,40 @@ export function SavePage({
                       {
                         label: t("edit.maxMasteryPoints"),
                         run: () => edit(maxMasteryPoints),
+                      },
+                    ]
+                  : []),
+              ]}
+            />
+          ) : table.id === STORY_TABLE ? (
+            <EditMenu
+              actions={[
+                ...(storyTargets ?? []).map((key) => ({
+                  label: t("edit.advanceStory", {
+                    chapter:
+                      key === STORY_END_KEY
+                        ? t("tables.mainStoryEnd")
+                        : gt("chapterStartChapter", String(key)),
+                  }),
+                  run: () =>
+                    edit((session) => {
+                      advanceStory(session, key);
+                      fillSkippedStory(session);
+                    }),
+                })),
+                ...(canPromote
+                  ? [
+                      {
+                        label: t("edit.promoteToProud"),
+                        run: () => edit(promoteToProud),
+                      },
+                    ]
+                  : []),
+                ...(canUnlock
+                  ? [
+                      {
+                        label: t("edit.unlockProudQuests"),
+                        run: () => edit(unlockProudQuests),
                       },
                     ]
                   : []),

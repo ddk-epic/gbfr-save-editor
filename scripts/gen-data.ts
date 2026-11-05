@@ -907,6 +907,9 @@ const GAME_TEXT = {
   story: `select Key key, Unk4 text_id from story`,
   // Note numbers the chapter, "Prologue"; The Story So Far has none.
   storyChapter: `select cast(Key as text) key, Title text_id, Note prefix_id from story_note_chapter`,
+  chapterStart: `select cast(Key as text) key, Title text_id from chapter_select`,
+  // The story_note_chapter row a chapter_select row belongs to, by key.
+  chapterStartChapter: `select cast(c.Key as text) key, n.Title text_id, n.Note prefix_id from chapter_select c join story_note_chapter n on n.Title = replace(c.ChapterText, 'TELOP_CHAPTER_MAIN_', 'TXT_CHAPTER_MAIN_TITLE_')`,
   fieldNoteCharacter: `select Key key, CharacterName text_id from story_note_picturebook_chara`,
   fieldNoteFoe: `select EnemyId key, EnemyName text_id from story_note_picturebook_enemy`,
   fieldNoteWrightstone: `select Key key, ItemName1 text_id from story_note_picturebook_code`,
@@ -944,7 +947,8 @@ const GAME_TEXT = {
     union all select 'apply', 'TXT_DLG_BUTTON_EXECUTE'
     union all select 'trait', 'TXT_BLS_CR_WEAPON_SKILL'
     union all select 'traitLevel', 'TXT_PAU_SKILL_LEVEL_DETAIL'
-    union all select 'level', 'TXT_PAU_LEVEL'`,
+    union all select 'level', 'TXT_PAU_LEVEL'
+    union all select 'mainStory', 'TXT_NOTE_MENU_MAIN_STORY'`,
 } satisfies Record<string, string>;
 
 /** Output language -> .msg folder. */

@@ -44,6 +44,7 @@
     "summary": "Summary",
     "overMasteries": "Over Masteries",
     "cardCharacters": "Card characters",
+    "mainStoryEnd": "Main Story End",
     "currentParty": "Current party",
     "partySets": "Party sets",
     "expandAll": "expand all",
@@ -71,7 +72,10 @@
     "maxRupies": "Max rupies",
     "maxMasteryPoints": "Max MSP",
     "addWrightstone": "Add wrightstone",
-    "addSigil": "Add sigil"
+    "addSigil": "Add sigil",
+    "advanceStory": "Advance to {{chapter}}",
+    "promoteToProud": "Promote to Proud",
+    "unlockProudQuests": "Unlock all Proud quests"
   },
   "wrightstoneForm": {
     "groups": {
@@ -108,7 +112,7 @@
     "rejectsNone": "header, section bounds, footer, both FlatBuffers decode"
   },
   "sections": {
-    "profile": "Profile",
+    "profile": "Profile/Progression",
     "party": "Party",
     "equippedSummons": "Equipped summons",
     "recentPlayers": "Recent players",
@@ -180,6 +184,7 @@
     "entry": "entry",
     "unlocked": "unlocked",
     "chapter": "chapter",
+    "chapterStart": "starts at",
     "trophy": "trophy",
     "description": "description",
     "dlc": "DLC",

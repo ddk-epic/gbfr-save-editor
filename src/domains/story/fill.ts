@@ -1,5 +1,6 @@
 import type { Attribute } from "../../core/attribute";
 import { EMPTY_HASH } from "../../core/keys";
+import type { Save } from "../../core/read-save";
 import { hashId } from "../../core/xxhash32-custom";
 import type { Patch, SaveSession } from "../../save/session";
 import {
@@ -33,9 +34,12 @@ import {
 import { MASTERY_NODE_BITS } from "../mastery/attributes";
 import { clearCounterQuests, clearShortStories } from "../quest/clear";
 import {
+  COUNTER_QUEST_CLEARS,
   COUNTER_QUEST_IDS,
   COUNTER_QUEST_OPENED,
   QUEST_DIFFICULTY_UNLOCKED,
+  SHORT_STORY_CLEARS,
+  SHORT_STORY_IDS,
 } from "../quest/attributes";
 import {
   EQUIP_SKILLS,
@@ -368,6 +372,27 @@ export function fillSkippedStory(session: SaveSession): string[] {
     STORY_FILL.filter(({ key }) => key <= reached),
   );
 }
+
+/** True on a save with Maniac quests and no Proud quests. */
+export function canPromoteToProud(save: Save): boolean {
+  const at = save.slotData.units.of(SAVE_ENTITY);
+  return at.get(QUEST_DIFFICULTY_UNLOCKED) === MANIAC;
+}
+
+/** True on a save with Proud quests and a quest left that `unlockProudQuests` clears. */
+export function canUnlockProudQuests(save: Save): boolean {
+  const at = save.slotData.units.of(SAVE_ENTITY);
+  if (at.get(QUEST_DIFFICULTY_UNLOCKED) < PROUD) return false;
+  const unclearedIn = (ids: readonly number[], clears: readonly number[]) =>
+    ids.some((id, row) => clears[row] === 0 && isProudPrerequisite(id));
+  return (
+    unclearedIn(at.get(COUNTER_QUEST_IDS), at.get(COUNTER_QUEST_CLEARS)) ||
+    unclearedIn(at.get(SHORT_STORY_IDS), at.get(SHORT_STORY_CLEARS))
+  );
+}
+
+const isProudPrerequisite = (id: number) =>
+  PROUD_PREREQUISITES.includes(id) || PROUD_SHORT_STORIES.includes(id);
 
 /** Clears the quests up to the first Proud quest and unlocks Proud quests, and returns what it added. */
 export function promoteToProud(session: SaveSession): string[] {

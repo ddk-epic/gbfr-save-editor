@@ -19,6 +19,7 @@ export function useRenderCell() {
       if (typeof cell === "string") return cell;
       if ("unknown" in cell)
         return <span className="italic">{t("table.unknown")}</span>;
+      if ("message" in cell) return t(`tables.${cell.message}`);
       const separator = "separator" in cell ? cell.separator : "";
       return keyCells(cell).map((k, i) => {
         const text = gt(k.text, k.key);
