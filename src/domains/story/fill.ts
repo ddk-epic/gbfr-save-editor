@@ -36,8 +36,6 @@ import {
   COUNTER_QUEST_IDS,
   COUNTER_QUEST_OPENED,
   QUEST_DIFFICULTY_UNLOCKED,
-  SHORT_STORY_CLEARS,
-  SHORT_STORY_IDS,
 } from "../quest/attributes";
 import {
   EQUIP_SKILLS,
@@ -152,6 +150,7 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     key: 140,
     trophies: [6, 1410],
     chapterKeysCleared: 22n,
+    shortStories: [0x730050],
   },
   {
     key: 160,
@@ -396,16 +395,20 @@ function applyFill(
   const units = session.save.slotData.units;
   const at = units.of(SAVE_ENTITY);
   const patches: Patch[] = [];
-  const added = clearCounterQuests(
-    session,
-    due.flatMap(({ counterQuests }) => counterQuests ?? []),
-  );
+  const added = [
+    ...clearShortStories(
+      session,
+      due.flatMap(({ shortStories }) => shortStories ?? []),
+    ),
+    ...clearCounterQuests(
+      session,
+      due.flatMap(({ counterQuests }) => counterQuests ?? []),
+    ),
+  ];
 
   const earned = [...at.get(TROPHY_EARNED)];
   const progress = [...at.get(TROPHY_PROGRESS)];
   const uiFeatures = [...at.get(UI_FEATURE_UNLOCKED)];
-  const shortStoryIds = at.get(SHORT_STORY_IDS);
-  const shortStoryClears = [...at.get(SHORT_STORY_CLEARS)];
   const counterQuestIds = at.get(COUNTER_QUEST_IDS);
   const counterQuestOpened = [...at.get(COUNTER_QUEST_OPENED)];
   const rewardItems = new Map<string, number>();
@@ -498,13 +501,6 @@ function applyFill(
       if (uiFeatures[feature]) continue;
       uiFeatures[feature] = true;
       added.push(`UI feature ${feature}`);
-    }
-
-    for (const quest of entry.shortStories ?? []) {
-      const row = shortStoryIds.indexOf(quest);
-      if (row === -1 || shortStoryClears[row] !== 0) continue;
-      shortStoryClears[row] = 1;
-      added.push(`short story ${quest.toString(16)}`);
     }
 
     for (const quest of entry.openedQuests ?? []) {
@@ -680,11 +676,6 @@ function applyFill(
     { attribute: TROPHY_EARNED, entity: SAVE_ENTITY, values: earned },
     { attribute: TROPHY_PROGRESS, entity: SAVE_ENTITY, values: progress },
     { attribute: UI_FEATURE_UNLOCKED, entity: SAVE_ENTITY, values: uiFeatures },
-    {
-      attribute: SHORT_STORY_CLEARS,
-      entity: SAVE_ENTITY,
-      values: shortStoryClears,
-    },
     {
       attribute: COUNTER_QUEST_OPENED,
       entity: SAVE_ENTITY,

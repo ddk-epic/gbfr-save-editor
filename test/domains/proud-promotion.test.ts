@@ -54,6 +54,7 @@ const save = (difficulty: number) =>
         [UI_FEATURE_UNLOCKED, Array<boolean>(128).fill(false)],
         [SHORT_STORY_IDS, [0]],
         [SHORT_STORY_CLEARS, [0]],
+        [SHORT_STORY_CHECKPOINTS, Array<number>(64).fill(0)],
         [COUNTER_QUEST_IDS, [LISTED_ONLY, ...MANIAC_QUESTS, PROMOTION]],
         [COUNTER_QUEST_CLEARS, Array<number>(ROWS).fill(0)],
         [COUNTER_QUEST_FLAGS, Array<number>(ROWS).fill(7)],

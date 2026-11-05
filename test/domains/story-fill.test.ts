@@ -48,6 +48,7 @@ import {
   COUNTER_QUEST_IDS,
   COUNTER_QUEST_OPENED,
   QUEST_DIFFICULTY_UNLOCKED,
+  SHORT_STORY_CHECKPOINTS,
   SHORT_STORY_CLEARS,
   SHORT_STORY_IDS,
 } from "../../src/domains/quest/attributes";
@@ -101,6 +102,7 @@ const NOTE_08_ENTITY = ARCHIVE_ENTITY + 5;
 const SHORT_STORIES = [
   0x705001, 0x705002, 0x705003, 0x705004, 0x705005, 0x705006, 0x705007,
   0x703000, 0x703001, 0x720000, 0x720001, 0x720002, 0x720003, 0x720004,
+  0x730050,
 ];
 const COUNTER_QUESTS = [
   0x403301, 0x403302, 0x403201, 0x403202, 0x403307, 0x403308, 0x403309,
@@ -164,6 +166,10 @@ const save = (
       [COUNTER_QUEST_CLEARED, Array<boolean>(COUNTER_ROWS).fill(false)],
       [SHORT_STORY_IDS, [0x704000, 0x704001, ...SHORT_STORIES]],
       [SHORT_STORY_CLEARS, Array<number>(SHORT_STORIES.length + 2).fill(0)],
+      [
+        SHORT_STORY_CHECKPOINTS,
+        Array<number>((SHORT_STORIES.length + 2) * 64).fill(5),
+      ],
     ],
     ...Object.fromEntries(
       ITEMS.map((item, index) => [
@@ -377,6 +383,9 @@ describe("fillSkippedStory", () => {
       ...SHORT_STORIES.map(() => 1),
     ]);
 
+    expect(at.get(SHORT_STORY_CHECKPOINTS)[0]).toBe(0);
+    expect(at.get(SHORT_STORY_CHECKPOINTS)[1]).toBe(5);
+
     expect(at.get(QUEST_DIFFICULTY_UNLOCKED)).toBe(6);
     for (const trophy of [0, 10, 22, 23, 24, 25, 19, 1398])
       expect(at.get(TROPHY_EARNED)[trophy]).toBe(true);
@@ -411,6 +420,18 @@ describe("fillSkippedStory", () => {
     const first = session.export();
     expect(fillSkippedStory(session)).toEqual([]);
     expect(session.export()).toEqual(first);
+  });
+
+  it("clears 00730050 from the start of chapter 7 on", () => {
+    const row = SHORT_STORIES.indexOf(0x730050) + 2;
+    for (const [chapter, clears] of [
+      [120, 0],
+      [140, 1],
+    ] as const) {
+      const session = save({ chapter });
+      fillSkippedStory(session);
+      expect(reread(session).of(0).get(SHORT_STORY_CLEARS)[row]).toBe(clears);
+    }
   });
 
   it("stops at the save's current chapter", () => {

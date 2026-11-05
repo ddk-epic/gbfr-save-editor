@@ -53,6 +53,10 @@ The row also takes 2575 to true on the 19 uncleared quests the traced run holds 
 
 The game pays the trophy 25 reward by itself on a load, so trophy 25 writes none. The same load pays nothing for trophies 22-24.
 
+## `00730050`
+
+The row for key 140 takes 2581 to 1 and the first 2582 value to 0 on `00730050`. It clears during `00104000` in a played run, and a save that skips that quest only takes its section. 16 trophies name it as `QuestId`, and it is the key of `bubble_talk_progress_ex` progress 100.
+
 ## Weapons
 
 Each added weapon takes the first free entry: 2802 the next 2801, 2803, 2804, 2805 and 2815, with 7403 at its row to 4, and 2801. 7403 stays set when a weapon is later sold, so a weapon sold on a played save is not added again.
@@ -93,7 +97,8 @@ When 1305 bit 3 was unset, meaning the save never played the character, the fill
 - `ITEM_23_0000` Crewmate Cards. The traced run gains three, and a loaded save gains one with the quest rank reward, so the count the game adds by itself is not settled.
 - 5815 at 184, 185 and 998, the weapon counts behind badges 360-368 and 1360-1362. They rise with no weapon unit moving when `PL1900` joins, and 998 can fall, so the game takes them again from the weapons held. A load does not.
 - The story party, 2201 at 103000-103003.
-- Short stories `00720005`-`00720017`, `00730045` and `00730050`.
+- Short stories `00720005`-`00720017`. They play voice lines at the quest counter, and their type 3 conditions close them on a save past `0010A025`.
+- `00730045`. The game clears it at a record write after a load.
 - `BlacksmithPendulumGrant`, 7103 and 6801. The first wrightstone a save receives unlocks the option, and the flipped quests give none.
 - MSP for levels `PL1900` gains at the join, side trophies, XP, rupies, consumables, sigils and journal rows.
 
