@@ -389,6 +389,12 @@ export function canPromoteToProud(save: Save): boolean {
   return at.get(QUEST_DIFFICULTY_UNLOCKED) === MANIAC;
 }
 
+/** True on a save with Proud quests. */
+export function isPromotedToProud(save: Save): boolean {
+  const at = save.slotData.units.of(SAVE_ENTITY);
+  return at.get(QUEST_DIFFICULTY_UNLOCKED) >= PROUD;
+}
+
 /** True on a save with Proud quests and a quest left that `unlockProudQuests` clears. */
 export function canUnlockProudQuests(save: Save): boolean {
   const at = save.slotData.units.of(SAVE_ENTITY);

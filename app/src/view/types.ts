@@ -107,6 +107,7 @@ export interface SaveView {
   belowMaxMasteryPoints: boolean;
   /** `chapter_select.Key` of the chapter starts the save can advance to. */
   storyTargets: number[];
+  canDisableHints: boolean;
   canMaxTreasures: boolean;
   canPromoteToProud: boolean;
   canUnlockProudQuests: boolean;

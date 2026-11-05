@@ -4,6 +4,7 @@ import {
   addSigil,
   addWrightstone,
   advanceStory,
+  disableHints,
   editSigil,
   editWrightstone,
   fillSkippedStory,
@@ -39,7 +40,7 @@ import { EditMenu } from "../../ui/EditMenu";
 import { PageTop } from "../../ui/PageTop";
 import { RowPanel } from "../../ui/RowPanel";
 import type { KeyCell, Row, SaveView, Table } from "../../view";
-import { STORY_TABLE } from "../../view/shared";
+import { OPTIONS_TABLE, STORY_TABLE } from "../../view/shared";
 import { SigilForm } from "./SigilForm";
 import { WrightstoneForm } from "./WrightstoneForm";
 
@@ -138,6 +139,7 @@ export function SavePage({
   const storyTargets = useSave((save) => save?.view.storyTargets);
   const canPromote = useSave((save) => save?.view.canPromoteToProud);
   const canUnlock = useSave((save) => save?.view.canUnlockProudQuests);
+  const canDisable = useSave((save) => save?.view.canDisableHints);
   // Selecting a row leaves the add form.
   const [prevRef, setPrevRef] = useState(ref);
   if (ref !== prevRef) {
@@ -249,24 +251,27 @@ export function SavePage({
             />
           ) : table.id === STORY_TABLE ? (
             <EditMenu
-              actions={[
-                ...(storyTargets ?? []).map((key) => ({
-                  label: t("edit.advanceStory", {
-                    chapter:
-                      key === STORY_END_KEY
-                        ? t("tables.mainStoryEnd")
-                        : gt("chapterStartChapter", String(key)),
+              actions={(storyTargets ?? []).map((key) => ({
+                label: t("edit.advanceStory", {
+                  chapter:
+                    key === STORY_END_KEY
+                      ? t("tables.mainStoryEnd")
+                      : gt("chapterStartChapter", String(key)),
+                }),
+                run: () =>
+                  edit((session) => {
+                    advanceStory(session, key);
+                    fillSkippedStory(session);
                   }),
-                  run: () =>
-                    edit((session) => {
-                      advanceStory(session, key);
-                      fillSkippedStory(session);
-                    }),
-                })),
+              }))}
+            />
+          ) : table.id === OPTIONS_TABLE ? (
+            <EditMenu
+              actions={[
                 ...(canPromote
                   ? [
                       {
-                        label: t("edit.promoteToProud"),
+                        label: t("tables.promoteToProud"),
                         run: () => edit(promoteToProud),
                       },
                     ]
@@ -274,8 +279,16 @@ export function SavePage({
                 ...(canUnlock
                   ? [
                       {
-                        label: t("edit.unlockProudQuests"),
+                        label: t("tables.unlockProudQuests"),
                         run: () => edit(unlockProudQuests),
+                      },
+                    ]
+                  : []),
+                ...(canDisable
+                  ? [
+                      {
+                        label: t("tables.disableHints"),
+                        run: () => edit(disableHints),
                       },
                     ]
                   : []),

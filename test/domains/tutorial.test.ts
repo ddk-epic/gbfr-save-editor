@@ -9,7 +9,7 @@ import {
   TUTORIAL_WINDOW_FLAGS,
   TUTORIAL_WINDOW_KEY,
 } from "../../src/domains/tutorial/attributes";
-import { disableHints } from "../../src/domains/tutorial/edit";
+import { canDisableHints, disableHints } from "../../src/domains/tutorial/edit";
 import { SAVE_HASHSEED } from "../../src/domains/user/attributes";
 import { SaveSession } from "../../src/save/session";
 import { fixtureFile } from "../../src/testing";
@@ -62,5 +62,12 @@ describe("disableHints", () => {
     expect(units.values(TIP_FLAGS, 5)).toEqual([3]);
     expect(units.values(INFORMATION_DIALOG_SHOWN, 6)).toEqual([1]);
     expect(units.values(INFORMATION_DIALOG_SHOWN, 7)).toEqual([0]);
+  });
+
+  it("is offered until every found hint is marked", () => {
+    const session = save();
+    expect(canDisableHints(session.save)).toBe(true);
+    disableHints(session);
+    expect(canDisableHints(session.save)).toBe(false);
   });
 });

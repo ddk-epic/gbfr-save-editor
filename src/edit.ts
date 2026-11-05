@@ -26,6 +26,7 @@ export {
   canPromoteToProud,
   canUnlockProudQuests,
   fillSkippedStory,
+  isPromotedToProud,
   promoteToProud,
   unlockProudQuests,
 } from "./domains/story/fill";
@@ -33,7 +34,7 @@ export {
   STORY_END_KEY,
   type StoryCheckpoint,
 } from "./domains/story/checkpoints";
-export { disableHints } from "./domains/tutorial/edit";
+export { canDisableHints, disableHints } from "./domains/tutorial/edit";
 export { addWrightstone, editWrightstone } from "./domains/wrightstone/edit";
 export {
   WRIGHTSTONE_MAINS,

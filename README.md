@@ -31,6 +31,7 @@ A save editor for Granblue Fantasy: Relink. Still work in progress and planned w
 - [x] Advance to a chapter start
 - [x] Promote to Proud quests
 - [x] Unlock all Proud quests
+- [x] Disable hints
 
 #### Party
 

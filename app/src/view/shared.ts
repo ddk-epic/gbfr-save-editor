@@ -32,13 +32,20 @@ import {
   type TrophyTab,
   type Inventory,
 } from "gbfr-save-editor";
-import { STORY_END_KEY, storyProgress } from "gbfr-save-editor/edit";
+import {
+  STORY_END_KEY,
+  canDisableHints,
+  canUnlockProudQuests,
+  isPromotedToProud,
+  storyProgress,
+} from "gbfr-save-editor/edit";
 import type { GameTextTable } from "../i18n/game-text";
 import { keyCell, trait, unknownCell } from "./cell";
 import { table } from "./table";
 import type { Cell, Table } from "./types";
 
 export const STORY_TABLE = "profile:story";
+export const OPTIONS_TABLE = "profile:options";
 
 /** profile 4706, from 1. */
 const SKYFARER_GRADES = [
@@ -314,6 +321,23 @@ export function buildShared(
         completed,
       ]),
       { stretch: "chapter", tab: "profile", uiLabel: "mainStory", wide: true },
+    ),
+    table(
+      OPTIONS_TABLE,
+      "profile",
+      [
+        ["option", 36],
+        ["done", 9],
+      ],
+      [
+        [{ message: "promoteToProud" }, isPromotedToProud(save)],
+        [
+          { message: "unlockProudQuests" },
+          isPromotedToProud(save) && !canUnlockProudQuests(save),
+        ],
+        [{ message: "disableHints" }, !canDisableHints(save)],
+      ],
+      { stretch: "option", tab: "profile", label: "options", wide: true },
     ),
     ...itemTables(inventory.items, wished, unseen),
     table(

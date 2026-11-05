@@ -45,6 +45,10 @@
     "overMasteries": "Over Masteries",
     "cardCharacters": "Card characters",
     "mainStoryEnd": "Main Story End",
+    "options": "Options",
+    "promoteToProud": "Promote to Proud",
+    "unlockProudQuests": "Unlock all Proud quests",
+    "disableHints": "Disable hints",
     "currentParty": "Current party",
     "partySets": "Party sets",
     "expandAll": "expand all",
@@ -74,9 +78,7 @@
     "maxTreasures": "Max treasures",
     "addWrightstone": "Add wrightstone",
     "addSigil": "Add sigil",
-    "advanceStory": "Advance to {{chapter}}",
-    "promoteToProud": "Promote to Proud",
-    "unlockProudQuests": "Unlock all Proud quests"
+    "advanceStory": "Advance to {{chapter}}"
   },
   "wrightstoneForm": {
     "groups": {
@@ -141,6 +143,8 @@
   },
   "columns": {
     "field": "field",
+    "option": "option",
+    "done": "done",
     "value": "value",
     "item": "item",
     "count": "count",

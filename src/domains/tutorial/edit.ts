@@ -1,4 +1,6 @@
 import type { Attribute } from "../../core/attribute";
+import type { Save } from "../../core/read-save";
+import type { UnitStore } from "../../core/unit-store";
 import { hashId } from "../../core/xxhash32-custom";
 import type { Patch, SaveSession } from "../../save/session";
 import { TIP_FLAGS, TIP_KEY } from "../journal/attributes";
@@ -131,9 +133,7 @@ const HINT_DIALOGS = [
   0x2b1905b3,
 ];
 
-/** Marks every found hint as shown, at any point in the story. */
-export function disableHints(session: SaveSession) {
-  const units = session.save.slotData.units;
+function hintPatches(units: UnitStore): Patch[] {
   const patches: Patch[] = [];
   const markShown = (
     key: Attribute<unknown>,
@@ -141,16 +141,27 @@ export function disableHints(session: SaveSession) {
     hashes: readonly number[],
   ) => {
     for (const hash of hashes)
-      for (const entity of units.entitiesWhere(key, hash))
+      for (const entity of units.entitiesWhere(key, hash)) {
+        const held = Number(units.values(flags, entity)![0]);
+        if (held & HINT_SHOWN) continue;
         patches.push({
           attribute: flags,
           entity,
-          values: [Number(units.values(flags, entity)![0]) | HINT_SHOWN],
+          values: [held | HINT_SHOWN],
         });
+      }
   };
   markShown(TUTORIAL_WINDOW_KEY, TUTORIAL_WINDOW_FLAGS, HINT_WINDOWS);
   markShown(TUTORIAL_MENU_KEY, TUTORIAL_MENU_FLAGS, HINT_MENUS);
   markShown(TIP_KEY, TIP_FLAGS, HINT_TIPS);
   markShown(INFORMATION_DIALOG_KEY, INFORMATION_DIALOG_SHOWN, HINT_DIALOGS);
-  session.patch(patches);
+  return patches;
 }
+
+/** True on a save with a found hint not marked as shown. */
+export const canDisableHints = (save: Save) =>
+  hintPatches(save.slotData.units).length > 0;
+
+/** Marks every found hint as shown, at any point in the story. */
+export const disableHints = (session: SaveSession) =>
+  session.patch(hintPatches(session.save.slotData.units));
