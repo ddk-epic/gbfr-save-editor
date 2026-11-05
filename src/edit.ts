@@ -11,6 +11,7 @@ export {
 } from "./domains/character/edit";
 export { CHARACTER_MAX_LEVEL } from "./domains/character/attributes";
 export { maxMasteryPoints, maxRupies } from "./domains/user/edit";
+export { canMaxTreasures, maxTreasures } from "./domains/item/edit";
 export {
   USER_MAX_MASTERY_POINTS,
   USER_MAX_RUPIES,

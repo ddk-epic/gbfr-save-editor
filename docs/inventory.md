@@ -69,6 +69,18 @@ The item menu tab follows `item.SortOrder`. `itemTab` derives it. The ranges and
 
 Every save holds a unit for each of the 74 wrightstone item rows, a new game included, whether or not the player has a stone of that key.
 
+### Max treasures
+
+`maxTreasures` raises every treasure below its count and lowers none. A raised row takes 1803 bits 2 and 3, and a row with 1804 at 0 takes the next 1805. 1806 takes bit 0.
+
+| Rows                                                              | Count |
+| ----------------------------------------------------------------- | ----- |
+| `ITEM_21_0000` Knickknack Voucher, `58FC9B99` Transmarvel Voucher | 99999 |
+| `ITEM_23_0000` Crewmate Card                                      | 99    |
+| `ITEM_23_0001`-`0007`, one character's Crewmate Card              | 1     |
+| `ITEM_19_0001`-`0004` Curio                                       | Kept  |
+| Every other treasure                                              | 999   |
+
 ### Fixed counts
 
 - The 57 rows with `IsVisible` 0 have count 0 and flags 0.

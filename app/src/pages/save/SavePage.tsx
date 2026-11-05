@@ -9,6 +9,7 @@ import {
   fillSkippedStory,
   maxMasteryPoints,
   maxRupies,
+  maxTreasures,
   promoteToProud,
   unlockProudQuests,
   wrightstoneRoll,
@@ -133,6 +134,7 @@ export function SavePage({
   const belowMaxMasteryPoints = useSave(
     (save) => save?.view.belowMaxMasteryPoints,
   );
+  const canMaxItems = useSave((save) => save?.view.canMaxTreasures);
   const storyTargets = useSave((save) => save?.view.storyTargets);
   const canPromote = useSave((save) => save?.view.canPromoteToProud);
   const canUnlock = useSave((save) => save?.view.canUnlockProudQuests);
@@ -278,6 +280,19 @@ export function SavePage({
                     ]
                   : []),
               ]}
+            />
+          ) : table.id === "items:treasures" ? (
+            <EditMenu
+              actions={
+                canMaxItems
+                  ? [
+                      {
+                        label: t("edit.maxTreasures"),
+                        run: () => edit(maxTreasures),
+                      },
+                    ]
+                  : []
+              }
             />
           ) : table.id === "sigils" ? (
             <EditMenu

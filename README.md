@@ -167,7 +167,8 @@ A save editor for Granblue Fantasy: Relink. Still work in progress and planned w
 #### Items
 
 - [x] Max rupies and mastery points
-- [ ] Max item count to its cap
+- [x] Max all treasures
+- [ ] Max a single item count
 - [ ] Max all items of a type
 - [ ] Edit wish list
 

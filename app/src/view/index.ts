@@ -2,6 +2,7 @@ import { readCharacterData, readInventory, type Save } from "gbfr-save-editor";
 import {
   USER_MAX_MASTERY_POINTS,
   USER_MAX_RUPIES,
+  canMaxTreasures,
   canPromoteToProud,
   canUnlockProudQuests,
   storyTargets,
@@ -42,6 +43,7 @@ export function buildView(save: Save): SaveView {
     belowMaxRupies: inventory.rupies < USER_MAX_RUPIES,
     belowMaxMasteryPoints: inventory.masteryPoints < USER_MAX_MASTERY_POINTS,
     storyTargets: storyTargets(save).map(({ key }) => key),
+    canMaxTreasures: canMaxTreasures(save),
     canPromoteToProud: canPromoteToProud(save),
     canUnlockProudQuests: canUnlockProudQuests(save),
     party: buildParty(data),
