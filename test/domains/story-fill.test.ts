@@ -80,8 +80,15 @@ const ITEMS = [
   "ITEM_10_0001",
   "ITEM_10_0002",
   "ITEM_10_0003",
+  "ITEM_70_0008",
+  "ITEM_70_0001",
+  "ITEM_70_0003",
 ] as const;
 const ITEM_ENTITY = 300;
+const STONE_ENTITY = ITEM_ENTITY + 7;
+const LIFE_LINK_ENTITY = ITEM_ENTITY + 8;
+const SKY_MAP_ENTITY = ITEM_ENTITY + 9;
+const HELD_SEEN_ITEMS: readonly string[] = ["ITEM_70_0001", "ITEM_70_0003"];
 const ARCHIVES = [
   "ARC_OTHER_011",
   "ARC_OTHER_026",
@@ -176,8 +183,8 @@ const save = (
         ITEM_ENTITY + index,
         [
           [ITEM_KEY, hashId(item)],
-          [ITEM_COUNT, 0],
-          [ITEM_FLAGS, 0],
+          [ITEM_COUNT, HELD_SEEN_ITEMS.includes(item) ? 1 : 0],
+          [ITEM_FLAGS, HELD_SEEN_ITEMS.includes(item) ? 12 : 0],
           [ITEM_ACQUIRED, 0],
         ],
       ]),
@@ -308,8 +315,15 @@ describe("fillSkippedStory", () => {
     expect(units.values(ITEM_FLAGS, ITEM_ENTITY)).toEqual([4]);
     expect(units.values(ITEM_FLAGS, ITEM_ENTITY + 3)).toEqual([36]);
     expect(units.values(ITEM_ACQUIRED, ITEM_ENTITY)).toEqual([8]);
-    expect(units.values(ITEM_ACQUIRED, ITEM_ENTITY + 3)).toEqual([11]);
-    expect(at.get(ITEM_ACQUIRED_LAST)).toBe(11);
+    expect(units.values(ITEM_ACQUIRED, ITEM_ENTITY + 3)).toEqual([12]);
+    expect(at.get(ITEM_ACQUIRED_LAST)).toBe(12);
+    expect(units.values(ITEM_COUNT, STONE_ENTITY)).toEqual([0]);
+    expect(units.values(ITEM_FLAGS, STONE_ENTITY)).toEqual([4]);
+    expect(units.values(ITEM_ACQUIRED, STONE_ENTITY)).toEqual([10]);
+    for (const entity of [LIFE_LINK_ENTITY, SKY_MAP_ENTITY]) {
+      expect(units.values(ITEM_COUNT, entity)).toEqual([1]);
+      expect(units.values(ITEM_FLAGS, entity)).toEqual([4]);
+    }
 
     for (let index = 0; index < 5; index++)
       expect(units.values(ARCHIVE_FLAGS, ARCHIVE_ENTITY + index)).toEqual([1]);
@@ -350,6 +364,40 @@ describe("fillSkippedStory", () => {
       expect(units.values(FIELD_NOTE_WEAPON_FLAGS, note)).toEqual([4]);
     expect(units.values(EQUIP_WEAPON, 10000)).toEqual([4]);
     expect(units.values(EQUIP_WEAPON, 10001)).toEqual([9]);
+  });
+
+  it("holds Dehg's Catalyst Stone only through Chapter 7", () => {
+    const session = save({ chapter: 140 });
+    fillSkippedStory(session);
+    expect(reread(session).values(ITEM_COUNT, STONE_ENTITY)).toEqual([1]);
+    expect(reread(session).values(ITEM_FLAGS, STONE_ENTITY)).toEqual([4]);
+
+    session.patch([
+      { attribute: CURRENT_CHAPTER, entity: 0, values: [160, -1] },
+    ]);
+    expect(fillSkippedStory(session)).toContain("ITEM_70_0008 taken");
+    const units = reread(session);
+    expect(units.values(ITEM_COUNT, STONE_ENTITY)).toEqual([0]);
+    expect(units.values(ITEM_FLAGS, STONE_ENTITY)).toEqual([4]);
+  });
+
+  it("brings back each held item's new mark at its chapter", () => {
+    const session = save({ chapter: 60 });
+    fillSkippedStory(session);
+    expect(reread(session).values(ITEM_FLAGS, LIFE_LINK_ENTITY)).toEqual([12]);
+
+    session.patch([
+      { attribute: CURRENT_CHAPTER, entity: 0, values: [180, -1] },
+    ]);
+    fillSkippedStory(session);
+    expect(reread(session).values(ITEM_FLAGS, LIFE_LINK_ENTITY)).toEqual([4]);
+    expect(reread(session).values(ITEM_FLAGS, SKY_MAP_ENTITY)).toEqual([12]);
+
+    session.patch([
+      { attribute: CURRENT_CHAPTER, entity: 0, values: [200, -1] },
+    ]);
+    fillSkippedStory(session);
+    expect(reread(session).values(ITEM_FLAGS, SKY_MAP_ENTITY)).toEqual([4]);
   });
 
   it("adds no stand-in weapon before Chapter 8", () => {
@@ -507,6 +555,7 @@ describe("fillSkippedStory", () => {
       "trophy 3",
       "trophy 1407",
       "ITEM_70_0005",
+      "ITEM_70_0001 new mark",
       "ARC_OTHER_011",
       "WEP_PL0000_03",
       "WEP_PL0100_03",

@@ -51,10 +51,11 @@ Unit order does not follow `item.SortOrder`, and it is not the same in every sav
 
 - Every item with a count above 0 has bit 2.
 - Every item with bit 3 has bit 2.
-- A key item's bit 3 can clear with its count unmoved, as `ITEM_70_0003` does just before `00107001` clears.
+- A key item's bit 3 can clear with its count unmoved. `ITEM_70_0001` does as Chapter 4 starts, `ITEM_70_0003` just before `00107001` clears.
 - Every item with bit 0 has bit 3 and sits in the treasures tab. At most 20 items have bit 0.
 - Held potions (`ItemCategoryId` 5), wrightstone items (6) and the Gold Badge Ticket (13) never have bit 3. At a count of 0 their flags are 0 or 4.
-- A held potion's count goes down on use and returns to a set number at the end of a story quest, such as 3 for `ITEM_13_0000`. Each use adds 1 to `TROPHY_PROGRESS` (5815) at 445.
+- A held potion's count goes down on use and returns to a set number as a quest starts or ends: `item_consume.DefaultAmount` plus the bonuses of the character in control at that moment. Each use adds 1 to `TROPHY_PROGRESS` (5815) at 445.
+- `ITEM_13_0000` Green Potion has `DefaultAmount` 3. Two mastery nodes on `limit_bonus` `2E9189B1` "Green Potion Stock Up" add 1 each, so a character holding both restocks it to 5. The Potion Hoarder sigil trait also adds to the count, for the character in control only.
 
 ### Tabs
 

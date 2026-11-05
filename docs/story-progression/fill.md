@@ -22,6 +22,8 @@
 | ------------- | ------------------------- | ------------------------------------------------------------------------------------- |
 | Trophy        | 5801 at the key is true   | 5801, and adds 1 to 5815 at 501, or at 1018 for Keys 1395-1453                        |
 | Item          | 1804 is not 0             | 1802 to 1, 1803 to 4, or 36 on `ITEM_70_0010`, 1804 to the next 1805, and 1805        |
+| Item taken    | 1802 is 0                 | 1802 to 0. 1803 and 1804 stay                                                         |
+| New mark      | 1803 bit 3 is unset       | 1803 clears bit 3                                                                     |
 | Archive       | 7902 bit 0 is set         | 7902 to bit 0, or bits 0 and 1 on `ARC_ROLANNOTE_08`, and adds 1 to 5815 at 46 and 47 |
 | UI feature    | 2600 at the index is true | 2600 at the index to true                                                             |
 | Weapon        | 7403 at its row is not 0  | The first free weapon entry, see below                                                |
@@ -31,6 +33,8 @@
 
 - 2600 holds one bool per `UnlockUIAction.feature_`, see [`quests.md`](../quests.md).
 - 1804 stays set once an item is spent, so a story item used up later is not added again.
+- `ITEM_70_0008` Dehg's Catalyst Stone is held through Chapter 7: the row for key 140 gives it and the row for key 160 takes it.
+- `ITEM_70_0001` Life Link takes its new mark at key 80, and `ITEM_70_0003` Sky Map Piece at key 200. A new save holds both with bit 3 set. A later fill brings the mark back on an item viewed since.
 - 5815 at 2 takes the row's chapter key count and only rises: 4, 6, 9, 13, 18, 22, 26, 30, 36, 38, 41.
 
 ## Story end
@@ -101,8 +105,7 @@ When 1305 bit 3 was unset, meaning the save never played the character, the fill
 
 ## Not filled
 
-- `ITEM_70_0008` Dehg's Catalyst Stone, given and taken within Chapter 7.
-- `ITEM_70_0001` and `ITEM_70_0003`, which a new save already holds.
+- The count of `ITEM_13_0000` Green Potion, which follows the character in control, see [`inventory.md`](../inventory.md).
 - `ITEM_23_0000` Crewmate Cards. The traced run gains three, and a loaded save gains one with the quest rank reward, so the count the game adds by itself is not settled.
 - 5815 at 184, 185 and 998, the weapon counts behind badges 360-368 and 1360-1362. They rise with no weapon unit moving when `PL1900` joins, and 998 can fall, so the game takes them again from the weapons held. A load does not.
 - The story party, 2201 at 103000-103003.

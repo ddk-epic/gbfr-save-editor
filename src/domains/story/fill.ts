@@ -79,6 +79,7 @@ import { onlyEntity } from "./only-entity";
 
 const STORY_ITEM = 4;
 const KEY_ITEM = 36;
+const ITEM_SEEN = 8;
 const ARCHIVE_UNLOCKED_SEEN = 3;
 const ARCHIVE_UNLOCKED = 1;
 const STORY_WEAPON_FLAGS = 128;
@@ -100,6 +101,10 @@ interface StoryFillEntry {
   trophies: readonly number[];
   chapterKeysCleared: bigint;
   items?: readonly { item: string; flags: number }[];
+  /** Items the row takes back, leaving their flags and 1804. */
+  takenItems?: readonly string[];
+  /** Held items whose new mark comes back. */
+  newMarks?: readonly string[];
   archives?: readonly { archive: string; flags: number }[];
   uiFeatures?: readonly number[];
   shortStories?: readonly number[];
@@ -135,6 +140,7 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     trophies: [3, 1407],
     chapterKeysCleared: 9n,
     items: [{ item: "ITEM_70_0005", flags: STORY_ITEM }],
+    newMarks: ["ITEM_70_0001"],
     archives: [{ archive: "ARC_OTHER_011", flags: ARCHIVE_UNLOCKED }],
     startWeapons: [
       { key: "WEP_PL0000_03", captain: 10000, replaces: "WEP_PL0000_01" },
@@ -155,6 +161,7 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     key: 140,
     trophies: [6, 1410],
     chapterKeysCleared: 22n,
+    items: [{ item: "ITEM_70_0008", flags: STORY_ITEM }],
     shortStories: [0x730050],
   },
   {
@@ -162,6 +169,7 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     trophies: [7, 1411],
     chapterKeysCleared: 26n,
     items: [{ item: "ITEM_70_0006", flags: STORY_ITEM }],
+    takenItems: ["ITEM_70_0008"],
     archives: [
       { archive: "ARC_OTHER_026", flags: ARCHIVE_UNLOCKED },
       { archive: "ARC_OTHER_058", flags: ARCHIVE_UNLOCKED },
@@ -188,6 +196,7 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     trophies: [9, 1413],
     chapterKeysCleared: 36n,
     items: [{ item: "ITEM_70_0010", flags: KEY_ITEM }],
+    newMarks: ["ITEM_70_0003"],
     archives: [{ archive: "ARC_ROLANNOTE_08", flags: ARCHIVE_UNLOCKED_SEEN }],
     standInWeapons: [
       { key: "WEP_PL1900_A0", xp: 1740, uncap: 3 },
@@ -453,6 +462,7 @@ function applyFill(
   const counterQuestIds = at.get(COUNTER_QUEST_IDS);
   const counterQuestOpened = [...at.get(COUNTER_QUEST_OPENED)];
   const rewardItems = new Map<string, number>();
+  const givenItems = new Set<string>();
   let acquired = at.get(ITEM_ACQUIRED_LAST);
   let rupies = at.get(USER_RUPIES);
   let weaponId = at.get(WEAPON_LAST_ID);
@@ -525,7 +535,28 @@ function applyFill(
         { attribute: ITEM_FLAGS, entity, values: [flags] },
         { attribute: ITEM_ACQUIRED, entity, values: [acquired] },
       );
+      givenItems.add(item);
       added.push(item);
+    }
+
+    for (const item of entry.takenItems ?? []) {
+      const entity = onlyEntity(units, ITEM_KEY, hashId(item));
+      if (!givenItems.has(item) && units.of(entity).get(ITEM_COUNT) === 0)
+        continue;
+      patches.push({ attribute: ITEM_COUNT, entity, values: [0] });
+      added.push(`${item} taken`);
+    }
+
+    for (const item of entry.newMarks ?? []) {
+      const entity = onlyEntity(units, ITEM_KEY, hashId(item));
+      const flags = Number(units.values(ITEM_FLAGS, entity)![0]);
+      if (!(flags & ITEM_SEEN)) continue;
+      patches.push({
+        attribute: ITEM_FLAGS,
+        entity,
+        values: [flags & ~ITEM_SEEN],
+      });
+      added.push(`${item} new mark`);
     }
 
     for (const { archive, flags: written } of entry.archives ?? []) {
