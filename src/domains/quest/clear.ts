@@ -72,6 +72,30 @@ export function clearCounterQuests(
   return added;
 }
 
+/** Lists quest counter quests, and returns those it changed. */
+export function openCounterQuests(
+  session: SaveSession,
+  quests: readonly number[],
+): string[] {
+  const at = session.save.slotData.units.of(SAVE_ENTITY);
+  const ids = at.get(COUNTER_QUEST_IDS);
+  const opened = [...at.get(COUNTER_QUEST_OPENED)];
+  const added: string[] = [];
+
+  for (const quest of quests) {
+    const row = ids.indexOf(quest);
+    if (row === -1 || opened[row]) continue;
+    opened[row] = true;
+    added.push(`listed counter quest ${quest.toString(16)}`);
+  }
+
+  if (added.length > 0)
+    session.patch([
+      { attribute: COUNTER_QUEST_OPENED, entity: SAVE_ENTITY, values: opened },
+    ]);
+  return added;
+}
+
 /** Marks short stories with no clears as played, and returns those it changed. */
 export function clearShortStories(
   session: SaveSession,

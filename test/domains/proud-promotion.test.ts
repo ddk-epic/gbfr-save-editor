@@ -43,7 +43,8 @@ const MANIAC_QUESTS = [
 ];
 const LISTED_ONLY = 0x406361;
 const PROMOTION = 0x407101;
-const ROWS = MANIAC_QUESTS.length + 2;
+const NEVER_LISTED = 0x406367;
+const ROWS = MANIAC_QUESTS.length + 3;
 
 const save = (difficulty: number) =>
   SaveSession.open(
@@ -57,7 +58,10 @@ const save = (difficulty: number) =>
         [SHORT_STORY_IDS, [0]],
         [SHORT_STORY_CLEARS, [0]],
         [SHORT_STORY_CHECKPOINTS, Array<number>(64).fill(0)],
-        [COUNTER_QUEST_IDS, [LISTED_ONLY, ...MANIAC_QUESTS, PROMOTION]],
+        [
+          COUNTER_QUEST_IDS,
+          [LISTED_ONLY, ...MANIAC_QUESTS, PROMOTION, NEVER_LISTED],
+        ],
         [COUNTER_QUEST_CLEARS, Array<number>(ROWS).fill(0)],
         [COUNTER_QUEST_FLAGS, Array<number>(ROWS).fill(7)],
         [COUNTER_QUEST_OPENED, Array<boolean>(ROWS).fill(false)],
@@ -82,9 +86,12 @@ describe("promoteToProud", () => {
       0,
       ...MANIAC_QUESTS.map(() => 1),
       1,
+      0,
     ]);
     expect(at.get(COUNTER_QUEST_FLAGS)[0]).toBe(7);
-    expect(at.get(COUNTER_QUEST_OPENED)[0]).toBe(false);
+    expect(at.get(COUNTER_QUEST_OPENED)[0]).toBe(true);
+    expect(at.get(COUNTER_QUEST_CLEARED)[0]).toBe(false);
+    expect(at.get(COUNTER_QUEST_OPENED)[ROWS - 1]).toBe(false);
     expect(at.get(QUEST_DIFFICULTY_UNLOCKED)).toBe(7);
     expect(at.get(TROPHY_EARNED)[542]).toBe(true);
     expect(at.get(TROPHY_PROGRESS)[19]).toBe(18n);
@@ -124,10 +131,20 @@ describe("promoteToProud", () => {
 });
 
 describe("canPromoteToProud", () => {
-  it("holds only at Maniac", () => {
+  it("holds at Maniac, and at Proud with a Maniac quest not listed", () => {
     expect(canPromoteToProud(save(5).save)).toBe(false);
     expect(canPromoteToProud(save(6).save)).toBe(true);
-    expect(canPromoteToProud(save(7).save)).toBe(false);
+    expect(canPromoteToProud(save(7).save)).toBe(true);
+  });
+
+  it("lists the Maniac quests on a save already at Proud", () => {
+    const session = save(7);
+    const added = promoteToProud(session);
+    expect(added).toContain("listed counter quest 406361");
+    expect(
+      session.save.slotData.units.of(0).get(QUEST_DIFFICULTY_UNLOCKED),
+    ).toBe(7);
+    expect(canPromoteToProud(session.save)).toBe(false);
   });
 
   it("ends with the promotion", () => {
@@ -170,13 +187,15 @@ describe("unlockProudQuests", () => {
 
   it("clears the quests that open others, and only once", () => {
     const session = proudSave(7);
-    expect(unlockProudQuests(session)).toHaveLength(17);
+    expect(unlockProudQuests(session)).toHaveLength(18);
     const at = readSave(session.export()).slotData.units.of(0);
 
     expect(at.get(COUNTER_QUEST_CLEARS)).toEqual([
       0,
       ...PREREQUISITES.map(() => 1),
     ]);
+    expect(at.get(COUNTER_QUEST_OPENED)).toEqual(Array(16).fill(true));
+    expect(at.get(COUNTER_QUEST_CLEARED)[0]).toBe(false);
     expect(at.get(SHORT_STORY_CLEARS)).toEqual([0, 1, 1]);
     expect(at.get(SHORT_STORY_CHECKPOINTS)[0]).toBe(77);
     expect(at.get(SHORT_STORY_CHECKPOINTS)[128]).toBe(0);
@@ -193,6 +212,21 @@ describe("unlockProudQuests", () => {
     const session = proudSave(7);
     expect(canUnlockProudQuests(session.save)).toBe(true);
     unlockProudQuests(session);
+    expect(canUnlockProudQuests(session.save)).toBe(false);
+  });
+
+  it("is offered on a save with every prerequisite cleared and a quest not listed", () => {
+    const session = proudSave(7);
+    unlockProudQuests(session);
+    const at = session.save.slotData.units.of(0);
+    const opened = [...at.get(COUNTER_QUEST_OPENED)];
+    opened[0] = false;
+    session.patch([
+      { attribute: COUNTER_QUEST_OPENED, entity: 0, values: opened },
+    ]);
+
+    expect(canUnlockProudQuests(session.save)).toBe(true);
+    expect(unlockProudQuests(session)).toEqual(["listed counter quest 407321"]);
     expect(canUnlockProudQuests(session.save)).toBe(false);
   });
 

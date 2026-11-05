@@ -140,7 +140,7 @@ Four arrays of 512.
 
 `FUN_14061f4b0` tests `occurrenceList_` in `baseinfo.msg`, the same list as the short stories. A type 1 entry passes when the named quest's clear count is above 0.
 
-`promoteToProud` works on a save with 7303 at 6 or more. It marks the 18 quests that open another Maniac quest or `00407101` as cleared, and `00407101` itself, written as in the [story fill](story-progression/fill.md): 2571 to 1, 2574 to 0, 2575 and 2576 to true, 4901 at 10600 and 5815 at 20 up by 1, and 5815 at 19 up by 1, or at 238 for `00407101`. First clear rewards are not given. It sets trophy 542 and 7303 to 7. The other 9 Maniac quests are listed with no clears.
+`promoteToProud` works on a save with 7303 at 6 or more. It marks the 18 quests that open another Maniac quest or `00407101` as cleared, and `00407101` itself, written as in the [story fill](story-progression/fill.md): 2571 to 1, 2574 to 0, 2575 and 2576 to true, 4901 at 10600 and 5815 at 20 up by 1, and 5815 at 19 up by 1, or at 238 for `00407101`. First clear rewards are not given. It sets trophy 542 and 7303 to 7. Eight other Maniac quests take 2575 to true, with no clears. `canPromoteToProud` holds at 7303 6, and above it while one of those has 2575 false. `00406367` keeps 2575 false: it has no title and is unlisted on played saves, and badge 31 "Sent from the Heavens" needs the other 26.
 
 The game pays the trophy 25 and 542 rewards by itself after a load.
 
@@ -164,7 +164,9 @@ The game pays the trophy 25 and 542 rewards by itself after a load.
 
 The other `00406` rows in 2570 have no `baseinfo.msg`.
 
-`unlockProudQuests` works on a save with 7303 at 7. It marks the 15 quests that open another Proud quest as cleared, written the same way with 5815 at 238: `00407301`-`00407304`, `00407310`-`00407320`. The other 10 are listed with no clears.
+`unlockProudQuests` works on a save with 7303 at 7. It marks the 15 quests that open another Proud quest as cleared, written the same way with 5815 at 238: `00407301`-`00407304`, `00407310`-`00407320`. The other 10 take 2575 to true, with no clears. `canUnlockProudQuests` stays true until every prerequisite has a clear and every `00407` row has 2575 true.
+
+The game does not take 2575 at a load with a row's conditions met. 7352 takes the row at the load, and 2575 follows at the next record write.
 
 It also takes 2581 to 1 and the first 2582 value to 0 on `00710000` and `00710001`, so neither plays. `00710000` runs at stage `0xD00`, calling event 5921 and talk event `VT_MS17_0015`, and writes nothing else. A load at `0xC00` with its conditions met plays it there, part broken. `00710001` runs at `0xD00`, calling event 32768 and dialog `DLG_STG_LUCILIUS_VISION`, and `00407320` opens on it.
 

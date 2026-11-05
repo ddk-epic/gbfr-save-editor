@@ -35,6 +35,7 @@ import {
 import {
   STORY_END_KEY,
   canDisableHints,
+  canPromoteToProud,
   canUnlockProudQuests,
   isPromotedToProud,
   storyProgress,
@@ -330,7 +331,10 @@ export function buildShared(
         ["done", 9],
       ],
       [
-        [{ message: "promoteToProud" }, isPromotedToProud(save)],
+        [
+          { message: "promoteToProud" },
+          isPromotedToProud(save) && !canPromoteToProud(save),
+        ],
         [
           { message: "unlockProudQuests" },
           isPromotedToProud(save) && !canUnlockProudQuests(save),

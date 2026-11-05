@@ -32,7 +32,11 @@ import {
   FIELD_NOTE_WEAPON_KEY,
 } from "../journal/attributes";
 import { MASTERY_NODE_BITS } from "../mastery/attributes";
-import { clearCounterQuests, clearShortStories } from "../quest/clear";
+import {
+  clearCounterQuests,
+  clearShortStories,
+  openCounterQuests,
+} from "../quest/clear";
 import {
   COUNTER_QUEST_CLEARS,
   COUNTER_QUEST_IDS,
@@ -292,6 +296,10 @@ const PROUD_PREREQUISITES = [
   0x407320,
 ];
 
+const MANIAC_QUEST_PREFIX = 0x406;
+const UNLISTED_MANIAC_QUEST = 0x406367;
+const PROUD_QUEST_PREFIX = 0x407;
+
 /** The cutscenes `00407320` opens on. */
 const PROUD_SHORT_STORIES = [0x710000, 0x710001];
 
@@ -392,10 +400,18 @@ export function fillSkippedStory(session: SaveSession): string[] {
   );
 }
 
-/** True on a save with Maniac quests and no Proud quests. */
+/** True at Maniac quests, or above them with a Maniac quest not listed. */
 export function canPromoteToProud(save: Save): boolean {
   const at = save.slotData.units.of(SAVE_ENTITY);
-  return at.get(QUEST_DIFFICULTY_UNLOCKED) === MANIAC;
+  const difficulty = at.get(QUEST_DIFFICULTY_UNLOCKED);
+  if (difficulty < MANIAC) return false;
+  const opened = at.get(COUNTER_QUEST_OPENED);
+  return (
+    difficulty === MANIAC ||
+    at
+      .get(COUNTER_QUEST_IDS)
+      .some((id, row) => isListedManiacQuest(id) && !opened[row])
+  );
 }
 
 /** True on a save with Proud quests. */
@@ -404,30 +420,45 @@ export function isPromotedToProud(save: Save): boolean {
   return at.get(QUEST_DIFFICULTY_UNLOCKED) >= PROUD;
 }
 
-/** True on a save with Proud quests and a quest left that `unlockProudQuests` clears. */
+/** True on a save with Proud quests and a quest left that `unlockProudQuests` clears or lists. */
 export function canUnlockProudQuests(save: Save): boolean {
   const at = save.slotData.units.of(SAVE_ENTITY);
   if (at.get(QUEST_DIFFICULTY_UNLOCKED) < PROUD) return false;
   const unclearedIn = (ids: readonly number[], clears: readonly number[]) =>
     ids.some((id, row) => clears[row] === 0 && isProudPrerequisite(id));
+  const opened = at.get(COUNTER_QUEST_OPENED);
   return (
     unclearedIn(at.get(COUNTER_QUEST_IDS), at.get(COUNTER_QUEST_CLEARS)) ||
-    unclearedIn(at.get(SHORT_STORY_IDS), at.get(SHORT_STORY_CLEARS))
+    unclearedIn(at.get(SHORT_STORY_IDS), at.get(SHORT_STORY_CLEARS)) ||
+    at
+      .get(COUNTER_QUEST_IDS)
+      .some((id, row) => isProudQuest(id) && !opened[row])
   );
 }
 
 const isProudPrerequisite = (id: number) =>
   PROUD_PREREQUISITES.includes(id) || PROUD_SHORT_STORIES.includes(id);
 
-/** Clears the quests up to the first Proud quest and unlocks Proud quests, and returns what it added. */
+const isProudQuest = (id: number) => id >>> 12 === PROUD_QUEST_PREFIX;
+
+const isListedManiacQuest = (id: number) =>
+  id >>> 12 === MANIAC_QUEST_PREFIX && id !== UNLISTED_MANIAC_QUEST;
+
+/** Clears the quests up to the first Proud quest, lists the other Maniac quests, and returns what it added. */
 export function promoteToProud(session: SaveSession): string[] {
   const at = session.save.slotData.units.of(SAVE_ENTITY);
   if (at.get(QUEST_DIFFICULTY_UNLOCKED) < MANIAC)
     throw new Error("the save has not unlocked Maniac quests");
-  return applyFill(session, [PROUD_PROMOTION]);
+  return [
+    ...applyFill(session, [PROUD_PROMOTION]),
+    ...openCounterQuests(
+      session,
+      at.get(COUNTER_QUEST_IDS).filter(isListedManiacQuest),
+    ),
+  ];
 }
 
-/** Lists every Proud quest by clearing the ones that open others, and returns what it added. */
+/** Clears the Proud quests that open others, lists the rest, and returns what it added. */
 export function unlockProudQuests(session: SaveSession): string[] {
   const at = session.save.slotData.units.of(SAVE_ENTITY);
   if (at.get(QUEST_DIFFICULTY_UNLOCKED) < PROUD)
@@ -435,6 +466,10 @@ export function unlockProudQuests(session: SaveSession): string[] {
   return [
     ...clearShortStories(session, PROUD_SHORT_STORIES),
     ...clearCounterQuests(session, PROUD_PREREQUISITES),
+    ...openCounterQuests(
+      session,
+      at.get(COUNTER_QUEST_IDS).filter(isProudQuest),
+    ),
   ];
 }
 
