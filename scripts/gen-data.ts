@@ -876,6 +876,69 @@ ${weaponRows
 );
 console.log(`WEAPON_ROWS: ${weaponRows.length} weapons`);
 
+// XP of each level, weapon_exp in row order: the first row is level 1.
+const weaponLevelXp = (
+  db.prepare("select Exp from weapon_exp").all() as { Exp: number }[]
+).map(({ Exp }) => Exp);
+emit(
+  "weapons",
+  `/** weapon_exp.Exp by level - 1. */
+export const WEAPON_LEVEL_XP: readonly number[] = [${weaponLevelXp.join(", ")}];`,
+);
+console.log(`WEAPON_LEVEL_XP: ${weaponLevelXp.length} levels`);
+
+// Unk9 11: the Trove trophies. BehaviorId 185 and 186: the weapon level and uncap tiers.
+const troveRows = db
+  .prepare(
+    "select CharaId, BehaviorId, Key, ReqQuantity from badge where Unk9 = 11 order by CharaId",
+  )
+  .all() as {
+  CharaId: string;
+  BehaviorId: number;
+  Key: number;
+  ReqQuantity: number;
+}[];
+const weaponTierBadges = (behavior: number) =>
+  (
+    db
+      .prepare(
+        "select Key, ReqQuantity from badge where BehaviorId = ? order by Key",
+      )
+      .all(behavior) as { Key: number; ReqQuantity: number }[]
+  )
+    .map((row) => `[${row.Key}, ${row.ReqQuantity}]`)
+    .join(", ");
+emit(
+  "weapons",
+  `/** Trove trophy by chara.CharId, ${troveRows.length} rows: BehaviorId, badge.Key and ReqQuantity. */
+export const WEAPON_TROVES: Readonly<
+  Record<
+    string,
+    readonly [progress: number, badge: number, quantity: number]
+  >
+> = {
+${troveRows
+  .map(
+    (row) =>
+      `  ${row.CharaId}: [${row.BehaviorId}, ${row.Key}, ${row.ReqQuantity}],`,
+  )
+  .join("\n")}
+};
+
+/** badge.Key and ReqQuantity of BehaviorId 185. */
+export const WEAPON_LEVELS_TOTAL_BADGES: readonly (readonly [
+  badge: number,
+  quantity: number,
+])[] = [${weaponTierBadges(185)}];
+
+/** badge.Key and ReqQuantity of BehaviorId 186. */
+export const WEAPON_UNCAPS_BADGES: readonly (readonly [
+  badge: number,
+  quantity: number,
+])[] = [${weaponTierBadges(186)}];`,
+);
+console.log(`WEAPON_TROVES: ${troveRows.length} rows`);
+
 // Game text: gt() table -> query returning (key, text_id), the key domain
 // returns and its .msg id. Unk* columns keep the extractor's names.
 const GAME_TEXT = {

@@ -1,4 +1,8 @@
-import { equipWeapon, removeWrightstone } from "gbfr-save-editor/edit";
+import {
+  equipWeapon,
+  maxWeaponSeries,
+  removeWrightstone,
+} from "gbfr-save-editor/edit";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGameText } from "../../i18n/game-text";
@@ -66,19 +70,32 @@ export function EquipmentSets({ sets }: { sets: EquipmentSetView[] }) {
             flush
             menu={
               <EditMenu
-                actions={set.weaponOptions.map((weapon) => ({
-                  label: t("edit.equipWeapon", {
-                    weapon:
-                      (weapon.series !== undefined &&
-                        gt("weaponSeries", String(weapon.series))) ||
-                      gt("weapon", weapon.key) ||
-                      weapon.key,
-                  }),
-                  run: () =>
-                    edit((session) =>
-                      equipWeapon(session, set.characterEntity!, weapon.id),
-                    ),
-                }))}
+                actions={[
+                  ...(set.canMaxWeaponSeries
+                    ? [
+                        {
+                          label: t("edit.maxWeaponSeries"),
+                          run: () =>
+                            edit((session) =>
+                              maxWeaponSeries(session, set.characterEntity!),
+                            ),
+                        },
+                      ]
+                    : []),
+                  ...set.weaponOptions.map((weapon) => ({
+                    label: t("edit.equipWeapon", {
+                      weapon:
+                        (weapon.series !== undefined &&
+                          gt("weaponSeries", String(weapon.series))) ||
+                        gt("weapon", weapon.key) ||
+                        weapon.key,
+                    }),
+                    run: () =>
+                      edit((session) =>
+                        equipWeapon(session, set.characterEntity!, weapon.id),
+                      ),
+                  })),
+                ]}
               />
             }
           />

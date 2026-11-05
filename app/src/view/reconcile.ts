@@ -88,6 +88,7 @@ function reuseSet(prev: EquipmentSetView, next: EquipmentSetView) {
     prev.partySet === next.partySet &&
     prev.characterEntity === next.characterEntity &&
     prev.wrightstoneWeaponId === next.wrightstoneWeaponId &&
+    prev.canMaxWeaponSeries === next.canMaxWeaponSeries &&
     sameList(
       prev.weaponOptions,
       next.weaponOptions,

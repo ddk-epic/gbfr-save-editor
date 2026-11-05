@@ -35,6 +35,25 @@ The save holds no owner. A weapon belongs to the character in the `weapon` table
 
 `readOwnedWeapons` gives the held weapons of the Collection series by `chara.CharId`, then by series. No save holds two held weapons of one series for a character; the first held is kept.
 
+## Uncap and level
+
+2805 is an index into `weapon_limit`, whose levels are 10, 30, 50, 75, 100, 125 and 150. 2804 is the `weapon_exp.Exp` of a level, by row: the first row is level 1, the 150th 162540. `weapon.MaxUncap` and `weapon.MaxLevel` are -1 on all but three series 7 weapons: `WEP_PL0000_10` and `WEP_PL0100_10` at 2 and 50, and `2C8681F8` at 5 and 125. `weapon.ForgedUncapLevel` and `weapon.ForgedWeaponLevel` give a forged weapon's start.
+
+An uncap, `FUN_1441c9ff0`, takes `item_material_list.CoinCost` and the items of the new stage's row in `UncapMaterialTierMapId`. One Damascus Ingot replaces the items and leaves the rupies. A level takes `weapon_exp.GoldCostPerExp` of its row in rupies, and XP comes from `item.OnUseExp` of the Fortitude items. `FUN_140312a80` writes 2804.
+
+5815 entries:
+
+| Entry                  | Written by                            | Holds                                                                                                                            |
+| ---------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| 225                    | `FUN_140ab7de0`                       | Adds the rupies spent                                                                                                            |
+| 186                    | `FUN_140abb380`, from `FUN_140313400` | Adds 1 per uncap                                                                                                                 |
+| Trove, `WEAPON_TROVES` | `FUN_140abb380`, from `FUN_140313400` | Set to the owner's weapons at their last stage, at an uncap                                                                      |
+| 185                    | `FUN_140abc120`, from `FUN_140313890` | Set to the summed levels of held weapons of joined characters (1305 bits 0-1 at 1), series 7 left out, at a level and at a forge |
+
+The 185 sum matches finished and played saves. Each of these functions earns the entry's trophies when it writes, and none of them runs at a load, so a count met on a load stays unearned until the entry is written again.
+
+`maxWeaponSeries` takes a character's held weapons of the Collection series to uncap 6 and level 150, no rupies or materials spent. It adds the uncaps to 186, sets 185 and the owner's Trove entry, and earns the trophies they meet, adding 1 to 5815 at 501 for each. `canMaxWeaponSeries` holds while it would change a weapon, an entry or a trophy, so it also repairs a save with the weapons already maxed.
+
 ## Series
 
 The save holds no series. It comes from the `weapon` table's `Unk30`, as `WEAPON_ROWS` in `src/data/weapons.ts`. Every character has one weapon of each series, and the traits the weapon carries name it.

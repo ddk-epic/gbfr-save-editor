@@ -1,4 +1,4 @@
-import { WEAPON_ROWS } from "../../data/weapons";
+import { WEAPON_LEVEL_XP, WEAPON_ROWS } from "../../data/weapons";
 import { keyOf } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { UnitStore } from "../../core/unit-store";
@@ -93,6 +93,10 @@ export function readWeapon(
     ...at.get(WEAPON_FLAGS),
   };
 }
+
+/** The level `xp` reaches. */
+export const weaponLevelOf = (xp: number) =>
+  WEAPON_LEVEL_XP.filter((needed) => needed <= xp).length;
 
 /** By weapon id. */
 export function readWeapons(units: UnitStore): Map<number, Weapon> {
