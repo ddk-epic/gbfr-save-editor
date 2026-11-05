@@ -3,6 +3,7 @@ import {
   maxCharacterLevel,
   maxMasterLevel,
   removeOverMasteries,
+  unlockCharacter,
 } from "gbfr-save-editor/edit";
 import { useTranslation } from "react-i18next";
 import { useGameText } from "../../i18n/game-text";
@@ -88,6 +89,20 @@ export function CharacterPage({
                     menu={
                       <EditMenu
                         actions={[
+                          ...(character.canUnlock
+                            ? [
+                                {
+                                  label: gt("ui", "unlockCharacter")!,
+                                  run: () =>
+                                    edit((session) =>
+                                      unlockCharacter(
+                                        session,
+                                        character.entity,
+                                      ),
+                                    ),
+                                },
+                              ]
+                            : []),
                           ...(character.belowMaxLevel
                             ? [
                                 {

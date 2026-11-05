@@ -13,8 +13,12 @@ import {
   masteryRange,
 } from "../../src/domains/character/attributes";
 import {
+  canUnlockAllCharacters,
+  canUnlockCharacter,
   maxCharacterLevel,
   maxMasterLevel,
+  unlockAllCharacters,
+  unlockCharacter,
 } from "../../src/domains/character/edit";
 import {
   characterEntities,
@@ -24,6 +28,7 @@ import {
   readMasterLevel,
 } from "../../src/domains/character/read";
 import {
+  TROPHY_CHARACTER_LEVEL,
   TROPHY_EARNED,
   TROPHY_PROGRESS,
 } from "../../src/domains/trophy/attributes";
@@ -195,5 +200,88 @@ describe("maxMasterLevel", () => {
     expect(() =>
       maxMasterLevel(open("NP0100", 0, [0, 0]), CHARACTER_FIRST),
     ).toThrow("no master level");
+  });
+});
+
+describe("unlockCharacter", () => {
+  const open = () =>
+    SaveSession.open(
+      fixtureFile({
+        [SAVE_ENTITY]: [
+          [USER_CAPTAIN, 1],
+          [TROPHY_EARNED, Array<boolean>(1700).fill(false)],
+          [TROPHY_PROGRESS, Array<bigint>(1200).fill(0n)],
+          [TROPHY_CHARACTER_LEVEL, Array<number>(28).fill(0)],
+        ],
+        [CHARACTER_FIRST]: [
+          [CHARACTER_KEY, hashId("PL0200")],
+          [CHARACTER_FLAGS, 1],
+          [CHARACTER_LEVEL, 100],
+        ],
+        [CHARACTER_FIRST + 1]: [
+          [CHARACTER_KEY, hashId("PL0300")],
+          [CHARACTER_FLAGS, 1],
+          [CHARACTER_LEVEL, 100],
+        ],
+        [CHARACTER_FIRST + 2]: [
+          [CHARACTER_KEY, hashId("PL1200")],
+          [CHARACTER_FLAGS, 0x10],
+          [CHARACTER_XP, 0],
+          [CHARACTER_LEVEL, 1],
+          [CHARACTER_BASE_HP, 148],
+          [CHARACTER_BASE_ATTACK, 8],
+        ],
+        [CHARACTER_FIRST + 3]: [
+          [CHARACTER_KEY, hashId("PL1900")],
+          [CHARACTER_FLAGS, 0],
+          [CHARACTER_LEVEL, 1],
+        ],
+      }),
+    );
+
+  it("joins at level 100 and writes the level, crew level and last raised trophies", () => {
+    const session = open();
+    unlockCharacter(session, CHARACTER_FIRST + 2);
+    const units = session.save.slotData.units;
+    const at = units.of(CHARACTER_FIRST + 2);
+    expect([
+      at.get(CHARACTER_FLAGS),
+      at.get(CHARACTER_XP),
+      at.get(CHARACTER_LEVEL),
+    ]).toEqual([0x11, 8400000, 100]);
+
+    const save = units.of(SAVE_ENTITY);
+    const progress = save.get(TROPHY_PROGRESS);
+    expect(save.get(TROPHY_CHARACTER_LEVEL)[11]).toBe(100);
+    expect([progress[144], progress[219], progress[1028]]).toEqual([
+      100n,
+      300n,
+      100n,
+    ]);
+    expect(save.get(TROPHY_EARNED).flatMap((e, i) => (e ? [i] : []))).toEqual([
+      278, 279, 280, 281, 426, 1435,
+    ]);
+    expect([progress[501], progress[1018]]).toEqual([0n, 1n]);
+    expect(canUnlockCharacter(units, CHARACTER_FIRST + 2)).toBe(false);
+  });
+
+  it("unlocks every locked Crewmate menu character, once", () => {
+    const session = open();
+    expect(canUnlockAllCharacters(session.save)).toBe(true);
+    unlockAllCharacters(session);
+    const units = session.save.slotData.units;
+    expect(units.of(CHARACTER_FIRST + 2).get(CHARACTER_FLAGS)).toBe(0x11);
+    expect(units.of(CHARACTER_FIRST + 3).get(CHARACTER_FLAGS)).toBe(0);
+    expect(canUnlockAllCharacters(session.save)).toBe(false);
+  });
+
+  it("refuses a crew member and a character outside the Crewmate menu", () => {
+    const session = open();
+    const units = session.save.slotData.units;
+    expect(canUnlockCharacter(units, CHARACTER_FIRST + 1)).toBe(false);
+    expect(canUnlockCharacter(units, CHARACTER_FIRST + 3)).toBe(false);
+    expect(() => unlockCharacter(session, CHARACTER_FIRST + 3)).toThrow(
+      "cannot be unlocked",
+    );
   });
 });

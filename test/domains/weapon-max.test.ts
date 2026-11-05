@@ -117,7 +117,7 @@ describe("maxWeaponSeries", () => {
     expect(progress(session)[225]).toBe(0n);
   });
 
-  it("earns the tiers the counts meet and counts them", () => {
+  it("earns the tiers the counts meet and leaves 501 to the game", () => {
     const session = open(SERIES.map((key) => [key, 0, 0] as const));
     maxWeaponSeries(session, CHARACTER);
     expect(progress(session)[185]).toBe(900n);
@@ -126,7 +126,7 @@ describe("maxWeaponSeries", () => {
     for (const badge of [364, 365, 369, 370, 327])
       expect(earned(session)[badge]).toBe(true);
     for (const badge of [366, 371]) expect(earned(session)[badge]).toBe(false);
-    expect(progress(session)[501]).toBe(5n);
+    expect(progress(session)[501]).toBe(0n);
   });
 
   it("earns the Trove at the character's own quantity", () => {

@@ -20,7 +20,7 @@
 
 | Kind          | Holds it when             | Writes                                                                                |
 | ------------- | ------------------------- | ------------------------------------------------------------------------------------- |
-| Trophy        | 5801 at the key is true   | 5801, and adds 1 to 5815 at 501, or at 1018 for Keys 1395-1453                        |
+| Trophy        | 5801 at the key is true   | 5801, and adds 1 to 5815 at 1018 for Keys 1395-1453; the game recounts 501 at a load  |
 | Item          | 1804 is not 0             | 1802 to 1, 1803 to 4, or 36 on `ITEM_70_0010`, 1804 to the next 1805, and 1805        |
 | Item taken    | 1802 is 0                 | 1802 to 0. 1803 and 1804 stay                                                         |
 | New mark      | 1803 bit 3 is unset       | 1803 clears bit 3                                                                     |

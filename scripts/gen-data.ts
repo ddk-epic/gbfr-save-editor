@@ -578,6 +578,88 @@ ${maxStats.sort().join("\n")}
 );
 console.log(`CHARACTER_MAX_STATS: ${maxStats.length} characters`);
 
+// Unk9 5: level badges by BehaviorId, the lowest Key naming the character.
+const levelBadgeRows = db
+  .prepare(
+    "select CharaId, Key, BehaviorId, ReqQuantity from badge where Unk9 = 5 order by Key",
+  )
+  .all() as {
+  CharaId: string;
+  Key: number;
+  BehaviorId: number;
+  ReqQuantity: number;
+}[];
+const levelBehaviors = new Map<number, typeof levelBadgeRows>();
+for (const r of levelBadgeRows) {
+  if (!levelBehaviors.has(r.BehaviorId)) levelBehaviors.set(r.BehaviorId, []);
+  levelBehaviors.get(r.BehaviorId)!.push(r);
+}
+const levelBadges = [...levelBehaviors]
+  .sort(([a], [b]) => a - b)
+  .flatMap(([behavior, rows], index) => {
+    const tiers = rows
+      .sort((a, b) => a.ReqQuantity - b.ReqQuantity)
+      .map((r) => `[${r.Key}, ${r.ReqQuantity}]`)
+      .join(", ");
+    const owner = rows.reduce((a, b) => (b.Key < a.Key ? b : a)).CharaId;
+    return (owner === "PL0000" ? ["PL0000", "PL0100"] : [owner]).map(
+      (c) =>
+        `  ${c}: { index: ${index}, progress: ${behavior}, badges: [${tiers}] },`,
+    );
+  });
+const tierBadges = (behavior: number) =>
+  (
+    db
+      .prepare(
+        "select Key, ReqQuantity from badge where BehaviorId = ? order by ReqQuantity",
+      )
+      .all(behavior) as { Key: number; ReqQuantity: number }[]
+  )
+    .map((row) => `[${row.Key}, ${row.ReqQuantity}]`)
+    .join(", ");
+// ET_CI_Id: listed in the Crewmate menu.
+const unlockable = (
+  db
+    .prepare(
+      "select CharId from chara where ET_CI_Id != '00000000' order by CharId",
+    )
+    .all() as { CharId: string }[]
+).map((r) => `"${r.CharId}"`);
+emit(
+  "characters",
+  `/** Level badges by chara.CharId: 5802 index, BehaviorId, badge.Key and ReqQuantity. */
+export const CHARACTER_LEVEL_BADGES: Readonly<
+  Record<
+    string,
+    {
+      index: number;
+      progress: number;
+      badges: readonly (readonly [badge: number, quantity: number])[];
+    }
+  >
+> = {
+${levelBadges.join("\n")}
+};
+
+/** badge.Key and ReqQuantity of BehaviorId 219. */
+export const CREW_LEVEL_BADGES: readonly (readonly [
+  badge: number,
+  quantity: number,
+])[] = [${tierBadges(219)}];
+
+/** badge.Key and ReqQuantity of BehaviorId 1028. */
+export const LAST_RAISED_LEVEL_BADGES: readonly (readonly [
+  badge: number,
+  quantity: number,
+])[] = [${tierBadges(1028)}];
+
+/** chara.CharId listed in the Crewmate menu. */
+export const UNLOCKABLE_CHARACTERS: readonly string[] = [${unlockable.join(", ")}];`,
+);
+console.log(
+  `CHARACTER_LEVEL_BADGES: ${levelBadges.length} characters, UNLOCKABLE_CHARACTERS: ${unlockable.length}`,
+);
+
 // Masteries nodes: per character and limit_bonus key, a [section, MspCost,
 // NodeGridLocation, series] cell per LimitBonusParamIndex, the bit 1602 sets
 // when the node is taken. Collection and Transcendence rows name their weapon,
@@ -1053,7 +1135,8 @@ const GAME_TEXT = {
     union all select 'trait', 'TXT_BLS_CR_WEAPON_SKILL'
     union all select 'traitLevel', 'TXT_PAU_SKILL_LEVEL_DETAIL'
     union all select 'level', 'TXT_PAU_LEVEL'
-    union all select 'mainStory', 'TXT_NOTE_MENU_MAIN_STORY'`,
+    union all select 'mainStory', 'TXT_NOTE_MENU_MAIN_STORY'
+    union all select 'unlockCharacter', 'TXT_PAU_TTL_SHOP_CHARA'`,
 } satisfies Record<string, string>;
 
 /** Output language -> .msg folder. */

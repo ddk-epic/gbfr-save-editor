@@ -3,6 +3,8 @@ import { Attribute } from "../../core/attribute";
 export const TROPHY_EARNED = Attribute.boolList(5801);
 export const TROPHY_SEEN = Attribute.boolList(5816);
 export const TROPHY_PROGRESS = Attribute.longList(5815);
+/** Indexed by `CHARACTER_LEVEL_BADGES` index. */
+export const TROPHY_CHARACTER_LEVEL = Attribute.intList(5802);
 
 /** `TROPHY_PROGRESS` indexes. */
 export const CHAPTER_KEYS_CLEARED = 2;
@@ -17,7 +19,8 @@ export const WEAPONS_HELD = 184;
 export const WEAPON_LEVELS_TOTAL = 185;
 export const WEAPON_UNCAPS = 186;
 export const WEAPONS_HELD_ALL = 998;
-export const TROPHIES_EARNED_OUTSIDE_RANGE = 501;
+export const CREW_LEVEL_TOTAL = 219;
+export const LAST_RAISED_LEVEL = 1028;
 export const TROPHIES_EARNED_IN_RANGE = 1018;
 /** `badge.Key` range counted by `TROPHIES_EARNED_IN_RANGE`. */
 export const TROPHY_RANGE_FIRST = 1395;

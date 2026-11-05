@@ -56,13 +56,10 @@ import {
   CHAPTER_KEYS_CLEARED,
   RUPIES_EARNED,
   STORY_MASTERY_FILLED,
-  TROPHIES_EARNED_IN_RANGE,
-  TROPHIES_EARNED_OUTSIDE_RANGE,
   TROPHY_EARNED,
   TROPHY_PROGRESS,
-  TROPHY_RANGE_FIRST,
-  TROPHY_RANGE_LAST,
 } from "../trophy/attributes";
+import { earnedCounter } from "../trophy/ledger";
 import {
   SAVE_ENTITY,
   USER_CAPTAIN,
@@ -543,11 +540,8 @@ function applyFill(
     for (const trophy of entry.trophies) {
       if (earned[trophy]) continue;
       earned[trophy] = true;
-      const counter =
-        trophy >= TROPHY_RANGE_FIRST && trophy <= TROPHY_RANGE_LAST
-          ? TROPHIES_EARNED_IN_RANGE
-          : TROPHIES_EARNED_OUTSIDE_RANGE;
-      progress[counter] = progress[counter]! + 1n;
+      const counter = earnedCounter(trophy);
+      if (counter !== undefined) progress[counter] = progress[counter]! + 1n;
       added.push(`trophy ${trophy}`);
 
       const reward = TROPHY_REWARDS[trophy];

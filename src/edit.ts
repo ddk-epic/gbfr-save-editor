@@ -14,6 +14,10 @@ export {
   characterMasterLevels,
   maxCharacterLevel,
   maxMasterLevel,
+  canUnlockAllCharacters,
+  canUnlockCharacter,
+  unlockAllCharacters,
+  unlockCharacter,
 } from "./domains/character/edit";
 export { CHARACTER_MAX_LEVEL } from "./domains/character/attributes";
 export { maxMasteryPoints, maxRupies } from "./domains/user/edit";

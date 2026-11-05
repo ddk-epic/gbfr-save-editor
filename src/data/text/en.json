@@ -13521,6 +13521,7 @@
     "level": "Lvl",
     "mainStory": "Main Story",
     "trait": "Trait",
-    "traitLevel": "T. Lvl"
+    "traitLevel": "T. Lvl",
+    "unlockCharacter": "Unlock Character"
   }
 }

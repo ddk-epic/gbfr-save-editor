@@ -19,7 +19,6 @@ import {
   FIELD_NOTE_WEAPON_KEY,
 } from "../journal/attributes";
 import {
-  TROPHIES_EARNED_OUTSIDE_RANGE,
   TROPHY_EARNED,
   TROPHY_PROGRESS,
   WEAPON_LEVELS_TOTAL,
@@ -27,6 +26,7 @@ import {
   WEAPONS_HELD,
   WEAPONS_HELD_ALL,
 } from "../trophy/attributes";
+import { trophyLedger, type TrophyLedger } from "../trophy/ledger";
 import { SAVE_ENTITY } from "../user/attributes";
 import {
   TRAIT_KEY,
@@ -108,37 +108,19 @@ const levelsTotalOf = (units: UnitStore, raised: ReadonlySet<UnitEntity>) => {
     );
 };
 
-/** Copies of 5815 and 5801 that earn trophies as counts are set. */
-function trophyLedger(units: UnitStore) {
-  const at = units.of(SAVE_ENTITY);
-  const progress = [...at.get(TROPHY_PROGRESS)];
-  const earned = [...at.get(TROPHY_EARNED)];
-  const earn = (badge: number) => {
-    if (earned[badge]) return;
-    earned[badge] = true;
-    progress[TROPHIES_EARNED_OUTSIDE_RANGE] =
-      progress[TROPHIES_EARNED_OUTSIDE_RANGE]! + 1n;
-  };
-  return {
-    progress,
-    earned,
-    setTiers(
-      index: number,
-      count: number,
-      badges: readonly (readonly [badge: number, quantity: number])[],
-    ) {
-      progress[index] = BigInt(count);
-      for (const [badge, quantity] of badges)
-        if (count >= quantity) earn(badge);
-    },
-    setOwn(
-      [index, badge, quantity]: readonly [number, number, number],
-      count: number,
-    ) {
-      progress[index] = BigInt(count);
-      if (count >= quantity) earn(badge);
-    },
-  };
+/** Recounts 184, 998 and 185 over joined characters' held weapons. */
+export function recountHeldWeapons(units: UnitStore, ledger: TrophyLedger) {
+  const joined = joinedCharacters(units);
+  const heldTotal = [...readOwnedWeapons(units)]
+    .filter(([owner]) => joined.has(owner))
+    .reduce((total, [, series]) => total + series.size, 0);
+  ledger.setTiers(WEAPONS_HELD, heldTotal, WEAPONS_HELD_BADGES);
+  ledger.setTiers(WEAPONS_HELD_ALL, heldTotal, WEAPONS_HELD_ALL_BADGES);
+  ledger.setTiers(
+    WEAPON_LEVELS_TOTAL,
+    levelsTotalOf(units, new Set()),
+    WEAPON_LEVELS_TOTAL_BADGES,
+  );
 }
 
 /** The weapons a character can still gain, one per missing series. */
@@ -201,22 +183,11 @@ export function unlockWeapon(
         ]),
   ]);
 
-  const owned = readOwnedWeapons(units);
-  const joined = joinedCharacters(units);
-  const heldTotal = [...owned]
-    .filter(([owner]) => joined.has(owner))
-    .reduce((total, [, series]) => total + series.size, 0);
-  const counted = [...owned.get(row.character)!.values()].filter((weapon) =>
-    countsForTrophies(row.character, weapon),
-  );
+  const counted = [
+    ...readOwnedWeapons(units).get(row.character)!.values(),
+  ].filter((weapon) => countsForTrophies(row.character, weapon));
   const ledger = trophyLedger(units);
-  ledger.setTiers(WEAPONS_HELD, heldTotal, WEAPONS_HELD_BADGES);
-  ledger.setTiers(WEAPONS_HELD_ALL, heldTotal, WEAPONS_HELD_ALL_BADGES);
-  ledger.setTiers(
-    WEAPON_LEVELS_TOTAL,
-    levelsTotalOf(units, new Set()),
-    WEAPON_LEVELS_TOTAL_BADGES,
-  );
+  recountHeldWeapons(units, ledger);
   const owner = trophyOwner(row.character);
   const collection = WEAPON_COLLECTIONS[owner];
   if (collection) ledger.setOwn(collection, counted.length);

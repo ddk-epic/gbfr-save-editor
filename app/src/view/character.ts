@@ -8,6 +8,7 @@ import {
   CHARACTER_MAX_LEVEL,
   MAX_MASTER_LEVEL,
   canMaxWeaponSeries,
+  canUnlockCharacter,
   canUnlockWeaponSeries,
   characterLevels,
   characterMasterLevels,
@@ -148,6 +149,7 @@ export function buildCharacters(
       level: c.level,
       belowMaxLevel:
         characterLevels(c.character) && c.level < CHARACTER_MAX_LEVEL,
+      canUnlock: canUnlockCharacter(units, c.entity),
       belowMaxMasterLevel:
         characterMasterLevels(c.character) && c.masterLevel < MAX_MASTER_LEVEL,
       overMasteryRolled: c.overMasteries.some((o) => o !== undefined),

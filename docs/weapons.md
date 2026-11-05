@@ -52,7 +52,7 @@ An uncap, `FUN_1441c9ff0`, takes `item_material_list.CoinCost` and the items of 
 
 The 185 sum matches finished and played saves. Each of these functions earns the entry's trophies when it writes, and none of them runs at a load, so a count met on a load stays unearned until the entry is written again.
 
-`maxWeaponSeries` unlocks a character's missing weapons, then takes the held weapons of the Collection series to uncap 6 and level 150, no rupies or materials spent. It adds the uncaps to 186, sets 185 and the owner's Trove entry, and earns the trophies they meet, adding 1 to 5815 at 501 for each. `canMaxWeaponSeries` holds while it would change a weapon, an entry or a trophy, so it also repairs a save with the weapons already maxed.
+`maxWeaponSeries` unlocks a character's missing weapons, then takes the held weapons of the Collection series to uncap 6 and level 150, no rupies or materials spent. It adds the uncaps to 186, sets 185 and the owner's Trove entry, and earns the trophies they meet. 501 is left to the game, which recounts it at a load. `canMaxWeaponSeries` holds while it would change a weapon, an entry or a trophy, so it also repairs a save with the weapons already maxed.
 
 ## Forging
 

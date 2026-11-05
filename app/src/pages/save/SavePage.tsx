@@ -5,6 +5,7 @@ import {
   addWrightstone,
   advanceStory,
   disableHints,
+  unlockAllCharacters,
   editSigil,
   editWrightstone,
   fillSkippedStory,
@@ -140,6 +141,7 @@ export function SavePage({
   const canPromote = useSave((save) => save?.view.canPromoteToProud);
   const canUnlock = useSave((save) => save?.view.canUnlockProudQuests);
   const canDisable = useSave((save) => save?.view.canDisableHints);
+  const canUnlockAll = useSave((save) => save?.view.canUnlockAllCharacters);
   // Selecting a row leaves the add form.
   const [prevRef, setPrevRef] = useState(ref);
   if (ref !== prevRef) {
@@ -244,6 +246,14 @@ export function SavePage({
                       {
                         label: t("edit.maxMasteryPoints"),
                         run: () => edit(maxMasteryPoints),
+                      },
+                    ]
+                  : []),
+                ...(canUnlockAll
+                  ? [
+                      {
+                        label: t("edit.unlockAllCharacters"),
+                        run: () => edit(unlockAllCharacters),
                       },
                     ]
                   : []),

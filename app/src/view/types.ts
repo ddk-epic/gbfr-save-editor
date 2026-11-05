@@ -96,6 +96,7 @@ export interface CharacterView {
   entity: number;
   level: number;
   belowMaxLevel: boolean;
+  canUnlock: boolean;
   belowMaxMasterLevel: boolean;
   overMasteryRolled: boolean;
   fateEpisodesIncomplete: boolean;
@@ -110,6 +111,7 @@ export interface SaveView {
   /** `chapter_select.Key` of the chapter starts the save can advance to. */
   storyTargets: number[];
   canDisableHints: boolean;
+  canUnlockAllCharacters: boolean;
   canMaxTreasures: boolean;
   canPromoteToProud: boolean;
   canUnlockProudQuests: boolean;

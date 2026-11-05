@@ -924,3 +924,60 @@ export const CHARACTER_MAX_STATS: Readonly<
   PL2800: { hp: 3324, attack: 707 },
   PL2900: { hp: 3404, attack: 730 },
 };
+
+/** Level badges by chara.CharId: 5802 index, BehaviorId, badge.Key and ReqQuantity. */
+export const CHARACTER_LEVEL_BADGES: Readonly<
+  Record<
+    string,
+    {
+      index: number;
+      progress: number;
+      badges: readonly (readonly [badge: number, quantity: number])[];
+    }
+  >
+> = {
+  PL0000: { index: 0, progress: 133, badges: [[190, 30], [191, 60], [192, 80], [193, 100]] },
+  PL0100: { index: 0, progress: 133, badges: [[190, 30], [191, 60], [192, 80], [193, 100]] },
+  PL0200: { index: 1, progress: 134, badges: [[198, 30], [199, 60], [200, 80], [201, 100]] },
+  PL0300: { index: 2, progress: 135, badges: [[206, 30], [207, 60], [208, 80], [209, 100]] },
+  PL0400: { index: 3, progress: 136, badges: [[214, 30], [215, 60], [216, 80], [217, 100]] },
+  PL0500: { index: 4, progress: 137, badges: [[230, 30], [231, 60], [232, 80], [233, 100]] },
+  PL0600: { index: 5, progress: 138, badges: [[222, 30], [223, 60], [224, 80], [225, 100]] },
+  PL0700: { index: 6, progress: 139, badges: [[238, 30], [239, 60], [240, 80], [241, 100]] },
+  PL0800: { index: 7, progress: 140, badges: [[246, 30], [247, 60], [248, 80], [249, 100]] },
+  PL0900: { index: 8, progress: 141, badges: [[254, 30], [255, 60], [256, 80], [257, 100]] },
+  PL1000: { index: 9, progress: 142, badges: [[262, 30], [263, 60], [264, 80], [265, 100]] },
+  PL1100: { index: 10, progress: 143, badges: [[270, 30], [271, 60], [272, 80], [273, 100]] },
+  PL1200: { index: 11, progress: 144, badges: [[278, 30], [279, 60], [280, 80], [281, 100]] },
+  PL1300: { index: 12, progress: 145, badges: [[286, 30], [287, 60], [288, 80], [289, 100]] },
+  PL1400: { index: 13, progress: 146, badges: [[294, 30], [295, 60], [296, 80], [297, 100]] },
+  PL1500: { index: 14, progress: 147, badges: [[302, 30], [303, 60], [304, 80], [305, 100]] },
+  PL1800: { index: 15, progress: 148, badges: [[310, 30], [311, 60], [312, 80], [313, 100]] },
+  PL1900: { index: 16, progress: 149, badges: [[318, 30], [319, 60], [320, 80], [321, 100]] },
+  PL1600: { index: 17, progress: 274, badges: [[581, 30], [582, 60], [583, 80], [584, 100]] },
+  PL1700: { index: 18, progress: 275, badges: [[589, 30], [590, 60], [591, 80], [592, 100]] },
+  PL2200: { index: 19, progress: 456, badges: [[1588, 30], [1589, 60], [639, 80], [640, 100]] },
+  PL2300: { index: 20, progress: 461, badges: [[1590, 30], [1591, 60], [645, 80], [646, 100]] },
+  PL2100: { index: 21, progress: 485, badges: [[1592, 30], [1593, 60], [672, 80], [673, 100]] },
+  PL2400: { index: 22, progress: 578, badges: [[1576, 30], [1577, 60], [770, 80], [771, 100]] },
+  PL2500: { index: 23, progress: 597, badges: [[1578, 30], [1579, 60], [790, 80], [791, 100]] },
+  PL2600: { index: 24, progress: 616, badges: [[1580, 30], [1581, 60], [810, 80], [811, 100]] },
+  PL2700: { index: 25, progress: 635, badges: [[1582, 30], [1583, 60], [830, 80], [831, 100]] },
+  PL2800: { index: 26, progress: 1105, badges: [[1584, 30], [1585, 60], [1540, 80], [1541, 100]] },
+  PL2900: { index: 27, progress: 1124, badges: [[1586, 30], [1587, 60], [1560, 80], [1561, 100]] },
+};
+
+/** badge.Key and ReqQuantity of BehaviorId 219. */
+export const CREW_LEVEL_BADGES: readonly (readonly [
+  badge: number,
+  quantity: number,
+])[] = [[426, 250], [427, 500], [428, 1000]];
+
+/** badge.Key and ReqQuantity of BehaviorId 1028. */
+export const LAST_RAISED_LEVEL_BADGES: readonly (readonly [
+  badge: number,
+  quantity: number,
+])[] = [[1435, 100]];
+
+/** chara.CharId listed in the Crewmate menu. */
+export const UNLOCKABLE_CHARACTERS: readonly string[] = ["PL0700", "PL0800", "PL0900", "PL1000", "PL1100", "PL1200", "PL1300", "PL1400", "PL1500", "PL1600", "PL1700", "PL1800", "PL2100", "PL2200", "PL2300", "PL2400", "PL2500", "PL2600", "PL2700", "PL2800", "PL2900"];

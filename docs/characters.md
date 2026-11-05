@@ -123,7 +123,7 @@ The save holds no slot count. The game works out a character's open slots (`FUN_
 | 0   | `0x1`    | `CHARACTER_JOINED`           | In the crew: the starting cast from a new game on, both captains included, and others once they join |
 | 1   | `0x2`    | not named                    | `PL1900` while the story plays it, see below                                                         |
 | 3   | `0x8`    | not named                    | `PL1900`, in place of bit 4, from its story stretch on                                               |
-| 4   | `0x10`   | not named                    | Probably characters recruited outside the main story, set before they join, DLC ones included        |
+| 4   | `0x10`   | not named                    | Listed in the Crewmate menu, set as the menu opens, see [Character unlocks](#character-unlocks)      |
 | 13  | `0x2000` | `CHARACTER_MASTER_BREAK_NEW` | New mark of a master level cap break                                                                 |
 | 14  | `0x4000` | not named                    | Only on recruited characters, and not in every save                                                  |
 
@@ -141,6 +141,78 @@ Bit 0 can clear again, as it does on `PL1900` when its story stretch ends, and i
 The unit then gains XP and levels as usual. Just before the clear of `00107001`, 1305 drops to bit 3 alone. The XP, level, skills and 1602 values stay.
 
 Early in `00109001`, the quest's `IdoEntry` step (`FUN_143212080`, `maxCharacterLevel_` 42) sets bit 0. It does nothing if bit 0 is already set. It then takes the highest level among the characters it counts, capped at 42, and raises the unit to that level if the unit is below it, with MSP for the levels gained. Which characters it counts has not been read. [`fillSkippedStory`](story-progression/fill.md) applies the same rule to a save that skipped the step.
+
+### Character unlocks
+
+Characters outside the story join at Siero's Crewmate menu, for a Crewmate Card. Opening the menu sets each listed character's starting state from `chara_invite`; turning in the card then adds the character to the crew.
+
+#### Roster level update
+
+`ui::fsm::action::SetUnlockCharaLevel` (`FUN_141c129e0`) runs as the Crewmate menu opens. It takes the menu's character list (`FUN_1402dcb30`), skips characters with 1305 bit 0, and applies one `chara_invite` row to each of the rest. `ControllerShopCharaList` (`FUN_143fd0970`) sets 1305 bit 4 on the same list. The update runs at every opening, so a later row raises characters still locked.
+
+`FUN_1402db3a0` picks the row: from the last row back, the first whose `QuestID` has a clear count above 0, or is the quest in play. A row with `MasterLevel` above 0 also needs `FUN_1402db510`, true when some character passes a level test (`FUN_1402dbb10`) that has not been read in full.
+
+| `QuestID`  | Quest                     | `CharaLevel` | `MasterLevel` | `WepLevel` | `WepUncapLevel` | `AtkTreeNodes`, `DefTreeNodes` | `WeaponTreeNodes` | `MSPBonus` |
+| ---------- | ------------------------- | ------------ | ------------- | ---------- | --------------- | ------------------------------ | ----------------- | ---------- |
+| `00100001` |                           | 10           | 0             | 10         | 0               | 0                              | 0                 | 3          |
+| `00101005` |                           | 10           | 0             | 10         | 0               | 31                             | 0                 | 3          |
+| `00102002` |                           | 10           | 0             | 10         | 0               | 31                             | 0                 | 3          |
+| `00103001` |                           | 20           | 0             | 30         | 1               | 51                             | 0                 | 5          |
+| `00104002` |                           | 20           | 0             | 30         | 1               | 51                             | 0                 | 5          |
+| `00105002` |                           | 25           | 0             | 30         | 1               | 71                             | 0                 | 10         |
+| `00106002` |                           | 35           | 0             | 30         | 2               | 81                             | 0                 | 20         |
+| `00107001` |                           | 35           | 0             | 30         | 2               | 81                             | 0                 | 20         |
+| `00108001` |                           | 35           | 0             | 30         | 2               | 81                             | 0                 | 20         |
+| `00109000` |                           | 45           | 0             | 50         | 2               | 91                             | 0                 | 30         |
+| `00404101` | Wings of Antiquity        | 45           | 0             | 50         | 2               | 91                             | 0                 | 30         |
+| `0010A002` |                           | 45           | 0             | 50         | 2               | 91                             | 0                 | 30         |
+| `0010A031` |                           | 60           | 0             | 50         | 2               | 113                            | 0                 | 80         |
+| `00407101` | The Final Report          | 60           | 0             | 50         | 2               | 113                            | 0                 | 80         |
+| `00408301` | A Trial of Two Eternities | 90           | 0             | 150        | 6               | 120                            | 0                 | 350        |
+| `00220003` | Hidden Gems of Aquila     | 100          | 10            | 150        | 6               | 150                            | 6                 | 350        |
+| `00230003` | Trial of White and Black  | 100          | 20            | 150        | 6               | 150                            | 6                 | 350        |
+
+Per character:
+
+- `CharaLevel` through `FUN_1402d2510`, when it differs from the level. XP becomes the threshold of that level on the character's experience curve, so it differs between characters at one level, and `FUN_1402b51f0` sets 1303, 1308, the stats and the skills. A level above the row's is lowered.
+- `MasterLevel` above 0 through `FUN_1402e24c0`.
+- `AtkTreeNodes` and `DefTreeNodes` through `FUN_1402f3710`, trees 0 and 1, as 1602 entries.
+- The character's weapon: level to `WepLevel` (`FUN_14031d040`) when it differs, uncap to `WepUncapLevel` (`FUN_14031ef70`), and `WeaponTreeNodes` above 0 through `FUN_1402f3710`, tree 2.
+- `FUN_1402b6370` recounts the character.
+
+One menu opening writes every listed character in a single poll: 1303, 1308-1310 and 1404, about 100 1602 entries each at `00407101`, 2804 and 2805 on the character's weapon, and 3904 bit 0 on the skills learned up to the level.
+
+#### Turning in the card
+
+`ui::fsm::action::ReleaseChara` (`FUN_141be12c0`):
+
+- Joins the character through `FUN_1402de3f0`, setting 1305 bit 0.
+- Adds the row's `MSPBonus` to MSP (1112) through `FUN_1403836c0`, raised by a percentage when a bonus applies.
+- Takes the card named by `FUN_1402eba80`: the character's `chara.CrewmateCardItemId`, or `ITEM_23_0000` Crewmate Card for a character with none.
+- Gives 1 of the item at chara row `+0x50`, when set. The item has not been resolved.
+
+The same poll also writes:
+
+- 5802 and 5803 at the character's index: the level and the mastery upgrades.
+- 5815: the character's level entry, 184 and 998 +1, 185 + the weapon's level, 215 +1, 219 + the level, 380 + the mastery upgrades, 501, 1028 to the level, and the character's mastery percentage entries.
+- The character's level and first mastery node trophies, and mastery count trophies reached.
+- 8402 bit 0 on the character's field note, 8702 bit 0 on its tips, and 8102 bit 0 on its glossary rows.
+
+Some entries follow seconds later: 5815 at 1020 and 1068 about 10 s after, and a character's welcome trophy, such as 1482 for `PL2900`, about 20 s after. 6902 at Siero's `facility_voice_list` rows, such as `NP0200_vo_SRK_firstinteractionyellow`, rises by 1 at a later visit to the menu.
+
+#### Unlocking a character
+
+`unlockCharacter` joins a character the Crewmate menu lists (`chara.ET_CI_Id` set) that is not in the crew, at level 100 instead of the `chara_invite` row. It writes:
+
+- 1305 bit 0, and 1303, 1308, 1309 and 1310 at level 100, as `maxCharacterLevel` does.
+- 5802 at the character's index to 100, and its 5815 level entry to 100 with the level 30, 60, 80 and 100 badges.
+- 5815 at 219 to the crew's summed level, capped at 1000, with the badges it reaches, and 1028 to 100 with badge 1435.
+- 184, 998 and 185, recounted over the crew's held weapons, with the badges they reach.
+- 1018 by one per trophy earned in Keys 1395-1453. 501 is left to the game, which recounts it at a load.
+
+It leaves the masteries, 5803, 380, the card, MSP, 215, the journal rows and the welcome trophies alone.
+
+`unlockAllCharacters` runs `unlockCharacter` on every character it accepts.
 
 ## Special units
 

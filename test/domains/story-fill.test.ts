@@ -308,7 +308,7 @@ describe("fillSkippedStory", () => {
     for (const trophy of [0, 10, 1, 1405, 9, 1413, 11, 1397])
       expect(at.get(TROPHY_EARNED)[trophy]).toBe(true);
     expect(at.get(TROPHY_PROGRESS)[2]).toBe(38n);
-    expect(at.get(TROPHY_PROGRESS)[501]).toBe(12n);
+    expect(at.get(TROPHY_PROGRESS)[501]).toBe(0n);
     expect(at.get(TROPHY_PROGRESS)[1018]).toBe(10n);
 
     expect(units.values(ITEM_COUNT, ITEM_ENTITY)).toEqual([1]);
@@ -679,7 +679,7 @@ describe("fillSkippedStory", () => {
     expect(units.values(ITEM_COUNT, ITEM_ENTITY)).toEqual([0]);
     expect(units.of(0).get(TROPHY_PROGRESS)[2]).toBe(50n);
     expect(units.of(0).get(TROPHY_PROGRESS)[46]).toBe(5n);
-    expect(units.of(0).get(TROPHY_PROGRESS)[501]).toBe(17n);
+    expect(units.of(0).get(TROPHY_PROGRESS)[501]).toBe(7n);
   });
 
   it("joins Id at the save's own level under a low-level crew", () => {
