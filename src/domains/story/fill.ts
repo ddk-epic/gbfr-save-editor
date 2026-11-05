@@ -107,6 +107,7 @@ interface StoryFillEntry {
   openedQuests?: readonly number[];
   questDifficulty?: number;
   startWeapons?: readonly { key: string; captain: number; replaces: string }[];
+  standInWeapons?: readonly { key: string; xp: number; uncap: number }[];
   fightWeapons?: readonly {
     key: string;
     captain: number;
@@ -167,11 +168,16 @@ const STORY_FILL: readonly StoryFillEntry[] = [
       { archive: "ARC_OTHER_059", flags: ARCHIVE_UNLOCKED },
       { archive: "ARC_OTHER_060", flags: ARCHIVE_UNLOCKED },
     ],
+    standInWeapons: [
+      { key: "WEP_PL1900_A0", xp: 790, uncap: 2 },
+      { key: "WEP_NP0300_01", xp: 1140, uncap: 2 },
+    ],
   },
   {
     key: 180,
     trophies: [8, 1412],
     chapterKeysCleared: 30n,
+    standInWeapons: [{ key: "WEP_NP0300_01", xp: 1740, uncap: 2 }],
     fightWeapons: [
       { key: "WEP_PL0000_99", captain: 10000, startWeapon: "WEP_PL0000_03" },
       { key: "WEP_PL0100_99", captain: 10001, startWeapon: "WEP_PL0100_03" },
@@ -183,6 +189,10 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     chapterKeysCleared: 36n,
     items: [{ item: "ITEM_70_0010", flags: KEY_ITEM }],
     archives: [{ archive: "ARC_ROLANNOTE_08", flags: ARCHIVE_UNLOCKED_SEEN }],
+    standInWeapons: [
+      { key: "WEP_PL1900_A0", xp: 1740, uncap: 3 },
+      { key: "WEP_NP0300_01", xp: 2740, uncap: 3 },
+    ],
   },
   {
     key: 220,
@@ -440,9 +450,10 @@ function applyFill(
   let acquired = at.get(ITEM_ACQUIRED_LAST);
   let rupies = at.get(USER_RUPIES);
   let weaponId = at.get(WEAPON_LAST_ID);
-  let weaponEntity = WEAPON_FIRST;
+  const writtenWeaponIds = new Map<number, number>();
   const captainInPlay = at.get(USER_CAPTAIN) === 2 ? 10001 : 10000;
   const startWeaponEntities = new Map<number, number>();
+  const standInEntities = new Map<string, number>();
   const fieldNoted = (key: string) =>
     Number(
       units.values(
@@ -451,13 +462,16 @@ function applyFill(
       )![0],
     ) !== 0;
   const addWeapon = (key: string, xp: number, uncap: number, flags: number) => {
-    while (units.of(weaponEntity).get(WEAPON_ID) !== 0) {
-      weaponEntity++;
-      if (weaponEntity >= WEAPON_FIRST + WEAPON_ENTRIES)
+    let entity = WEAPON_FIRST;
+    while (
+      (writtenWeaponIds.get(entity) ?? units.of(entity).get(WEAPON_ID)) !== 0
+    ) {
+      entity++;
+      if (entity >= WEAPON_FIRST + WEAPON_ENTRIES)
         throw new Error("no free weapon entry");
     }
     weaponId++;
-    const entity = weaponEntity++;
+    writtenWeaponIds.set(entity, weaponId);
     const hash = hashId(key);
     patches.push(
       { attribute: WEAPON_ID, entity, values: [weaponId] },
@@ -547,6 +561,7 @@ function applyFill(
       added.push(`quest difficulty ${entry.questDifficulty}`);
     }
 
+    const replaced: number[] = [];
     for (const { key, captain, replaces } of entry.startWeapons ?? []) {
       if (fieldNoted(key)) continue;
       const inPlay = captain === captainInPlay;
@@ -574,6 +589,7 @@ function applyFill(
       });
       for (const old of units.entitiesWhere(WEAPON_KEY, hashId(replaces))) {
         const oldId = units.of(old).get(WEAPON_ID);
+        replaced.push(old);
         patches.push(
           { attribute: WEAPON_ID, entity: old, values: [0] },
           { attribute: WEAPON_KEY, entity: old, values: [EMPTY_HASH] },
@@ -587,6 +603,26 @@ function applyFill(
             entity: captain,
             values: [id],
           });
+      }
+      added.push(key);
+    }
+    for (const entity of replaced) writtenWeaponIds.set(entity, 0);
+
+    for (const { key, xp, uncap } of entry.standInWeapons ?? []) {
+      const held =
+        standInEntities.get(key) ??
+        units.entitiesWhere(WEAPON_KEY, hashId(key))[0];
+      if (held === undefined) {
+        if (fieldNoted(key)) continue;
+        const { entity } = addWeapon(key, xp, uncap, STORY_WEAPON_FLAGS);
+        standInEntities.set(key, entity);
+      } else {
+        if (!standInEntities.has(key) && units.of(held).get(WEAPON_XP) >= xp)
+          continue;
+        patches.push(
+          { attribute: WEAPON_XP, entity: held, values: [xp] },
+          { attribute: WEAPON_UNCAP, entity: held, values: [uncap] },
+        );
       }
       added.push(key);
     }

@@ -10,9 +10,9 @@
 | Chapter 5  | 100 | 4, 1408         |                                       |                                                                    |             |                                                |
 | Chapter 6  | 120 | 5, 1409         |                                       |                                                                    |             |                                                |
 | Chapter 7  | 140 | 6, 1410         |                                       |                                                                    |             |                                                |
-| Chapter 8  | 160 | 7, 1411         | `ITEM_70_0006` Elpis, the Mind Sealer | `ARC_OTHER_026`, `ARC_OTHER_058`, `ARC_OTHER_059`, `ARC_OTHER_060` |             |                                                |
+| Chapter 8  | 160 | 7, 1411         | `ITEM_70_0006` Elpis, the Mind Sealer | `ARC_OTHER_026`, `ARC_OTHER_058`, `ARC_OTHER_059`, `ARC_OTHER_060` |             | `WEP_PL1900_A0`, `WEP_NP0300_01`               |
 | Chapter 9  | 180 | 8, 1412         |                                       |                                                                    |             | `WEP_PL0000_99`, `WEP_PL0100_99`               |
-| Chapter 10 | 200 | 9, 1413         | `ITEM_70_0010` Rolan's Notes          | `ARC_ROLANNOTE_08`                                                 |             |                                                |
+| Chapter 10 | 200 | 9, 1413         | `ITEM_70_0010` Rolan's Notes          | `ARC_ROLANNOTE_08`                                                 |             | Stand-in weapons raised                        |
 | Chapter Ø  | 220 | 11, 1397        |                                       |                                                                    | 0-6         | `PL1900` joins                                 |
 | Story end  | 222 | 22-25, 19, 1398 |                                       | `ARC_ROLANNOTE_01`-`07`                                            |             | Short stories, counter quests, see below       |
 
@@ -59,12 +59,21 @@ The row for key 140 takes 2581 to 1 and the first 2582 value to 0 on `00730050`.
 
 ## Weapons
 
-Each added weapon takes the first free entry: 2802 the next 2801, 2803, 2804, 2805 and 2815, with 7403 at its row to 4, and 2801. 7403 stays set when a weapon is later sold, so a weapon sold on a played save is not added again.
+Each added weapon takes the first free entry, counting ones the fill cleared: 2802 the next 2801, 2803, 2804, 2805 and 2815, with 7403 at its row to 4, and 2801. 7403 stays set when a weapon is later sold, so a weapon sold on a played save is not added again.
 
 | Weapon               | XP     | Uncap | Flags (2815)                                 | Also                                                                                                        |
 | -------------------- | ------ | ----- | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | `_03`, due Chapter 4 | 90     | 0     | 129 on the captain in play, 128 on the other | Clears the captain's `_01` entry. 1402 takes the new id on a captain equipping the `_01`. See outfits below |
 | `_99`, due Chapter 9 | 162540 | 6     | 128                                          | 1402 on the captain not in play takes it. The captain in play's `_03` takes XP 1740, uncap 3                |
+
+The stand-in weapons stay in the list after their quests, flags 128. A row due later raises a weapon already held below its XP, which keeps its entry and id.
+
+| Weapon          | Chapter 8 | Chapter 9 | Chapter 10 |
+| --------------- | --------- | --------- | ---------- |
+| `WEP_PL1900_A0` | 790, 2    |           | 1740, 3    |
+| `WEP_NP0300_01` | 1140, 2   | 1740, 2   | 2740, 3    |
+
+XP and uncap per row. The game adds `WEP_PL1900_A0` itself after the Chapter 7 start loads, so neither is due earlier.
 
 The game sets 2815 bit 0 on the in-play `_03` as `TUTORIAL_EQUIP` opens. `disableHints` marks that hint shown, so the fill writes the bit itself.
 

@@ -216,6 +216,14 @@ const save = (
       [FIELD_NOTE_WEAPON_KEY, hashId("WEP_PL0100_99")],
       [FIELD_NOTE_WEAPON_FLAGS, 0],
     ],
+    271: [
+      [FIELD_NOTE_WEAPON_KEY, hashId("WEP_NP0300_01")],
+      [FIELD_NOTE_WEAPON_FLAGS, 0],
+    ],
+    391: [
+      [FIELD_NOTE_WEAPON_KEY, hashId("WEP_PL1900_A0")],
+      [FIELD_NOTE_WEAPON_FLAGS, 0],
+    ],
     [PROFILE_FIRST]: [[PROFILE_QUESTS_CLEARED, 0]],
     10000: [
       [CHARACTER_KEY, hashId("PL0000")],
@@ -313,7 +321,7 @@ describe("fillSkippedStory", () => {
       at.get(UI_FEATURE_UNLOCKED).flatMap((on, index) => (on ? [index] : [])),
     ).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
-    expect(at.get(WEAPON_LAST_ID)).toBe(7);
+    expect(at.get(WEAPON_LAST_ID)).toBe(9);
     expect(units.values(WEAPON_KEY, 40003)).toEqual([hashId("WEP_PL0000_03")]);
     expect(units.values(WEAPON_KEY, 40004)).toEqual([hashId("WEP_PL0100_03")]);
     expect(units.values(WEAPON_KEY, 40005)).toEqual([hashId("WEP_PL0000_99")]);
@@ -327,13 +335,64 @@ describe("fillSkippedStory", () => {
     expect(units.values(WEAPON_XP, 40006)).toEqual([162540]);
     expect(units.values(WEAPON_UNCAP, 40006)).toEqual([6]);
     expect(units.values(WEAPON_FLAGS, 40006)).toEqual([128]);
-    expect(units.values(WEAPON_ID, 40000)).toEqual([0]);
+    expect(units.values(WEAPON_ID, 40000)).toEqual([6]);
+    expect(units.values(WEAPON_KEY, 40000)).toEqual([hashId("WEP_PL1900_A0")]);
+    expect(units.values(WEAPON_XP, 40000)).toEqual([1740]);
+    expect(units.values(WEAPON_UNCAP, 40000)).toEqual([3]);
+    expect(units.values(WEAPON_FLAGS, 40000)).toEqual([128]);
     expect(units.values(WEAPON_ID, 40001)).toEqual([2]);
-    expect(units.values(WEAPON_ID, 40002)).toEqual([0]);
-    for (const note of [6, 7, 34, 35])
+    expect(units.values(WEAPON_ID, 40002)).toEqual([7]);
+    expect(units.values(WEAPON_KEY, 40002)).toEqual([hashId("WEP_NP0300_01")]);
+    expect(units.values(WEAPON_XP, 40002)).toEqual([2740]);
+    expect(units.values(WEAPON_UNCAP, 40002)).toEqual([3]);
+    expect(units.values(WEAPON_FLAGS, 40002)).toEqual([128]);
+    for (const note of [6, 7, 34, 35, 271, 391])
       expect(units.values(FIELD_NOTE_WEAPON_FLAGS, note)).toEqual([4]);
     expect(units.values(EQUIP_WEAPON, 10000)).toEqual([4]);
-    expect(units.values(EQUIP_WEAPON, 10001)).toEqual([7]);
+    expect(units.values(EQUIP_WEAPON, 10001)).toEqual([9]);
+  });
+
+  it("adds no stand-in weapon before Chapter 8", () => {
+    const session = save({ chapter: 140 });
+    fillSkippedStory(session);
+    const units = reread(session);
+
+    expect(units.values(WEAPON_KEY, 40000)).toEqual([hashId("")]);
+    expect(units.values(WEAPON_KEY, 40002)).toEqual([hashId("")]);
+    expect(units.values(FIELD_NOTE_WEAPON_FLAGS, 391)).toEqual([0]);
+  });
+
+  it("raises the stand-in weapons a shorter fill added", () => {
+    const session = save({ chapter: 160 });
+    fillSkippedStory(session);
+    const early = reread(session);
+    expect(early.values(WEAPON_XP, 40000)).toEqual([790]);
+    expect(early.values(WEAPON_UNCAP, 40000)).toEqual([2]);
+    expect(early.values(WEAPON_XP, 40002)).toEqual([1140]);
+
+    session.patch([
+      { attribute: CURRENT_CHAPTER, entity: 0, values: [200, -1] },
+    ]);
+    fillSkippedStory(session);
+    const units = reread(session);
+
+    expect(units.values(WEAPON_ID, 40000)).toEqual([6]);
+    expect(units.values(WEAPON_XP, 40000)).toEqual([1740]);
+    expect(units.values(WEAPON_UNCAP, 40000)).toEqual([3]);
+    expect(units.values(WEAPON_ID, 40002)).toEqual([7]);
+    expect(units.values(WEAPON_XP, 40002)).toEqual([2740]);
+    expect(units.values(WEAPON_UNCAP, 40002)).toEqual([3]);
+  });
+
+  it("does not add a stand-in weapon back once sold", () => {
+    const session = save({ chapter: 200 });
+    session.patch([
+      { attribute: FIELD_NOTE_WEAPON_FLAGS, entity: 391, values: [4] },
+    ]);
+    const added = fillSkippedStory(session);
+
+    expect(added).not.toContain("WEP_PL1900_A0");
+    expect(added).toContain("WEP_NP0300_01");
   });
 
   it("marks the counter quests the story needs as cleared once", () => {
