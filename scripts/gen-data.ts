@@ -842,17 +842,34 @@ console.log(
   `CONFLUX_TREE: ${treeRows.length} nodes, CONFLUX_AURAS: ${auraRows.length} auras`,
 );
 
-// Weapon series (Unk30), owner (CharaId) and obtainable (unk52) by key.
+// Weapon rows by key, forged on the one row an unlock adds per series.
+const NEVER_FORGED_QUEST = "00999999";
 const weaponRows = db
   .prepare(
-    "select Key, Unk30 as series, CharaId, unk52 as obtainable from weapon where Key <> '' order by Key",
+    `select Key, Unk30 as series, CharaId, unk52 as obtainable, MinFeatureVersion as unlockVersion,
+       WeaponId2 as base, ForgeUnlockQuestId as quest, ForgedUncapLevel as uncap, ForgedWeaponLevel as level
+     from weapon where Key <> '' order by Key`,
   )
   .all() as {
   Key: string;
   series: number;
   CharaId: string;
   obtainable: number;
+  unlockVersion: number;
+  base: string;
+  quest: string;
+  uncap: number;
+  level: number;
 }[];
+const unlockRows = new Map<string, (typeof weaponRows)[number]>();
+for (const row of weaponRows) {
+  if (!row.obtainable || row.series === 7) continue;
+  if (row.base && row.base !== row.Key) continue;
+  const slot = `${row.CharaId}:${row.series}`;
+  if (!unlockRows.has(slot) || row.quest !== NEVER_FORGED_QUEST)
+    unlockRows.set(slot, row);
+}
+const unlockKeys = new Set([...unlockRows.values()].map(({ Key }) => Key));
 emit(
   "weapons",
   `export interface WeaponRow {
@@ -862,19 +879,25 @@ emit(
   character: string;
   /** weapon.unk52 */
   obtainable?: true;
+  /** weapon.MinFeatureVersion */
+  unlockVersion?: number;
+  /** weapon.ForgedUncapLevel and ForgedWeaponLevel */
+  forged?: readonly [uncap: number, level: number];
 }
 
 /** By weapon.Key, ${weaponRows.length} weapons. */
 export const WEAPON_ROWS: Readonly<Record<string, WeaponRow>> = {
 ${weaponRows
   .map(
-    ({ Key, series, CharaId, obtainable }) =>
-      `  ${JSON.stringify(Key)}: { series: ${series}, character: ${JSON.stringify(CharaId)}${obtainable ? ", obtainable: true" : ""} },`,
+    ({ Key, series, CharaId, obtainable, unlockVersion, uncap, level }) =>
+      `  ${JSON.stringify(Key)}: { series: ${series}, character: ${JSON.stringify(CharaId)}${obtainable ? ", obtainable: true" : ""}${unlockVersion ? `, unlockVersion: ${unlockVersion}` : ""}${unlockKeys.has(Key) ? `, forged: [${uncap}, ${level}]` : ""} },`,
   )
   .join("\n")}
 };`,
 );
-console.log(`WEAPON_ROWS: ${weaponRows.length} weapons`);
+console.log(
+  `WEAPON_ROWS: ${weaponRows.length} weapons, ${unlockKeys.size} unlocks`,
+);
 
 // XP of each level, weapon_exp in row order: the first row is level 1.
 const weaponLevelXp = (
@@ -887,17 +910,27 @@ export const WEAPON_LEVEL_XP: readonly number[] = [${weaponLevelXp.join(", ")}];
 );
 console.log(`WEAPON_LEVEL_XP: ${weaponLevelXp.length} levels`);
 
-// Unk9 11: the Trove trophies. BehaviorId 185 and 186: the weapon level and uncap tiers.
-const troveRows = db
-  .prepare(
-    "select CharaId, BehaviorId, Key, ReqQuantity from badge where Unk9 = 11 order by CharaId",
+// Unk9 10 and 11: Collection and Trove. BehaviorId 184-186 and 998: weapon tiers.
+const characterBadges = (unk9: number) =>
+  (
+    db
+      .prepare(
+        "select CharaId, BehaviorId, Key, ReqQuantity from badge where Unk9 = ? order by CharaId",
+      )
+      .all(unk9) as {
+      CharaId: string;
+      BehaviorId: number;
+      Key: number;
+      ReqQuantity: number;
+    }[]
   )
-  .all() as {
-  CharaId: string;
-  BehaviorId: number;
-  Key: number;
-  ReqQuantity: number;
-}[];
+    .map(
+      (row) =>
+        `  ${row.CharaId}: [${row.BehaviorId}, ${row.Key}, ${row.ReqQuantity}],`,
+    )
+    .join("\n");
+const troveRows = characterBadges(11);
+const collectionRows = characterBadges(10);
 const weaponTierBadges = (behavior: number) =>
   (
     db
@@ -910,20 +943,37 @@ const weaponTierBadges = (behavior: number) =>
     .join(", ");
 emit(
   "weapons",
-  `/** Trove trophy by chara.CharId, ${troveRows.length} rows: BehaviorId, badge.Key and ReqQuantity. */
+  `/** Collection trophy by chara.CharId: BehaviorId, badge.Key and ReqQuantity. */
+export const WEAPON_COLLECTIONS: Readonly<
+  Record<
+    string,
+    readonly [progress: number, badge: number, quantity: number]
+  >
+> = {
+${collectionRows}
+};
+
+/** Trove trophy by chara.CharId: BehaviorId, badge.Key and ReqQuantity. */
 export const WEAPON_TROVES: Readonly<
   Record<
     string,
     readonly [progress: number, badge: number, quantity: number]
   >
 > = {
-${troveRows
-  .map(
-    (row) =>
-      `  ${row.CharaId}: [${row.BehaviorId}, ${row.Key}, ${row.ReqQuantity}],`,
-  )
-  .join("\n")}
+${troveRows}
 };
+
+/** badge.Key and ReqQuantity of BehaviorId 184. */
+export const WEAPONS_HELD_BADGES: readonly (readonly [
+  badge: number,
+  quantity: number,
+])[] = [${weaponTierBadges(184)}];
+
+/** badge.Key and ReqQuantity of BehaviorId 998. */
+export const WEAPONS_HELD_ALL_BADGES: readonly (readonly [
+  badge: number,
+  quantity: number,
+])[] = [${weaponTierBadges(998)}];
 
 /** badge.Key and ReqQuantity of BehaviorId 185. */
 export const WEAPON_LEVELS_TOTAL_BADGES: readonly (readonly [
@@ -937,7 +987,6 @@ export const WEAPON_UNCAPS_BADGES: readonly (readonly [
   quantity: number,
 ])[] = [${weaponTierBadges(186)}];`,
 );
-console.log(`WEAPON_TROVES: ${troveRows.length} rows`);
 
 // Game text: gt() table -> query returning (key, text_id), the key domain
 // returns and its .msg id. Unk* columns keep the extractor's names.

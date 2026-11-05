@@ -52,11 +52,31 @@ An uncap, `FUN_1441c9ff0`, takes `item_material_list.CoinCost` and the items of 
 
 The 185 sum matches finished and played saves. Each of these functions earns the entry's trophies when it writes, and none of them runs at a load, so a count met on a load stays unearned until the entry is written again.
 
-`maxWeaponSeries` takes a character's held weapons of the Collection series to uncap 6 and level 150, no rupies or materials spent. It adds the uncaps to 186, sets 185 and the owner's Trove entry, and earns the trophies they meet, adding 1 to 5815 at 501 for each. `canMaxWeaponSeries` holds while it would change a weapon, an entry or a trophy, so it also repairs a save with the weapons already maxed.
+`maxWeaponSeries` unlocks a character's missing weapons, then takes the held weapons of the Collection series to uncap 6 and level 150, no rupies or materials spent. It adds the uncaps to 186, sets 185 and the owner's Trove entry, and earns the trophies they meet, adding 1 to 5815 at 501 for each. `canMaxWeaponSeries` holds while it would change a weapon, an entry or a trophy, so it also repairs a save with the weapons already maxed.
+
+## Forging
+
+`FUN_140311e00` adds a weapon in the first entry with an id of 0, unless `FUN_140312750` finds one held already.
+
+| Unit                                                       | Write                                                                              |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| 2801, 2802                                                 | The next id                                                                        |
+| 2803                                                       | Key                                                                                |
+| 2804, 2805                                                 | `weapon_exp.Exp` of `weapon.ForgedWeaponLevel`, and `weapon.ForgedUncapLevel`      |
+| 2815                                                       | 128                                                                                |
+| 7403                                                       | Bit 2 of the weapon's field note                                                   |
+| 5815 at 184, 998                                           | Set by `FUN_140aba650` to the held weapons of joined characters, series 7 left out |
+| 5815 at the owner's Collection entry, `WEAPON_COLLECTIONS` | Set by `FUN_140aba650` to the owner's held weapons                                 |
+| 5815 at 185                                                | Set by `FUN_140313890`                                                             |
+| 5815 at the owner's Trove entry                            | Set by `FUN_140313400` when the weapon is series 0                                 |
+
+The Collection and Trove counts of `PL2100`, `PL2200` and `PL2300` leave out weapons with a `weapon.MinFeatureVersion` of 5 or more. The Trove also counts a held series 0 weapon below its last stage. The rupies, items and 225 belong to the blacksmith's `FUN_1441c8b10`. 8913 counts forges.
+
+`unlockWeaponSeries` makes these writes for each series the character does not hold, none on the captain not in play, with no rupies or materials spent, and earns the trophies the counts meet. It adds the row with `forged` in `WEAPON_ROWS`, one per character and series: not a `WeaponId2` variant, and preferring a row whose `ForgeUnlockQuestId` is not `00999999`.
 
 ## Series
 
-The save holds no series. It comes from the `weapon` table's `Unk30`, as `WEAPON_ROWS` in `src/data/weapons.ts`. Every character has one weapon of each series, and the traits the weapon carries name it.
+The save holds no series. It comes from the `weapon` table's `Unk30`, as `WEAPON_ROWS` in `src/data/weapons.ts`. A character has at most one weapon of each series, some later characters only four of the six, and the traits the weapon carries name it.
 
 | Series | Name             | Traits                              |
 | ------ | ---------------- | ----------------------------------- |

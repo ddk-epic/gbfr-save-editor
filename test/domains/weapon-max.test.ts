@@ -15,6 +15,7 @@ import {
   WEAPON_FLAGS,
   WEAPON_ID,
   WEAPON_KEY,
+  WEAPON_LAST_ID,
   WEAPON_UNCAP,
   WEAPON_XP,
 } from "../../src/domains/weapon/attributes";
@@ -28,6 +29,7 @@ import { fixtureFile } from "../../src/testing";
 
 const CHARACTER = 10000;
 const LAST_XP = 162540;
+const ENTRIES = 12;
 const SERIES = [
   "WEP_PL0000_02",
   "WEP_PL0000_03",
@@ -50,6 +52,7 @@ const open = (
     fixtureFile({
       [SAVE_ENTITY]: [
         [USER_CAPTAIN, 1],
+        [WEAPON_LAST_ID, 50],
         [TROPHY_PROGRESS, counts],
         [TROPHY_EARNED, Array<boolean>(1700).fill(false)],
       ],
@@ -58,16 +61,19 @@ const open = (
         [CHARACTER_FLAGS, 1],
       ],
       ...Object.fromEntries(
-        rows.map(([key, xp, uncap, flags = 129], index) => [
-          WEAPON_FIRST + index,
-          [
-            [WEAPON_ID, index + 1],
-            [WEAPON_KEY, hashId(key)],
-            [WEAPON_XP, xp],
-            [WEAPON_UNCAP, uncap],
-            [WEAPON_FLAGS, flags],
-          ],
-        ]),
+        Array.from({ length: ENTRIES }, (_, index) => {
+          const [key, xp, uncap, flags = 129] = rows[index] ?? ["", 0, 0, 0];
+          return [
+            WEAPON_FIRST + index,
+            [
+              [WEAPON_ID, key ? index + 1 : 0],
+              [WEAPON_KEY, hashId(key)],
+              [WEAPON_XP, xp],
+              [WEAPON_UNCAP, uncap],
+              [WEAPON_FLAGS, flags],
+            ],
+          ];
+        }),
       ),
     }),
   );
@@ -94,6 +100,10 @@ describe("maxWeaponSeries", () => {
       [
         ["WEP_PL0000_02", 790, 2],
         ["WEP_PL0000_06", 0, 6],
+        ["WEP_PL0000_03", 0, 0],
+        ["WEP_PL0000_04", 0, 0],
+        ["WEP_PL0000_05", 0, 0],
+        ["WEP_PL0000_01_01", 0, 0],
       ],
       { 186: 3n, 185: 6n, 151: 1n },
     );
@@ -101,9 +111,9 @@ describe("maxWeaponSeries", () => {
     expect(held(session).uncap).toBe(6);
     expect(held(session).xp).toBe(LAST_XP);
     expect(held(session, 1).xp).toBe(LAST_XP);
-    expect(progress(session)[186]).toBe(7n);
-    expect(progress(session)[185]).toBe(300n);
-    expect(progress(session)[151]).toBe(2n);
+    expect(progress(session)[186]).toBe(31n);
+    expect(progress(session)[185]).toBe(900n);
+    expect(progress(session)[151]).toBe(6n);
     expect(progress(session)[225]).toBe(0n);
   });
 
@@ -125,7 +135,7 @@ describe("maxWeaponSeries", () => {
     const session = open(
       [
         ["WEP_PL2200_01", 0, 0],
-        ["WEP_PL2200_04", 0, 0],
+        ["WEP_PL2200_07", 0, 0],
       ],
       {},
       "PL2200",
@@ -151,7 +161,7 @@ describe("maxWeaponSeries", () => {
     expect(held(session, 1).uncap).toBe(2);
     expect(held(session, 2).xp).toBe(LAST_XP);
     expect(held(session, 3).xp).toBe(0);
-    expect(progress(session)[185]).toBe(300n);
+    expect(progress(session)[185]).toBe(900n);
   });
 
   it("is not offered on the captain not in play, whose Trove the captain in play shares", () => {
@@ -175,7 +185,7 @@ describe("maxWeaponSeries", () => {
       ["WEP_PL0100_02", LAST_XP, 6],
     ]);
     maxWeaponSeries(session, CHARACTER);
-    expect(progress(session)[185]).toBe(150n);
+    expect(progress(session)[185]).toBe(900n);
   });
 
   it("repairs a save with the weapons maxed and the trophies unearned", () => {

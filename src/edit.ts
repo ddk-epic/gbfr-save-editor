@@ -1,8 +1,10 @@
 export { SaveSession, type Patch } from "./save/session";
 export {
   canMaxWeaponSeries,
+  canUnlockWeaponSeries,
   maxWeaponSeries,
   removeWrightstone,
+  unlockWeaponSeries,
 } from "./domains/weapon/edit";
 export { equipWeapon, equippableWeapons } from "./domains/equipment/edit";
 export { removeOverMasteries } from "./domains/over-mastery/edit";

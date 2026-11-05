@@ -84,6 +84,7 @@ export interface EquipmentSetView {
   wrightstone: Table;
   wrightstoneWeaponId: number | undefined;
   canMaxWeaponSeries: boolean;
+  canUnlockWeaponSeries: boolean;
   skills: Table;
   sigils: Table;
 }

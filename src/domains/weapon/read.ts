@@ -53,7 +53,7 @@ export interface Weapon {
   awakeningSeen: boolean;
 }
 
-const offPlayCaptain = (units: UnitStore) => {
+export const offPlayCaptain = (units: UnitStore) => {
   const captain = units.of(SAVE_ENTITY).get(USER_CAPTAIN);
   return captain === 1 ? "PL0100" : captain === 2 ? "PL0000" : undefined;
 };

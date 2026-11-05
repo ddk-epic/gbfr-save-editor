@@ -13,8 +13,10 @@ export const QUESTS_CLEARED = 20;
 export const PROUD_QUEST_CLEARS = 238;
 export const RUPIES_EARNED = 224;
 export const STORY_MASTERY_FILLED = 714;
+export const WEAPONS_HELD = 184;
 export const WEAPON_LEVELS_TOTAL = 185;
 export const WEAPON_UNCAPS = 186;
+export const WEAPONS_HELD_ALL = 998;
 export const TROPHIES_EARNED_OUTSIDE_RANGE = 501;
 export const TROPHIES_EARNED_IN_RANGE = 1018;
 /** `badge.Key` range counted by `TROPHIES_EARNED_IN_RANGE`. */

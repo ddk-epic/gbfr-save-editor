@@ -148,7 +148,7 @@ A save editor for Granblue Fantasy: Relink. Still work in progress and planned w
 - [x] Max all weapon series level
 - [ ] Upgrade weapon: plus, awakening, transcendence, or max all
 - [ ] Unlock weapon
-- [ ] Unlock weapon series
+- [x] Unlock weapon series
 - [ ] Set appearance
 
 #### Wrightstones

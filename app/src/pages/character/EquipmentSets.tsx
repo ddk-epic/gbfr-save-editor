@@ -2,6 +2,7 @@ import {
   equipWeapon,
   maxWeaponSeries,
   removeWrightstone,
+  unlockWeaponSeries,
 } from "gbfr-save-editor/edit";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -71,6 +72,17 @@ export function EquipmentSets({ sets }: { sets: EquipmentSetView[] }) {
             menu={
               <EditMenu
                 actions={[
+                  ...(set.canUnlockWeaponSeries
+                    ? [
+                        {
+                          label: t("edit.unlockWeaponSeries"),
+                          run: () =>
+                            edit((session) =>
+                              unlockWeaponSeries(session, set.characterEntity!),
+                            ),
+                        },
+                      ]
+                    : []),
                   ...(set.canMaxWeaponSeries
                     ? [
                         {

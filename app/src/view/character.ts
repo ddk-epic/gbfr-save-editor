@@ -8,6 +8,7 @@ import {
   CHARACTER_MAX_LEVEL,
   MAX_MASTER_LEVEL,
   canMaxWeaponSeries,
+  canUnlockWeaponSeries,
   characterLevels,
   characterMasterLevels,
   equippableWeapons,
@@ -79,6 +80,9 @@ export function buildCharacters(
       canMaxWeaponSeries:
         characterEntity !== undefined &&
         canMaxWeaponSeries(units, characterEntity),
+      canUnlockWeaponSeries:
+        characterEntity !== undefined &&
+        canUnlockWeaponSeries(units, characterEntity),
       wrightstone: table(
         `${id}:wrightstone`,
         "gear",
