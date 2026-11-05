@@ -87,7 +87,7 @@ const ITEM_SEEN = 8;
 const ARCHIVE_UNLOCKED_SEEN = 3;
 const ARCHIVE_UNLOCKED = 1;
 const STORY_WEAPON_FLAGS = 128;
-const WEAPON_OWNED_BIT = 1;
+const WEAPON_LIST_OPENED_BIT = 1;
 const START_WEAPON_XP = 90;
 const RAISED_WEAPON_XP = 1740;
 const RAISED_WEAPON_UNCAP = 3;
@@ -641,7 +641,9 @@ function applyFill(
         key,
         START_WEAPON_XP,
         0,
-        inPlay ? STORY_WEAPON_FLAGS | WEAPON_OWNED_BIT : STORY_WEAPON_FLAGS,
+        inPlay
+          ? STORY_WEAPON_FLAGS | WEAPON_LIST_OPENED_BIT
+          : STORY_WEAPON_FLAGS,
       );
       startWeaponEntities.set(captain, entity);
       const wearer = units.of(captain);

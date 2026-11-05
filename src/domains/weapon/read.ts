@@ -1,10 +1,10 @@
-import { WEAPON_CHARACTERS, WEAPON_SERIES } from "../../data/weapons";
-import { hashId } from "../../core/xxhash32-custom";
+import { WEAPON_ROWS } from "../../data/weapons";
 import { keyOf } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { UnitStore } from "../../core/unit-store";
 import { SKILLS, TRAIT_WEAPON } from "../trait/attributes";
 import { readFilledTraits } from "../trait/read";
+import { SAVE_ENTITY, USER_CAPTAIN } from "../user/attributes";
 import type { Wrightstone } from "../wrightstone/read";
 import {
   COLLECTION_SERIES,
@@ -41,7 +41,7 @@ export interface Weapon {
   wrightstone: Wrightstone | undefined;
   /** weapon.Key of the look chosen for the weapon, undefined for its own. */
   appearance: string | undefined;
-  /** In the player's hands, and so equippable. */
+  /** Obtainable and not the copy of the captain not in play. */
   owned: boolean;
   /** Weapon series, the gt() weaponSeries key, undefined for a key off the table. */
   series: number | undefined;
@@ -53,6 +53,11 @@ export interface Weapon {
   awakeningSeen: boolean;
 }
 
+const offPlayCaptain = (units: UnitStore) => {
+  const captain = units.of(SAVE_ENTITY).get(USER_CAPTAIN);
+  return captain === 1 ? "PL0100" : captain === 2 ? "PL0000" : undefined;
+};
+
 export function readWeapon(
   units: UnitStore,
   entity: UnitEntity,
@@ -62,6 +67,7 @@ export function readWeapon(
   const key = at.get(WEAPON_KEY);
   if (!id || key === undefined) return undefined;
 
+  const row = WEAPON_ROWS[key];
   const stoneKey = at.get(WEAPON_WRIGHTSTONE);
   // The stone welded onto the weapon keeps its traits in the weapon's own list.
   const traits = readFilledTraits(units, TRAIT_WEAPON + entity - WEAPON_FIRST);
@@ -81,8 +87,9 @@ export function readWeapon(
     ),
     wrightstone: stoneKey === undefined ? undefined : { key: stoneKey, traits },
     appearance: at.get(WEAPON_APPEARANCE),
-    series: WEAPON_SERIES[hashId(key)],
-    character: WEAPON_CHARACTERS[hashId(key)],
+    series: row?.series,
+    character: row?.character,
+    owned: row?.obtainable === true && row.character !== offPlayCaptain(units),
     ...at.get(WEAPON_FLAGS),
   };
 }

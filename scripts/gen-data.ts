@@ -842,46 +842,39 @@ console.log(
   `CONFLUX_TREE: ${treeRows.length} nodes, CONFLUX_AURAS: ${auraRows.length} auras`,
 );
 
-// Weapon series by key hash, weapon.Unk30. The traits each series carries name it:
-// 1 holds Stun Power, 3 Critical Hit Rate, 4 HP and Garrison, 5 Weak Point DMG,
-// while 0 and 2 are the Terminus and Ascension weapons. 6 sits on the unnamed
-// _07 weapons. Every character has one weapon of each series.
+// Weapon series (Unk30), owner (CharaId) and obtainable (unk52) by key.
 const weaponRows = db
-  .prepare("select Key, Unk30 as series from weapon order by Key")
-  .all() as { Key: string; series: number }[];
+  .prepare(
+    "select Key, Unk30 as series, CharaId, unk52 as obtainable from weapon where Key <> '' order by Key",
+  )
+  .all() as {
+  Key: string;
+  series: number;
+  CharaId: string;
+  obtainable: number;
+}[];
 emit(
   "weapons",
-  `/** weapon.Key hash -> weapon series (weapon.Unk30), ${weaponRows.length} weapons. */
-export const WEAPON_SERIES: Readonly<Record<number, number>> = {
-${weaponRows
-  .filter(({ Key }) => Key !== "")
-  .map(
-    ({ Key, series }) =>
-      `  0x${hashId(Key).toString(16).padStart(8, "0")}: ${series},`,
-  )
-  .join("\n")}
-};`,
-);
-console.log(`WEAPON_SERIES: ${weaponRows.length} weapons`);
+  `export interface WeaponRow {
+  /** weapon.Unk30 */
+  series: number;
+  /** weapon.CharaId */
+  character: string;
+  /** weapon.unk52 */
+  obtainable?: true;
+}
 
-// Owner by key hash, weapon.CharaId. The save holds no owner, and a hash-keyed
-// DLC weapon has no WEP_<CharId> in its key to read one from.
-const ownerRows = db
-  .prepare("select Key, CharaId from weapon where Key <> '' order by Key")
-  .all() as { Key: string; CharaId: string }[];
-emit(
-  "weapons",
-  `/** weapon.Key hash -> chara.CharId (weapon.CharaId), ${ownerRows.length} weapons. */
-export const WEAPON_CHARACTERS: Readonly<Record<number, string>> = {
-${ownerRows
+/** By weapon.Key, ${weaponRows.length} weapons. */
+export const WEAPON_ROWS: Readonly<Record<string, WeaponRow>> = {
+${weaponRows
   .map(
-    ({ Key, CharaId }) =>
-      `  0x${hashId(Key).toString(16).padStart(8, "0")}: ${JSON.stringify(CharaId)},`,
+    ({ Key, series, CharaId, obtainable }) =>
+      `  ${JSON.stringify(Key)}: { series: ${series}, character: ${JSON.stringify(CharaId)}${obtainable ? ", obtainable: true" : ""} },`,
   )
   .join("\n")}
 };`,
 );
-console.log(`WEAPON_CHARACTERS: ${ownerRows.length} weapons`);
+console.log(`WEAPON_ROWS: ${weaponRows.length} weapons`);
 
 // Game text: gt() table -> query returning (key, text_id), the key domain
 // returns and its .msg id. Unk* columns keep the extractor's names.

@@ -6,38 +6,38 @@ A weapon carries two separate trait lists. Its own five trait positions sit on t
 
 Weapons occupy 256 entities, `WEAPON_FIRST` (40000) to 40255. `WEAPON_ID` (2802) gives the id the equip positions reference. An id of 0 or an unresolved `WEAPON_KEY` (2803) marks an empty entry.
 
-| Attribute | Name                   | Type      | Holds                                                          |
-| --------- | ---------------------- | --------- | -------------------------------------------------------------- |
-| 2802      | `WEAPON_ID`            | `uint`    | Id the equip positions point at                                |
-| 2803      | `WEAPON_KEY`           | `uint`    | `weapon.Key` hash                                              |
-| 2804      | `WEAPON_XP`            | `uint`    | Experience                                                     |
-| 2805      | `WEAPON_UNCAP`         | `int`     | Uncap level                                                    |
-| 2806      | `WEAPON_PLUS`          | `int`     | Plus value                                                     |
-| 2807      | `WEAPON_AWAKENING`     | `int`     | Awakening level                                                |
-| 2813      | `WEAPON_QUESTS_USED`   | `uint`    | Times taken into a quest                                       |
-| 2814      | `WEAPON_APPEARANCE`    | `uint`    | `weapon.Key` of the chosen look                                |
-| 2815      | `WEAPON_FLAGS`         | `uint`    | `WEAPON_OWNED` 1, `WEAPON_SEEN` 64, `WEAPON_AWAKENING_SEEN` 16 |
-| 2816      | `WEAPON_WRIGHTSTONE`   | `uint`    | `item.Key` of the applied stone                                |
-| 2817      | `WEAPON_TRANSCENDENCE` | `int`     | Transcendence stage                                            |
-| 2818      | `WEAPON_TRAITS`        | `uint[5]` | Five `skill.Key` hashes, one per trait position                |
+| Attribute | Name                   | Type      | Holds                                           |
+| --------- | ---------------------- | --------- | ----------------------------------------------- |
+| 2802      | `WEAPON_ID`            | `uint`    | Id the equip positions point at                 |
+| 2803      | `WEAPON_KEY`           | `uint`    | `weapon.Key` hash                               |
+| 2804      | `WEAPON_XP`            | `uint`    | Experience                                      |
+| 2805      | `WEAPON_UNCAP`         | `int`     | Uncap level                                     |
+| 2806      | `WEAPON_PLUS`          | `int`     | Plus value                                      |
+| 2807      | `WEAPON_AWAKENING`     | `int`     | Awakening level                                 |
+| 2813      | `WEAPON_QUESTS_USED`   | `uint`    | Times taken into a quest                        |
+| 2814      | `WEAPON_APPEARANCE`    | `uint`    | `weapon.Key` of the chosen look                 |
+| 2815      | `WEAPON_FLAGS`         | `uint`    | `WEAPON_SEEN` 64, `WEAPON_AWAKENING_SEEN` 16    |
+| 2816      | `WEAPON_WRIGHTSTONE`   | `uint`    | `item.Key` of the applied stone                 |
+| 2817      | `WEAPON_TRANSCENDENCE` | `int`     | Transcendence stage                             |
+| 2818      | `WEAPON_TRAITS`        | `uint[5]` | Five `skill.Key` hashes, one per trait position |
 
 `WEAPON_TRAITS` is a single vector of `WEAPON_TRAIT_POSITIONS` (5) hashes. Neither the vector nor the unit holds a level for them. An unlocked position holds the hash of an empty string, which `keyOf` returns as undefined.
 
 ## Ownership
 
-`WEAPON_OWNED`, bit 0 of the flags, marks a weapon the player holds. An entry without it is one the game keeps for its own use: a `_A0` or `_99` key standing in for a weapon's look, a story stand-in's weapon such as `WEP_NP0300_01`, a copy held for the captain not in play, and the starter weapon of a character not yet recruited.
+A held weapon is an entry whose `WEAPON_ROWS` row has `obtainable`, from `weapon.unk52`. The rest are entries the game keeps for its own use: a `_A0` or `_99` key standing in for a weapon's look, and a story stand-in's weapon such as `WEP_NP0300_01`. The copy of the captain not in play has a key in the set and is left out by `USER_CAPTAIN`. A character not yet recruited can hold a `_01` starter.
 
-Early in the story the bit does not follow this. The captains' `_03` weapons the game gives at the start of story Chapter 4 are equipped without it. The captain in play's gains it a second after `TUTORIAL_EQUIP`, shown on opening the equip menu, and the other captain's stays without. `_01` starters at 0 XP can hold it with the menu never opened, and what sets it on them is not settled. Bit 7 (128) has no meaning assigned; a save early in the story holds it on every entry.
+Bit 0 of the flags does not mark ownership. `FUN_140316020`, called from `ui::component::ControllerSubList` and `ControllerBlacksmithSelectList`, sets it on the held weapons of one character when a weapon list opens, so a fresh forge stays without it until then. `FUN_140310c30` sets it on the default weapons it forges and `FUN_141bc4e20` on one weapon by id. `FUN_140313890` does not read it. Bit 7 (128) is set at every forge by `FUN_140311e00`.
 
-A `_99` key is also a weapon for a story fight. `WEP_PL0000_99` and `WEP_PL0100_99`, XP 162540 and uncap 6, are added and equipped on both captains for the fight in story Chapter 8, without `WEAPON_OWNED`. After it the captain in play returns to `_03`, which the game raises to XP 1740 and uncap 3, and the other captain stays on `_99`. Both entries stay in the list.
+A `_99` key is also a weapon for a story fight. `WEP_PL0000_99` and `WEP_PL0100_99`, XP 162540 and uncap 6, are added and equipped on both captains for the fight in story Chapter 8, without bit 0. After it the captain in play returns to `_03`, which the game raises to XP 1740 and uncap 3, and the other captain stays on `_99`. Both entries stay in the list.
 
-The save holds no owner. A weapon belongs to the character in the `weapon` table's `CharaId`, as `WEAPON_CHARACTERS` in `src/data/weapons.ts`, read into `Weapon.character`. For a `WEP_<CharId>_*` key this is the character the key names. A DLC weapon's key is a bare hash, such as `219EE448`, and only the table names its owner. The inventory keeps a separate entry per character even where two hold the same weapon, so the two captains never share one.
+The save holds no owner. A weapon belongs to the character in the `weapon` table's `CharaId`, as `WEAPON_ROWS` in `src/data/weapons.ts`, read into `Weapon.character`. For a `WEP_<CharId>_*` key this is the character the key names. A DLC weapon's key is a bare hash, such as `219EE448`, and only the table names its owner. The inventory keeps a separate entry per character even where two hold the same weapon, so the two captains never share one.
 
-`readOwnedWeapons` gives the owned weapons of the Collection series by `chara.CharId`, then by series. An NPC's weapon, such as `WEP_NP0300_01`, sits under its own `CharaId`. No save holds two owned weapons of one series for a character; the first held is kept.
+`readOwnedWeapons` gives the held weapons of the Collection series by `chara.CharId`, then by series. No save holds two held weapons of one series for a character; the first held is kept.
 
 ## Series
 
-The save holds no series. It comes from the `weapon` table's `Unk30`, as `WEAPON_SERIES` in `src/data/weapons.ts`. Every character has one weapon of each series, and the traits the weapon carries name it.
+The save holds no series. It comes from the `weapon` table's `Unk30`, as `WEAPON_ROWS` in `src/data/weapons.ts`. Every character has one weapon of each series, and the traits the weapon carries name it.
 
 | Series | Name             | Traits                              |
 | ------ | ---------------- | ----------------------------------- |

@@ -1,3 +1,4 @@
+import { SAVE_ENTITY, USER_CAPTAIN } from "../../src/domains/user/attributes";
 import { describe, expect, it } from "vitest";
 import { EMPTY_HASH } from "../../src/core/keys";
 import { hashId } from "../../src/core/xxhash32-custom";
@@ -99,22 +100,18 @@ describe("readWeapon", () => {
 });
 
 describe("readOwnedWeapons", () => {
-  /** WEAPON_FLAGS held bit. */
-  const WEAPON_OWNED = 1;
-  const weapon = (
-    id: number,
-    key: number,
-    flags = WEAPON_OWNED,
-  ): EntityUnits => [
+  const weapon = (id: number, key: number, flags = 129): EntityUnits => [
     [WEAPON_ID, id],
     [WEAPON_KEY, key],
     [WEAPON_FLAGS, flags],
   ];
   const units = unitStore({
+    [SAVE_ENTITY]: [[USER_CAPTAIN, 1]],
     [WEAPON_FIRST]: weapon(1, hashId("WEP_PL2900_01")),
     [WEAPON_FIRST + 1]: weapon(2, 0x219ee448),
-    // Not held, a bonus series, and an NPC's.
-    [WEAPON_FIRST + 2]: weapon(3, hashId("WEP_PL2900_04"), 0),
+    [WEAPON_FIRST + 2]: weapon(3, hashId("WEP_PL2900_04"), 128),
+    [WEAPON_FIRST + 5]: weapon(6, hashId("WEP_PL2900_A0")),
+    [WEAPON_FIRST + 6]: weapon(7, hashId("WEP_PL0100_02")),
     [WEAPON_FIRST + 3]: weapon(4, hashId("WEP_PL0100_10")),
     [WEAPON_FIRST + 4]: weapon(5, hashId("WEP_NP0300_01")),
   });
@@ -126,12 +123,13 @@ describe("readOwnedWeapons", () => {
     expect(ids("PL2900")).toEqual([
       [4, 1],
       [2, 2],
+      [3, 3],
     ]);
     expect(owned.has("PL0100")).toBe(false);
   });
 
-  it("keeps an NPC's weapon under its own CharaId", () => {
-    expect(owned.get("NP0300")?.get(4)?.id).toBe(5);
+  it("leaves an NPC's weapon out", () => {
+    expect(owned.has("NP0300")).toBe(false);
   });
 });
 
