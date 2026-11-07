@@ -48,7 +48,7 @@ import {
   readPartySets,
   type PartyMember,
 } from "../domains/party/read";
-import { sigilSlots } from "../domains/equipment/slots";
+import { sigilSlots } from "./sigil-slots";
 import { readEquippedSkills } from "../domains/skill/read";
 import { readEquippedSummons, type Summon } from "../domains/summon/read";
 import { readOwnedWeapons, type Weapon } from "../domains/weapon/read";

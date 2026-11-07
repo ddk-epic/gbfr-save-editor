@@ -12,7 +12,8 @@ const LAYERS = {
   tables: ["core", "data", "tables"],
   domains: ["core", "data", "tables", "domains"],
   save: ["core", "data", "tables", "domains", "save"],
-  entry: ["core", "data", "tables", "domains", "save", "entry"],
+  workflows: ["core", "data", "tables", "domains", "workflows"],
+  entry: ["core", "data", "tables", "domains", "save", "workflows", "entry"],
 };
 
 const ENTRIES = ["index", "edit", "language", "testing"];
@@ -24,7 +25,8 @@ function layerOf(rel) {
   return Object.hasOwn(LAYERS, top) ? top : undefined;
 }
 
-const isWrite = (rel) => /(^|\/)(edit|fill|clear|session)$/.test(rel);
+const isWrite = (rel) =>
+  /(^|\/)(edit|fill|clear|session)$/.test(rel) || rel.startsWith("workflows/");
 
 // Reason an import is not allowed, or null.
 function violation(fromRel, toRel) {

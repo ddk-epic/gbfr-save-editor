@@ -9,7 +9,7 @@ import {
 import {
   canMaxWeaponSeries,
   maxWeaponSeries,
-} from "../../src/domains/weapon/edit";
+} from "../../src/workflows/weapon";
 import { readWeapon, weaponLevelOf } from "../../src/domains/weapon/read";
 import {
   WEAPON_FIRST,

@@ -2,27 +2,12 @@ import type { Save } from "../../core/read-save";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { UnitStore } from "../../core/unit-store";
 import {
-  ACCOUNT_MASTER_LEVEL_BADGES,
-  CHARACTER_LEVEL_BADGES,
   CHARACTER_MAX_STATS,
-  CREW_LEVEL_BADGES,
   UNLOCKABLE_CHARACTERS,
-  LAST_RAISED_LEVEL_BADGES,
-  MASTER_LEVEL_BADGE_QUANTITIES,
   MASTER_LEVEL_BADGES,
   MASTER_LEVEL_MSP,
 } from "../../data/characters";
-import type { SaveSession } from "../../core/session";
-import {
-  CREW_LEVEL_TOTAL,
-  LAST_RAISED_LEVEL,
-  TROPHY_CHARACTER_LEVEL,
-  TROPHY_EARNED,
-  TROPHY_PROGRESS,
-} from "../trophy/attributes";
-import { trophyLedger } from "../trophy/ledger";
-import { SAVE_ENTITY } from "../../core/save-entity";
-import { recountHeldWeapons } from "../weapon/edit";
+import type { Patch, SaveSession } from "../../core/session";
 import {
   CHARACTER_BASE_ATTACK,
   CHARACTER_BASE_HP,
@@ -35,7 +20,7 @@ import {
   CHARACTER_MAX_XP,
   CHARACTER_XP,
 } from "./attributes";
-import { isCrewMember, masterLevelOf, offPlayCaptain } from "./read";
+import { masterLevelOf } from "./read";
 
 export const MAX_MASTER_LEVEL = MASTER_LEVEL_MSP.length - 1;
 const MASTER_LEVEL_CAP = 50;
@@ -77,59 +62,19 @@ export function canUnlockCharacter(units: UnitStore, character: UnitEntity) {
   );
 }
 
-/** Summed levels of the crew, the off-play captain left out. */
-const crewLevelTotal = (units: UnitStore) => {
-  const offPlay = offPlayCaptain(units);
-  return units
-    .entitiesWith(CHARACTER_KEY)
-    .filter((entity) => {
-      const at = units.of(entity);
-      return isCrewMember(units, entity) && at.get(CHARACTER_KEY) !== offPlay;
-    })
-    .reduce(
-      (total, entity) => total + units.of(entity).get(CHARACTER_LEVEL),
-      0,
-    );
-};
-
-/** Joins a Crewmate menu character at level 100 and writes its level trophies. */
-export function unlockCharacter(session: SaveSession, character: UnitEntity) {
+/** Joins a Crewmate menu character at level 100. */
+export function joinCharacter(session: SaveSession, character: UnitEntity) {
   const units = session.save.slotData.units;
   if (!canUnlockCharacter(units, character))
     throw new Error(`character ${character} cannot be unlocked`);
   const at = units.of(character);
-  const key = at.get(CHARACTER_KEY)!;
-  const stats = CHARACTER_MAX_STATS[key]!;
+  const stats = CHARACTER_MAX_STATS[at.get(CHARACTER_KEY)!]!;
   session.patch([
     at.patch(CHARACTER_FLAGS, { joined: true }),
     at.patch(CHARACTER_XP, CHARACTER_MAX_XP),
     at.patch(CHARACTER_LEVEL, CHARACTER_MAX_LEVEL),
     at.patch(CHARACTER_BASE_HP, stats.hp),
     at.patch(CHARACTER_BASE_ATTACK, stats.attack),
-  ]);
-
-  const { index, progress, badges } = CHARACTER_LEVEL_BADGES[key]!;
-  const crewCap = CREW_LEVEL_BADGES.at(-1)![1];
-  const ledger = trophyLedger(units);
-  ledger.setTiers(progress, CHARACTER_MAX_LEVEL, badges);
-  ledger.setTiers(
-    CREW_LEVEL_TOTAL,
-    Math.min(crewLevelTotal(units), crewCap),
-    CREW_LEVEL_BADGES,
-  );
-  ledger.setTiers(
-    LAST_RAISED_LEVEL,
-    CHARACTER_MAX_LEVEL,
-    LAST_RAISED_LEVEL_BADGES,
-  );
-  recountHeldWeapons(units, ledger);
-  const levels = [...units.of(SAVE_ENTITY).get(TROPHY_CHARACTER_LEVEL)];
-  levels[index] = CHARACTER_MAX_LEVEL;
-  const save = units.of(SAVE_ENTITY);
-  session.patch([
-    save.patch(TROPHY_PROGRESS, ledger.progress),
-    save.patch(TROPHY_EARNED, ledger.earned),
-    save.patch(TROPHY_CHARACTER_LEVEL, levels),
   ]);
 }
 
@@ -142,54 +87,31 @@ export const lockedCharacters = (units: UnitStore) =>
 export const canUnlockAllCharacters = (save: Save) =>
   lockedCharacters(save.slotData.units).length > 0;
 
-/** Unlocks every Crewmate menu character not in the crew. */
-export function unlockAllCharacters(session: SaveSession) {
-  const units = session.save.slotData.units;
-  for (const entity of lockedCharacters(units))
-    unlockCharacter(session, entity);
-}
-
 /** False for characters with no master level badges. */
 export const characterMasterLevels = (character: string) =>
   character in MASTER_LEVEL_BADGES;
 
-/** Sets a character to the last master level and earns its badges, no MSP spent. */
-export function maxMasterLevel(session: SaveSession, character: UnitEntity) {
-  const units = session.save.slotData.units;
+/** Patches setting a character to the last master level, no MSP spent. */
+export function maxMasterLevelPatches(
+  units: UnitStore,
+  character: UnitEntity,
+): Patch[] {
   const at = units.of(character);
   const key = at.get(CHARACTER_KEY);
-  const badges = key === undefined ? undefined : MASTER_LEVEL_BADGES[key];
-  if (badges === undefined)
+  if (key === undefined || MASTER_LEVEL_BADGES[key] === undefined)
     throw new Error(`character ${character} has no master level`);
   if (masterLevelOf(at.get(CHARACTER_MASTER_XP)) >= MAX_MASTER_LEVEL)
     throw new Error(
       `character ${character} is already master level ${MAX_MASTER_LEVEL}`,
     );
 
-  const earned = [...units.of(SAVE_ENTITY).get(TROPHY_EARNED)];
-  const progress = [...units.of(SAVE_ENTITY).get(TROPHY_PROGRESS)];
-  // ReqQuantity 1 badges write no progress.
-  for (const [badge, behavior, quantity] of [
-    ...badges.map(
-      ([key, progress], i) =>
-        [key, progress, MASTER_LEVEL_BADGE_QUANTITIES[i]!] as const,
-    ),
-    ...ACCOUNT_MASTER_LEVEL_BADGES,
-  ]) {
-    earned[badge] = true;
-    if (quantity > 1 && progress[behavior]! < BigInt(quantity))
-      progress[behavior] = BigInt(quantity);
-  }
   const breaks = MAX_MASTER_LEVEL - MASTER_LEVEL_CAP;
-  const save = units.of(SAVE_ENTITY);
-  session.patch([
+  return [
     at.patch(CHARACTER_MASTER_XP, MASTER_LEVEL_MSP[MAX_MASTER_LEVEL]!),
     at.patch(CHARACTER_FLAGS, { masterBreakNew: true }),
     at.patch(
       CHARACTER_MASTER_BREAK_MARKS,
       at.get(CHARACTER_MASTER_BREAK_MARKS).map((m) => m || breaks),
     ),
-    save.patch(TROPHY_EARNED, earned),
-    save.patch(TROPHY_PROGRESS, progress),
-  ]);
+  ];
 }

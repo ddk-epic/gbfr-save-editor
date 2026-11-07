@@ -7,6 +7,7 @@ import {
   CHARACTER_FIRST,
   CHARACTER_FLAGS,
   CHARACTER_KEY,
+  CHARACTER_LEVEL,
   CHARACTER_MASTER_XP,
   masteryRange,
 } from "./attributes";
@@ -120,3 +121,18 @@ export function findCharacter(
   })[0];
   return gear === undefined ? undefined : characterAt(units, gear);
 }
+
+/** Summed levels of the crew, the off-play captain left out. */
+export const crewLevelTotal = (units: UnitStore) => {
+  const offPlay = offPlayCaptain(units);
+  return units
+    .entitiesWith(CHARACTER_KEY)
+    .filter((entity) => {
+      const at = units.of(entity);
+      return isCrewMember(units, entity) && at.get(CHARACTER_KEY) !== offPlay;
+    })
+    .reduce(
+      (total, entity) => total + units.of(entity).get(CHARACTER_LEVEL),
+      0,
+    );
+};

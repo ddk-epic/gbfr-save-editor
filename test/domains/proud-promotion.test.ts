@@ -23,7 +23,7 @@ import {
   canUnlockProudQuests,
   promoteToProud,
   unlockProudQuests,
-} from "../../src/domains/story/fill";
+} from "../../src/workflows/story-fill";
 import {
   TROPHY_EARNED,
   TROPHY_PROGRESS,

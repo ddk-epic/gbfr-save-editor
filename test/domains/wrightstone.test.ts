@@ -24,7 +24,7 @@ import {
 import {
   addWrightstone,
   editWrightstone,
-} from "../../src/domains/wrightstone/edit";
+} from "../../src/workflows/wrightstone";
 import { readWrightstones } from "../../src/domains/wrightstone/read";
 import {
   wrightstoneRoll,

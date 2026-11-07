@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { MASTERY_SECTIONS } from "../../src/data/masteries";
-import { sigilSlots } from "../../src/domains/equipment/slots";
+import { sigilSlots } from "../../src/save/sigil-slots";
 import type {
   MasteryNode,
   MasteryProgress,

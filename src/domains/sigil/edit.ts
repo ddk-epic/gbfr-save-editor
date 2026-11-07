@@ -1,12 +1,7 @@
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { Patch, SaveSession } from "../../core/session";
-import {
-  TRAIT_FIRST,
-  TRAIT_KEY,
-  TRAIT_LEVEL,
-  TRAIT_SIGIL,
-  TRAIT_STRIDE,
-} from "../trait/attributes";
+import { TRAIT_FIRST, TRAIT_SIGIL, TRAIT_STRIDE } from "../trait/attributes";
+import { setTraits } from "../trait/edit";
 import type { UnitStore } from "../../core/unit-store";
 import { SAVE_ENTITY } from "../../core/save-entity";
 import {
@@ -74,13 +69,13 @@ function sigilPatches(
 ): Patch[] {
   const first =
     TRAIT_FIRST + (TRAIT_SIGIL + entity - SIGIL_FIRST) * TRAIT_STRIDE;
-  const traits = [roll.primary, roll.secondary];
+  const traits = [roll.primary, roll.secondary].map((key) => ({
+    key: key || undefined,
+    level: roll.level,
+  }));
   return [
     units.of(entity).patch(SIGIL_KEY, key),
     units.of(entity).patch(SIGIL_LEVEL, roll.level),
-    ...traits.flatMap((key, i) => [
-      units.of(first + i).patch(TRAIT_KEY, key || undefined),
-      units.of(first + i).patch(TRAIT_LEVEL, roll.level),
-    ]),
+    ...setTraits(units, first, traits),
   ];
 }

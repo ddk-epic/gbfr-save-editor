@@ -17,10 +17,12 @@ import {
   canUnlockAllCharacters,
   canUnlockCharacter,
   maxCharacterLevel,
+} from "../../src/domains/character/edit";
+import {
   maxMasterLevel,
   unlockAllCharacters,
   unlockCharacter,
-} from "../../src/domains/character/edit";
+} from "../../src/workflows/character";
 import {
   characterEntities,
   joinedCharacters,

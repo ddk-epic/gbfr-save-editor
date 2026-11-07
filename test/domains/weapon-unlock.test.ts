@@ -18,10 +18,10 @@ import { SAVE_ENTITY } from "../../src/core/save-entity";
 import {
   canMaxWeaponSeries,
   maxWeaponSeries,
-  unlockableWeapons,
   unlockWeapon,
   unlockWeaponSeries,
-} from "../../src/domains/weapon/edit";
+} from "../../src/workflows/weapon";
+import { unlockableWeapons } from "../../src/domains/weapon/read";
 import {
   WEAPON_FIRST,
   WEAPON_FLAGS,

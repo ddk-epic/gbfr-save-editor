@@ -1,3 +1,4 @@
+import { EMPTY_HASH } from "../../core/keys";
 import type { Save } from "../../core/read-save";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { UnitStore } from "../../core/unit-store";
@@ -13,6 +14,7 @@ import {
 } from "./attributes";
 import { itemTab } from "./read";
 
+const ITEM_ENTITIES = 500;
 const TREASURE_CAP = 999;
 const KNICKKNACK_VOUCHER_CAP = 99999;
 const KNICKKNACK_VOUCHER = "ITEM_21_0000";
@@ -82,4 +84,60 @@ export function maxTreasures(session: SaveSession) {
   }
   patches.push(...stamps.done(), at.patch(INVENTORY_TABS, { first: true }));
   session.patch(patches);
+}
+
+const itemEntity = (units: UnitStore, key: string) => {
+  for (let entity = 0; entity < ITEM_ENTITIES; entity++)
+    if (units.of(entity).get(ITEM_KEY) === key) return entity;
+  return undefined;
+};
+
+/** One more of the item, stamped with the next acquisition counter. */
+export function gainItem(units: UnitStore, key: string): Patch[] {
+  let entity = itemEntity(units, key);
+  const added = entity === undefined;
+  if (entity === undefined) {
+    entity = 0;
+    while (
+      entity < ITEM_ENTITIES &&
+      units.get(ITEM_KEY, entity)?.values[0] !== EMPTY_HASH
+    )
+      entity++;
+    if (entity === ITEM_ENTITIES) throw new Error("no empty item entry");
+  }
+  const stamps = acquisitions(units);
+  const item = units.of(entity);
+  return [
+    ...(added ? [item.patch(ITEM_KEY, key)] : []),
+    item.patch(ITEM_COUNT, item.get(ITEM_COUNT) + 1),
+    stamps.stamp(entity),
+    ...stamps.done(),
+  ];
+}
+
+/** One fewer of the item, none when it is not held. */
+export function loseItem(units: UnitStore, key: string): Patch[] {
+  const entity = itemEntity(units, key);
+  const count = entity === undefined ? 0 : units.of(entity).get(ITEM_COUNT);
+  return entity === undefined || count === 0
+    ? []
+    : [units.of(entity).patch(ITEM_COUNT, count - 1)];
+}
+
+/** One more of a held item as a reward, marked as a field note and stamped from `stamps`. */
+export function rewardItem(
+  units: UnitStore,
+  stamps: ReturnType<typeof acquisitions>,
+  item: UnitEntity,
+  keyItem: boolean,
+): Patch[] {
+  const held = units.of(item);
+  return [
+    held.patch(ITEM_COUNT, held.get(ITEM_COUNT) + 1),
+    held.patch(ITEM_FLAGS, {
+      fieldNote: true,
+      ...(keyItem ? { keyItem: true } : {}),
+    }),
+    stamps.stamp(item),
+  ];
 }

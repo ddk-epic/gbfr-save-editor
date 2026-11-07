@@ -26,5 +26,8 @@ export const WEAPON_TRAITS = Attribute.uintList(2818);
 
 export const WEAPON_TRAIT_POSITIONS = 5;
 
+export const WEAPON_LAST_UNCAP = 6;
+export const WEAPON_LAST_LEVEL = 150;
+
 export const COLLECTION_SERIES = [4, 1, 2, 3, 5, 0];
 export const WEAPON_SERIES_ORDER = [...COLLECTION_SERIES, 6, 7];

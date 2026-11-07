@@ -1,16 +1,12 @@
-import { EMPTY_HASH } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { UnitStore } from "../../core/unit-store";
-import type { Patch, SaveSession } from "../../core/session";
-import { ITEM_COUNT, ITEM_KEY } from "../item/attributes";
-import { acquisitions } from "../item/edit";
+import type { Patch } from "../../core/session";
 import {
   TRAIT_FIRST,
-  TRAIT_KEY,
-  TRAIT_LEVEL,
   TRAIT_STRIDE,
   TRAIT_WRIGHTSTONE,
 } from "../trait/attributes";
+import { setTraits } from "../trait/edit";
 import { SAVE_ENTITY } from "../../core/save-entity";
 import {
   WRIGHTSTONE_FIRST,
@@ -28,12 +24,10 @@ import {
 } from "./rolls";
 
 const WRIGHTSTONE_COUNT = 5000;
-const ITEM_ENTITIES = 500;
 
-/** Adds an unlocked, unseen stone to the inventory; returns its id. */
-export function addWrightstone(session: SaveSession, roll: WrightstoneRoll) {
+/** Patches adding an unlocked, unseen stone to the first empty entry, with its id and item key. */
+export function newWrightstone(units: UnitStore, roll: WrightstoneRoll) {
   checkRoll(roll);
-  const units = session.save.slotData.units;
   let entity = WRIGHTSTONE_FIRST;
   while (readWrightstone(units, entity)) entity++;
   if (entity >= WRIGHTSTONE_FIRST + WRIGHTSTONE_COUNT)
@@ -41,38 +35,33 @@ export function addWrightstone(session: SaveSession, roll: WrightstoneRoll) {
   const id = units.of(SAVE_ENTITY).get(WRIGHTSTONE_LAST_ID) + 1;
   const key = wrightstoneKey(roll);
 
-  session.patch([
+  const patches = [
     units.of(SAVE_ENTITY).patch(WRIGHTSTONE_LAST_ID, id),
     units.of(entity).patch(WRIGHTSTONE_KEY, key),
     units.of(entity).patch(WRIGHTSTONE_ID, id),
     ...traitPatches(units, entity, roll),
-    ...gainItem(units, key),
-  ]);
-  return id;
+  ];
+  return { id, key, patches };
 }
 
-/** Rerolls an inventory stone by id. */
-export function editWrightstone(
-  session: SaveSession,
+/** Patches rerolling an inventory stone by id, with its item key before and after. */
+export function rerollWrightstone(
+  units: UnitStore,
   id: number,
   roll: WrightstoneRoll,
 ) {
   checkRoll(roll);
-  const units = session.save.slotData.units;
   const stone = readWrightstones(units).get(id);
   if (stone === undefined) throw new Error(`no wrightstone with id ${id}`);
   const key = wrightstoneKey(roll);
 
-  session.patch([
+  const patches = [
     ...traitPatches(units, stone.entity, roll),
     ...(key === stone.key
       ? []
-      : [
-          units.of(stone.entity).patch(WRIGHTSTONE_KEY, key),
-          ...loseItem(units, stone.key),
-          ...gainItem(units, key),
-        ]),
-  ]);
+      : [units.of(stone.entity).patch(WRIGHTSTONE_KEY, key)]),
+  ];
+  return { previous: stone.key, key, patches };
 }
 
 function checkRoll({ family, preset, subs }: WrightstoneRoll) {
@@ -95,47 +84,12 @@ function traitPatches(
     TRAIT_FIRST +
     (TRAIT_WRIGHTSTONE + entity - WRIGHTSTONE_FIRST) * TRAIT_STRIDE;
   const keys = [WRIGHTSTONE_MAINS[roll.family], ...roll.subs];
-  return keys.flatMap((key, i) => [
-    units.of(first + i).patch(TRAIT_KEY, key),
-    units
-      .of(first + i)
-      .patch(TRAIT_LEVEL, WRIGHTSTONE_PRESETS[roll.preset].levels[i]!),
-  ]);
-}
-
-const itemEntity = (units: UnitStore, key: string) => {
-  for (let entity = 0; entity < ITEM_ENTITIES; entity++)
-    if (units.of(entity).get(ITEM_KEY) === key) return entity;
-  return undefined;
-};
-
-/** One more of the item, stamped with the next acquisition counter. */
-function gainItem(units: UnitStore, key: string): Patch[] {
-  let entity = itemEntity(units, key);
-  const added = entity === undefined;
-  if (entity === undefined) {
-    entity = 0;
-    while (
-      entity < ITEM_ENTITIES &&
-      units.get(ITEM_KEY, entity)?.values[0] !== EMPTY_HASH
-    )
-      entity++;
-    if (entity === ITEM_ENTITIES) throw new Error("no empty item entry");
-  }
-  const stamps = acquisitions(units);
-  const item = units.of(entity);
-  return [
-    ...(added ? [item.patch(ITEM_KEY, key)] : []),
-    item.patch(ITEM_COUNT, item.get(ITEM_COUNT) + 1),
-    stamps.stamp(entity),
-    ...stamps.done(),
-  ];
-}
-
-function loseItem(units: UnitStore, key: string): Patch[] {
-  const entity = itemEntity(units, key);
-  const count = entity === undefined ? 0 : units.of(entity).get(ITEM_COUNT);
-  return entity === undefined || count === 0
-    ? []
-    : [units.of(entity).patch(ITEM_COUNT, count - 1)];
+  return setTraits(
+    units,
+    first,
+    keys.map((key, i) => ({
+      key,
+      level: WRIGHTSTONE_PRESETS[roll.preset].levels[i]!,
+    })),
+  );
 }

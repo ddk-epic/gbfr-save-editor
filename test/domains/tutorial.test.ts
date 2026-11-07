@@ -9,7 +9,7 @@ import {
   TUTORIAL_WINDOW_FLAGS,
   TUTORIAL_WINDOW_KEY,
 } from "../../src/domains/tutorial/attributes";
-import { canDisableHints, disableHints } from "../../src/domains/tutorial/edit";
+import { canDisableHints, disableHints } from "../../src/workflows/tutorial";
 import { SAVE_HASHSEED } from "../../src/core/save-entity";
 import { SaveSession } from "../../src/core/session";
 import { fixtureFile } from "../../src/testing";

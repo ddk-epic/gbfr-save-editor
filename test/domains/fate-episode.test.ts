@@ -4,7 +4,7 @@ import {
   FATE_EPISODE_KEY,
   FATE_EPISODE_STATE,
 } from "../../src/domains/fate-episode/attributes";
-import { completeFateEpisodes } from "../../src/domains/fate-episode/edit";
+import { completeFateEpisodes } from "../../src/workflows/fate-episode";
 import { readFateEpisodes } from "../../src/domains/fate-episode/read";
 import { validateFateEpisodes } from "../../src/domains/fate-episode/validate";
 import {

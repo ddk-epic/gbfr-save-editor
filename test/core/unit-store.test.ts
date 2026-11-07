@@ -120,3 +120,28 @@ describe("UnitStore.onlyEntityWhere", () => {
     expect(() => units.onlyEntityWhere(ID, 8)).toThrow("2 units of 20 hold 8");
   });
 });
+
+describe("UnitStore.patchWhere", () => {
+  const FLAGS = Attribute.flags(21, { shown: 1 });
+  const units = unitStore({
+    1: [
+      [ID, 7],
+      [FLAGS, 2],
+    ],
+    2: [
+      [ID, 8],
+      [FLAGS, 1],
+    ],
+    3: [
+      [ID, 7],
+      [FLAGS, 0],
+    ],
+  });
+
+  it("patches every entity holding a value, skipping unchanged units", () => {
+    expect(units.patchWhere(ID, [7, 8], FLAGS, { shown: true })).toEqual([
+      { attribute: FLAGS, entity: 1, values: [3] },
+      { attribute: FLAGS, entity: 3, values: [1] },
+    ]);
+  });
+});

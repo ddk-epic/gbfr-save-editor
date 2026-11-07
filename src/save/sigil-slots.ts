@@ -1,6 +1,6 @@
-import { SIGIL_SLOT_PARAMS } from "../../data/masteries";
-import type { FateEpisode } from "../fate-episode/read";
-import type { MasteryProgress, MasterySection } from "../mastery/read";
+import { SIGIL_SLOT_PARAMS } from "../data/masteries";
+import type { FateEpisode } from "../domains/fate-episode/read";
+import type { MasteryProgress, MasterySection } from "../domains/mastery/read";
 
 /** Open sigil slots, as FUN_1402b5990 counts them. */
 export function sigilSlots(

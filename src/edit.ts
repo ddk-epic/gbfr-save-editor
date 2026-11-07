@@ -3,9 +3,9 @@ export {
   canMaxWeaponSeries,
   canUnlockWeaponSeries,
   maxWeaponSeries,
-  removeWrightstone,
   unlockWeaponSeries,
-} from "./domains/weapon/edit";
+} from "./workflows/weapon";
+export { removeWrightstone } from "./domains/weapon/edit";
 export { equipWeapon, equippableWeapons } from "./domains/equipment/edit";
 export { removeOverMasteries } from "./domains/over-mastery/edit";
 export {
@@ -13,12 +13,14 @@ export {
   characterLevels,
   characterMasterLevels,
   maxCharacterLevel,
-  maxMasterLevel,
   canUnlockAllCharacters,
   canUnlockCharacter,
+} from "./domains/character/edit";
+export {
+  maxMasterLevel,
   unlockAllCharacters,
   unlockCharacter,
-} from "./domains/character/edit";
+} from "./workflows/character";
 export { CHARACTER_MAX_LEVEL } from "./domains/character/attributes";
 export { maxMasteryPoints, maxRupies } from "./domains/user/edit";
 export { canMaxTreasures, maxTreasures } from "./domains/item/edit";
@@ -26,7 +28,7 @@ export {
   USER_MAX_MASTERY_POINTS,
   USER_MAX_RUPIES,
 } from "./domains/user/attributes";
-export { completeFateEpisodes } from "./domains/fate-episode/edit";
+export { completeFateEpisodes } from "./workflows/fate-episode";
 export {
   advanceStory,
   storyProgress,
@@ -39,13 +41,13 @@ export {
   isPromotedToProud,
   promoteToProud,
   unlockProudQuests,
-} from "./domains/story/fill";
+} from "./workflows/story-fill";
 export {
   STORY_END_KEY,
   type StoryCheckpoint,
 } from "./domains/story/checkpoints";
-export { canDisableHints, disableHints } from "./domains/tutorial/edit";
-export { addWrightstone, editWrightstone } from "./domains/wrightstone/edit";
+export { canDisableHints, disableHints } from "./workflows/tutorial";
+export { addWrightstone, editWrightstone } from "./workflows/wrightstone";
 export {
   WRIGHTSTONE_MAINS,
   WRIGHTSTONE_PRESETS,

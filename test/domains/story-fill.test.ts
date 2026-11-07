@@ -37,7 +37,7 @@ import {
   CURRENT_CHAPTER,
   UI_FEATURE_UNLOCKED,
 } from "../../src/domains/story/attributes";
-import { fillSkippedStory } from "../../src/domains/story/fill";
+import { fillSkippedStory } from "../../src/workflows/story-fill";
 import {
   PROFILE_FIRST,
   PROFILE_QUESTS_CLEARED,

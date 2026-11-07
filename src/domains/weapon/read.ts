@@ -1,4 +1,5 @@
 import { WEAPON_LEVEL_XP, WEAPON_ROWS } from "../../data/weapons";
+import { CHARACTER_KEY } from "../character/attributes";
 import { keyOf } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { UnitStore } from "../../core/unit-store";
@@ -15,6 +16,8 @@ import {
   WEAPON_FLAGS,
   WEAPON_ID,
   WEAPON_KEY,
+  WEAPON_LAST_LEVEL,
+  WEAPON_LAST_UNCAP,
   WEAPON_PLUS,
   WEAPON_QUESTS_USED,
   WEAPON_TRAITS,
@@ -126,3 +129,33 @@ export const findWeaponById = (
   units: UnitStore,
   id: number,
 ): UnitEntity | undefined => units.entitiesWhere(WEAPON_ID, id)[0];
+
+export const WEAPON_LAST_XP = WEAPON_LEVEL_XP[WEAPON_LAST_LEVEL - 1]!;
+
+/** The weapons a character can still gain, one per missing series. */
+export function unlockableWeapons(units: UnitStore, character: UnitEntity) {
+  const owner = units.of(character).get(CHARACTER_KEY);
+  if (owner === undefined || owner === offPlayCaptain(units)) return [];
+  const held = readOwnedWeapons(units).get(owner);
+  return Object.entries(WEAPON_ROWS)
+    .filter(
+      ([, row]) =>
+        row.forged && row.character === owner && !held?.has(row.series),
+    )
+    .map(([key, { series }]) => ({ key, series }))
+    .sort(
+      (a, b) =>
+        COLLECTION_SERIES.indexOf(a.series) -
+        COLLECTION_SERIES.indexOf(b.series),
+    );
+}
+
+/** A character's held weapons and those short of the last uncap or level, undefined when none are held. */
+export function raisableWeapons(units: UnitStore, character: string) {
+  const held = [...(readOwnedWeapons(units).get(character)?.values() ?? [])];
+  if (held.length === 0) return undefined;
+  const raised = held.filter(
+    ({ uncap, xp }) => uncap < WEAPON_LAST_UNCAP || xp < WEAPON_LAST_XP,
+  );
+  return { held, raised };
+}

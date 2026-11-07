@@ -161,6 +161,22 @@ export class UnitStore {
       throw new Error(`${found.length} units of ${attribute.id} hold ${value}`);
     return found[0]!;
   }
+
+  /** Patches `attribute` on every entity whose `key` holds one of `values`, skipping no-op patches. */
+  patchWhere<T, W>(
+    key: Attribute<unknown>,
+    values: readonly number[],
+    attribute: Attribute<T, W>,
+    value: W,
+  ): Patch[] {
+    return values.flatMap((held) =>
+      this.entitiesWhere(key, held).flatMap((entity) => {
+        const patch = this.of(entity).patch(attribute, value);
+        const current = this.values(attribute, entity);
+        return patch.values.every((v, i) => v === current?.[i]) ? [] : [patch];
+      }),
+    );
+  }
 }
 
 /** The values one entity holds, read through typed attributes. */

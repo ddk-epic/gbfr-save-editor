@@ -1,12 +1,15 @@
-import type { SaveSession } from "../../core/session";
-import { PROFILE_FIRST, PROFILE_QUESTS_CLEARED } from "../profile/attributes";
+import type { SaveSession } from "../core/session";
+import {
+  PROFILE_FIRST,
+  PROFILE_QUESTS_CLEARED,
+} from "../domains/profile/attributes";
 import {
   PROUD_QUEST_CLEARS,
   QUEST_CLEARS_BEFORE_DIFFICULTY,
   QUESTS_CLEARED,
   TROPHY_PROGRESS,
-} from "../trophy/attributes";
-import { SAVE_ENTITY } from "../../core/save-entity";
+} from "../domains/trophy/attributes";
+import { SAVE_ENTITY } from "../core/save-entity";
 import {
   COUNTER_QUEST_CLEARED,
   COUNTER_QUEST_CLEARS,
@@ -16,8 +19,8 @@ import {
   SHORT_STORY_CHECKPOINTS,
   SHORT_STORY_CLEARS,
   SHORT_STORY_IDS,
-} from "./attributes";
-import { difficultyDigit } from "./read";
+} from "../domains/quest/attributes";
+import { difficultyDigit } from "../domains/quest/read";
 
 const LOWEST_GRADE = 0;
 const SHORT_STORY_CHECKPOINT_VALUES = 64;

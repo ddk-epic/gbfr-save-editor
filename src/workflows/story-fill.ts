@@ -1,7 +1,7 @@
-import type { Attribute } from "../../core/attribute";
-import type { Save } from "../../core/read-save";
-import { hashId } from "../../core/xxhash32-custom";
-import type { Patch, SaveSession } from "../../core/session";
+import type { Attribute } from "../core/attribute";
+import type { Save } from "../core/read-save";
+import { hashId } from "../core/xxhash32-custom";
+import type { Patch, SaveSession } from "../core/session";
 import {
   CAPTAIN,
   CHARACTER_BASE_ATTACK,
@@ -13,29 +13,29 @@ import {
   CHARACTER_OUTFITS_OWNED,
   CHARACTER_XP,
   masteryRange,
-} from "../character/attributes";
-import { acquisitions } from "../item/edit";
-import { joinedCharacters } from "../character/read";
-import { EQUIP_WEAPON } from "../equipment/attributes";
+} from "../domains/character/attributes";
+import { acquisitions } from "../domains/item/edit";
+import { joinedCharacters } from "../domains/character/read";
+import { EQUIP_WEAPON } from "../domains/equipment/attributes";
 import {
   ITEM_ACQUIRED,
   ITEM_COUNT,
   ITEM_FLAGS,
   ITEM_KEY,
-} from "../item/attributes";
+} from "../domains/item/attributes";
 import {
   ARCHIVE_FLAGS,
   ARCHIVE_KEY,
   FIELD_NOTE_WEAPON_FLAGS,
   FIELD_NOTE_WEAPON_KEY,
-} from "../journal/attributes";
-import { MASTERY_NODE_BITS } from "../mastery/attributes";
-import { difficultyDigit } from "../quest/read";
+} from "../domains/journal/attributes";
+import { MASTERY_NODE_BITS } from "../domains/mastery/attributes";
+import { difficultyDigit } from "../domains/quest/read";
 import {
   clearCounterQuests,
   clearShortStories,
   openCounterQuests,
-} from "../quest/clear";
+} from "./quest-clears";
 import {
   COUNTER_QUEST_CLEARS,
   COUNTER_QUEST_IDS,
@@ -43,8 +43,12 @@ import {
   QUEST_DIFFICULTY_UNLOCKED,
   SHORT_STORY_CLEARS,
   SHORT_STORY_IDS,
-} from "../quest/attributes";
-import { EQUIP_SKILLS, SKILL_FLAGS, SKILL_KEY } from "../skill/attributes";
+} from "../domains/quest/attributes";
+import {
+  EQUIP_SKILLS,
+  SKILL_FLAGS,
+  SKILL_KEY,
+} from "../domains/skill/attributes";
 import {
   ARCHIVES_UNLOCKED_COUNTERS,
   CHAPTER_KEYS_CLEARED,
@@ -52,10 +56,10 @@ import {
   STORY_MASTERY_FILLED,
   TROPHY_EARNED,
   TROPHY_PROGRESS,
-} from "../trophy/attributes";
-import { earnedCounter } from "../trophy/ledger";
-import { SAVE_ENTITY } from "../../core/save-entity";
-import { USER_MAX_RUPIES, USER_RUPIES } from "../user/attributes";
+} from "../domains/trophy/attributes";
+import { earnedCounter } from "../domains/trophy/ledger";
+import { SAVE_ENTITY } from "../core/save-entity";
+import { USER_MAX_RUPIES, USER_RUPIES } from "../domains/user/attributes";
 import {
   WEAPON_FIRST,
   WEAPON_FLAGS,
@@ -64,8 +68,11 @@ import {
   WEAPON_LAST_ID,
   WEAPON_UNCAP,
   WEAPON_XP,
-} from "../weapon/attributes";
-import { CURRENT_CHAPTER, UI_FEATURE_UNLOCKED } from "./attributes";
+} from "../domains/weapon/attributes";
+import {
+  CURRENT_CHAPTER,
+  UI_FEATURE_UNLOCKED,
+} from "../domains/story/attributes";
 
 type ItemFlags = Parameters<typeof ITEM_FLAGS.write>[0];
 type ArchiveFlags = Parameters<typeof ARCHIVE_FLAGS.write>[0];
