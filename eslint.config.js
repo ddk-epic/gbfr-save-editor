@@ -5,24 +5,37 @@ import prettier from "eslint-config-prettier";
 
 const SRC = path.resolve(import.meta.dirname, "src");
 
-/**
- * Layer of a module path under src, without extension. Edit: the edit entry,
- * session/, data/rules/, and any edit or rules file. Language: the language
- * entry and language/. Everything else is read.
- */
+// Layers each layer may import.
+const LAYERS = {
+  core: ["core"],
+  data: ["data"],
+  domains: ["core", "data", "domains"],
+  save: ["core", "data", "domains", "save"],
+  entry: ["core", "data", "domains", "save", "entry"],
+};
+
+const ENTRIES = ["index", "edit", "language", "testing"];
+
+// Layer of a src-relative path.
 function layerOf(rel) {
-  if (/^language(\/|$)/.test(rel)) return "language";
-  if (/^(edit$|session\/|data\/rules\/)|(^|\/)(edit|rules)$/.test(rel))
-    return "edit";
-  return "read";
+  const top = rel.split("/")[0];
+  if (ENTRIES.includes(top)) return "entry";
+  return Object.hasOwn(LAYERS, top) ? top : undefined;
 }
 
-/** Layers each layer may import. Read stays copyable on its own. */
-const ALLOWED = {
-  read: ["read"],
-  edit: ["read", "edit"],
-  language: ["read", "language"],
-};
+const isWrite = (rel) => /(^|\/)(edit|fill|clear|session)$/.test(rel);
+
+// Reason an import is not allowed, or null.
+function violation(fromRel, toRel) {
+  const from = layerOf(fromRel);
+  const to = layerOf(toRel);
+  if (!from) return `${fromRel} is in no layer; add it to LAYERS`;
+  if (!to) return `${toRel} is in no layer; add it to LAYERS`;
+  if (isWrite(toRel) && !isWrite(fromRel))
+    return "read code cannot import write code";
+  if (!LAYERS[from].includes(to)) return `${from} cannot import ${to}`;
+  return null;
+}
 
 const layers = {
   rules: {
@@ -35,7 +48,7 @@ const layers = {
             .split(path.sep)
             .join("/")
             .replace(/\.[cm]?[jt]sx?$/, "");
-        const from = layerOf(rel(context.filename));
+        const fromRel = rel(context.filename);
         const check = (node) => {
           const source = node.source;
           if (source?.type !== "Literal" || !source.value.startsWith("."))
@@ -44,12 +57,13 @@ const layers = {
             path.dirname(context.filename),
             source.value,
           );
-          const to = rel(target);
-          if (to.startsWith("..")) return;
-          if (!ALLOWED[from].includes(layerOf(to)))
+          const toRel = rel(target);
+          if (toRel.startsWith("..")) return;
+          const reason = violation(fromRel, toRel);
+          if (reason)
             context.report({
               node: source,
-              message: `${from} code cannot import ${layerOf(to)} code (${source.value}).`,
+              message: `${reason} (${source.value}).`,
             });
         };
         return {
@@ -64,7 +78,7 @@ const layers = {
 };
 
 export default tseslint.config(
-  // Unlinted trees: .gitignore entries, and app, which has its own config.
+  // Unlinted: .gitignore entries and app.
   { ignores: ["node_modules", "tmp", "app"] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -84,7 +98,7 @@ export default tseslint.config(
       },
     },
   },
-  // Rest destructuring drops fields such as steamId.
+  // Allows unused rest siblings.
   {
     rules: {
       "@typescript-eslint/no-unused-vars": [
@@ -111,7 +125,7 @@ export default tseslint.config(
       ],
     },
   },
-  // Read, edit and language layers, matching the package entries.
+  // Restricts imports between src layers.
   {
     files: ["src/**"],
     plugins: { layers },
