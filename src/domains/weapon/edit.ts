@@ -14,6 +14,7 @@ import {
 } from "../../data/weapons";
 import type { Patch, SaveSession } from "../../core/session";
 import { CHARACTER_FLAGS, CHARACTER_KEY } from "../character/attributes";
+import { offPlayCaptain } from "../character/read";
 import {
   FIELD_NOTE_WEAPON_FLAGS,
   FIELD_NOTE_WEAPON_KEY,
@@ -36,7 +37,6 @@ import {
 } from "../trait/attributes";
 import {
   findWeaponById,
-  offPlayCaptain,
   readOwnedWeapons,
   readWeapons,
   type Weapon,

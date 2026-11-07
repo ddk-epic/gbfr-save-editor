@@ -1,10 +1,8 @@
 import { Attribute } from "../../core/attribute";
-import { keyAttribute, keyTable } from "../../core/keys";
+import { keyAttribute } from "../../core/keys";
 import type { EntityRange } from "../../core/unit-store";
 import type { UnitEntity } from "../../core/save-data-binary";
-import { CHARACTER_KEYS } from "../../data/characters";
-
-export const CHARACTERS = keyTable("chara", CHARACTER_KEYS);
+import { CHARACTERS } from "../../tables/characters";
 
 export const CHARACTER_FIRST = 10000;
 
@@ -14,6 +12,8 @@ export const CHARACTER_MAX_XP = 8_400_000;
 /** Over Masteries, mastery nodes and master trait cells. */
 export const MASTERY_FIRST = 10000000;
 export const MASTERY_ENTRIES = 400;
+
+export const CAPTAIN = Attribute.optional<number>(1103, "int");
 
 export const CHARACTER_KEY = keyAttribute(1301, CHARACTERS);
 /** `chara_costume.SkinType`. */

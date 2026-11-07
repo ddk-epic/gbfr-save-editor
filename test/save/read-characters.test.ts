@@ -5,6 +5,7 @@ import {
   CHARACTER_KEY,
   CHARACTER_LEVEL,
   masteryRange,
+  CAPTAIN,
 } from "../../src/domains/character/attributes";
 import {
   EQUIP_CHARACTER,
@@ -35,7 +36,6 @@ import {
   SUMMONS_EQUIPPED,
 } from "../../src/domains/summon/attributes";
 import { SAVE_ENTITY } from "../../src/core/save-entity";
-import { USER_CAPTAIN } from "../../src/domains/user/attributes";
 import { readCharacterData } from "../../src/save/read-characters";
 import { unitStore } from "../../src/testing";
 
@@ -51,7 +51,7 @@ const SUMMON_HASH = 0x0033943a;
 
 const units = unitStore({
   [SAVE_ENTITY]: [
-    [USER_CAPTAIN, 1],
+    [CAPTAIN, 1],
     // Summon id 9 in the second position, the rest empty.
     [SUMMONS_EQUIPPED, [0, 9, 0, 0]],
   ],

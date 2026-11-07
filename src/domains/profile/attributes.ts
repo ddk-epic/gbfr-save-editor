@@ -1,8 +1,8 @@
 import { Attribute } from "../../core/attribute";
 import { keyAttribute } from "../../core/keys";
-import { CHARACTERS } from "../character/attributes";
+import { CHARACTERS } from "../../tables/characters";
 
-/** The player's own profile card. Other players' cards fill 10700, 10800 and 10900, fifty each. */
+/** The player's own card; other players' cards fill 10700, 10800 and 10900, fifty each. */
 export const PROFILE_FIRST = 10600;
 /** The last players queued with, newest first. */
 export const RECENT_PLAYER_FIRST = 10900;

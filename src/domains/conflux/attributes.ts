@@ -7,6 +7,7 @@ export const CONFLUX_TREE_RANGE: EntityRange = { first: 0, count: 200 };
 
 export const RESONANCE_KEY = hashAttribute(1601);
 export const RESONANCE_BITS = Attribute.int(1602);
+export const RESONANCE_POINTS = Attribute.int(1116);
 
 export const CONFLUX_AURA_RANGE: EntityRange = { first: 0, count: 300 };
 

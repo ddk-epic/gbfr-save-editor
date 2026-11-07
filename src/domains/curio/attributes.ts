@@ -1,6 +1,6 @@
 import { Attribute } from "../../core/attribute";
 import { hashAttribute, keyAttribute } from "../../core/keys";
-import { ITEMS } from "../wrightstone/attributes";
+import { ITEMS } from "../../tables/items";
 
 export const CURIO_KEY = keyAttribute(2002, ITEMS);
 export const CURIO_SERIAL = Attribute.uint(2003);

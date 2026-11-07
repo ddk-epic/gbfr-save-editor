@@ -224,7 +224,7 @@ Not every unit is a playable character.
 | `NP*`, `PL000B`, `PL2000` | 1     | No `chara_status` rows, HP and ATK 0                           |
 | `SLOT01` to `SLOT04`      | any   | XP, and another character's weapon, skills and sigils          |
 
-`USER_CAPTAIN` (1103) holds the captain picked at the start. The `SLOT` rows have no name, element -1 and UI order 1000-1003. They stand in for a character during the story: A `SLOT` row plays as the character in `CHARACTER_STAND_IN` (1315), at a level and with a weapon and sigils of its own, such as `PL1900` with `WEP_PL1900_A0` or `NP0300` with `WEP_NP0300_01`. `SLOT01` and `SLOT02` can run at once. They can also sit at level 1 with a starter weapon and no sigils.
+`CAPTAIN` (1103) holds the captain picked at the start. The `SLOT` rows have no name, element -1 and UI order 1000-1003. They stand in for a character during the story: A `SLOT` row plays as the character in `CHARACTER_STAND_IN` (1315), at a level and with a weapon and sigils of its own, such as `PL1900` with `WEP_PL1900_A0` or `NP0300` with `WEP_NP0300_01`. `SLOT01` and `SLOT02` can run at once. They can also sit at level 1 with a starter weapon and no sigils.
 
 A stand-in lasts part of a quest or a whole one, and can end with no checkpoint. As it ends, 1315 and the sigils clear, including the sigil entries' keys and wearer. XP, level, HP, attack, the equipped weapon id and the skills stay until the next stand-in overwrites them, and the weapon stays in the weapon list. A row can take a different character next, as `SLOT02` goes from `PL1900` to `NP0300`. A load puts level back to 1 and HP and attack to 0, and keeps XP, the weapon id and the skills.
 

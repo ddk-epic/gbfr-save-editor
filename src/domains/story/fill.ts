@@ -4,6 +4,7 @@ import type { Save } from "../../core/read-save";
 import { hashId } from "../../core/xxhash32-custom";
 import type { Patch, SaveSession } from "../../core/session";
 import {
+  CAPTAIN,
   CHARACTER_BASE_ATTACK,
   CHARACTER_BASE_HP,
   CHARACTER_FLAGS,
@@ -61,7 +62,7 @@ import {
 } from "../trophy/attributes";
 import { earnedCounter } from "../trophy/ledger";
 import { SAVE_ENTITY } from "../../core/save-entity";
-import { USER_CAPTAIN, USER_MAX_RUPIES, USER_RUPIES } from "../user/attributes";
+import { USER_MAX_RUPIES, USER_RUPIES } from "../user/attributes";
 import {
   WEAPON_FIRST,
   WEAPON_FLAGS,
@@ -495,7 +496,7 @@ function applyFill(
   let rupies = at.get(USER_RUPIES);
   let weaponId = at.get(WEAPON_LAST_ID);
   const writtenWeaponIds = new Map<number, number>();
-  const captainInPlay = at.get(USER_CAPTAIN) === 2 ? 10001 : 10000;
+  const captainInPlay = at.get(CAPTAIN) === 2 ? 10001 : 10000;
   const startWeaponEntities = new Map<number, number>();
   const standInEntities = new Map<string, number>();
   const fieldNoted = (key: string) =>

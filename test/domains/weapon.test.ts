@@ -1,5 +1,5 @@
 import { SAVE_ENTITY } from "../../src/core/save-entity";
-import { USER_CAPTAIN } from "../../src/domains/user/attributes";
+import { CAPTAIN } from "../../src/domains/character/attributes";
 import { describe, expect, it } from "vitest";
 import { EMPTY_HASH } from "../../src/core/keys";
 import { hashId } from "../../src/core/xxhash32-custom";
@@ -107,7 +107,7 @@ describe("readOwnedWeapons", () => {
     [WEAPON_FLAGS, flags],
   ];
   const units = unitStore({
-    [SAVE_ENTITY]: [[USER_CAPTAIN, 1]],
+    [SAVE_ENTITY]: [[CAPTAIN, 1]],
     [WEAPON_FIRST]: weapon(1, hashId("WEP_PL2900_01")),
     [WEAPON_FIRST + 1]: weapon(2, 0x219ee448),
     [WEAPON_FIRST + 2]: weapon(3, hashId("WEP_PL2900_04"), 128),

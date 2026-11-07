@@ -1,5 +1,5 @@
 import { keyAttribute } from "../../core/keys";
-import { CHARACTERS } from "../character/attributes";
+import { CHARACTERS } from "../../tables/characters";
 
 export const PARTY_FIRST = 103000;
 export const PARTY_POSITIONS = 4;

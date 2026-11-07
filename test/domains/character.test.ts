@@ -11,6 +11,7 @@ import {
   CHARACTER_MASTER_XP,
   CHARACTER_XP,
   masteryRange,
+  CAPTAIN,
 } from "../../src/domains/character/attributes";
 import {
   canUnlockAllCharacters,
@@ -33,7 +34,6 @@ import {
   TROPHY_PROGRESS,
 } from "../../src/domains/trophy/attributes";
 import { SAVE_ENTITY } from "../../src/core/save-entity";
-import { USER_CAPTAIN } from "../../src/domains/user/attributes";
 import { SaveSession } from "../../src/core/session";
 import { fixtureFile, unitStore } from "../../src/testing";
 
@@ -71,7 +71,7 @@ describe("readCaptain", () => {
     const captain = (value?: number) =>
       readCaptain(
         unitStore(
-          value === undefined ? {} : { [SAVE_ENTITY]: [[USER_CAPTAIN, value]] },
+          value === undefined ? {} : { [SAVE_ENTITY]: [[CAPTAIN, value]] },
         ),
       );
     expect(captain(1)).toBe("PL0000");
@@ -83,7 +83,7 @@ describe("readCaptain", () => {
 describe("playableCharacters", () => {
   it("skips NPCs, unused rows and the captain not picked", () => {
     const units = unitStore({
-      [SAVE_ENTITY]: [[USER_CAPTAIN, 2]],
+      [SAVE_ENTITY]: [[CAPTAIN, 2]],
       [CHARACTER_FIRST]: [[CHARACTER_KEY, hashId("PL0000")]],
       [CHARACTER_FIRST + 1]: [[CHARACTER_KEY, hashId("PL0100")]],
       [CHARACTER_FIRST + 2]: [[CHARACTER_KEY, hashId("PL0300")]],
@@ -209,7 +209,7 @@ describe("unlockCharacter", () => {
     SaveSession.open(
       fixtureFile({
         [SAVE_ENTITY]: [
-          [USER_CAPTAIN, 1],
+          [CAPTAIN, 1],
           [TROPHY_EARNED, Array<boolean>(1700).fill(false)],
           [TROPHY_PROGRESS, Array<bigint>(1200).fill(0n)],
           [TROPHY_CHARACTER_LEVEL, Array<number>(28).fill(0)],

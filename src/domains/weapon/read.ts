@@ -2,10 +2,10 @@ import { WEAPON_LEVEL_XP, WEAPON_ROWS } from "../../data/weapons";
 import { keyOf } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { UnitStore } from "../../core/unit-store";
-import { SKILLS, TRAIT_WEAPON } from "../trait/attributes";
+import { SKILLS } from "../../tables/skills";
+import { TRAIT_WEAPON } from "../trait/attributes";
 import { readFilledTraits } from "../trait/read";
-import { SAVE_ENTITY } from "../../core/save-entity";
-import { USER_CAPTAIN } from "../user/attributes";
+import { offPlayCaptain } from "../character/read";
 import type { Wrightstone } from "../wrightstone/read";
 import {
   COLLECTION_SERIES,
@@ -53,11 +53,6 @@ export interface Weapon {
   /** Seen in the upgrade menu, set only on awakenable weapons. */
   awakeningSeen: boolean;
 }
-
-export const offPlayCaptain = (units: UnitStore) => {
-  const captain = units.of(SAVE_ENTITY).get(USER_CAPTAIN);
-  return captain === 1 ? "PL0100" : captain === 2 ? "PL0000" : undefined;
-};
 
 export function readWeapon(
   units: UnitStore,

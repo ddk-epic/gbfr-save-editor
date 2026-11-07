@@ -23,7 +23,6 @@ import {
 import { trophyLedger } from "../trophy/ledger";
 import { SAVE_ENTITY } from "../../core/save-entity";
 import { recountHeldWeapons } from "../weapon/edit";
-import { offPlayCaptain } from "../weapon/read";
 import {
   CHARACTER_BASE_ATTACK,
   CHARACTER_BASE_HP,
@@ -38,7 +37,7 @@ import {
   CHARACTER_MAX_XP,
   CHARACTER_XP,
 } from "./attributes";
-import { masterLevelOf } from "./read";
+import { masterLevelOf, offPlayCaptain } from "./read";
 
 export const MAX_MASTER_LEVEL = MASTER_LEVEL_MSP.length - 1;
 const MASTER_LEVEL_CAP = 50;

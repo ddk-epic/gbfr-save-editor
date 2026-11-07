@@ -3,6 +3,7 @@ import { hashId } from "../../core/xxhash32-custom";
 import type { EntityRange, UnitStore } from "../../core/unit-store";
 import type { UnitEntity } from "../../core/save-data-binary";
 import {
+  CAPTAIN,
   CHARACTER_FIRST,
   CHARACTER_FLAGS,
   CHARACTER_JOINED,
@@ -11,7 +12,6 @@ import {
   masteryRange,
 } from "./attributes";
 import { SAVE_ENTITY } from "../../core/save-entity";
-import { USER_CAPTAIN } from "../user/attributes";
 
 /** NP rows: Lyria, Vyrn, Sierokarte, Rolan, Historiath, Zathba. */
 export const isNPC = (character: string) => /^NP\d{4}$/.test(character);
@@ -27,11 +27,16 @@ export const CAPTAINS = ["PL0000", "PL0100"] as const;
 export type Captain = (typeof CAPTAINS)[number];
 
 export function readCaptain(units: UnitStore): Captain | undefined {
-  const captain = units.of(SAVE_ENTITY).get(USER_CAPTAIN);
+  const captain = units.of(SAVE_ENTITY).get(CAPTAIN);
   return captain === undefined ? undefined : CAPTAINS[captain - 1];
 }
 
-/** The captain the save did not pick. Unknown when the save names no captain. */
+export const offPlayCaptain = (units: UnitStore): Captain | undefined => {
+  const captain = readCaptain(units);
+  return captain && CAPTAINS.find((c) => c !== captain);
+};
+
+/** True for the captain the save did not pick; false when it names none. */
 export const isUnchosenCaptain = (
   character: string,
   captain: Captain | undefined,

@@ -25,7 +25,7 @@ Weapons occupy 256 entities, `WEAPON_FIRST` (40000) to 40255. `WEAPON_ID` (2802)
 
 ## Ownership
 
-A held weapon is an entry whose `WEAPON_ROWS` row has `obtainable`, from `weapon.unk52`. The rest are entries the game keeps for its own use: a `_A0` or `_99` key standing in for a weapon's look, and a story stand-in's weapon such as `WEP_NP0300_01`. The copy of the captain not in play has a key in the set and is left out by `USER_CAPTAIN`. A character not yet recruited can hold a `_01` starter.
+A held weapon is an entry whose `WEAPON_ROWS` row has `obtainable`, from `weapon.unk52`. The rest are entries the game keeps for its own use: a `_A0` or `_99` key standing in for a weapon's look, and a story stand-in's weapon such as `WEP_NP0300_01`. The copy of the captain not in play has a key in the set and is left out by `CAPTAIN`. A character not yet recruited can hold a `_01` starter.
 
 Bit 0 of the flags does not mark ownership. `FUN_140316020`, called from `ui::component::ControllerSubList` and `ControllerBlacksmithSelectList`, sets it on the held weapons of one character when a weapon list opens, so a fresh forge stays without it until then. `FUN_140310c30` sets it on the default weapons it forges and `FUN_141bc4e20` on one weapon by id. `FUN_140313890` does not read it. Bit 7 (128) is set at every forge by `FUN_140311e00`.
 

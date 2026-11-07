@@ -9,9 +9,10 @@ const SRC = path.resolve(import.meta.dirname, "src");
 const LAYERS = {
   core: ["core"],
   data: ["data"],
-  domains: ["core", "data", "domains"],
-  save: ["core", "data", "domains", "save"],
-  entry: ["core", "data", "domains", "save", "entry"],
+  tables: ["core", "data", "tables"],
+  domains: ["core", "data", "tables", "domains"],
+  save: ["core", "data", "tables", "domains", "save"],
+  entry: ["core", "data", "tables", "domains", "save", "entry"],
 };
 
 const ENTRIES = ["index", "edit", "language", "testing"];

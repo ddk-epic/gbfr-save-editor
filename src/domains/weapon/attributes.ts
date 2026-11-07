@@ -1,9 +1,7 @@
 import { Attribute } from "../../core/attribute";
-import { keyAttribute, keyTable } from "../../core/keys";
-import { WEAPON_KEYS } from "../../data/weapons";
-import { ITEMS } from "../wrightstone/attributes";
-
-export const WEAPONS = keyTable("weapon", WEAPON_KEYS);
+import { keyAttribute } from "../../core/keys";
+import { ITEMS } from "../../tables/items";
+import { WEAPONS } from "../../tables/weapons";
 
 export const WEAPON_FIRST = 40000;
 

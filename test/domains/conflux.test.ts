@@ -5,6 +5,7 @@ import {
   CONFLUX_AURA_KEY,
   RESONANCE_BITS,
   RESONANCE_KEY,
+  RESONANCE_POINTS,
 } from "../../src/domains/conflux/attributes";
 import {
   readConflux,
@@ -14,7 +15,6 @@ import {
 } from "../../src/domains/conflux/read";
 import { validateConflux } from "../../src/domains/conflux/validate";
 import { SAVE_ENTITY } from "../../src/core/save-entity";
-import { USER_RESONANCE_POINTS } from "../../src/domains/user/attributes";
 import { unitStore } from "../../src/testing";
 
 const node = (taken: boolean): ResonanceNode => ({
@@ -44,7 +44,7 @@ describe("readConflux", () => {
     // One unit per distinct bonus, every bit set.
     const bonuses = [...new Set(CONFLUX_TREE.map(([hash]) => hash))];
     const units = unitStore({
-      [SAVE_ENTITY]: [[USER_RESONANCE_POINTS, 250]],
+      [SAVE_ENTITY]: [[RESONANCE_POINTS, 250]],
       ...Object.fromEntries(
         bonuses.map((hash, i) => [
           i + 1,

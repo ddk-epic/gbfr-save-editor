@@ -1,8 +1,6 @@
 import { Attribute } from "../../core/attribute";
-import { keyAttribute, keyTable } from "../../core/keys";
-import { ITEM_KEYS } from "../../data/items";
-
-export const ITEMS = keyTable("item", ITEM_KEYS);
+import { keyAttribute } from "../../core/keys";
+import { ITEMS } from "../../tables/items";
 
 export const WRIGHTSTONE_FIRST = 50000;
 

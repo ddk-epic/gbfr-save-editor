@@ -4,7 +4,7 @@ Conflux is the endless mode added in the Endless Ragnarok DLC. The save holds it
 
 ## Resonance points
 
-`USER_RESONANCE_POINTS` (1116) at entity 0 holds the Resonance points, the currency of the Resonance tree.
+`RESONANCE_POINTS` (1116) at entity 0 holds the Resonance points, the currency of the Resonance tree.
 
 ## Resonance tree
 

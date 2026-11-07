@@ -10,7 +10,7 @@ import {
   STORY_KEYS,
   TIP_KEYS,
 } from "../../data/journal";
-import { WEAPONS } from "../weapon/attributes";
+import { WEAPONS } from "../../tables/weapons";
 
 const journalFlags = (id: number) =>
   Attribute.flags(id, { unlocked: 1, seen: 2 });
@@ -60,7 +60,6 @@ export const FIELD_NOTE_WRIGHTSTONE_KEY = keyAttribute(
 );
 export const FIELD_NOTE_WRIGHTSTONE_FLAGS = journalFlags(8602);
 
-// Weapons and Treasure have no story_note_picturebook table of their own. They
-// are filtered subsets of weapon and item, so they resolve through those.
+// Weapons and Treasure resolve through the weapon and item tables.
 export const FIELD_NOTE_WEAPON_KEY = keyAttribute(7401, WEAPONS);
 export const FIELD_NOTE_WEAPON_FLAGS = Attribute.flags(7403, { unlocked: 4 });

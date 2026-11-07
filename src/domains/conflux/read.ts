@@ -2,7 +2,6 @@ import { CONFLUX_AURAS, CONFLUX_TREE } from "../../data/conflux";
 import type { Attribute } from "../../core/attribute";
 import type { EntityRange, UnitStore } from "../../core/unit-store";
 import { SAVE_ENTITY } from "../../core/save-entity";
-import { USER_RESONANCE_POINTS } from "../user/attributes";
 import {
   CONFLUX_AURA_FLAGS,
   CONFLUX_AURA_KEY,
@@ -10,6 +9,7 @@ import {
   CONFLUX_TREE_RANGE,
   RESONANCE_BITS,
   RESONANCE_KEY,
+  RESONANCE_POINTS,
 } from "./attributes";
 
 export interface ResonanceEffect {
@@ -100,7 +100,7 @@ export function readConflux(units: UnitStore): Conflux {
     auras.push(aura(`#${hash.toString(16).padStart(8, "0")}`, undefined, flag));
 
   return {
-    resonancePoints: units.of(SAVE_ENTITY).get(USER_RESONANCE_POINTS),
+    resonancePoints: units.of(SAVE_ENTITY).get(RESONANCE_POINTS),
     resonance,
     auras,
   };

@@ -2,8 +2,8 @@ import { GEM_ROWS } from "../../data/sigils";
 import { keyOf } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { UnitStore } from "../../core/unit-store";
-import { GEMS } from "../sigil/attributes";
-import { ITEMS } from "../wrightstone/attributes";
+import { GEMS } from "../../tables/gems";
+import { ITEMS } from "../../tables/items";
 import {
   CURIO_KEY,
   CURIO_REWARD_ENTRIES,

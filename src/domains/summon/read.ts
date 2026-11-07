@@ -2,7 +2,7 @@ import { keyOf } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { UnitStore } from "../../core/unit-store";
 import { SUMMON_BONUS_VALUES } from "../../data/summons";
-import { SKILLS } from "../trait/attributes";
+import { SKILLS } from "../../tables/skills";
 import type { Trait } from "../trait/read";
 import {
   SUMMONS_EQUIPPED,

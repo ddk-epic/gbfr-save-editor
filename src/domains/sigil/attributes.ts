@@ -1,8 +1,6 @@
 import { Attribute } from "../../core/attribute";
-import { keyAttribute, keyTable } from "../../core/keys";
-import { GEM_KEYS } from "../../data/sigils";
-
-export const GEMS = keyTable("gem", GEM_KEYS);
+import { keyAttribute } from "../../core/keys";
+import { GEMS } from "../../tables/gems";
 
 export const SIGIL_FIRST = 30000;
 

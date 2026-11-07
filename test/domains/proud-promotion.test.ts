@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { CAPTAIN } from "../../src/domains/character/attributes";
 import { readSave } from "../../src/core/read-save";
 import { ITEM_ACQUIRED_LAST } from "../../src/domains/item/attributes";
 import {
@@ -28,7 +29,7 @@ import {
   TROPHY_PROGRESS,
 } from "../../src/domains/trophy/attributes";
 import { SAVE_HASHSEED } from "../../src/core/save-entity";
-import { USER_CAPTAIN, USER_RUPIES } from "../../src/domains/user/attributes";
+import { USER_RUPIES } from "../../src/domains/user/attributes";
 import { WEAPON_LAST_ID } from "../../src/domains/weapon/attributes";
 import { SaveSession } from "../../src/core/session";
 import { fixtureFile } from "../../src/testing";
@@ -65,7 +66,7 @@ const save = (difficulty: number) =>
         [COUNTER_QUEST_CLEARED, Array<boolean>(ROWS).fill(false)],
         [ITEM_ACQUIRED_LAST, 7],
         [WEAPON_LAST_ID, 3],
-        [USER_CAPTAIN, 1],
+        [CAPTAIN, 1],
         [USER_RUPIES, 1000],
       ],
       [PROFILE_FIRST]: [[PROFILE_QUESTS_CLEARED, 3]],

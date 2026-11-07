@@ -11,6 +11,7 @@ import {
   CHARACTER_OUTFIT,
   CHARACTER_OUTFITS_OWNED,
   CHARACTER_XP,
+  CAPTAIN,
 } from "../../src/domains/character/attributes";
 import { EQUIP_WEAPON } from "../../src/domains/equipment/attributes";
 import {
@@ -57,7 +58,7 @@ import {
   TROPHY_PROGRESS,
 } from "../../src/domains/trophy/attributes";
 import { SAVE_HASHSEED } from "../../src/core/save-entity";
-import { USER_CAPTAIN, USER_RUPIES } from "../../src/domains/user/attributes";
+import { USER_RUPIES } from "../../src/domains/user/attributes";
 import {
   WEAPON_FLAGS,
   WEAPON_ID,
@@ -160,7 +161,7 @@ const save = (
       [UI_FEATURE_UNLOCKED, UI_FEATURES_NEW_SAVE],
       [ITEM_ACQUIRED_LAST, 7],
       [WEAPON_LAST_ID, 3],
-      [USER_CAPTAIN, overrides.captain ?? 1],
+      [CAPTAIN, overrides.captain ?? 1],
       [USER_RUPIES, 1000],
       [QUEST_DIFFICULTY_UNLOCKED, 2],
       [COUNTER_QUEST_IDS, [0x405204, 0x401301, ...COUNTER_QUESTS]],

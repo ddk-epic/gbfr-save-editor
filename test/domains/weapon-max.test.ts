@@ -4,6 +4,7 @@ import { WEAPON_TROVES } from "../../src/data/weapons";
 import {
   CHARACTER_FLAGS,
   CHARACTER_KEY,
+  CAPTAIN,
 } from "../../src/domains/character/attributes";
 import {
   canMaxWeaponSeries,
@@ -24,7 +25,6 @@ import {
   TROPHY_PROGRESS,
 } from "../../src/domains/trophy/attributes";
 import { SAVE_ENTITY } from "../../src/core/save-entity";
-import { USER_CAPTAIN } from "../../src/domains/user/attributes";
 import { SaveSession } from "../../src/core/session";
 import { fixtureFile } from "../../src/testing";
 
@@ -52,7 +52,7 @@ const open = (
   return SaveSession.open(
     fixtureFile({
       [SAVE_ENTITY]: [
-        [USER_CAPTAIN, 1],
+        [CAPTAIN, 1],
         [WEAPON_LAST_ID, 50],
         [TROPHY_PROGRESS, counts],
         [TROPHY_EARNED, Array<boolean>(1700).fill(false)],

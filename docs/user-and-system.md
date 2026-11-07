@@ -60,7 +60,7 @@ User data uses attributes 1101-1151.
 | --------- | -------------------------- | ------------ | ------------------------------------------------------------------- |
 | 1101      | `USER_PLAYER_NAME`         | `ushort[32]` | Player name, one character code per value, padded with 0            |
 | 1102      | not named                  | `int`        | Always 1                                                            |
-| 1103      | `USER_CAPTAIN`             | `int`        | Captain picked at the start: 1 Gran, 2 Djeeta                       |
+| 1103      | `CAPTAIN`                  | `int`        | Captain picked at the start: 1 Gran, 2 Djeeta                       |
 | 1104      | `USER_RUPIES`              | `int`        | Rupies                                                              |
 | 1105      | `USER_TRANSMARVEL_POINTS`  | `int`        | Transmarvel points, 150 per Transmarvel Stock                       |
 | 1106      | `USER_COMMENDATIONS`       | `int`        | Commendations, as the player page shows                             |
@@ -73,7 +73,7 @@ User data uses attributes 1101-1151.
 | 1113      | not named                  | `bool[256]`  | Flag set                                                            |
 | 1114      | not named                  | `bool`       |                                                                     |
 | 1115      | not named                  | `uint`       | Hash-like                                                           |
-| 1116      | `USER_RESONANCE_POINTS`    | `int`        | Resonance points, spent on the Resonance tree                       |
+| 1116      | `RESONANCE_POINTS`         | `int`        | Resonance points, spent on the Resonance tree                       |
 | 1151      | not named                  | `uint[58]`   | One entry per value: the low byte is its index, the high byte flags |
 
 The player name also appears at 4413 and 4506.

@@ -1,6 +1,6 @@
 import { Attribute } from "../../core/attribute";
 import { keyAttribute } from "../../core/keys";
-import { ITEMS } from "../wrightstone/attributes";
+import { ITEMS } from "../../tables/items";
 
 export const ITEM_KEY = keyAttribute(1801, ITEMS);
 export const ITEM_COUNT = Attribute.int(1802);
