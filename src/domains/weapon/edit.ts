@@ -1,4 +1,3 @@
-import { EMPTY_HASH } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { UnitStore } from "../../core/unit-store";
 import {
@@ -13,8 +12,8 @@ import {
   WEAPONS_HELD_BADGES,
 } from "../../data/weapons";
 import type { Patch, SaveSession } from "../../core/session";
-import { CHARACTER_FLAGS, CHARACTER_KEY } from "../character/attributes";
-import { offPlayCaptain } from "../character/read";
+import { CHARACTER_KEY } from "../character/attributes";
+import { CAPTAINS, isCrewMember, offPlayCaptain } from "../character/read";
 import {
   FIELD_NOTE_WEAPON_FLAGS,
   FIELD_NOTE_WEAPON_KEY,
@@ -59,12 +58,7 @@ const LAST_LEVEL = 150;
 const LAST_XP = WEAPON_LEVEL_XP[LAST_LEVEL - 1]!;
 const BONUS_SERIES = 7;
 const TERMINUS_SERIES = 0;
-const GRAN = "PL0000";
-const DJEETA = "PL0100";
-const JOINED_MASK = 3;
-const JOINED = 1;
-const FORGED_FLAGS = 128;
-const FIELD_NOTE_UNLOCKED = 4;
+const [GRAN, DJEETA] = CAPTAINS;
 /** weapon.Key to hash, a DLC key being its hash in hex. */
 const WEAPON_HASHES = new Map(
   Object.entries(WEAPON_KEYS).map(([hash, key]) => [key, Number(hash)]),
@@ -83,10 +77,7 @@ const joinedCharacters = (units: UnitStore) =>
   new Set(
     units
       .entitiesWith(CHARACTER_KEY)
-      .filter(
-        (entity) =>
-          (units.of(entity).get(CHARACTER_FLAGS) & JOINED_MASK) === JOINED,
-      )
+      .filter((entity) => isCrewMember(units, entity))
       .map((entity) => units.of(entity).get(CHARACTER_KEY)),
   );
 
@@ -162,25 +153,17 @@ export function unlockWeapon(
   const id = units.of(SAVE_ENTITY).get(WEAPON_LAST_ID) + 1;
   const hash = WEAPON_HASHES.get(key)!;
   const note = units.entitiesWhere(FIELD_NOTE_WEAPON_KEY, hash)[0];
+  const weapon = units.of(entity);
   session.patch([
-    { attribute: WEAPON_LAST_ID, entity: SAVE_ENTITY, values: [id] },
-    { attribute: WEAPON_ID, entity, values: [id] },
-    { attribute: WEAPON_KEY, entity, values: [hash] },
-    { attribute: WEAPON_XP, entity, values: [WEAPON_LEVEL_XP[level - 1]!] },
-    { attribute: WEAPON_UNCAP, entity, values: [uncap] },
-    { attribute: WEAPON_FLAGS, entity, values: [FORGED_FLAGS] },
+    units.of(SAVE_ENTITY).patch(WEAPON_LAST_ID, id),
+    weapon.patch(WEAPON_ID, id),
+    weapon.patch(WEAPON_KEY, key),
+    weapon.patch(WEAPON_XP, WEAPON_LEVEL_XP[level - 1]!),
+    weapon.patch(WEAPON_UNCAP, uncap),
+    weapon.replace(WEAPON_FLAGS, { forged: true }),
     ...(note === undefined
       ? []
-      : [
-          {
-            attribute: FIELD_NOTE_WEAPON_FLAGS,
-            entity: note,
-            values: [
-              Number(units.values(FIELD_NOTE_WEAPON_FLAGS, note)![0]) |
-                FIELD_NOTE_UNLOCKED,
-            ],
-          },
-        ]),
+      : [units.of(note).patch(FIELD_NOTE_WEAPON_FLAGS, { unlocked: true })]),
   ]);
 
   const counted = [
@@ -200,13 +183,10 @@ export function unlockWeapon(
           weapon.series === TERMINUS_SERIES || weapon.uncap >= LAST_UNCAP,
       ).length,
     );
+  const save = units.of(SAVE_ENTITY);
   session.patch([
-    {
-      attribute: TROPHY_PROGRESS,
-      entity: SAVE_ENTITY,
-      values: ledger.progress,
-    },
-    { attribute: TROPHY_EARNED, entity: SAVE_ENTITY, values: ledger.earned },
+    save.patch(TROPHY_PROGRESS, ledger.progress),
+    save.patch(TROPHY_EARNED, ledger.earned),
   ]);
 }
 
@@ -280,13 +260,14 @@ export function maxWeaponSeries(session: SaveSession, character: UnitEntity) {
   const plan = planWeaponSeries(session.save.slotData.units, character);
   if (!plan?.changed)
     throw new Error(`character ${character} has no weapon series to raise`);
+  const units = session.save.slotData.units;
   const patches: Patch[] = plan.raised.flatMap(({ entity }) => [
-    { attribute: WEAPON_UNCAP, entity, values: [LAST_UNCAP] },
-    { attribute: WEAPON_XP, entity, values: [LAST_XP] },
+    units.of(entity).patch(WEAPON_UNCAP, LAST_UNCAP),
+    units.of(entity).patch(WEAPON_XP, LAST_XP),
   ]);
   patches.push(
-    { attribute: TROPHY_PROGRESS, entity: SAVE_ENTITY, values: plan.progress },
-    { attribute: TROPHY_EARNED, entity: SAVE_ENTITY, values: plan.earned },
+    units.of(SAVE_ENTITY).patch(TROPHY_PROGRESS, plan.progress),
+    units.of(SAVE_ENTITY).patch(TROPHY_EARNED, plan.earned),
   );
   session.patch(patches);
 }
@@ -303,10 +284,10 @@ export function removeWrightstone(session: SaveSession, weaponId: number) {
     traitRange(TRAIT_WEAPON + entity - WEAPON_FIRST),
   );
   session.patch([
-    { attribute: WEAPON_WRIGHTSTONE, entity, values: [EMPTY_HASH] },
+    units.of(entity).patch(WEAPON_WRIGHTSTONE, undefined),
     ...traits.flatMap((trait) => [
-      { attribute: TRAIT_KEY, entity: trait, values: [EMPTY_HASH] },
-      { attribute: TRAIT_LEVEL, entity: trait, values: [0] },
+      units.of(trait).patch(TRAIT_KEY, undefined),
+      units.of(trait).patch(TRAIT_LEVEL, 0),
     ]),
   ]);
 }

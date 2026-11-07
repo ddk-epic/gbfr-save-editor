@@ -17,9 +17,9 @@ import {
   SHORT_STORY_CLEARS,
   SHORT_STORY_IDS,
 } from "./attributes";
+import { difficultyDigit } from "./read";
 
 const LOWEST_GRADE = 0;
-const PROUD = 7;
 const SHORT_STORY_CHECKPOINT_VALUES = 64;
 
 /** Marks quest counter quests with no clears as cleared once, with no rewards, and returns those it changed. */
@@ -48,7 +48,7 @@ export function clearCounterQuests(
     questsCleared++;
     const digit = (quest >> 12) & 0xf;
     const difficulty =
-      digit === PROUD
+      digit === difficultyDigit("proud")
         ? PROUD_QUEST_CLEARS
         : QUEST_CLEARS_BEFORE_DIFFICULTY + digit;
     progress[difficulty] = progress[difficulty]! + 1n;
@@ -58,16 +58,12 @@ export function clearCounterQuests(
 
   if (added.length === 0) return added;
   session.patch([
-    { attribute: COUNTER_QUEST_CLEARS, entity: SAVE_ENTITY, values: clears },
-    { attribute: COUNTER_QUEST_FLAGS, entity: SAVE_ENTITY, values: grades },
-    { attribute: COUNTER_QUEST_OPENED, entity: SAVE_ENTITY, values: opened },
-    { attribute: COUNTER_QUEST_CLEARED, entity: SAVE_ENTITY, values: cleared },
-    { attribute: TROPHY_PROGRESS, entity: SAVE_ENTITY, values: progress },
-    {
-      attribute: PROFILE_QUESTS_CLEARED,
-      entity: PROFILE_FIRST,
-      values: [questsCleared],
-    },
+    at.patch(COUNTER_QUEST_CLEARS, clears),
+    at.patch(COUNTER_QUEST_FLAGS, grades),
+    at.patch(COUNTER_QUEST_OPENED, opened),
+    at.patch(COUNTER_QUEST_CLEARED, cleared),
+    at.patch(TROPHY_PROGRESS, progress),
+    units.of(PROFILE_FIRST).patch(PROFILE_QUESTS_CLEARED, questsCleared),
   ]);
   return added;
 }
@@ -89,10 +85,7 @@ export function openCounterQuests(
     added.push(`listed counter quest ${quest.toString(16)}`);
   }
 
-  if (added.length > 0)
-    session.patch([
-      { attribute: COUNTER_QUEST_OPENED, entity: SAVE_ENTITY, values: opened },
-    ]);
+  if (added.length > 0) session.patch([at.patch(COUNTER_QUEST_OPENED, opened)]);
   return added;
 }
 
@@ -117,12 +110,8 @@ export function clearShortStories(
 
   if (added.length === 0) return added;
   session.patch([
-    { attribute: SHORT_STORY_CLEARS, entity: SAVE_ENTITY, values: clears },
-    {
-      attribute: SHORT_STORY_CHECKPOINTS,
-      entity: SAVE_ENTITY,
-      values: checkpoints,
-    },
+    at.patch(SHORT_STORY_CLEARS, clears),
+    at.patch(SHORT_STORY_CHECKPOINTS, checkpoints),
   ]);
   return added;
 }

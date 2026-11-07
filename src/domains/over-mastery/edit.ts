@@ -1,4 +1,3 @@
-import { EMPTY_HASH } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { SaveSession } from "../../core/session";
 import { CHARACTER_KEY, masteryRange } from "../character/attributes";
@@ -19,13 +18,12 @@ export function removeOverMasteries(
     throw new Error(`character ${character} has no Over Mastery`);
 
   session.patch(
-    lines.flatMap((_, i) => [
-      {
-        attribute: OVER_MASTERY_KEY,
-        entity: mastery.first + i,
-        values: [EMPTY_HASH],
-      },
-      { attribute: OVER_MASTERY_LEVEL, entity: mastery.first + i, values: [0] },
-    ]),
+    lines.flatMap((_, i) => {
+      const line = units.of(mastery.first + i);
+      return [
+        line.patch(OVER_MASTERY_KEY, undefined),
+        line.patch(OVER_MASTERY_LEVEL, 0),
+      ];
+    }),
   );
 }

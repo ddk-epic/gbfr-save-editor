@@ -6,7 +6,6 @@ import {
   CAPTAIN,
   CHARACTER_FIRST,
   CHARACTER_FLAGS,
-  CHARACTER_JOINED,
   CHARACTER_KEY,
   CHARACTER_MASTER_XP,
   masteryRange,
@@ -99,7 +98,13 @@ export function playableCharacters(units: UnitStore): CharacterEntities[] {
 }
 
 export const isJoined = (units: UnitStore, gear: UnitEntity) =>
-  (units.of(gear).get(CHARACTER_FLAGS) & CHARACTER_JOINED) !== 0;
+  units.of(gear).get(CHARACTER_FLAGS).joined;
+
+/** In the crew and not a story stand-in. */
+export const isCrewMember = (units: UnitStore, gear: UnitEntity) => {
+  const { joined, storyPlaying } = units.of(gear).get(CHARACTER_FLAGS);
+  return joined && !storyPlaying;
+};
 
 /** In gear entity order. */
 export const joinedCharacters = (units: UnitStore): CharacterEntities[] =>

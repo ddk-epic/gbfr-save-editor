@@ -68,6 +68,7 @@ export function readWeapon(
   // The stone welded onto the weapon keeps its traits in the weapon's own list.
   const traits = readFilledTraits(units, TRAIT_WEAPON + entity - WEAPON_FIRST);
   const positionTraits = at.get(WEAPON_TRAITS);
+  const flags = at.get(WEAPON_FLAGS);
   return {
     entity,
     id,
@@ -86,7 +87,8 @@ export function readWeapon(
     series: row?.series,
     character: row?.character,
     owned: row?.obtainable === true && row.character !== offPlayCaptain(units),
-    ...at.get(WEAPON_FLAGS),
+    seen: flags.seen,
+    awakeningSeen: flags.awakeningSeen,
   };
 }
 

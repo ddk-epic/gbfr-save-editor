@@ -15,8 +15,10 @@ export const WEAPON_AWAKENING = Attribute.int(2807);
 export const WEAPON_QUESTS_USED = Attribute.uint(2813);
 export const WEAPON_APPEARANCE = keyAttribute(2814, WEAPONS);
 export const WEAPON_FLAGS = Attribute.flags(2815, {
-  seen: 64,
+  listOpened: 1,
   awakeningSeen: 16,
+  seen: 64,
+  forged: 128,
 });
 export const WEAPON_WRIGHTSTONE = keyAttribute(2816, ITEMS);
 export const WEAPON_TRANSCENDENCE = Attribute.int(2817);

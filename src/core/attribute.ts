@@ -1,14 +1,13 @@
 import type { UnitAttribute, ValueType } from "./save-data-binary";
 
-/**
- * One attribute, the value type the save stores it as, and how to read it.
- * The value type is stated here once instead of at every call site.
- */
-export interface Attribute<T> {
+/** One attribute, its stored value type, and how to read and write it. */
+export interface Attribute<T, W = T> {
   readonly id: UnitAttribute;
   readonly valueType: ValueType;
   /** Reads the values of one unit, or the fallback when the save holds none. */
   read(values: readonly unknown[] | undefined): T;
+  /** The values to store for `value`, given the unit's current values. */
+  write(value: W, current: readonly unknown[] | undefined): unknown[];
 }
 
 /** One value, falling back when the unit is missing or empty. */
@@ -17,12 +16,22 @@ function scalar<T>(
   valueType: ValueType,
   fallback: T,
 ): Attribute<T> {
-  return { id, valueType, read: (values) => (values?.[0] as T) ?? fallback };
+  return {
+    id,
+    valueType,
+    read: (values) => (values?.[0] as T) ?? fallback,
+    write: (value) => [value],
+  };
 }
 
 /** Every value of the unit, empty when the save holds none. */
 function list<T>(id: UnitAttribute, valueType: ValueType): Attribute<T[]> {
-  return { id, valueType, read: (values) => (values as T[]) ?? [] };
+  return {
+    id,
+    valueType,
+    read: (values) => (values as T[]) ?? [],
+    write: (value) => [...value],
+  };
 }
 
 /** Builds attributes, one per value type the save stores. */
@@ -45,10 +54,7 @@ export const Attribute = {
   uintList: (id: UnitAttribute) => list<number>(id, "uint"),
   longList: (id: UnitAttribute) => list<bigint>(id, "long"),
 
-  /**
-   * A value read as optional, undefined when the save holds no unit.
-   * Separates "the save has no unit here" from a real 0.
-   */
+  /** A value read as optional, undefined when the save holds no unit. */
   optional: <T>(
     id: UnitAttribute,
     valueType: ValueType,
@@ -56,14 +62,21 @@ export const Attribute = {
     id,
     valueType,
     read: (values) => values?.[0] as T | undefined,
+    write(value) {
+      if (value === undefined) throw new Error(`no value to write to ${id}`);
+      return [value];
+    },
   }),
 
-  /** Bits of one unit, named. A missing unit reads every bit as false. */
+  /** Named bits of one unit; a missing unit reads every bit as false. */
   flags: <B extends Record<string, number>>(
     id: UnitAttribute,
     bits: B,
     valueType: ValueType = "uint",
-  ): Attribute<{ [K in keyof B]: boolean }> => {
+  ): Attribute<
+    { [K in keyof B]: boolean },
+    Partial<{ [K in keyof B]: boolean }>
+  > => {
     const names = Object.keys(bits) as (keyof B)[];
     return {
       id,
@@ -73,6 +86,15 @@ export const Attribute = {
         const set = {} as { [K in keyof B]: boolean };
         for (const name of names) set[name] = (flags & bits[name]!) !== 0;
         return set;
+      },
+      write(value, current) {
+        let flags = (current?.[0] as number | undefined) ?? 0;
+        for (const name of names) {
+          const set = value[name];
+          if (set === undefined) continue;
+          flags = set ? flags | bits[name]! : flags & ~bits[name]!;
+        }
+        return [flags];
       },
     };
   },
@@ -89,6 +111,16 @@ export const Attribute = {
       const codes = (values as number[]) ?? [];
       const end = codes.indexOf(0);
       return String.fromCharCode(...(end === -1 ? codes : codes.slice(0, end)));
+    },
+    write(value, current) {
+      if (current === undefined) throw new Error(`no unit ${id} to size text`);
+      if (value.length > current.length)
+        throw new Error(
+          `text of ${value.length} does not fit ${current.length}`,
+        );
+      return Array.from({ length: current.length }, (_, i) =>
+        i < value.length ? value.charCodeAt(i) : 0,
+      );
     },
   }),
 };

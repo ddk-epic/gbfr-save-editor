@@ -6,20 +6,20 @@ A weapon carries two separate trait lists. Its own five trait positions sit on t
 
 Weapons occupy 256 entities, `WEAPON_FIRST` (40000) to 40255. `WEAPON_ID` (2802) gives the id the equip positions reference. An id of 0 or an unresolved `WEAPON_KEY` (2803) marks an empty entry.
 
-| Attribute | Name                   | Type      | Holds                                           |
-| --------- | ---------------------- | --------- | ----------------------------------------------- |
-| 2802      | `WEAPON_ID`            | `uint`    | Id the equip positions point at                 |
-| 2803      | `WEAPON_KEY`           | `uint`    | `weapon.Key` hash                               |
-| 2804      | `WEAPON_XP`            | `uint`    | Experience                                      |
-| 2805      | `WEAPON_UNCAP`         | `int`     | Uncap level                                     |
-| 2806      | `WEAPON_PLUS`          | `int`     | Plus value                                      |
-| 2807      | `WEAPON_AWAKENING`     | `int`     | Awakening level                                 |
-| 2813      | `WEAPON_QUESTS_USED`   | `uint`    | Times taken into a quest                        |
-| 2814      | `WEAPON_APPEARANCE`    | `uint`    | `weapon.Key` of the chosen look                 |
-| 2815      | `WEAPON_FLAGS`         | `uint`    | `WEAPON_SEEN` 64, `WEAPON_AWAKENING_SEEN` 16    |
-| 2816      | `WEAPON_WRIGHTSTONE`   | `uint`    | `item.Key` of the applied stone                 |
-| 2817      | `WEAPON_TRANSCENDENCE` | `int`     | Transcendence stage                             |
-| 2818      | `WEAPON_TRAITS`        | `uint[5]` | Five `skill.Key` hashes, one per trait position |
+| Attribute | Name                   | Type      | Holds                                                       |
+| --------- | ---------------------- | --------- | ----------------------------------------------------------- |
+| 2802      | `WEAPON_ID`            | `uint`    | Id the equip positions point at                             |
+| 2803      | `WEAPON_KEY`           | `uint`    | `weapon.Key` hash                                           |
+| 2804      | `WEAPON_XP`            | `uint`    | Experience                                                  |
+| 2805      | `WEAPON_UNCAP`         | `int`     | Uncap level                                                 |
+| 2806      | `WEAPON_PLUS`          | `int`     | Plus value                                                  |
+| 2807      | `WEAPON_AWAKENING`     | `int`     | Awakening level                                             |
+| 2813      | `WEAPON_QUESTS_USED`   | `uint`    | Times taken into a quest                                    |
+| 2814      | `WEAPON_APPEARANCE`    | `uint`    | `weapon.Key` of the chosen look                             |
+| 2815      | `WEAPON_FLAGS`         | `uint`    | `listOpened` 1, `awakeningSeen` 16, `seen` 64, `forged` 128 |
+| 2816      | `WEAPON_WRIGHTSTONE`   | `uint`    | `item.Key` of the applied stone                             |
+| 2817      | `WEAPON_TRANSCENDENCE` | `int`     | Transcendence stage                                         |
+| 2818      | `WEAPON_TRAITS`        | `uint[5]` | Five `skill.Key` hashes, one per trait position             |
 
 `WEAPON_TRAITS` is a single vector of `WEAPON_TRAIT_POSITIONS` (5) hashes. Neither the vector nor the unit holds a level for them. An unlocked position holds the hash of an empty string, which `keyOf` returns as undefined.
 
@@ -63,7 +63,7 @@ The 185 sum matches finished and played saves. Each of these functions earns the
 | 2801, 2802                                                 | The next id                                                                        |
 | 2803                                                       | Key                                                                                |
 | 2804, 2805                                                 | `weapon_exp.Exp` of `weapon.ForgedWeaponLevel`, and `weapon.ForgedUncapLevel`      |
-| 2815                                                       | 128                                                                                |
+| 2815                                                       | `forged`, 128                                                                      |
 | 7403                                                       | Bit 2 of the weapon's field note                                                   |
 | 5815 at 184, 998                                           | Set by `FUN_140aba650` to the held weapons of joined characters, series 7 left out |
 | 5815 at the owner's Collection entry, `WEAPON_COLLECTIONS` | Set by `FUN_140aba650` to the owner's held weapons                                 |

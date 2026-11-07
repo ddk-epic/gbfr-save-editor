@@ -177,7 +177,7 @@ describe("maxMasterLevel", () => {
     const units = session.save.slotData.units;
     const at = units.of(CHARACTER_FIRST);
     expect(at.get(CHARACTER_MASTER_XP)).toBe(3309499);
-    expect(at.get(CHARACTER_FLAGS)).toBe(0x6001);
+    expect(units.values(CHARACTER_FLAGS, CHARACTER_FIRST)).toEqual([0x6001]);
     expect(at.get(CHARACTER_MASTER_BREAK_MARKS)).toEqual([5, 2]);
 
     const earned = units.of(SAVE_ENTITY).get(TROPHY_EARNED);
@@ -246,7 +246,7 @@ describe("unlockCharacter", () => {
     const units = session.save.slotData.units;
     const at = units.of(CHARACTER_FIRST + 2);
     expect([
-      at.get(CHARACTER_FLAGS),
+      units.values(CHARACTER_FLAGS, CHARACTER_FIRST + 2)![0],
       at.get(CHARACTER_XP),
       at.get(CHARACTER_LEVEL),
     ]).toEqual([0x11, 8400000, 100]);
@@ -271,8 +271,8 @@ describe("unlockCharacter", () => {
     expect(canUnlockAllCharacters(session.save)).toBe(true);
     unlockAllCharacters(session);
     const units = session.save.slotData.units;
-    expect(units.of(CHARACTER_FIRST + 2).get(CHARACTER_FLAGS)).toBe(0x11);
-    expect(units.of(CHARACTER_FIRST + 3).get(CHARACTER_FLAGS)).toBe(0);
+    expect(units.values(CHARACTER_FLAGS, CHARACTER_FIRST + 2)).toEqual([0x11]);
+    expect(units.values(CHARACTER_FLAGS, CHARACTER_FIRST + 3)).toEqual([0]);
     expect(canUnlockAllCharacters(session.save)).toBe(false);
   });
 

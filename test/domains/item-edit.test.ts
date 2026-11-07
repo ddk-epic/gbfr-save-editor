@@ -82,7 +82,7 @@ describe("maxTreasures", () => {
     expect(got(6)).toEqual([11]);
     const at = units.of(SAVE_ENTITY);
     expect(at.get(ITEM_ACQUIRED_LAST)).toBe(11);
-    expect(at.get(INVENTORY_TABS)).toBe(5);
+    expect(units.values(INVENTORY_TABS, SAVE_ENTITY)).toEqual([5]);
   });
 
   it("is offered until nothing is left to raise", () => {

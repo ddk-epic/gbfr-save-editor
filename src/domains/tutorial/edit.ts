@@ -13,8 +13,6 @@ import {
   TUTORIAL_WINDOW_KEY,
 } from "./attributes";
 
-const HINT_SHOWN = 1;
-
 const HINT_WINDOWS = [
   "TU_MAP",
   "TU_SETTING",
@@ -186,26 +184,38 @@ const HINT_DIALOGS = [
 
 function hintPatches(units: UnitStore): Patch[] {
   const patches: Patch[] = [];
-  const markShown = (
+  const markShown = <W>(
     key: Attribute<unknown>,
-    flags: Attribute<unknown>,
+    flags: Attribute<unknown, W>,
+    shown: W,
     hashes: readonly number[],
   ) => {
     for (const hash of hashes)
       for (const entity of units.entitiesWhere(key, hash)) {
-        const held = Number(units.values(flags, entity)![0]);
-        if (held & HINT_SHOWN) continue;
-        patches.push({
-          attribute: flags,
-          entity,
-          values: [held | HINT_SHOWN],
-        });
+        const patch = units.of(entity).patch(flags, shown);
+        if (patch.values[0] === units.values(flags, entity)![0]) continue;
+        patches.push(patch);
       }
   };
-  markShown(TUTORIAL_WINDOW_KEY, TUTORIAL_WINDOW_FLAGS, HINT_WINDOWS);
-  markShown(TUTORIAL_MENU_KEY, TUTORIAL_MENU_FLAGS, HINT_MENUS);
-  markShown(TIP_KEY, TIP_FLAGS, HINT_TIPS);
-  markShown(INFORMATION_DIALOG_KEY, INFORMATION_DIALOG_SHOWN, HINT_DIALOGS);
+  markShown(
+    TUTORIAL_WINDOW_KEY,
+    TUTORIAL_WINDOW_FLAGS,
+    { shown: true },
+    HINT_WINDOWS,
+  );
+  markShown(
+    TUTORIAL_MENU_KEY,
+    TUTORIAL_MENU_FLAGS,
+    { shown: true },
+    HINT_MENUS,
+  );
+  markShown(TIP_KEY, TIP_FLAGS, { unlocked: true }, HINT_TIPS);
+  markShown(
+    INFORMATION_DIALOG_KEY,
+    INFORMATION_DIALOG_SHOWN,
+    { shown: true },
+    HINT_DIALOGS,
+  );
   return patches;
 }
 

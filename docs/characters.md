@@ -118,14 +118,14 @@ The save holds no slot count. The game works out a character's open slots (`FUN_
 
 1305 uses bits 0, 1, 3, 4, 13 and 14.
 
-| Bit | Value    | Name                         | Set on                                                                                               |
-| --- | -------- | ---------------------------- | ---------------------------------------------------------------------------------------------------- |
-| 0   | `0x1`    | `CHARACTER_JOINED`           | In the crew: the starting cast from a new game on, both captains included, and others once they join |
-| 1   | `0x2`    | not named                    | `PL1900` while the story plays it, see below                                                         |
-| 3   | `0x8`    | not named                    | `PL1900`, in place of bit 4, from its story stretch on                                               |
-| 4   | `0x10`   | not named                    | Listed in the Crewmate menu, set as the menu opens, see [Character unlocks](#character-unlocks)      |
-| 13  | `0x2000` | `CHARACTER_MASTER_BREAK_NEW` | New mark of a master level cap break                                                                 |
-| 14  | `0x4000` | not named                    | Only on recruited characters, and not in every save                                                  |
+| Bit | Value    | Name             | Set on                                                                                               |
+| --- | -------- | ---------------- | ---------------------------------------------------------------------------------------------------- |
+| 0   | `0x1`    | `joined`         | In the crew: the starting cast from a new game on, both captains included, and others once they join |
+| 1   | `0x2`    | `storyPlaying`   | `PL1900` while the story plays it, see below                                                         |
+| 3   | `0x8`    | `storyPlayed`    | `PL1900`, in place of bit 4, from its story stretch on                                               |
+| 4   | `0x10`   | not named        | Listed in the Crewmate menu, set as the menu opens, see [Character unlocks](#character-unlocks)      |
+| 13  | `0x2000` | `masterBreakNew` | New mark of a master level cap break                                                                 |
+| 14  | `0x4000` | not named        | Only on recruited characters, and not in every save                                                  |
 
 Bit 0 can clear again, as it does on `PL1900` when its story stretch ends, and it returns when the character rejoins.
 

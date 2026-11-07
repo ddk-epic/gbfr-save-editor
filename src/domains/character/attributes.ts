@@ -19,10 +19,13 @@ export const CHARACTER_KEY = keyAttribute(1301, CHARACTERS);
 /** `chara_costume.SkinType`. */
 export const CHARACTER_OUTFIT = Attribute.int(1302);
 export const CHARACTER_XP = Attribute.int(1303);
-export const CHARACTER_FLAGS = Attribute.rawFlags(1305);
-export const CHARACTER_JOINED = 1;
-/** `PL1900` from its story stretch on. */
-export const CHARACTER_STORY_PLAYED = 8;
+export const CHARACTER_FLAGS = Attribute.flags(1305, {
+  joined: 0x1,
+  storyPlaying: 0x2,
+  /** `PL1900` from its story stretch on. */
+  storyPlayed: 0x8,
+  masterBreakNew: 0x2000,
+});
 
 export const CHARACTER_LEVEL = Attribute.int(1308);
 export const CHARACTER_BASE_HP = Attribute.int(1309);
@@ -33,7 +36,6 @@ export const CHARACTER_OUTFITS_OWNED = Attribute.uint(1316);
 export const CHARACTER_MASTER_XP = Attribute.int(1323);
 /** New marks of two menus, 0 once viewed. */
 export const CHARACTER_MASTER_BREAK_MARKS = Attribute.intList(1504);
-export const CHARACTER_MASTER_BREAK_NEW = 0x2000;
 
 export const masteryRange = (gear: UnitEntity): EntityRange => ({
   first: MASTERY_FIRST + (gear - CHARACTER_FIRST) * 1000,

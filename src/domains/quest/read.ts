@@ -42,6 +42,10 @@ export const QUEST_DIFFICULTIES = [
 
 export type QuestDifficulty = (typeof QUEST_DIFFICULTIES)[number];
 
+/** The difficulty digit of a quest id, also the unlocked difficulty value. */
+export const difficultyDigit = (difficulty: QuestDifficulty) =>
+  QUEST_DIFFICULTIES.indexOf(difficulty) + 1;
+
 /** A best grade counter for quests; a quest never cleared holds 7. */
 export const QUEST_GRADES = ["C", "B", "A", "S", "S+", "S++"] as const;
 

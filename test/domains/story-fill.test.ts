@@ -686,7 +686,7 @@ describe("fillSkippedStory", () => {
     const units = reread(session);
     const id = units.of(ID_ENTITY);
 
-    expect(id.get(CHARACTER_FLAGS)).toBe(9);
+    expect(units.values(CHARACTER_FLAGS, ID_ENTITY)).toEqual([9]);
     expect(id.get(CHARACTER_XP)).toBe(184474);
     expect(id.get(CHARACTER_LEVEL)).toBe(37);
     expect(id.get(CHARACTER_BASE_HP)).toBe(1107);
@@ -726,7 +726,7 @@ describe("fillSkippedStory", () => {
     const units = reread(session);
     const id = units.of(ID_ENTITY);
 
-    expect(id.get(CHARACTER_FLAGS)).toBe(9);
+    expect(units.values(CHARACTER_FLAGS, ID_ENTITY)).toEqual([9]);
     expect(id.get(CHARACTER_LEVEL)).toBe(39);
     expect(units.values(MASTERY_NODE_BITS, ID_MASTERY_BLOCK)).toEqual([0]);
     expect(units.of(0).get(TROPHY_PROGRESS)[714]).toBe(0n);

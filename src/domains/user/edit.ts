@@ -16,7 +16,9 @@ function maxOut(
 ) {
   if (session.save.slotData.units.of(SAVE_ENTITY).get(attribute) >= max)
     throw new Error(`${name} are already ${max}`);
-  session.patch([{ attribute, entity: SAVE_ENTITY, values: [max] }]);
+  session.patch([
+    session.save.slotData.units.of(SAVE_ENTITY).patch(attribute, max),
+  ]);
 }
 
 export const maxRupies = (session: SaveSession) =>

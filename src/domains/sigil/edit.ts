@@ -1,6 +1,4 @@
-import { EMPTY_HASH } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
-import { hashId } from "../../core/xxhash32-custom";
 import type { Patch, SaveSession } from "../../core/session";
 import {
   TRAIT_FIRST,
@@ -9,6 +7,7 @@ import {
   TRAIT_SIGIL,
   TRAIT_STRIDE,
 } from "../trait/attributes";
+import type { UnitStore } from "../../core/unit-store";
 import { SAVE_ENTITY } from "../../core/save-entity";
 import {
   SIGIL_FIRST,
@@ -16,7 +15,6 @@ import {
   SIGIL_KEY,
   SIGIL_LAST_ID,
   SIGIL_LEVEL,
-  SIGIL_LIST_ADDED,
   SIGIL_LIST_FLAGS,
 } from "./attributes";
 import { readSigil, readSigils } from "./read";
@@ -33,17 +31,13 @@ export function addSigil(session: SaveSession, roll: SigilRoll) {
   let entity = SIGIL_FIRST;
   while (readSigil(units, entity)) entity++;
   const id = units.of(SAVE_ENTITY).get(SIGIL_LAST_ID) + 1;
-  const flags = units.of(SAVE_ENTITY).get(SIGIL_LIST_FLAGS);
+  const save = units.of(SAVE_ENTITY);
 
   session.patch([
-    { attribute: SIGIL_LAST_ID, entity: SAVE_ENTITY, values: [id] },
-    {
-      attribute: SIGIL_LIST_FLAGS,
-      entity: SAVE_ENTITY,
-      values: [flags | SIGIL_LIST_ADDED],
-    },
-    { attribute: SIGIL_ID, entity, values: [id] },
-    ...sigilPatches(entity, key, roll),
+    save.patch(SIGIL_LAST_ID, id),
+    save.patch(SIGIL_LIST_FLAGS, { added: true }),
+    units.of(entity).patch(SIGIL_ID, id),
+    ...sigilPatches(units, entity, key, roll),
   ]);
   return id;
 }
@@ -52,7 +46,14 @@ export function addSigil(session: SaveSession, roll: SigilRoll) {
 export function editSigil(session: SaveSession, id: number, roll: SigilRoll) {
   const sigil = readSigils(session.save.slotData.units).get(id);
   if (sigil === undefined) throw new Error(`no sigil with id ${id}`);
-  session.patch(sigilPatches(sigil.entity, gemFor(roll, sigil.key), roll));
+  session.patch(
+    sigilPatches(
+      session.save.slotData.units,
+      sigil.entity,
+      gemFor(roll, sigil.key),
+      roll,
+    ),
+  );
 }
 
 function gemFor(roll: SigilRoll, current?: string) {
@@ -66,6 +67,7 @@ function gemFor(roll: SigilRoll, current?: string) {
 
 /** Key, level and both traits at the sigil's level. */
 function sigilPatches(
+  units: UnitStore,
   entity: UnitEntity,
   key: string,
   roll: SigilRoll,
@@ -74,15 +76,11 @@ function sigilPatches(
     TRAIT_FIRST + (TRAIT_SIGIL + entity - SIGIL_FIRST) * TRAIT_STRIDE;
   const traits = [roll.primary, roll.secondary];
   return [
-    { attribute: SIGIL_KEY, entity, values: [hashId(key)] },
-    { attribute: SIGIL_LEVEL, entity, values: [roll.level] },
+    units.of(entity).patch(SIGIL_KEY, key),
+    units.of(entity).patch(SIGIL_LEVEL, roll.level),
     ...traits.flatMap((key, i) => [
-      {
-        attribute: TRAIT_KEY,
-        entity: first + i,
-        values: [key ? hashId(key) : EMPTY_HASH],
-      },
-      { attribute: TRAIT_LEVEL, entity: first + i, values: [roll.level] },
+      units.of(first + i).patch(TRAIT_KEY, key || undefined),
+      units.of(first + i).patch(TRAIT_LEVEL, roll.level),
     ]),
   ];
 }

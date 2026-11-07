@@ -1,5 +1,4 @@
 import type { Attribute } from "../../core/attribute";
-import { EMPTY_HASH } from "../../core/keys";
 import type { Save } from "../../core/read-save";
 import { hashId } from "../../core/xxhash32-custom";
 import type { Patch, SaveSession } from "../../core/session";
@@ -8,20 +7,18 @@ import {
   CHARACTER_BASE_ATTACK,
   CHARACTER_BASE_HP,
   CHARACTER_FLAGS,
-  CHARACTER_JOINED,
   CHARACTER_KEY,
   CHARACTER_LEVEL,
   CHARACTER_OUTFIT,
   CHARACTER_OUTFITS_OWNED,
-  CHARACTER_STORY_PLAYED,
   CHARACTER_XP,
   masteryRange,
 } from "../character/attributes";
+import { acquisitions } from "../item/edit";
 import { joinedCharacters } from "../character/read";
 import { EQUIP_WEAPON } from "../equipment/attributes";
 import {
   ITEM_ACQUIRED,
-  ITEM_ACQUIRED_LAST,
   ITEM_COUNT,
   ITEM_FLAGS,
   ITEM_KEY,
@@ -33,6 +30,7 @@ import {
   FIELD_NOTE_WEAPON_KEY,
 } from "../journal/attributes";
 import { MASTERY_NODE_BITS } from "../mastery/attributes";
+import { difficultyDigit } from "../quest/read";
 import {
   clearCounterQuests,
   clearShortStories,
@@ -46,12 +44,7 @@ import {
   SHORT_STORY_CLEARS,
   SHORT_STORY_IDS,
 } from "../quest/attributes";
-import {
-  EQUIP_SKILLS,
-  SKILL_ACQUIRED,
-  SKILL_FLAGS,
-  SKILL_KEY,
-} from "../skill/attributes";
+import { EQUIP_SKILLS, SKILL_FLAGS, SKILL_KEY } from "../skill/attributes";
 import {
   ARCHIVES_UNLOCKED_COUNTERS,
   CHAPTER_KEYS_CLEARED,
@@ -73,21 +66,16 @@ import {
   WEAPON_XP,
 } from "../weapon/attributes";
 import { CURRENT_CHAPTER, UI_FEATURE_UNLOCKED } from "./attributes";
-import { onlyEntity } from "./only-entity";
 
-const STORY_ITEM = 4;
-const KEY_ITEM = 36;
-const ITEM_SEEN = 8;
-const ARCHIVE_UNLOCKED_SEEN = 3;
-const ARCHIVE_UNLOCKED = 1;
-const STORY_WEAPON_FLAGS = 128;
-const WEAPON_LIST_OPENED_BIT = 1;
+type ItemFlags = Parameters<typeof ITEM_FLAGS.write>[0];
+type ArchiveFlags = Parameters<typeof ARCHIVE_FLAGS.write>[0];
+type WeaponFlags = Parameters<typeof WEAPON_FLAGS.write>[0];
+
 const START_WEAPON_XP = 90;
 const RAISED_WEAPON_XP = 1740;
 const RAISED_WEAPON_UNCAP = 3;
 const FIGHT_WEAPON_XP = 162540;
 const FIGHT_WEAPON_UNCAP = 6;
-const FIELD_NOTE_REGISTERED = 4;
 const WEAPON_ENTRIES = 256;
 const OUTFIT_MAIN = 0;
 const OUTFIT_STARTING = 1;
@@ -98,12 +86,12 @@ interface StoryFillEntry {
   /** `badge.Key`. */
   trophies: readonly number[];
   chapterKeysCleared: bigint;
-  items?: readonly { item: string; flags: number }[];
+  items?: readonly { item: string; flags: ItemFlags }[];
   /** Items the row takes back, leaving their flags and 1804. */
   takenItems?: readonly string[];
   /** Held items whose new mark comes back. */
   newMarks?: readonly string[];
-  archives?: readonly { archive: string; flags: number }[];
+  archives?: readonly { archive: string; flags: ArchiveFlags }[];
   uiFeatures?: readonly number[];
   shortStories?: readonly number[];
   counterQuests?: readonly number[];
@@ -131,15 +119,15 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     key: 60,
     trophies: [2, 1406],
     chapterKeysCleared: 6n,
-    items: [{ item: "ITEM_70_0004", flags: STORY_ITEM }],
+    items: [{ item: "ITEM_70_0004", flags: { fieldNote: true } }],
   },
   {
     key: 80,
     trophies: [3, 1407],
     chapterKeysCleared: 9n,
-    items: [{ item: "ITEM_70_0005", flags: STORY_ITEM }],
+    items: [{ item: "ITEM_70_0005", flags: { fieldNote: true } }],
     newMarks: ["ITEM_70_0001"],
-    archives: [{ archive: "ARC_OTHER_011", flags: ARCHIVE_UNLOCKED }],
+    archives: [{ archive: "ARC_OTHER_011", flags: { unlocked: true } }],
     startWeapons: [
       { key: "WEP_PL0000_03", captain: 10000, replaces: "WEP_PL0000_01" },
       { key: "WEP_PL0100_03", captain: 10001, replaces: "WEP_PL0100_01" },
@@ -159,20 +147,20 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     key: 140,
     trophies: [6, 1410],
     chapterKeysCleared: 22n,
-    items: [{ item: "ITEM_70_0008", flags: STORY_ITEM }],
+    items: [{ item: "ITEM_70_0008", flags: { fieldNote: true } }],
     shortStories: [0x730050],
   },
   {
     key: 160,
     trophies: [7, 1411],
     chapterKeysCleared: 26n,
-    items: [{ item: "ITEM_70_0006", flags: STORY_ITEM }],
+    items: [{ item: "ITEM_70_0006", flags: { fieldNote: true } }],
     takenItems: ["ITEM_70_0008"],
     archives: [
-      { archive: "ARC_OTHER_026", flags: ARCHIVE_UNLOCKED },
-      { archive: "ARC_OTHER_058", flags: ARCHIVE_UNLOCKED },
-      { archive: "ARC_OTHER_059", flags: ARCHIVE_UNLOCKED },
-      { archive: "ARC_OTHER_060", flags: ARCHIVE_UNLOCKED },
+      { archive: "ARC_OTHER_026", flags: { unlocked: true } },
+      { archive: "ARC_OTHER_058", flags: { unlocked: true } },
+      { archive: "ARC_OTHER_059", flags: { unlocked: true } },
+      { archive: "ARC_OTHER_060", flags: { unlocked: true } },
     ],
     standInWeapons: [
       { key: "WEP_PL1900_A0", xp: 790, uncap: 2 },
@@ -193,9 +181,13 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     key: 200,
     trophies: [9, 1413],
     chapterKeysCleared: 36n,
-    items: [{ item: "ITEM_70_0010", flags: KEY_ITEM }],
+    items: [
+      { item: "ITEM_70_0010", flags: { fieldNote: true, keyItem: true } },
+    ],
     newMarks: ["ITEM_70_0003"],
-    archives: [{ archive: "ARC_ROLANNOTE_08", flags: ARCHIVE_UNLOCKED_SEEN }],
+    archives: [
+      { archive: "ARC_ROLANNOTE_08", flags: { unlocked: true, seen: true } },
+    ],
     standInWeapons: [
       { key: "WEP_PL1900_A0", xp: 1740, uncap: 3 },
       { key: "WEP_NP0300_01", xp: 2740, uncap: 3 },
@@ -213,13 +205,13 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     trophies: [22, 23, 24, 25, 19, 1398],
     chapterKeysCleared: 41n,
     archives: [
-      { archive: "ARC_ROLANNOTE_02", flags: ARCHIVE_UNLOCKED_SEEN },
-      { archive: "ARC_ROLANNOTE_03", flags: ARCHIVE_UNLOCKED_SEEN },
-      { archive: "ARC_ROLANNOTE_06", flags: ARCHIVE_UNLOCKED },
-      { archive: "ARC_ROLANNOTE_01", flags: ARCHIVE_UNLOCKED },
-      { archive: "ARC_ROLANNOTE_04", flags: ARCHIVE_UNLOCKED },
-      { archive: "ARC_ROLANNOTE_05", flags: ARCHIVE_UNLOCKED },
-      { archive: "ARC_ROLANNOTE_07", flags: ARCHIVE_UNLOCKED },
+      { archive: "ARC_ROLANNOTE_02", flags: { unlocked: true, seen: true } },
+      { archive: "ARC_ROLANNOTE_03", flags: { unlocked: true, seen: true } },
+      { archive: "ARC_ROLANNOTE_06", flags: { unlocked: true } },
+      { archive: "ARC_ROLANNOTE_01", flags: { unlocked: true } },
+      { archive: "ARC_ROLANNOTE_04", flags: { unlocked: true } },
+      { archive: "ARC_ROLANNOTE_05", flags: { unlocked: true } },
+      { archive: "ARC_ROLANNOTE_07", flags: { unlocked: true } },
     ],
     shortStories: [
       0x705001, 0x705002, 0x705003, 0x705004, 0x705005, 0x705006, 0x705007,
@@ -268,8 +260,8 @@ const TROPHY_REWARDS: Readonly<
   },
 };
 
-const MANIAC = 6;
-const PROUD = 7;
+const MANIAC = difficultyDigit("maniac");
+const PROUD = difficultyDigit("proud");
 
 /** The Maniac quests other quests open on, then `00407101`, the first Proud quest. */
 const PROUD_PROMOTION: StoryFillEntry = {
@@ -492,7 +484,7 @@ function applyFill(
   const counterQuestOpened = [...at.get(COUNTER_QUEST_OPENED)];
   const rewardItems = new Map<string, number>();
   const givenItems = new Set<string>();
-  let acquired = at.get(ITEM_ACQUIRED_LAST);
+  const stamps = acquisitions(units);
   let rupies = at.get(USER_RUPIES);
   let weaponId = at.get(WEAPON_LAST_ID);
   const writtenWeaponIds = new Map<number, number>();
@@ -503,10 +495,15 @@ function applyFill(
     Number(
       units.values(
         FIELD_NOTE_WEAPON_FLAGS,
-        onlyEntity(units, FIELD_NOTE_WEAPON_KEY, hashId(key)),
+        units.onlyEntityWhere(FIELD_NOTE_WEAPON_KEY, hashId(key)),
       )![0],
     ) !== 0;
-  const addWeapon = (key: string, xp: number, uncap: number, flags: number) => {
+  const addWeapon = (
+    key: string,
+    xp: number,
+    uncap: number,
+    flags: WeaponFlags,
+  ) => {
     let entity = WEAPON_FIRST;
     while (
       (writtenWeaponIds.get(entity) ?? units.of(entity).get(WEAPON_ID)) !== 0
@@ -518,17 +515,16 @@ function applyFill(
     weaponId++;
     writtenWeaponIds.set(entity, weaponId);
     const hash = hashId(key);
+    const weapon = units.of(entity);
     patches.push(
-      { attribute: WEAPON_ID, entity, values: [weaponId] },
-      { attribute: WEAPON_KEY, entity, values: [hash] },
-      { attribute: WEAPON_XP, entity, values: [xp] },
-      { attribute: WEAPON_UNCAP, entity, values: [uncap] },
-      { attribute: WEAPON_FLAGS, entity, values: [flags] },
-      {
-        attribute: FIELD_NOTE_WEAPON_FLAGS,
-        entity: onlyEntity(units, FIELD_NOTE_WEAPON_KEY, hash),
-        values: [FIELD_NOTE_REGISTERED],
-      },
+      weapon.patch(WEAPON_ID, weaponId),
+      weapon.patch(WEAPON_KEY, key),
+      weapon.patch(WEAPON_XP, xp),
+      weapon.patch(WEAPON_UNCAP, uncap),
+      weapon.replace(WEAPON_FLAGS, flags),
+      units
+        .of(units.onlyEntityWhere(FIELD_NOTE_WEAPON_KEY, hash))
+        .replace(FIELD_NOTE_WEAPON_FLAGS, { unlocked: true }),
     );
     return { entity, id: weaponId };
   };
@@ -553,47 +549,37 @@ function applyFill(
       progress[CHAPTER_KEYS_CLEARED] = entry.chapterKeysCleared;
 
     for (const { item, flags } of entry.items ?? []) {
-      const entity = onlyEntity(units, ITEM_KEY, hashId(item));
+      const entity = units.onlyEntityWhere(ITEM_KEY, hashId(item));
       if (units.of(entity).get(ITEM_ACQUIRED) !== 0) continue;
-      acquired++;
+      const held = units.of(entity);
       patches.push(
-        { attribute: ITEM_COUNT, entity, values: [1] },
-        { attribute: ITEM_FLAGS, entity, values: [flags] },
-        { attribute: ITEM_ACQUIRED, entity, values: [acquired] },
+        held.patch(ITEM_COUNT, 1),
+        held.replace(ITEM_FLAGS, flags),
+        stamps.stamp(entity),
       );
       givenItems.add(item);
       added.push(item);
     }
 
     for (const item of entry.takenItems ?? []) {
-      const entity = onlyEntity(units, ITEM_KEY, hashId(item));
+      const entity = units.onlyEntityWhere(ITEM_KEY, hashId(item));
       if (!givenItems.has(item) && units.of(entity).get(ITEM_COUNT) === 0)
         continue;
-      patches.push({ attribute: ITEM_COUNT, entity, values: [0] });
+      patches.push(units.of(entity).patch(ITEM_COUNT, 0));
       added.push(`${item} taken`);
     }
 
     for (const item of entry.newMarks ?? []) {
-      const entity = onlyEntity(units, ITEM_KEY, hashId(item));
-      const flags = Number(units.values(ITEM_FLAGS, entity)![0]);
-      if (!(flags & ITEM_SEEN)) continue;
-      patches.push({
-        attribute: ITEM_FLAGS,
-        entity,
-        values: [flags & ~ITEM_SEEN],
-      });
+      const entity = units.onlyEntityWhere(ITEM_KEY, hashId(item));
+      if (!units.of(entity).get(ITEM_FLAGS).seen) continue;
+      patches.push(units.of(entity).patch(ITEM_FLAGS, { seen: false }));
       added.push(`${item} new mark`);
     }
 
     for (const { archive, flags: written } of entry.archives ?? []) {
-      const entity = onlyEntity(units, ARCHIVE_KEY, hashId(archive));
-      const flags = Number(units.values(ARCHIVE_FLAGS, entity)![0]);
-      if (flags & ARCHIVE_UNLOCKED) continue;
-      patches.push({
-        attribute: ARCHIVE_FLAGS,
-        entity,
-        values: [flags | written],
-      });
+      const entity = units.onlyEntityWhere(ARCHIVE_KEY, hashId(archive));
+      if (units.of(entity).get(ARCHIVE_FLAGS).unlocked) continue;
+      patches.push(units.of(entity).patch(ARCHIVE_FLAGS, written));
       for (const counter of ARCHIVES_UNLOCKED_COUNTERS)
         progress[counter] = progress[counter]! + 1n;
       added.push(archive);
@@ -616,11 +602,7 @@ function applyFill(
       entry.questDifficulty !== undefined &&
       entry.questDifficulty > at.get(QUEST_DIFFICULTY_UNLOCKED)
     ) {
-      patches.push({
-        attribute: QUEST_DIFFICULTY_UNLOCKED,
-        entity: SAVE_ENTITY,
-        values: [entry.questDifficulty],
-      });
+      patches.push(at.patch(QUEST_DIFFICULTY_UNLOCKED, entry.questDifficulty));
       added.push(`quest difficulty ${entry.questDifficulty}`);
     }
 
@@ -628,46 +610,34 @@ function applyFill(
     for (const { key, captain, replaces } of entry.startWeapons ?? []) {
       if (fieldNoted(key)) continue;
       const inPlay = captain === captainInPlay;
-      const { entity, id } = addWeapon(
-        key,
-        START_WEAPON_XP,
-        0,
-        inPlay
-          ? STORY_WEAPON_FLAGS | WEAPON_LIST_OPENED_BIT
-          : STORY_WEAPON_FLAGS,
-      );
+      const { entity, id } = addWeapon(key, START_WEAPON_XP, 0, {
+        forged: true,
+        listOpened: inPlay,
+      });
       startWeaponEntities.set(captain, entity);
       const wearer = units.of(captain);
       if (wearer.get(CHARACTER_OUTFIT) === OUTFIT_STARTING)
-        patches.push({
-          attribute: CHARACTER_OUTFIT,
-          entity: captain,
-          values: [OUTFIT_MAIN],
-        });
-      patches.push({
-        attribute: CHARACTER_OUTFITS_OWNED,
-        entity: captain,
-        values: [
+        patches.push(wearer.patch(CHARACTER_OUTFIT, OUTFIT_MAIN));
+      patches.push(
+        wearer.patch(
+          CHARACTER_OUTFITS_OWNED,
           (wearer.get(CHARACTER_OUTFITS_OWNED) | (1 << OUTFIT_MAIN)) &
             ~(1 << OUTFIT_STARTING),
-        ],
-      });
+        ),
+      );
       for (const old of units.entitiesWhere(WEAPON_KEY, hashId(replaces))) {
-        const oldId = units.of(old).get(WEAPON_ID);
+        const oldWeapon = units.of(old);
+        const oldId = oldWeapon.get(WEAPON_ID);
         replaced.push(old);
         patches.push(
-          { attribute: WEAPON_ID, entity: old, values: [0] },
-          { attribute: WEAPON_KEY, entity: old, values: [EMPTY_HASH] },
-          { attribute: WEAPON_XP, entity: old, values: [0] },
-          { attribute: WEAPON_UNCAP, entity: old, values: [0] },
-          { attribute: WEAPON_FLAGS, entity: old, values: [0] },
+          oldWeapon.patch(WEAPON_ID, 0),
+          oldWeapon.patch(WEAPON_KEY, undefined),
+          oldWeapon.patch(WEAPON_XP, 0),
+          oldWeapon.patch(WEAPON_UNCAP, 0),
+          oldWeapon.replace(WEAPON_FLAGS, {}),
         );
-        if (units.of(captain).get(EQUIP_WEAPON) === oldId)
-          patches.push({
-            attribute: EQUIP_WEAPON,
-            entity: captain,
-            values: [id],
-          });
+        if (wearer.get(EQUIP_WEAPON) === oldId)
+          patches.push(wearer.patch(EQUIP_WEAPON, id));
       }
       added.push(key);
     }
@@ -679,14 +649,14 @@ function applyFill(
         units.entitiesWhere(WEAPON_KEY, hashId(key))[0];
       if (held === undefined) {
         if (fieldNoted(key)) continue;
-        const { entity } = addWeapon(key, xp, uncap, STORY_WEAPON_FLAGS);
+        const { entity } = addWeapon(key, xp, uncap, { forged: true });
         standInEntities.set(key, entity);
       } else {
         if (!standInEntities.has(key) && units.of(held).get(WEAPON_XP) >= xp)
           continue;
         patches.push(
-          { attribute: WEAPON_XP, entity: held, values: [xp] },
-          { attribute: WEAPON_UNCAP, entity: held, values: [uncap] },
+          units.of(held).patch(WEAPON_XP, xp),
+          units.of(held).patch(WEAPON_UNCAP, uncap),
         );
       }
       added.push(key);
@@ -694,51 +664,32 @@ function applyFill(
 
     for (const { key, captain, startWeapon } of entry.fightWeapons ?? []) {
       if (fieldNoted(key)) continue;
-      const { id } = addWeapon(
-        key,
-        FIGHT_WEAPON_XP,
-        FIGHT_WEAPON_UNCAP,
-        STORY_WEAPON_FLAGS,
-      );
+      const { id } = addWeapon(key, FIGHT_WEAPON_XP, FIGHT_WEAPON_UNCAP, {
+        forged: true,
+      });
       if (captain === captainInPlay) {
         const raised =
           startWeaponEntities.get(captain) ??
           units.entitiesWhere(WEAPON_KEY, hashId(startWeapon))[0];
         if (raised !== undefined)
           patches.push(
-            {
-              attribute: WEAPON_XP,
-              entity: raised,
-              values: [RAISED_WEAPON_XP],
-            },
-            {
-              attribute: WEAPON_UNCAP,
-              entity: raised,
-              values: [RAISED_WEAPON_UNCAP],
-            },
+            units.of(raised).patch(WEAPON_XP, RAISED_WEAPON_XP),
+            units.of(raised).patch(WEAPON_UNCAP, RAISED_WEAPON_UNCAP),
           );
       } else {
-        patches.push({
-          attribute: EQUIP_WEAPON,
-          entity: captain,
-          values: [id],
-        });
+        patches.push(units.of(captain).patch(EQUIP_WEAPON, id));
       }
       added.push(key);
     }
 
     if (entry.joinsId) {
-      const entity = onlyEntity(units, CHARACTER_KEY, hashId("PL1900"));
+      const entity = units.onlyEntityWhere(CHARACTER_KEY, hashId("PL1900"));
       const id = units.of(entity);
-      const flags = Number(id.get(CHARACTER_FLAGS));
-      if (flags & CHARACTER_JOINED) continue;
-      const write = (
-        attribute: Attribute<unknown>,
-        values: readonly unknown[],
-      ) => patches.push({ attribute, entity, values });
-      write(CHARACTER_FLAGS, [
-        flags | CHARACTER_JOINED | CHARACTER_STORY_PLAYED,
-      ]);
+      const flags = id.get(CHARACTER_FLAGS);
+      if (flags.joined) continue;
+      const write = <T, W>(attribute: Attribute<T, W>, value: W) =>
+        patches.push(id.patch(attribute, value));
+      write(CHARACTER_FLAGS, { joined: true, storyPlayed: true });
 
       const crewLevel = Math.max(
         1,
@@ -749,32 +700,26 @@ function applyFill(
       const level = Math.min(crewLevel, ID_MAX_JOIN_LEVEL);
       const row = ID_LEVELS[level];
       if (level > id.get(CHARACTER_LEVEL) && row) {
-        write(CHARACTER_XP, [row[0]]);
-        write(CHARACTER_LEVEL, [level]);
-        write(CHARACTER_BASE_HP, [row[1]]);
-        write(CHARACTER_BASE_ATTACK, [row[2]]);
+        write(CHARACTER_XP, row[0]);
+        write(CHARACTER_LEVEL, level);
+        write(CHARACTER_BASE_HP, row[1]);
+        write(CHARACTER_BASE_ATTACK, row[2]);
       }
 
-      if (!(flags & CHARACTER_STORY_PLAYED)) {
+      if (!flags.storyPlayed) {
         const skill = (n: string) => hashId(`AB_PL1900_${n}`);
         write(EQUIP_SKILLS, ID_EQUIPPED_SKILLS.map(skill));
         for (const n of ID_ACQUIRED_SKILLS) {
-          const skillEntity = onlyEntity(units, SKILL_KEY, skill(n));
-          patches.push({
-            attribute: SKILL_FLAGS,
-            entity: skillEntity,
-            values: [
-              Number(units.of(skillEntity).get(SKILL_FLAGS)) | SKILL_ACQUIRED,
-            ],
-          });
+          const skillEntity = units.onlyEntityWhere(SKILL_KEY, skill(n));
+          patches.push(
+            units.of(skillEntity).patch(SKILL_FLAGS, { acquired: true }),
+          );
         }
         const block = masteryRange(entity).first;
         for (const [offset, bits] of Object.entries(ID_MASTERY_BITS))
-          patches.push({
-            attribute: MASTERY_NODE_BITS,
-            entity: block + Number(offset),
-            values: [bits],
-          });
+          patches.push(
+            units.of(block + Number(offset)).patch(MASTERY_NODE_BITS, bits),
+          );
         progress[STORY_MASTERY_FILLED] = 1n;
       }
       added.push("PL1900");
@@ -783,33 +728,22 @@ function applyFill(
 
   if (added.length === 0) return added;
   for (const [item, count] of rewardItems) {
-    const entity = onlyEntity(units, ITEM_KEY, hashId(item));
+    const entity = units.onlyEntityWhere(ITEM_KEY, hashId(item));
     const held = units.of(entity);
     patches.push(
-      {
-        attribute: ITEM_COUNT,
-        entity,
-        values: [held.get(ITEM_COUNT) + count],
-      },
-      { attribute: ITEM_FLAGS, entity, values: [STORY_ITEM] },
+      held.patch(ITEM_COUNT, held.get(ITEM_COUNT) + count),
+      held.replace(ITEM_FLAGS, { fieldNote: true }),
     );
-    if (held.get(ITEM_ACQUIRED) === 0) {
-      acquired++;
-      patches.push({ attribute: ITEM_ACQUIRED, entity, values: [acquired] });
-    }
+    if (held.get(ITEM_ACQUIRED) === 0) patches.push(stamps.stamp(entity));
   }
   patches.push(
-    { attribute: TROPHY_EARNED, entity: SAVE_ENTITY, values: earned },
-    { attribute: TROPHY_PROGRESS, entity: SAVE_ENTITY, values: progress },
-    { attribute: UI_FEATURE_UNLOCKED, entity: SAVE_ENTITY, values: uiFeatures },
-    {
-      attribute: COUNTER_QUEST_OPENED,
-      entity: SAVE_ENTITY,
-      values: counterQuestOpened,
-    },
-    { attribute: USER_RUPIES, entity: SAVE_ENTITY, values: [rupies] },
-    { attribute: ITEM_ACQUIRED_LAST, entity: SAVE_ENTITY, values: [acquired] },
-    { attribute: WEAPON_LAST_ID, entity: SAVE_ENTITY, values: [weaponId] },
+    at.patch(TROPHY_EARNED, earned),
+    at.patch(TROPHY_PROGRESS, progress),
+    at.patch(UI_FEATURE_UNLOCKED, uiFeatures),
+    at.patch(COUNTER_QUEST_OPENED, counterQuestOpened),
+    at.patch(USER_RUPIES, rupies),
+    ...stamps.done(),
+    at.patch(WEAPON_LAST_ID, weaponId),
   );
   session.patch(patches);
   return added;

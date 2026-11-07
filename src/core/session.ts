@@ -7,17 +7,14 @@ import {
   SLOT_DATA_SIZE_AT,
 } from "./container";
 import { readSave, type Save } from "./read-save";
+import type { Patch } from "./unit-store";
 import { ELEMENTS, type SaveUnit, type UnitEntity } from "./save-data-binary";
 import { SAVE_ENTITY, SAVE_HASHSEED } from "./save-entity";
 
 const VTABLE_SIZE = 12;
 const UNIT_VALUES_FIELD = 12;
 
-export interface Patch {
-  attribute: Attribute<unknown>;
-  entity: UnitEntity;
-  values: readonly unknown[];
-}
+export type { Patch };
 
 /** A save file open for editing, values overwritten in place. */
 export class SaveSession {

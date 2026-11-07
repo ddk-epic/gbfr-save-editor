@@ -7,6 +7,13 @@ import type {
 import type { Attribute } from "./attribute";
 import { SaveFormatError } from "./errors";
 
+/** Raw values to store in one unit. */
+export interface Patch {
+  attribute: Attribute<unknown>;
+  entity: UnitEntity;
+  values: readonly unknown[];
+}
+
 /** A span of entity numbers, `count` wide, starting at `first`. */
 export interface EntityRange {
   first: UnitEntity;
@@ -116,10 +123,7 @@ export class UnitStore {
     return new EntityValues(this, entity);
   }
 
-  /**
-   * Entities holding one attribute, ascending. Entities the save does not
-   * hold are left out, `range` included.
-   */
+  /** Entities holding one attribute, ascending, narrowed to `range` when given. */
   entitiesWith(
     attribute: Attribute<unknown>,
     range?: EntityRange,
@@ -132,11 +136,7 @@ export class UnitStore {
     );
   }
 
-  /**
-   * Entities whose unit for one attribute holds `value` as its first value,
-   * ascending. The search is over the attribute's units alone, so a `range`
-   * only narrows what is returned.
-   */
+  /** Entities whose first value of one attribute is `value`, ascending, narrowed to `range`. */
   entitiesWhere(
     attribute: Attribute<unknown>,
     value: number,
@@ -153,6 +153,14 @@ export class UnitStore {
         found.push(entity);
     return found.sort((a, b) => a - b);
   }
+
+  /** The one entity holding `value` in `attribute`, throwing unless there is exactly one. */
+  onlyEntityWhere(attribute: Attribute<unknown>, value: number): UnitEntity {
+    const found = this.entitiesWhere(attribute, value);
+    if (found.length !== 1)
+      throw new Error(`${found.length} units of ${attribute.id} hold ${value}`);
+    return found[0]!;
+  }
 }
 
 /** The values one entity holds, read through typed attributes. */
@@ -163,8 +171,26 @@ export class EntityValues {
   ) {}
 
   /** The attribute's value, or its fallback when the save holds no unit. */
-  get<T>(attribute: Attribute<T>): T {
+  get<T, W>(attribute: Attribute<T, W>): T {
     return attribute.read(this.store.values(attribute, this.entity));
+  }
+
+  /** A patch setting `value`; flags merge onto the unit's current bits. */
+  patch<T, W>(attribute: Attribute<T, W>, value: W): Patch {
+    return {
+      attribute: attribute as Attribute<unknown>,
+      entity: this.entity,
+      values: attribute.write(value, this.store.values(attribute, this.entity)),
+    };
+  }
+
+  /** A patch setting `value` with no current bits, so flags start from 0. */
+  replace<T, W>(attribute: Attribute<T, W>, value: W): Patch {
+    return {
+      attribute: attribute as Attribute<unknown>,
+      entity: this.entity,
+      values: attribute.write(value, undefined),
+    };
   }
 
   has(attribute: Attribute<unknown>): boolean {

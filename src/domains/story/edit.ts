@@ -25,7 +25,6 @@ import {
   SYSTEM_STORY_DIFFICULTY,
 } from "./attributes";
 import { STORY_CHECKPOINTS, type StoryCheckpoint } from "./checkpoints";
-import { onlyEntity } from "./only-entity";
 
 /** The checkpoints a save can advance to, in story order. */
 export function storyTargets(save: Save): readonly StoryCheckpoint[] {
@@ -80,8 +79,8 @@ export function advanceStory(session: SaveSession, key: number) {
   const patches: Patch[] = [];
   const units = session.save.slotData.units;
   const at = units.of(SAVE_ENTITY);
-  const set = (attribute: Attribute<unknown>, values: readonly unknown[]) =>
-    patches.push({ attribute, entity: SAVE_ENTITY, values });
+  const set = <T, W>(attribute: Attribute<T, W>, value: W) =>
+    patches.push(at.patch(attribute, value));
 
   const questIds = at.get(STORY_QUEST_IDS);
   const recordOf = (quest: number) => {
@@ -117,17 +116,17 @@ export function advanceStory(session: SaveSession, key: number) {
     set(attribute, sections);
   }
 
-  set(CURRENT_TOWN, [destination.town]);
-  set(CURRENT_TOWN_CHECKPOINT, [destination.townCheckpoint]);
-  set(CURRENT_CHAPTER, [destination.key, at.get(CURRENT_CHAPTER)[1]]);
+  set(CURRENT_TOWN, destination.town);
+  set(CURRENT_TOWN_CHECKPOINT, destination.townCheckpoint);
+  set(CURRENT_CHAPTER, [destination.key, at.get(CURRENT_CHAPTER)[1]!]);
 
   for (const step of steps) {
     for (const hash of step.islands)
-      patches.push({
-        attribute: ISLAND_UNLOCKED,
-        entity: onlyEntity(units, ISLAND_KEY, hash),
-        values: [true],
-      });
+      patches.push(
+        units
+          .of(units.onlyEntityWhere(ISLAND_KEY, hash))
+          .patch(ISLAND_UNLOCKED, true),
+      );
   }
   session.patch(patches);
 

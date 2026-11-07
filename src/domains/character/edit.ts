@@ -12,7 +12,7 @@ import {
   MASTER_LEVEL_BADGES,
   MASTER_LEVEL_MSP,
 } from "../../data/characters";
-import type { Patch, SaveSession } from "../../core/session";
+import type { SaveSession } from "../../core/session";
 import {
   CREW_LEVEL_TOTAL,
   LAST_RAISED_LEVEL,
@@ -27,22 +27,18 @@ import {
   CHARACTER_BASE_ATTACK,
   CHARACTER_BASE_HP,
   CHARACTER_FLAGS,
-  CHARACTER_JOINED,
   CHARACTER_KEY,
   CHARACTER_LEVEL,
   CHARACTER_MASTER_BREAK_MARKS,
-  CHARACTER_MASTER_BREAK_NEW,
   CHARACTER_MASTER_XP,
   CHARACTER_MAX_LEVEL,
   CHARACTER_MAX_XP,
   CHARACTER_XP,
 } from "./attributes";
-import { masterLevelOf, offPlayCaptain } from "./read";
+import { isCrewMember, masterLevelOf, offPlayCaptain } from "./read";
 
 export const MAX_MASTER_LEVEL = MASTER_LEVEL_MSP.length - 1;
 const MASTER_LEVEL_CAP = 50;
-/** 1305; a crew member has bit 0 without bit 1. */
-const JOINED_MASK = 3;
 
 /** False for NPCs and unused rows. */
 export const characterLevels = (character: string) =>
@@ -60,19 +56,12 @@ export function maxCharacterLevel(session: SaveSession, character: UnitEntity) {
       `character ${character} is already level ${CHARACTER_MAX_LEVEL}`,
     );
 
+  const at = units.of(character);
   session.patch([
-    { attribute: CHARACTER_XP, entity: character, values: [CHARACTER_MAX_XP] },
-    {
-      attribute: CHARACTER_LEVEL,
-      entity: character,
-      values: [CHARACTER_MAX_LEVEL],
-    },
-    { attribute: CHARACTER_BASE_HP, entity: character, values: [stats.hp] },
-    {
-      attribute: CHARACTER_BASE_ATTACK,
-      entity: character,
-      values: [stats.attack],
-    },
+    at.patch(CHARACTER_XP, CHARACTER_MAX_XP),
+    at.patch(CHARACTER_LEVEL, CHARACTER_MAX_LEVEL),
+    at.patch(CHARACTER_BASE_HP, stats.hp),
+    at.patch(CHARACTER_BASE_ATTACK, stats.attack),
   ]);
 }
 
@@ -84,7 +73,7 @@ export function canUnlockCharacter(units: UnitStore, character: UnitEntity) {
     key !== undefined &&
     UNLOCKABLE_CHARACTERS.includes(key) &&
     characterLevels(key) &&
-    (at.get(CHARACTER_FLAGS) & CHARACTER_JOINED) === 0
+    !at.get(CHARACTER_FLAGS).joined
   );
 }
 
@@ -95,10 +84,7 @@ const crewLevelTotal = (units: UnitStore) => {
     .entitiesWith(CHARACTER_KEY)
     .filter((entity) => {
       const at = units.of(entity);
-      return (
-        (at.get(CHARACTER_FLAGS) & JOINED_MASK) === CHARACTER_JOINED &&
-        at.get(CHARACTER_KEY) !== offPlay
-      );
+      return isCrewMember(units, entity) && at.get(CHARACTER_KEY) !== offPlay;
     })
     .reduce(
       (total, entity) => total + units.of(entity).get(CHARACTER_LEVEL),
@@ -115,23 +101,11 @@ export function unlockCharacter(session: SaveSession, character: UnitEntity) {
   const key = at.get(CHARACTER_KEY)!;
   const stats = CHARACTER_MAX_STATS[key]!;
   session.patch([
-    {
-      attribute: CHARACTER_FLAGS,
-      entity: character,
-      values: [at.get(CHARACTER_FLAGS) | CHARACTER_JOINED],
-    },
-    { attribute: CHARACTER_XP, entity: character, values: [CHARACTER_MAX_XP] },
-    {
-      attribute: CHARACTER_LEVEL,
-      entity: character,
-      values: [CHARACTER_MAX_LEVEL],
-    },
-    { attribute: CHARACTER_BASE_HP, entity: character, values: [stats.hp] },
-    {
-      attribute: CHARACTER_BASE_ATTACK,
-      entity: character,
-      values: [stats.attack],
-    },
+    at.patch(CHARACTER_FLAGS, { joined: true }),
+    at.patch(CHARACTER_XP, CHARACTER_MAX_XP),
+    at.patch(CHARACTER_LEVEL, CHARACTER_MAX_LEVEL),
+    at.patch(CHARACTER_BASE_HP, stats.hp),
+    at.patch(CHARACTER_BASE_ATTACK, stats.attack),
   ]);
 
   const { index, progress, badges } = CHARACTER_LEVEL_BADGES[key]!;
@@ -151,18 +125,11 @@ export function unlockCharacter(session: SaveSession, character: UnitEntity) {
   recountHeldWeapons(units, ledger);
   const levels = [...units.of(SAVE_ENTITY).get(TROPHY_CHARACTER_LEVEL)];
   levels[index] = CHARACTER_MAX_LEVEL;
+  const save = units.of(SAVE_ENTITY);
   session.patch([
-    {
-      attribute: TROPHY_PROGRESS,
-      entity: SAVE_ENTITY,
-      values: ledger.progress,
-    },
-    { attribute: TROPHY_EARNED, entity: SAVE_ENTITY, values: ledger.earned },
-    {
-      attribute: TROPHY_CHARACTER_LEVEL,
-      entity: SAVE_ENTITY,
-      values: levels,
-    },
+    save.patch(TROPHY_PROGRESS, ledger.progress),
+    save.patch(TROPHY_EARNED, ledger.earned),
+    save.patch(TROPHY_CHARACTER_LEVEL, levels),
   ]);
 }
 
@@ -214,24 +181,15 @@ export function maxMasterLevel(session: SaveSession, character: UnitEntity) {
       progress[behavior] = BigInt(quantity);
   }
   const breaks = MAX_MASTER_LEVEL - MASTER_LEVEL_CAP;
-  const patches: Patch[] = [
-    {
-      attribute: CHARACTER_MASTER_XP,
-      entity: character,
-      values: [MASTER_LEVEL_MSP[MAX_MASTER_LEVEL]!],
-    },
-    {
-      attribute: CHARACTER_FLAGS,
-      entity: character,
-      values: [at.get(CHARACTER_FLAGS) | CHARACTER_MASTER_BREAK_NEW],
-    },
-    {
-      attribute: CHARACTER_MASTER_BREAK_MARKS,
-      entity: character,
-      values: at.get(CHARACTER_MASTER_BREAK_MARKS).map((m) => m || breaks),
-    },
-    { attribute: TROPHY_EARNED, entity: SAVE_ENTITY, values: earned },
-    { attribute: TROPHY_PROGRESS, entity: SAVE_ENTITY, values: progress },
-  ];
-  session.patch(patches);
+  const save = units.of(SAVE_ENTITY);
+  session.patch([
+    at.patch(CHARACTER_MASTER_XP, MASTER_LEVEL_MSP[MAX_MASTER_LEVEL]!),
+    at.patch(CHARACTER_FLAGS, { masterBreakNew: true }),
+    at.patch(
+      CHARACTER_MASTER_BREAK_MARKS,
+      at.get(CHARACTER_MASTER_BREAK_MARKS).map((m) => m || breaks),
+    ),
+    save.patch(TROPHY_EARNED, earned),
+    save.patch(TROPHY_PROGRESS, progress),
+  ]);
 }

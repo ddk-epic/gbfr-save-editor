@@ -34,7 +34,5 @@ export function equipWeapon(
   if (!equippableWeapons(units, character).some(({ id }) => id === weaponId))
     throw new Error(`character ${character} cannot equip weapon ${weaponId}`);
 
-  session.patch([
-    { attribute: EQUIP_WEAPON, entity: character, values: [weaponId] },
-  ]);
+  session.patch([units.of(character).patch(EQUIP_WEAPON, weaponId)]);
 }

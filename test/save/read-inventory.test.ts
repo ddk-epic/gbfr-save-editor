@@ -11,12 +11,7 @@ import {
   SIGIL_ID,
   SIGIL_KEY,
 } from "../../src/domains/sigil/attributes";
-import {
-  SKILL_ACQUIRED,
-  SKILL_FLAGS,
-  SKILL_KEY,
-  SKILL_SEEN,
-} from "../../src/domains/skill/attributes";
+import { SKILL_FLAGS, SKILL_KEY } from "../../src/domains/skill/attributes";
 import {
   SUMMON_FLAGS,
   SUMMON_ID,
@@ -101,11 +96,11 @@ const units = unitStore({
   // Two acquired skills, one of them seen.
   5: [
     [SKILL_KEY, hashId(SKILL_UNSEEN)],
-    [SKILL_FLAGS, SKILL_ACQUIRED],
+    [SKILL_FLAGS, 1],
   ],
   6: [
     [SKILL_KEY, hashId(SKILL_SEEN_KEY)],
-    [SKILL_FLAGS, SKILL_ACQUIRED | SKILL_SEEN],
+    [SKILL_FLAGS, 1 | 8],
   ],
   [SIGIL_FIRST]: [
     [SIGIL_ID, 71],

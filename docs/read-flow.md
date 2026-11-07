@@ -74,6 +74,16 @@ at.get(SIGIL_LEVEL); // number
 at.get(SIGIL_FLAGS); // { locked: boolean, seen: boolean }
 ```
 
+An attribute also writes. `units.of(entity).patch(attribute, value)` returns a `Patch` holding the stored values, and `SaveSession.patch` applies it. Flags merge into the unit's current bits and keep the bits with no name. `replace` ignores the current bits and starts from 0.
+
+```ts
+session.patch([
+  at.patch(SIGIL_LEVEL, 15),
+  at.patch(SIGIL_FLAGS, { seen: true }), // other bits stay
+  at.replace(SIGIL_FLAGS, { locked: true }), // every other bit becomes 0
+]);
+```
+
 `keyAttribute` resolves a hash to its archive key. `keyOf` in `src/core/keys.ts` does the lookup and takes the table as a parameter, so it holds no table of its own. It returns undefined for the hash of an empty string, which marks an empty slot. A hash missing from the table comes back as `#` plus 8 hex digits, with one console warning per hash.
 
 ### Record coordinates

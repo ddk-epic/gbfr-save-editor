@@ -1,4 +1,5 @@
 import type { Save } from "../../core/read-save";
+import type { UnitEntity } from "../../core/save-data-binary";
 import type { UnitStore } from "../../core/unit-store";
 import type { Patch, SaveSession } from "../../core/session";
 import { SAVE_ENTITY } from "../../core/save-entity";
@@ -7,7 +8,6 @@ import {
   ITEM_ACQUIRED,
   ITEM_ACQUIRED_LAST,
   ITEM_COUNT,
-  ITEM_FLAG_BITS,
   ITEM_FLAGS,
   ITEM_KEY,
 } from "./attributes";
@@ -21,7 +21,22 @@ const CARD_PREFIX = "ITEM_23_";
 const PLAIN_CARD = "ITEM_23_0000";
 const PLAIN_CARD_COUNT = 99;
 const CHARACTER_CARD_COUNT = 1;
-const INVENTORY_TAB_FIRST = 1;
+
+/** Hands out ITEM_ACQUIRED stamps after ITEM_ACQUIRED_LAST. */
+export function acquisitions(units: UnitStore) {
+  const last = units.of(SAVE_ENTITY).get(ITEM_ACQUIRED_LAST);
+  let next = last;
+  return {
+    /** Stamps the item at `entity` as the latest acquired. */
+    stamp: (entity: UnitEntity): Patch =>
+      units.of(entity).patch(ITEM_ACQUIRED, ++next),
+    /** The ITEM_ACQUIRED_LAST patch, none when nothing was stamped. */
+    done: (): Patch[] =>
+      next === last
+        ? []
+        : [units.of(SAVE_ENTITY).patch(ITEM_ACQUIRED_LAST, next)],
+  };
+}
 
 function treasureTarget(key: string): number | undefined {
   if (itemTab(key) !== "treasures" || key.startsWith(CURIO_PREFIX))
@@ -55,34 +70,16 @@ export function maxTreasures(session: SaveSession) {
     throw new Error("the treasures are already at their counts");
 
   const at = units.of(SAVE_ENTITY);
-  let acquired = at.get(ITEM_ACQUIRED_LAST);
+  const stamps = acquisitions(units);
   const patches: Patch[] = [];
   for (const { entity, target } of below) {
     const item = units.of(entity);
     patches.push(
-      { attribute: ITEM_COUNT, entity, values: [target] },
-      {
-        attribute: ITEM_FLAGS,
-        entity,
-        values: [
-          Number(units.values(ITEM_FLAGS, entity)![0]) |
-            ITEM_FLAG_BITS.fieldNote |
-            ITEM_FLAG_BITS.seen,
-        ],
-      },
+      item.patch(ITEM_COUNT, target),
+      item.patch(ITEM_FLAGS, { fieldNote: true, seen: true }),
     );
-    if (item.get(ITEM_ACQUIRED) === 0) {
-      acquired++;
-      patches.push({ attribute: ITEM_ACQUIRED, entity, values: [acquired] });
-    }
+    if (item.get(ITEM_ACQUIRED) === 0) patches.push(stamps.stamp(entity));
   }
-  patches.push(
-    { attribute: ITEM_ACQUIRED_LAST, entity: SAVE_ENTITY, values: [acquired] },
-    {
-      attribute: INVENTORY_TABS,
-      entity: SAVE_ENTITY,
-      values: [at.get(INVENTORY_TABS) | INVENTORY_TAB_FIRST],
-    },
-  );
+  patches.push(...stamps.done(), at.patch(INVENTORY_TABS, { first: true }));
   session.patch(patches);
 }

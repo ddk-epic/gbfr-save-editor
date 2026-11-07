@@ -28,7 +28,7 @@ export function keyOf(
   if (key !== undefined) return key;
 
   const unresolved = `#${hash.toString(16).padStart(8, "0")}`;
-  // Once per hash, so a missing key surfaces without flooding the console.
+  // Warns once per table and hash.
   if (!warned.has(`${table.name}${unresolved}`)) {
     warned.add(`${table.name}${unresolved}`);
     console.warn(
@@ -48,7 +48,22 @@ export function hashAttribute(
       const hash = values?.[0] as number | undefined;
       return hash === undefined || hash === EMPTY_HASH ? undefined : hash;
     },
+    write: (value) => [value ?? EMPTY_HASH],
   };
+}
+
+const hashesByTable = new WeakMap<KeyTable, Map<string, number>>();
+
+/** Hash of a table key, hashing the key when the table lacks it. */
+function hashOfKey(table: KeyTable, key: string): number {
+  let hashes = hashesByTable.get(table);
+  if (!hashes) {
+    hashes = new Map(
+      Object.entries(table.keys).map(([hash, name]) => [name, Number(hash)]),
+    );
+    hashesByTable.set(table, hashes);
+  }
+  return hashes.get(key) ?? hashId(key);
 }
 
 export function keyAttribute(
@@ -59,5 +74,12 @@ export function keyAttribute(
     id,
     valueType: "uint",
     read: (values) => keyOf(table, values?.[0] as number | undefined),
+    write(value) {
+      if (value === undefined) return [EMPTY_HASH];
+      const unresolved = /^#([0-9a-f]{8})$/.exec(value);
+      return [
+        unresolved ? parseInt(unresolved[1]!, 16) : hashOfKey(table, value),
+      ];
+    },
   };
 }

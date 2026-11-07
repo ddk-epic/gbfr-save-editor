@@ -107,3 +107,16 @@ describe("UnitStore", () => {
     expect(() => units.get(misdeclared, 1)).toThrow(SaveFormatError);
   });
 });
+
+describe("UnitStore.onlyEntityWhere", () => {
+  const units = unitStore({ 1: [[ID, 7]], 2: [[ID, 8]], 3: [[ID, 8]] });
+
+  it("returns the one entity holding the value", () => {
+    expect(units.onlyEntityWhere(ID, 7)).toBe(1);
+  });
+
+  it("throws when none or several hold it", () => {
+    expect(() => units.onlyEntityWhere(ID, 9)).toThrow("0 units of 20 hold 9");
+    expect(() => units.onlyEntityWhere(ID, 8)).toThrow("2 units of 20 hold 8");
+  });
+});

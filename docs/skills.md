@@ -13,10 +13,10 @@ Skills occupy entities 0-655. The `ability` rows fill them from 0, and the rest 
 
 ### Flags
 
-| Bit | Value | Name             | Set on                                                                      |
-| --- | ----- | ---------------- | --------------------------------------------------------------------------- |
-| 0   | 1     | `SKILL_ACQUIRED` | Acquired: granted by a taken mastery node, or the character's default skill |
-| 3   | 8     | `SKILL_SEEN`     | Skills whose new mark is cleared                                            |
+| Bit | Value | Name       | Set on                                                                      |
+| --- | ----- | ---------- | --------------------------------------------------------------------------- |
+| 0   | 1     | `acquired` | Acquired: granted by a taken mastery node, or the character's default skill |
+| 3   | 8     | `seen`     | Skills whose new mark is cleared                                            |
 
 - 3904 takes the values 0, 1 and 9. Bit 3 is only set with bit 0.
 - A mastery node grants the skill in its `limit_bonus.AbilityId`. Every taken node's skill has bit 0.

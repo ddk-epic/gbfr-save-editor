@@ -4,11 +4,9 @@ import type { UnitStore } from "../../core/unit-store";
 import {
   ABILITIES,
   EQUIP_SKILLS,
-  SKILL_ACQUIRED,
   SKILL_FLAGS,
   SKILL_KEY,
   SKILL_POSITIONS,
-  SKILL_SEEN,
 } from "./attributes";
 
 /** ability.Key of acquired skills not yet seen, guest characters included. */
@@ -18,12 +16,7 @@ export function readUnseenSkills(units: UnitStore): string[] {
     const at = units.of(entity);
     const key = at.get(SKILL_KEY);
     const flags = at.get(SKILL_FLAGS);
-    if (
-      key !== undefined &&
-      (flags & SKILL_ACQUIRED) !== 0 &&
-      (flags & SKILL_SEEN) === 0
-    )
-      keys.push(key);
+    if (key !== undefined && flags.acquired && !flags.seen) keys.push(key);
   }
   return keys;
 }

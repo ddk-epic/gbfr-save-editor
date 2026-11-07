@@ -47,10 +47,10 @@ export interface Conflux {
 }
 
 /** Values of one attribute by the key hash another attribute holds at the same entity. */
-function byKey<T>(
+function byKey<T, W>(
   units: UnitStore,
   key: Attribute<number | undefined>,
-  value: Attribute<T>,
+  value: Attribute<T, W>,
   range: EntityRange,
 ): Map<number, T> {
   const values = new Map<number, T>();
