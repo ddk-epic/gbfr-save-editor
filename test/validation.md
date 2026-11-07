@@ -1,12 +1,12 @@
 # Validation
 
-`validateSave` in `src/save/validate.ts` checks claims every save the game writes holds, and returns what it finds. Reading a save says what it holds; validation says whether what it holds makes sense.
+`validateSave` in `src/save/validate.ts` runs a list of modules that check claims every save the game writes holds, and returns what it finds. Reading a save says what it holds; validation says whether what it holds makes sense.
 
 ```ts
 const issues = validateSave(readSave(bytes));
 ```
 
-Save content never makes it throw. A reader throwing `SaveFormatError` on the way is caught and returned as a reject, and the checks that did not depend on it still run. `now` can be passed to fix the latest a quest can have been cleared.
+Save content never makes it throw. A reader throwing `SaveFormatError` on the way is caught and returned as a reject, and the modules that did not depend on it still run. `now` can be passed to fix the latest a quest can have been cleared.
 
 ## Issues
 
@@ -31,11 +31,16 @@ Unresolved keys are not reported here yet. They still surface as a console warni
 
 ## Layout
 
-- `src/domains/<x>/validate.ts` checks what that domain's reader returns, such as `validateTrophies(trophies)`.
-- `src/save/cross-validate.ts` holds checks spanning domains, such as quest clears against the profile.
-- `src/save/validate.ts` reads the save once and runs both, catching a `SaveFormatError` per group.
+- `src/core/validation.ts` holds the generic machinery: `Issue`, `Graded`, `reject`, `warning`, `duplicates` and `TableCountIssue`.
+- `src/core/module.ts` defines `SaveModule`, a named set of checks over a save, and the `ValidateContext` they receive.
+- `src/core/validate-container.ts` holds the container checks and their `ContainerIssue` codes as `containerModule`.
+- `src/domains/<x>/issues.ts` holds the issue codes that domain's checks produce, and any format codes its reader throws.
+- `src/domains/<x>/validate.ts` checks what that domain's reader returns, such as `validateTrophies(trophies)`, and exports a module when the checks need only that reader: `confluxModule`, `trophyModule`, `sideQuestModule` (side quests) and `journalModule`.
+- `src/save/cross-validate.ts` holds checks spanning domains, such as quest clears against the profile, as `characterModule`, `inventoryModule` and `counterQuestModule` (counter quests, then their clears against the profile).
+- `src/save/issues.ts` holds the codes those checks produce and composes the public `ValidationIssue`, `SaveFormatIssue` and `SaveIssue` unions.
+- `src/save/validate.ts` lists the default modules as `SAVE_MODULES` and runs them in that order. `validateSave(save, { now, modules })` takes another list, and catches a `SaveFormatError` per module.
 
-Each check takes records rather than a `UnitStore`, so its test states the records it checks.
+Each check takes records rather than a `UnitStore`, so its test states the records it checks. A module wraps reading and one check; counter quests and their clears share a module, so a read failing in either drops both.
 
 ## Checking a file
 

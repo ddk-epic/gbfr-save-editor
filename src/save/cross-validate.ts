@@ -1,5 +1,6 @@
 import { CHARACTER_KEYS } from "../data/characters";
-import { warning, reject, type SaveIssue } from "../core/validation";
+import type { SaveModule } from "../core/module";
+import { warning, reject, type Graded } from "../core/validation";
 import { characterOrder } from "../domains/character/read";
 import { validateCurios } from "../domains/curio/validate";
 import { validateFateEpisodes } from "../domains/fate-episode/validate";
@@ -7,15 +8,26 @@ import { validateItems } from "../domains/item/validate";
 import { validateMasterTraits } from "../domains/master-trait/validate";
 import { validateMasteries } from "../domains/mastery/validate";
 import { validateOverMasteries } from "../domains/over-mastery/validate";
-import type { CounterQuest } from "../domains/quest/read";
+import { readProfile } from "../domains/profile/read";
+import type { QuestIssue } from "../domains/quest/issues";
+import { readCounterQuests, type CounterQuest } from "../domains/quest/read";
+import { validateCounterQuests } from "../domains/quest/validate";
 import { validateWrightstone } from "../domains/wrightstone/validate";
-import type { CharacterData } from "./read-characters";
-import type { Inventory } from "./read-inventory";
+import type {
+  CharacterDataIssue,
+  InventoryIssue,
+  QuestClearsMismatchIssue,
+  SigilSlotClosedIssue,
+} from "./issues";
+import { readCharacterData, type CharacterData } from "./read-characters";
+import { readInventory, type Inventory } from "./read-inventory";
 
 const known = (key: string) => characterOrder(key) < Infinity;
 
-export function validateCharacterData(data: CharacterData): SaveIssue[] {
-  const issues: SaveIssue[] = [];
+export function validateCharacterData(
+  data: CharacterData,
+): Graded<CharacterDataIssue>[] {
+  const issues: Graded<CharacterDataIssue>[] = [];
   const expected = Object.keys(CHARACTER_KEYS).length;
   if (data.characters.length !== expected)
     issues.push(
@@ -72,7 +84,7 @@ const closedSlots = (
   where: string,
   sigils: readonly unknown[],
   slots: number,
-): SaveIssue[] =>
+): Graded<SigilSlotClosedIssue>[] =>
   sigils.flatMap((sigil, i) =>
     sigil !== undefined && i >= slots
       ? [
@@ -87,9 +99,11 @@ const closedSlots = (
       : [],
   );
 
-export function validateInventory(inventory: Inventory): SaveIssue[] {
+export function validateInventory(
+  inventory: Inventory,
+): Graded<InventoryIssue>[] {
   const { items } = inventory;
-  const issues = [
+  const issues: Graded<InventoryIssue>[] = [
     ...validateItems(items, inventory.wishList),
     ...validateCurios(inventory.curios),
   ];
@@ -112,9 +126,34 @@ export function validateInventory(inventory: Inventory): SaveIssue[] {
 export function validateQuestClears(
   quests: CounterQuest[],
   profileClears: number,
-): SaveIssue[] {
+): Graded<QuestClearsMismatchIssue>[] {
   const sum = quests.reduce((total, quest) => total + quest.clears, 0);
   return sum === profileClears
     ? []
     : [reject({ code: "questClearsMismatch", sum, profile: profileClears })];
 }
+
+export const characterModule: SaveModule<CharacterDataIssue> = {
+  name: "characters",
+  validate: (save) =>
+    validateCharacterData(readCharacterData(save.slotData.units)),
+};
+
+export const inventoryModule: SaveModule<InventoryIssue> = {
+  name: "inventory",
+  validate: (save) => validateInventory(readInventory(save.slotData.units)),
+};
+
+export const counterQuestModule: SaveModule<
+  QuestIssue | QuestClearsMismatchIssue
+> = {
+  name: "counter quests",
+  validate(save, { now }) {
+    const units = save.slotData.units;
+    const quests = readCounterQuests(units);
+    return [
+      ...validateCounterQuests(quests, now),
+      ...validateQuestClears(quests, readProfile(units).questsCleared),
+    ];
+  },
+};

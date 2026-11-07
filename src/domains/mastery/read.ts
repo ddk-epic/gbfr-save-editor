@@ -6,6 +6,7 @@ import {
   REPLACED_TRANSCENDENCE,
 } from "../../data/masteries";
 import { SaveFormatError } from "../../core/errors";
+import type { MasteryFormatIssue } from "./issues";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { EntityRange, UnitStore } from "../../core/unit-store";
 import { MASTERY_NODE_BITS, MASTERY_NODE_KEY } from "./attributes";
@@ -74,12 +75,11 @@ export function readMasteries(
     if (hash === undefined) continue;
     const ladder = nodes[hash];
     if (!ladder) continue;
-    // Low byte: bit n is the node at LimitBonusParamIndex n. The second byte
-    // flags a subset of those and has no meaning assigned.
+    // Low byte: bit n is the node at LimitBonusParamIndex n.
     const bits = at.get(MASTERY_NODE_BITS) & 0xff;
     ladder.forEach((node, index) => {
       if (bits & (1 << index) && !node)
-        throw new SaveFormatError({
+        throw new SaveFormatError<MasteryFormatIssue>({
           code: "unusedMasteryBit",
           entity,
           bit: index,

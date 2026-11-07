@@ -1,10 +1,11 @@
-import { reject, type SaveIssue } from "../../core/validation";
+import { reject, type Graded } from "../../core/validation";
+import type { MasteryIssue } from "./issues";
 import type { MasteryProgress, MasterySection } from "./read";
 
 export const validateMasteries = (
   character: string,
   masteries: Record<MasterySection, MasteryProgress>,
-): SaveIssue[] =>
+): Graded<MasteryIssue>[] =>
   Object.entries(masteries)
     .filter(([, { taken, total }]) => taken > total)
     .map(([section, { taken, total }]) =>

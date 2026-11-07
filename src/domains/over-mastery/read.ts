@@ -1,4 +1,5 @@
 import { SaveFormatError } from "../../core/errors";
+import type { OverMasteryFormatIssue } from "./issues";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { EntityRange, UnitStore } from "../../core/unit-store";
 import { OVER_MASTERY_VALUES } from "../../data/over-masteries";
@@ -31,7 +32,11 @@ export function readOverMasteries(
     const bits = at.get(OVER_MASTERY_LEVEL);
     const level = Math.log2(bits) + 1;
     if (!Number.isInteger(level))
-      throw new SaveFormatError({ code: "overMasteryLevel", entity, bits });
+      throw new SaveFormatError<OverMasteryFormatIssue>({
+        code: "overMasteryLevel",
+        entity,
+        bits,
+      });
     const value = OVER_MASTERY_VALUES[key]?.[level - 1];
     return { entity, key, level, value };
   });

@@ -1,8 +1,10 @@
-import { reject, warning, type SaveIssue } from "../../core/validation";
-import type { Conflux } from "./read";
+import { reject, warning, type Graded } from "../../core/validation";
+import type { SaveModule } from "../../core/module";
+import type { ConfluxIssue } from "./issues";
+import { readConflux, type Conflux } from "./read";
 
-export function validateConflux(conflux: Conflux): SaveIssue[] {
-  const issues: SaveIssue[] = [];
+export function validateConflux(conflux: Conflux): Graded<ConfluxIssue>[] {
+  const issues: Graded<ConfluxIssue>[] = [];
   if (conflux.resonancePoints < 0)
     issues.push(
       reject({
@@ -22,3 +24,8 @@ export function validateConflux(conflux: Conflux): SaveIssue[] {
   }
   return issues;
 }
+
+export const confluxModule: SaveModule<ConfluxIssue> = {
+  name: "conflux",
+  validate: (save) => validateConflux(readConflux(save.slotData.units)),
+};

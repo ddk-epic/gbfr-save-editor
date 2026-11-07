@@ -1,8 +1,4 @@
-export {
-  SaveFormatError,
-  type SaveFormatCode,
-  type SaveFormatIssue,
-} from "./core/errors";
+export { SaveFormatError } from "./core/errors";
 export {
   FILE_SIZE,
   readContainer,
@@ -22,13 +18,20 @@ export {
 export { EntityValues, UnitStore, type EntityRange } from "./core/unit-store";
 export { Attribute } from "./core/attribute";
 export { readSave, type Save, type SaveSection } from "./core/read-save";
+export type { Severity } from "./core/validation";
+export type { SaveModule, ValidateContext } from "./core/module";
+export type {
+  SaveFormatCode,
+  SaveFormatIssue,
+  SaveIssue,
+  ValidationCode,
+  ValidationIssue,
+} from "./save/issues";
 export {
-  type SaveIssue,
-  type Severity,
-  type ValidationCode,
-  type ValidationIssue,
-} from "./core/validation";
-export { validateSave, type ValidateOptions } from "./save/validate";
+  SAVE_MODULES,
+  validateSave,
+  type ValidateOptions,
+} from "./save/validate";
 export { hashId } from "./core/xxhash32-custom";
 export { keyOf, keyTable, type KeyTable } from "./core/keys";
 

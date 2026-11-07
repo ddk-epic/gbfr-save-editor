@@ -1,6 +1,8 @@
 import type { ValueType } from "./save-data-binary";
+import type { Issue } from "./validation";
 
-export type SaveFormatIssue =
+/** Format errors raised by core readers. */
+export type CoreFormatIssue =
   /** A read of `size` bytes at `at` falls outside `length`. `what` names the part, such as `SlotData` or `u32`. */
   | {
       code: "outOfBounds";
@@ -37,16 +39,10 @@ export type SaveFormatIssue =
       attribute: number;
       expected: ValueType;
       actual: ValueType;
-    }
-  /** A mastery bit set on a node index the table leaves unused. */
-  | { code: "unusedMasteryBit"; entity: number; bit: number }
-  /** An Over Mastery level that is not a single bit. */
-  | { code: "overMasteryLevel"; entity: number; bits: number };
-
-export type SaveFormatCode = SaveFormatIssue["code"];
+    };
 
 /** The code and its parameters, e.g. `outOfBounds what=header at=0x0 size=52 length=0x10`. */
-function summarize({ code, ...params }: SaveFormatIssue): string {
+function summarize({ code, ...params }: Issue): string {
   const fields = Object.entries(params).map(
     ([name, value]) =>
       `${name}=${typeof value === "bigint" ? `0x${value.toString(16)}` : value}`,
@@ -55,16 +51,16 @@ function summarize({ code, ...params }: SaveFormatIssue): string {
 }
 
 /** Thrown when save bytes do not match the expected layout. */
-export class SaveFormatError extends Error {
+export class SaveFormatError<I extends Issue = Issue> extends Error {
   override name = "SaveFormatError";
-  readonly issue: SaveFormatIssue;
+  readonly issue: I;
 
-  constructor(issue: SaveFormatIssue) {
+  constructor(issue: I) {
     super(summarize(issue));
     this.issue = issue;
   }
 
-  get code(): SaveFormatCode {
+  get code(): I["code"] {
     return this.issue.code;
   }
 }

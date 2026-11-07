@@ -1,10 +1,8 @@
-import { reject, type SaveIssue } from "../../core/validation";
+import { reject, type Graded } from "../../core/validation";
+import type { MasterTraitIssue } from "./issues";
 import type { MasterTrait } from "./read";
 
-/**
- * Cells the board pays out per rank. Perks are lit by those cells rather than
- * bought, so they have no pool of their own.
- */
+/** Cells the board pays out per rank; perks have no pool. */
 export const MASTER_TRAIT_POOLS: Record<MasterTrait["rank"], number> = {
   r1: 10,
   r2: 10,
@@ -15,7 +13,7 @@ export const MASTER_TRAIT_POOLS: Record<MasterTrait["rank"], number> = {
 export function validateMasterTraits(
   character: string,
   traits: MasterTrait[],
-): SaveIssue[] {
+): Graded<MasterTraitIssue>[] {
   const chosen = traits.filter((trait) => trait.chosen && !trait.perk);
   return Object.entries(MASTER_TRAIT_POOLS).flatMap(([rank, pool]) => {
     const count = chosen.filter((trait) => trait.rank === rank).length;

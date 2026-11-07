@@ -3,8 +3,9 @@ import {
   duplicates,
   reject,
   warning,
-  type SaveIssue,
+  type Graded,
 } from "../../core/validation";
+import type { ItemIssue } from "./issues";
 import { itemTab } from "./read";
 
 export const WISH_LIST_MAX = 20;
@@ -12,8 +13,8 @@ export const WISH_LIST_MAX = 20;
 export function validateItems(
   items: Map<string, number>,
   wishList: string[],
-): SaveIssue[] {
-  const issues: SaveIssue[] = [];
+): Graded<ItemIssue>[] {
+  const issues: Graded<ItemIssue>[] = [];
   // The save keeps a unit for every item row, held or not.
   const expected = Object.keys(ITEM_KEYS).length;
   if (items.size !== expected)

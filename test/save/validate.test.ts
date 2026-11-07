@@ -15,7 +15,8 @@ import {
 } from "../../src/domains/sigil/attributes";
 import { SAVE_ENTITY } from "../../src/core/save-entity";
 import { fixtureSave, unitStore } from "../../src/testing";
-import { validateSave } from "../../src/save/validate";
+import { containerModule } from "../../src/core/validate-container";
+import { SAVE_MODULES, validateSave } from "../../src/save/validate";
 
 /** Issues of an empty save. */
 const EMPTY_TABLES = [
@@ -145,5 +146,18 @@ describe("validateSave", () => {
     });
     // The inventory check stopped, the rest still ran.
     expect(codes(issues)).toContain("tableCount");
+  });
+
+  it("runs only the modules it is given", () => {
+    const save = fixtureSave();
+    expect(validateSave(save, { modules: [] })).toEqual([]);
+    expect(validateSave(save, { modules: [containerModule] })).toEqual(
+      containerModule.validate(save, { now: new Date() }),
+    );
+    expect(validateSave(save)).toEqual(
+      SAVE_MODULES.flatMap((module) =>
+        module.validate(save, { now: new Date() }),
+      ),
+    );
   });
 });

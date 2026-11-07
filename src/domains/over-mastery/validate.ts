@@ -1,4 +1,5 @@
-import { reject, type SaveIssue } from "../../core/validation";
+import { reject, type Graded } from "../../core/validation";
+import type { OverMasteryIssue } from "./issues";
 import type { OverMastery } from "./read";
 
 export const OVER_MASTERY_MAX_LEVEL = 10;
@@ -7,7 +8,7 @@ export const OVER_MASTERY_MAX_LEVEL = 10;
 export const validateOverMasteries = (
   character: string,
   lines: (OverMastery | undefined)[],
-): SaveIssue[] =>
+): Graded<OverMasteryIssue>[] =>
   lines
     .filter((line): line is OverMastery => !!line)
     .filter((line) => line.level > OVER_MASTERY_MAX_LEVEL)
