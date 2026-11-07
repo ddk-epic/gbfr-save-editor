@@ -1,6 +1,6 @@
 import { TROPHIES, type TrophyTab } from "../../data/trophies";
 import type { UnitStore } from "../../core/unit-store";
-import { SAVE_ENTITY } from "../user/attributes";
+import { SAVE_ENTITY } from "../../core/save-entity";
 import { TROPHY_EARNED, TROPHY_SEEN } from "./attributes";
 
 export interface Trophy {
@@ -16,11 +16,7 @@ export interface Trophy {
   seen: boolean;
 }
 
-/**
- * Every trophy in `TROPHIES`, the order the journal lists, earned or not. The
- * game hides some unearned trophies until an earlier one in their chain is
- * earned; that is not stored.
- */
+/** Every trophy in `TROPHIES`, in journal order, earned or not. */
 export function readTrophies(units: UnitStore): Trophy[] {
   const at = units.of(SAVE_ENTITY);
   const earned = new Set(
@@ -35,7 +31,7 @@ export function readTrophies(units: UnitStore): Trophy[] {
     earned: earned.delete(key),
     seen: seen[key] === true,
   }));
-  // An earned key the table does not hold, after a game update.
+  // An earned key the table does not hold.
   for (const key of earned)
     trophies.push({
       key,

@@ -3,8 +3,8 @@ import { Attribute } from "../../src/core/attribute";
 import { checksumIndex, slotChecksum } from "../../src/core/checksum";
 import { readContainer } from "../../src/core/container";
 import { readSave } from "../../src/core/read-save";
-import { SAVE_HASHSEED } from "../../src/domains/user/attributes";
-import { SaveSession } from "../../src/save/session";
+import { SAVE_HASHSEED } from "../../src/core/save-entity";
+import { SaveSession } from "../../src/core/session";
 import { fixtureFile } from "../../src/testing";
 
 const LEVEL = Attribute.int(2704);

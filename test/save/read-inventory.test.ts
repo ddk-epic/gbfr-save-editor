@@ -29,8 +29,8 @@ import {
   TRAIT_STRIDE,
   TRAIT_WRIGHTSTONE,
 } from "../../src/domains/trait/attributes";
+import { SAVE_ENTITY } from "../../src/core/save-entity";
 import {
-  SAVE_ENTITY,
   USER_MASTERY_POINTS,
   USER_RUPIES,
 } from "../../src/domains/user/attributes";

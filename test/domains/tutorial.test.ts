@@ -10,8 +10,8 @@ import {
   TUTORIAL_WINDOW_KEY,
 } from "../../src/domains/tutorial/attributes";
 import { canDisableHints, disableHints } from "../../src/domains/tutorial/edit";
-import { SAVE_HASHSEED } from "../../src/domains/user/attributes";
-import { SaveSession } from "../../src/save/session";
+import { SAVE_HASHSEED } from "../../src/core/save-entity";
+import { SaveSession } from "../../src/core/session";
 import { fixtureFile } from "../../src/testing";
 
 const save = () =>

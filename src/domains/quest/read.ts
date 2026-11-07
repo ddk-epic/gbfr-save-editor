@@ -1,6 +1,6 @@
 import { QUEST_COUNTER } from "../../data/quests";
 import type { UnitStore } from "../../core/unit-store";
-import { SAVE_ENTITY } from "../user/attributes";
+import { SAVE_ENTITY } from "../../core/save-entity";
 import {
   COUNTER_QUEST_CLEARS,
   COUNTER_QUEST_FLAGS,

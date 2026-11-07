@@ -7,7 +7,7 @@ import {
   SUMMON_TRAIT_AND_BONUS,
 } from "../../src/domains/summon/attributes";
 import { readEquippedSummons, readSummon } from "../../src/domains/summon/read";
-import { SAVE_ENTITY } from "../../src/domains/user/attributes";
+import { SAVE_ENTITY } from "../../src/core/save-entity";
 import { unitStore } from "../../src/testing";
 
 // The summon table names unresolved keys in hex; the save stores the hash.

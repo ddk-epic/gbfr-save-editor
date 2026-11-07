@@ -4,11 +4,8 @@ import { readCurios, type Curio } from "../domains/curio/read";
 import { readItems, readItemsFlagged } from "../domains/item/read";
 import { readSigils, type Sigil } from "../domains/sigil/read";
 import { readSummons, type Summon } from "../domains/summon/read";
-import {
-  SAVE_ENTITY,
-  USER_MASTERY_POINTS,
-  USER_RUPIES,
-} from "../domains/user/attributes";
+import { SAVE_ENTITY } from "../core/save-entity";
+import { USER_MASTERY_POINTS, USER_RUPIES } from "../domains/user/attributes";
 import { readWeapons, type Weapon } from "../domains/weapon/read";
 import {
   readWrightstones,

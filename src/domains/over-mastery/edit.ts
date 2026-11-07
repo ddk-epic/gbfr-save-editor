@@ -1,6 +1,6 @@
 import { EMPTY_HASH } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
-import type { SaveSession } from "../../save/session";
+import type { SaveSession } from "../../core/session";
 import { CHARACTER_KEY, masteryRange } from "../character/attributes";
 import { OVER_MASTERY_KEY, OVER_MASTERY_LEVEL } from "./attributes";
 import { readOverMasteries } from "./read";

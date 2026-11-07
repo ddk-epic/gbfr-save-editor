@@ -2,7 +2,7 @@ import { EMPTY_HASH } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { UnitStore } from "../../core/unit-store";
 import { hashId } from "../../core/xxhash32-custom";
-import type { Patch, SaveSession } from "../../save/session";
+import type { Patch, SaveSession } from "../../core/session";
 import {
   ITEM_ACQUIRED,
   ITEM_ACQUIRED_LAST,
@@ -16,7 +16,7 @@ import {
   TRAIT_STRIDE,
   TRAIT_WRIGHTSTONE,
 } from "../trait/attributes";
-import { SAVE_ENTITY } from "../user/attributes";
+import { SAVE_ENTITY } from "../../core/save-entity";
 import {
   WRIGHTSTONE_FIRST,
   WRIGHTSTONE_ID,

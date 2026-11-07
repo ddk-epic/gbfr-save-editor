@@ -31,7 +31,7 @@ import {
   WEAPON_ID,
   WEAPON_KEY,
 } from "../../src/domains/weapon/attributes";
-import { SaveSession } from "../../src/save/session";
+import { SaveSession } from "../../src/core/session";
 import { fixtureFile, unitStore, type EntityUnits } from "../../src/testing";
 
 /** WEAPON_FLAGS held bit. */

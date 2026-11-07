@@ -1,7 +1,7 @@
 import { EMPTY_HASH } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
 import { hashId } from "../../core/xxhash32-custom";
-import type { Patch, SaveSession } from "../../save/session";
+import type { Patch, SaveSession } from "../../core/session";
 import {
   TRAIT_FIRST,
   TRAIT_KEY,
@@ -9,7 +9,7 @@ import {
   TRAIT_SIGIL,
   TRAIT_STRIDE,
 } from "../trait/attributes";
-import { SAVE_ENTITY } from "../user/attributes";
+import { SAVE_ENTITY } from "../../core/save-entity";
 import {
   SIGIL_FIRST,
   SIGIL_ID,

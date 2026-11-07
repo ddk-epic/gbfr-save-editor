@@ -1,4 +1,4 @@
-export { SaveSession, type Patch } from "./save/session";
+export { SaveSession, type Patch } from "./core/session";
 export {
   canMaxWeaponSeries,
   canUnlockWeaponSeries,

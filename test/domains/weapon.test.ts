@@ -1,4 +1,5 @@
-import { SAVE_ENTITY, USER_CAPTAIN } from "../../src/domains/user/attributes";
+import { SAVE_ENTITY } from "../../src/core/save-entity";
+import { USER_CAPTAIN } from "../../src/domains/user/attributes";
 import { describe, expect, it } from "vitest";
 import { EMPTY_HASH } from "../../src/core/keys";
 import { hashId } from "../../src/core/xxhash32-custom";
@@ -9,7 +10,7 @@ import {
   TRAIT_STRIDE,
   TRAIT_WEAPON,
 } from "../../src/domains/trait/attributes";
-import { SAVE_HASHSEED } from "../../src/domains/user/attributes";
+import { SAVE_HASHSEED } from "../../src/core/save-entity";
 import {
   WEAPON_APPEARANCE,
   WEAPON_FIRST,
@@ -26,7 +27,7 @@ import {
   readOwnedWeapons,
   readWeapon,
 } from "../../src/domains/weapon/read";
-import { SaveSession } from "../../src/save/session";
+import { SaveSession } from "../../src/core/session";
 import { fixtureFile, unitStore, type EntityUnits } from "../../src/testing";
 
 const WEAPON = WEAPON_FIRST + 3;

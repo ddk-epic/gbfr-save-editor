@@ -1,7 +1,8 @@
 import { CONFLUX_AURAS, CONFLUX_TREE } from "../../data/conflux";
 import type { Attribute } from "../../core/attribute";
 import type { EntityRange, UnitStore } from "../../core/unit-store";
-import { SAVE_ENTITY, USER_RESONANCE_POINTS } from "../user/attributes";
+import { SAVE_ENTITY } from "../../core/save-entity";
+import { USER_RESONANCE_POINTS } from "../user/attributes";
 import {
   CONFLUX_AURA_FLAGS,
   CONFLUX_AURA_KEY,
@@ -94,7 +95,7 @@ export function readConflux(units: UnitStore): Conflux {
     flags.delete(hash);
     return aura(key, category, flag);
   });
-  // A key the table does not hold, after a game update.
+  // A key the table does not hold.
   for (const [hash, flag] of flags)
     auras.push(aura(`#${hash.toString(16).padStart(8, "0")}`, undefined, flag));
 

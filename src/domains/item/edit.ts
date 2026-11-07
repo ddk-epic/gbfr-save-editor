@@ -1,7 +1,7 @@
 import type { Save } from "../../core/read-save";
 import type { UnitStore } from "../../core/unit-store";
-import type { Patch, SaveSession } from "../../save/session";
-import { SAVE_ENTITY } from "../user/attributes";
+import type { Patch, SaveSession } from "../../core/session";
+import { SAVE_ENTITY } from "../../core/save-entity";
 import {
   INVENTORY_TABS,
   ITEM_ACQUIRED,

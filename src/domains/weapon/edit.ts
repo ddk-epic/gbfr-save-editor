@@ -12,7 +12,7 @@ import {
   WEAPONS_HELD_ALL_BADGES,
   WEAPONS_HELD_BADGES,
 } from "../../data/weapons";
-import type { Patch, SaveSession } from "../../save/session";
+import type { Patch, SaveSession } from "../../core/session";
 import { CHARACTER_FLAGS, CHARACTER_KEY } from "../character/attributes";
 import {
   FIELD_NOTE_WEAPON_FLAGS,
@@ -27,7 +27,7 @@ import {
   WEAPONS_HELD_ALL,
 } from "../trophy/attributes";
 import { trophyLedger, type TrophyLedger } from "../trophy/ledger";
-import { SAVE_ENTITY } from "../user/attributes";
+import { SAVE_ENTITY } from "../../core/save-entity";
 import {
   TRAIT_KEY,
   TRAIT_LEVEL,

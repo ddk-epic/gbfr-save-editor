@@ -34,7 +34,8 @@ import {
   SUMMON_POSITIONS,
   SUMMONS_EQUIPPED,
 } from "../../src/domains/summon/attributes";
-import { SAVE_ENTITY, USER_CAPTAIN } from "../../src/domains/user/attributes";
+import { SAVE_ENTITY } from "../../src/core/save-entity";
+import { USER_CAPTAIN } from "../../src/domains/user/attributes";
 import { readCharacterData } from "../../src/save/read-characters";
 import { unitStore } from "../../src/testing";
 

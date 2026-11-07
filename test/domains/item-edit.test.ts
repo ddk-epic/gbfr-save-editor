@@ -9,8 +9,8 @@ import {
   ITEM_FLAGS,
   ITEM_KEY,
 } from "../../src/domains/item/attributes";
-import { SAVE_ENTITY } from "../../src/domains/user/attributes";
-import { SaveSession } from "../../src/save/session";
+import { SAVE_ENTITY } from "../../src/core/save-entity";
+import { SaveSession } from "../../src/core/session";
 import { fixtureFile } from "../../src/testing";
 
 const ROWS: readonly [

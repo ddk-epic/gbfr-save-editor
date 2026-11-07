@@ -13,10 +13,8 @@ import {
   type ResonanceNode,
 } from "../../src/domains/conflux/read";
 import { validateConflux } from "../../src/domains/conflux/validate";
-import {
-  SAVE_ENTITY,
-  USER_RESONANCE_POINTS,
-} from "../../src/domains/user/attributes";
+import { SAVE_ENTITY } from "../../src/core/save-entity";
+import { USER_RESONANCE_POINTS } from "../../src/domains/user/attributes";
 import { unitStore } from "../../src/testing";
 
 const node = (taken: boolean): ResonanceNode => ({

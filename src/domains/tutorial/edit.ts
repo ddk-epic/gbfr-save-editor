@@ -2,7 +2,7 @@ import type { Attribute } from "../../core/attribute";
 import type { Save } from "../../core/read-save";
 import type { UnitStore } from "../../core/unit-store";
 import { hashId } from "../../core/xxhash32-custom";
-import type { Patch, SaveSession } from "../../save/session";
+import type { Patch, SaveSession } from "../../core/session";
 import { TIP_FLAGS, TIP_KEY } from "../journal/attributes";
 import {
   INFORMATION_DIALOG_KEY,

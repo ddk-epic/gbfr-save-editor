@@ -13,7 +13,8 @@ import {
   TROPHY_EARNED,
   TROPHY_PROGRESS,
 } from "../../src/domains/trophy/attributes";
-import { SAVE_ENTITY, USER_CAPTAIN } from "../../src/domains/user/attributes";
+import { SAVE_ENTITY } from "../../src/core/save-entity";
+import { USER_CAPTAIN } from "../../src/domains/user/attributes";
 import {
   canMaxWeaponSeries,
   maxWeaponSeries,
@@ -31,7 +32,7 @@ import {
   WEAPON_XP,
 } from "../../src/domains/weapon/attributes";
 import { readOwnedWeapons, readWeapons } from "../../src/domains/weapon/read";
-import { SaveSession } from "../../src/save/session";
+import { SaveSession } from "../../src/core/session";
 import { fixtureFile } from "../../src/testing";
 
 const CHARACTER = 10000;

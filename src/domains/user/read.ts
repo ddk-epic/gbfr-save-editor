@@ -1,11 +1,13 @@
+import {
+  SAVE_ENTITY,
+  SAVE_FEATURE_VERSION,
+  SAVE_SLOT_VERSION,
+} from "../../core/save-entity";
 import type { UnitStore } from "../../core/unit-store";
 import {
   LOCATION_PARTY_HP,
   LOCATION_SPOT,
   LOCATION_STAGE,
-  SAVE_FEATURE_VERSION,
-  SAVE_SLOT_VERSION,
-  SAVE_ENTITY,
   SYSTEM_PLAY_TIME,
   USER_COMMENDATIONS,
   USER_ONLINE_STATUS_FLAGS,

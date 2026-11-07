@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
-  LOCATION_PARTY_HP,
-  LOCATION_SPOT,
-  LOCATION_STAGE,
   SAVE_ENTITY,
   SAVE_FEATURE_VERSION,
   SAVE_SLOT_VERSION,
+} from "../../src/core/save-entity";
+import {
+  LOCATION_PARTY_HP,
+  LOCATION_SPOT,
+  LOCATION_STAGE,
   SYSTEM_PLAY_TIME,
   USER_COMMENDATIONS,
   USER_MASTERY_POINTS,
@@ -15,7 +17,7 @@ import {
 } from "../../src/domains/user/attributes";
 import { maxMasteryPoints, maxRupies } from "../../src/domains/user/edit";
 import { readSystem, readUser } from "../../src/domains/user/read";
-import { SaveSession } from "../../src/save/session";
+import { SaveSession } from "../../src/core/session";
 import { fixtureFile, unitStore } from "../../src/testing";
 
 /** Text is stored as char codes, terminated by a zero. */

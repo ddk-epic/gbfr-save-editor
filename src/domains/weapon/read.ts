@@ -4,7 +4,8 @@ import type { UnitEntity } from "../../core/save-data-binary";
 import type { UnitStore } from "../../core/unit-store";
 import { SKILLS, TRAIT_WEAPON } from "../trait/attributes";
 import { readFilledTraits } from "../trait/read";
-import { SAVE_ENTITY, USER_CAPTAIN } from "../user/attributes";
+import { SAVE_ENTITY } from "../../core/save-entity";
+import { USER_CAPTAIN } from "../user/attributes";
 import type { Wrightstone } from "../wrightstone/read";
 import {
   COLLECTION_SERIES,

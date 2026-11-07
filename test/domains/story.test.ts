@@ -22,8 +22,8 @@ import {
   SYSTEM_STORY_DIFFICULTY,
 } from "../../src/domains/story/attributes";
 import { advanceStory, storyTargets } from "../../src/domains/story/edit";
-import { SAVE_HASHSEED } from "../../src/domains/user/attributes";
-import { SaveSession } from "../../src/save/session";
+import { SAVE_HASHSEED } from "../../src/core/save-entity";
+import { SaveSession } from "../../src/core/session";
 import { fixtureFile } from "../../src/testing";
 
 const QUESTS = [

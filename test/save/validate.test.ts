@@ -13,7 +13,7 @@ import {
   SIGIL_ID,
   SIGIL_KEY,
 } from "../../src/domains/sigil/attributes";
-import { SAVE_ENTITY } from "../../src/domains/user/attributes";
+import { SAVE_ENTITY } from "../../src/core/save-entity";
 import { fixtureSave, unitStore } from "../../src/testing";
 import { validateSave } from "../../src/save/validate";
 

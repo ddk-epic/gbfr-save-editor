@@ -32,8 +32,9 @@ import {
   TROPHY_EARNED,
   TROPHY_PROGRESS,
 } from "../../src/domains/trophy/attributes";
-import { SAVE_ENTITY, USER_CAPTAIN } from "../../src/domains/user/attributes";
-import { SaveSession } from "../../src/save/session";
+import { SAVE_ENTITY } from "../../src/core/save-entity";
+import { USER_CAPTAIN } from "../../src/domains/user/attributes";
+import { SaveSession } from "../../src/core/session";
 import { fixtureFile, unitStore } from "../../src/testing";
 
 describe("characterEntities", () => {

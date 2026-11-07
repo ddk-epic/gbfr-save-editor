@@ -10,7 +10,8 @@ import {
   CHARACTER_MASTER_XP,
   masteryRange,
 } from "./attributes";
-import { SAVE_ENTITY, USER_CAPTAIN } from "../user/attributes";
+import { SAVE_ENTITY } from "../../core/save-entity";
+import { USER_CAPTAIN } from "../user/attributes";
 
 /** NP rows: Lyria, Vyrn, Sierokarte, Rolan, Historiath, Zathba. */
 export const isNPC = (character: string) => /^NP\d{4}$/.test(character);

@@ -1,18 +1,14 @@
-import type { Attribute } from "../core/attribute";
-import { checksumIndex, slotChecksum } from "../core/checksum";
+import type { Attribute } from "./attribute";
+import { checksumIndex, slotChecksum } from "./checksum";
 import {
   CHECKSUM_COUNT,
   FOOTER_SIZE,
   readContainer,
   SLOT_DATA_SIZE_AT,
-} from "../core/container";
-import { readSave, type Save } from "../core/read-save";
-import {
-  ELEMENTS,
-  type SaveUnit,
-  type UnitEntity,
-} from "../core/save-data-binary";
-import { SAVE_ENTITY, SAVE_HASHSEED } from "../domains/user/attributes";
+} from "./container";
+import { readSave, type Save } from "./read-save";
+import { ELEMENTS, type SaveUnit, type UnitEntity } from "./save-data-binary";
+import { SAVE_ENTITY, SAVE_HASHSEED } from "./save-entity";
 
 const VTABLE_SIZE = 12;
 const UNIT_VALUES_FIELD = 12;

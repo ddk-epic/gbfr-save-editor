@@ -13,7 +13,7 @@ import {
 import { removeOverMasteries } from "../../src/domains/over-mastery/edit";
 import { readOverMasteries } from "../../src/domains/over-mastery/read";
 import { validateOverMasteries } from "../../src/domains/over-mastery/validate";
-import { SaveSession } from "../../src/save/session";
+import { SaveSession } from "../../src/core/session";
 import { fixtureFile, unitStore, type EntityUnits } from "../../src/testing";
 
 describe("readOverMasteries", () => {

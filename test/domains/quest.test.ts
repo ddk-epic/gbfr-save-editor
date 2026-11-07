@@ -19,7 +19,7 @@ import {
   validateCounterQuests,
   validateSideQuests,
 } from "../../src/domains/quest/validate";
-import { SAVE_ENTITY } from "../../src/domains/user/attributes";
+import { SAVE_ENTITY } from "../../src/core/save-entity";
 import { unitStore } from "../../src/testing";
 
 describe("readSideQuests", () => {

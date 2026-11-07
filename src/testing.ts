@@ -19,12 +19,9 @@ import {
 } from "./domains/character/attributes";
 import { ITEM_COUNT, ITEM_KEY } from "./domains/item/attributes";
 import { SIGIL_FIRST, SIGIL_ID, SIGIL_KEY } from "./domains/sigil/attributes";
-import { SAVE_ENTITY, SAVE_HASHSEED } from "./domains/user/attributes";
+import { SAVE_ENTITY, SAVE_HASHSEED } from "./core/save-entity";
 
-/**
- * The units one entity holds, as attribute and stored values. A value that is
- * not an array stands for a unit holding that one value.
- */
+/** An entity's units as attribute and values; a non-array value is a single value. */
 export type EntityUnits = [Attribute<unknown>, unknown][];
 
 export function saveUnits(
@@ -45,10 +42,7 @@ export function saveUnits(
 export const unitStore = (entities: Record<number, EntityUnits> = {}) =>
   new UnitStore(saveUnits(entities));
 
-/**
- * A save holding one character, one item and one sigil. Enough for anything
- * reading across domains, such as the app's view, to have rows to build.
- */
+/** A save holding one character, one item and one sigil. */
 export const sampleUnits = () =>
   unitStore({
     [CHARACTER_FIRST]: [
@@ -108,7 +102,7 @@ class ByteWriter {
     return this.length - size;
   }
 
-  // Each reserves before touching the view, since reserving can replace it.
+  // Each writer reserves before using the view.
   u16(value: number) {
     const at = this.reserve(2);
     this.view.setUint16(at, value, true);
@@ -152,10 +146,7 @@ function writeTable(out: ByteWriter, fields: (number | undefined)[]): number {
   return table;
 }
 
-/**
- * Units as a SaveDataBinary FlatBuffer. The decoder reads it back as the same
- * units, though the layout is not the one the game writes.
- */
+/** Units as a SaveDataBinary FlatBuffer, not in the game's layout. */
 export function encodeSaveDataBinary(
   units: readonly SaveUnit[],
   version?: number,
@@ -189,10 +180,7 @@ export function encodeSaveDataBinary(
   return out.bytesWritten();
 }
 
-/**
- * A whole save file around the given SlotData units, with the checksum the
- * seed at SAVE_HASHSEED picks computed and the other nine left stale at 1.
- */
+/** A save file around the SlotData units; only the checksum SAVE_HASHSEED picks is computed. */
 export function fixtureFile(
   entities: Record<number, EntityUnits>,
   systemEntities: Record<number, EntityUnits> = {},

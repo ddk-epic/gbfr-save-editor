@@ -30,14 +30,13 @@ const units = unitStore({
 
 ## Layout
 
-| Path                    | Holds                                                                   |
-| ----------------------- | ----------------------------------------------------------------------- |
-| `test/core/`            | The container, the unit store, the hashes                               |
-| `test/session/`         | `SaveSession`: patching, export and the checksum it recomputes          |
-| `test/domains/`         | One file per `src/domains` module with a reader or checks worth pinning |
-| `test/read/`            | The readers spanning domains, and their checks                          |
-| `test/data.test.ts`     | The generated `src/data` tables on their own, no reader and no save     |
-| `test/validate.test.ts` | `validateSave` over a whole save                                        |
+| Path                    | Holds                                                                                                         |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `test/core/`            | The container, the unit store, the hashes, and `SaveSession`: patching, export and the checksum it recomputes |
+| `test/domains/`         | One file per `src/domains` module with a reader or checks worth pinning                                       |
+| `test/read/`            | The readers spanning domains, and their checks                                                                |
+| `test/data.test.ts`     | The generated `src/data` tables on their own, no reader and no save                                           |
+| `test/validate.test.ts` | `validateSave` over a whole save                                                                              |
 
 A function belongs to the test of the module that exports it, whatever table it reads. `questOrder` indexes `QUEST_COUNTER`, so it is tested in `test/domains/quest.test.ts`, while `test/data.test.ts` holds the claims about `QUEST_COUNTER` itself.
 

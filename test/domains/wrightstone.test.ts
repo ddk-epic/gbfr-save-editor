@@ -14,7 +14,7 @@ import {
   TRAIT_STRIDE,
   TRAIT_WRIGHTSTONE,
 } from "../../src/domains/trait/attributes";
-import { SAVE_HASHSEED } from "../../src/domains/user/attributes";
+import { SAVE_HASHSEED } from "../../src/core/save-entity";
 import {
   WRIGHTSTONE_FIRST,
   WRIGHTSTONE_ID,
@@ -31,7 +31,7 @@ import {
   type WrightstoneRoll,
 } from "../../src/domains/wrightstone/rolls";
 import { validateWrightstone } from "../../src/domains/wrightstone/validate";
-import { SaveSession } from "../../src/save/session";
+import { SaveSession } from "../../src/core/session";
 import { fixtureFile, type EntityUnits } from "../../src/testing";
 
 const stone = (...levels: number[]) => ({

@@ -1,7 +1,7 @@
+import { SAVE_ENTITY } from "../../core/save-entity";
 import type { Attribute } from "../../core/attribute";
-import type { SaveSession } from "../../save/session";
+import type { SaveSession } from "../../core/session";
 import {
-  SAVE_ENTITY,
   USER_MASTERY_POINTS,
   USER_MAX_MASTERY_POINTS,
   USER_MAX_RUPIES,

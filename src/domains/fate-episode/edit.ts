@@ -5,7 +5,7 @@ import {
   FATE_EPISODE_CHARACTERS,
   FATE_EPISODE_REWARDS,
 } from "../../data/characters";
-import type { Patch, SaveSession } from "../../save/session";
+import type { Patch, SaveSession } from "../../core/session";
 import {
   ITEM_ACQUIRED,
   ITEM_ACQUIRED_LAST,
@@ -16,7 +16,7 @@ import {
 } from "../item/attributes";
 import { ARCHIVE_FLAGS, ARCHIVE_KEY } from "../journal/attributes";
 import { FATE_QUEST_CLEARED, FATE_QUEST_IDS } from "../quest/attributes";
-import { SAVE_ENTITY } from "../user/attributes";
+import { SAVE_ENTITY } from "../../core/save-entity";
 import {
   FATE_EPISODE_BITS,
   FATE_EPISODE_KEY,

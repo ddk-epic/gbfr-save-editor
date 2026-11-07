@@ -27,8 +27,8 @@ import {
   TRAIT_SIGIL,
   traitRange,
 } from "../../src/domains/trait/attributes";
-import { SAVE_HASHSEED } from "../../src/domains/user/attributes";
-import { SaveSession } from "../../src/save/session";
+import { SAVE_HASHSEED } from "../../src/core/save-entity";
+import { SaveSession } from "../../src/core/session";
 import { fixtureFile, unitStore, type EntityUnits } from "../../src/testing";
 
 /** The entity of a sigil's trait at one index. */

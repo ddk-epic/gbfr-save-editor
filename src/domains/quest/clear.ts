@@ -1,4 +1,4 @@
-import type { SaveSession } from "../../save/session";
+import type { SaveSession } from "../../core/session";
 import { PROFILE_FIRST, PROFILE_QUESTS_CLEARED } from "../profile/attributes";
 import {
   PROUD_QUEST_CLEARS,
@@ -6,7 +6,7 @@ import {
   QUESTS_CLEARED,
   TROPHY_PROGRESS,
 } from "../trophy/attributes";
-import { SAVE_ENTITY } from "../user/attributes";
+import { SAVE_ENTITY } from "../../core/save-entity";
 import {
   COUNTER_QUEST_CLEARED,
   COUNTER_QUEST_CLEARS,

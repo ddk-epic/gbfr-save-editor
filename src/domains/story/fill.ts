@@ -2,7 +2,7 @@ import type { Attribute } from "../../core/attribute";
 import { EMPTY_HASH } from "../../core/keys";
 import type { Save } from "../../core/read-save";
 import { hashId } from "../../core/xxhash32-custom";
-import type { Patch, SaveSession } from "../../save/session";
+import type { Patch, SaveSession } from "../../core/session";
 import {
   CHARACTER_BASE_ATTACK,
   CHARACTER_BASE_HP,
@@ -60,12 +60,8 @@ import {
   TROPHY_PROGRESS,
 } from "../trophy/attributes";
 import { earnedCounter } from "../trophy/ledger";
-import {
-  SAVE_ENTITY,
-  USER_CAPTAIN,
-  USER_MAX_RUPIES,
-  USER_RUPIES,
-} from "../user/attributes";
+import { SAVE_ENTITY } from "../../core/save-entity";
+import { USER_CAPTAIN, USER_MAX_RUPIES, USER_RUPIES } from "../user/attributes";
 import {
   WEAPON_FIRST,
   WEAPON_FLAGS,

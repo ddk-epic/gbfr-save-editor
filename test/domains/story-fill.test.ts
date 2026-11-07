@@ -56,11 +56,8 @@ import {
   TROPHY_EARNED,
   TROPHY_PROGRESS,
 } from "../../src/domains/trophy/attributes";
-import {
-  SAVE_HASHSEED,
-  USER_CAPTAIN,
-  USER_RUPIES,
-} from "../../src/domains/user/attributes";
+import { SAVE_HASHSEED } from "../../src/core/save-entity";
+import { USER_CAPTAIN, USER_RUPIES } from "../../src/domains/user/attributes";
 import {
   WEAPON_FLAGS,
   WEAPON_ID,
@@ -69,7 +66,7 @@ import {
   WEAPON_UNCAP,
   WEAPON_XP,
 } from "../../src/domains/weapon/attributes";
-import { SaveSession } from "../../src/save/session";
+import { SaveSession } from "../../src/core/session";
 import { fixtureFile } from "../../src/testing";
 
 const ITEMS = [

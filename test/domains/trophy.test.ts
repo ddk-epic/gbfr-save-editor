@@ -6,7 +6,7 @@ import {
 } from "../../src/domains/trophy/attributes";
 import { readTrophies, type Trophy } from "../../src/domains/trophy/read";
 import { validateTrophies } from "../../src/domains/trophy/validate";
-import { SAVE_ENTITY } from "../../src/domains/user/attributes";
+import { SAVE_ENTITY } from "../../src/core/save-entity";
 import { unitStore } from "../../src/testing";
 
 describe("readTrophies", () => {

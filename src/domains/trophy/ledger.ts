@@ -1,5 +1,5 @@
 import type { UnitStore } from "../../core/unit-store";
-import { SAVE_ENTITY } from "../user/attributes";
+import { SAVE_ENTITY } from "../../core/save-entity";
 import {
   TROPHIES_EARNED_IN_RANGE,
   TROPHY_EARNED,

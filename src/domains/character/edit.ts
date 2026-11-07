@@ -12,7 +12,7 @@ import {
   MASTER_LEVEL_BADGES,
   MASTER_LEVEL_MSP,
 } from "../../data/characters";
-import type { Patch, SaveSession } from "../../save/session";
+import type { Patch, SaveSession } from "../../core/session";
 import {
   CREW_LEVEL_TOTAL,
   LAST_RAISED_LEVEL,
@@ -21,7 +21,7 @@ import {
   TROPHY_PROGRESS,
 } from "../trophy/attributes";
 import { trophyLedger } from "../trophy/ledger";
-import { SAVE_ENTITY } from "../user/attributes";
+import { SAVE_ENTITY } from "../../core/save-entity";
 import { recountHeldWeapons } from "../weapon/edit";
 import { offPlayCaptain } from "../weapon/read";
 import {
@@ -42,7 +42,7 @@ import { masterLevelOf } from "./read";
 
 export const MAX_MASTER_LEVEL = MASTER_LEVEL_MSP.length - 1;
 const MASTER_LEVEL_CAP = 50;
-/** 1305 bits 0 and 1; a crew member has bit 0 without bit 1. */
+/** 1305; a crew member has bit 0 without bit 1. */
 const JOINED_MASK = 3;
 
 /** False for NPCs and unused rows. */
