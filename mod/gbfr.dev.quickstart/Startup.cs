@@ -29,6 +29,10 @@ public class Startup : IMod
     private const string GuideUpdateSignature =
         "41 56 56 57 53 48 83 EC 38 48 89 CE 80 B9 00 02 00 00 00 74 ?? 48 8B 86 38 01 00 00";
 
+    // returns a data file parsed into msgpack objects, cached by path (FUN_143b73680)
+    private const string LoadDataFileSignature =
+        "55 41 57 41 56 56 57 53 48 81 EC 88 00 00 00 48 8D AC 24 ?? ?? ?? ?? 48 C7 45 00 ?? ?? ?? ?? 48 89 D7";
+
     // in the run update: mov rax, [session global]
     private const int SessionMov = 0xBD, SessionDisp = 0xC0, SessionNext = 0xC4;
 
@@ -38,6 +42,7 @@ public class Startup : IMod
     private Boosts? _boosts;
     private ChestTimer? _chestTimer;
     private ResultTimer? _resultTimer;
+    private StartupLogos? _startupLogos;
 
     public void StartEx(IModLoaderV1 loaderApi, IModConfigV1 modConfig)
     {
@@ -50,6 +55,8 @@ public class Startup : IMod
             return;
         }
         _settings = Settings.Load(loader.GetDirectoryForModId(modConfig.ModId));
+        if (_settings.SkipStartupLogos)
+            InstallStartupLogos();
         new Thread(Run) { IsBackground = true, Name = "quick" }.Start();
     }
 
@@ -63,6 +70,18 @@ public class Startup : IMod
         {
             _logger.WriteLine($"[quick] stopped: {e}");
         }
+    }
+
+    private unsafe void InstallStartupLogos()
+    {
+        var module = Process.GetCurrentProcess().MainModule!;
+        var load = new Scanner((byte*)module.BaseAddress, module.ModuleMemorySize).FindPattern(LoadDataFileSignature);
+        if (!load.Found)
+        {
+            _logger.WriteLine("[quick] data file loader not found; startup logos not skipped");
+            return;
+        }
+        _startupLogos = new StartupLogos(_hooks!, _logger, module.BaseAddress + load.Offset);
     }
 
     // Retries while SteamStub may still be unpacking the code.

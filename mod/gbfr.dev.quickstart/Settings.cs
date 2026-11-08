@@ -9,6 +9,7 @@ public sealed class Settings
     public float RunSpeedMultiplier { get; set; } = 3f;
     public bool SkipChestTimer { get; set; } = true;
     public bool SkipResultTimer { get; set; } = true;
+    public bool SkipStartupLogos { get; set; } = true;
 
     private static readonly JsonSerializerOptions Options = new() { WriteIndented = true };
 
