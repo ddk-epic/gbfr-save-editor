@@ -55,16 +55,9 @@ public class Startup : IMod
             return;
         }
         _settings = Settings.Load(loader.GetDirectoryForModId(modConfig.ModId));
-        if (_settings.SkipStartupLogos)
-            InstallStartupLogos();
-        new Thread(Run) { IsBackground = true, Name = "quick" }.Start();
-    }
-
-    private void Run()
-    {
         try
         {
-            Install();
+            HookFunctions();
         }
         catch (Exception e)
         {
@@ -72,52 +65,39 @@ public class Startup : IMod
         }
     }
 
-    private unsafe void InstallStartupLogos()
+    private unsafe void HookFunctions()
     {
         var module = Process.GetCurrentProcess().MainModule!;
-        var load = new Scanner((byte*)module.BaseAddress, module.ModuleMemorySize).FindPattern(LoadDataFileSignature);
-        if (!load.Found)
+        var scanner = new Scanner((byte*)module.BaseAddress, module.ModuleMemorySize);
+        var hit = scanner.FindPattern(CalculateHitSignature);
+        var run = scanner.FindPattern(RunUpdateSignature);
+        var flow = scanner.FindPattern(FlowUpdateSignature);
+        var guide = scanner.FindPattern(GuideUpdateSignature);
+        var load = scanner.FindPattern(LoadDataFileSignature);
+        if (!hit.Found || !run.Found || !flow.Found || !guide.Found || !load.Found)
         {
-            _logger.WriteLine("[quick] data file loader not found; startup logos not skipped");
+            _logger.WriteLine("[quick] signatures not found; nothing hooked; is this game version 2.0.6?");
             return;
         }
-        _startupLogos = new StartupLogos(_hooks!, _logger, module.BaseAddress + load.Offset);
-    }
-
-    // Retries while SteamStub may still be unpacking the code.
-    private unsafe void Install()
-    {
-        var module = Process.GetCurrentProcess().MainModule!;
-        for (int attempt = 0; attempt < 60; attempt++)
+        nint runUpdate = module.BaseAddress + run.Offset;
+        byte* mov = (byte*)runUpdate + SessionMov;
+        if (mov[0] != 0x48 || mov[1] != 0x8B || mov[2] != 0x05)
         {
-            var scanner = new Scanner((byte*)module.BaseAddress, module.ModuleMemorySize);
-            var hit = scanner.FindPattern(CalculateHitSignature);
-            var run = scanner.FindPattern(RunUpdateSignature);
-            var flow = scanner.FindPattern(FlowUpdateSignature);
-            var guide = scanner.FindPattern(GuideUpdateSignature);
-            if (hit.Found && run.Found && flow.Found && guide.Found)
-            {
-                nint runUpdate = module.BaseAddress + run.Offset;
-                byte* mov = (byte*)runUpdate + SessionMov;
-                if (mov[0] != 0x48 || mov[1] != 0x8B || mov[2] != 0x05)
-                {
-                    _logger.WriteLine("[quick] session global not found; not installing");
-                    return;
-                }
-                nint session = runUpdate + SessionNext + *(int*)(runUpdate + SessionDisp);
-                _boosts = new Boosts(_hooks!, _settings, _logger, module.BaseAddress + hit.Offset, runUpdate, session);
-                if (_settings.SkipChestTimer)
-                    _chestTimer = new ChestTimer(_hooks!, _logger, module.BaseAddress + flow.Offset, session);
-                if (_settings.SkipResultTimer)
-                    _resultTimer = new ResultTimer(_hooks!, _logger, module.BaseAddress + guide.Offset, session);
-                _logger.WriteLine(
-                    $"[quick] installed: damage x{_settings.DamageMultiplier}, run x{_settings.RunSpeedMultiplier}, " +
-                    $"skip chest timer {_settings.SkipChestTimer}, skip result timer {_settings.SkipResultTimer}");
-                return;
-            }
-            Thread.Sleep(1000);
+            _logger.WriteLine("[quick] session global not found; nothing hooked");
+            return;
         }
-        _logger.WriteLine("[quick] signatures not found; is this game version 2.0.6?");
+        nint session = runUpdate + SessionNext + *(int*)(runUpdate + SessionDisp);
+        _boosts = new Boosts(_hooks!, _settings, _logger, module.BaseAddress + hit.Offset, runUpdate, session);
+        if (_settings.SkipChestTimer)
+            _chestTimer = new ChestTimer(_hooks!, _logger, module.BaseAddress + flow.Offset, session);
+        if (_settings.SkipResultTimer)
+            _resultTimer = new ResultTimer(_hooks!, _logger, module.BaseAddress + guide.Offset, session);
+        if (_settings.SkipStartupLogos)
+            _startupLogos = new StartupLogos(_hooks!, _logger, module.BaseAddress + load.Offset);
+        _logger.WriteLine(
+            $"[quick] hooked: damage x{_settings.DamageMultiplier}, run x{_settings.RunSpeedMultiplier}, " +
+            $"skip chest timer {_settings.SkipChestTimer}, skip result timer {_settings.SkipResultTimer}, " +
+            $"skip startup logos {_settings.SkipStartupLogos}");
     }
 
     public void Suspend() { }
