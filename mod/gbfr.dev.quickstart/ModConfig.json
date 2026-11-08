@@ -1,0 +1,21 @@
+{
+  "ModId": "gbfr.dev.quickstart",
+  "ModName": "Quick Start",
+  "ModAuthor": "ddk",
+  "ModVersion": "0.1.0",
+  "ModDescription": "Dev tool for tracing saves: the controlled character deals far more damage and runs faster. Offline only.",
+  "ModDll": "gbfr.dev.quickstart.dll",
+  "ModIcon": "",
+  "ModR2RManagedDll32": "",
+  "ModR2RManagedDll64": "",
+  "ModNativeDll32": "",
+  "ModNativeDll64": "",
+  "IsLibrary": false,
+  "ReleaseMetadataFileName": "",
+  "PluginData": {},
+  "IsUniversalMod": false,
+  "ModDependencies": ["reloaded.sharedlib.hooks"],
+  "OptionalDependencies": [],
+  "SupportedAppId": ["granblue_fantasy_relink.exe"],
+  "ProjectUrl": ""
+}
