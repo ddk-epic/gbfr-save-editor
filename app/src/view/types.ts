@@ -54,7 +54,7 @@ export type Column = [id: ColumnId, width: number];
 export interface Table {
   id: string;
   section: SectionId;
-  /** Tab name when the section holds several tables; tables sharing a tab sit side by side. */
+  /** Tab name when the section holds several tables. */
   tab?: string;
   /** Label above the table when it shares its tab. */
   label?: TableLabelId;
@@ -62,7 +62,7 @@ export interface Table {
   uiLabel?: string;
   /** Takes both sides of its tab. */
   wide?: boolean;
-  /** Each column with its width in letters on a wide screen, padding aside. */
+  /** Widths on a wide screen, without padding. */
   columns: Column[];
   /** The column that also takes the width the others leave. */
   stretch: ColumnId;
@@ -112,6 +112,8 @@ export interface SaveView {
   storyTargets: number[];
   canDisableHints: boolean;
   canUnlockAllCharacters: boolean;
+  canUnlockAllWeaponSeries: boolean;
+  canMaxAllWeaponSeries: boolean;
   canMaxTreasures: boolean;
   canPromoteToProud: boolean;
   canUnlockProudQuests: boolean;

@@ -52,7 +52,7 @@ An uncap, `FUN_1441c9ff0`, takes `item_material_list.CoinCost` and the items of 
 
 The 185 sum matches finished and played saves. Each of these functions earns the entry's trophies when it writes, and none of them runs at a load, so a count met on a load stays unearned until the entry is written again.
 
-`maxWeaponSeries` unlocks a character's missing weapons, then takes the held weapons of the Collection series to uncap 6 and level 150, no rupies or materials spent. It adds the uncaps to 186, sets 185 and the owner's Trove entry, and earns the trophies they meet. 501 is left to the game, which recounts it at a load. `canMaxWeaponSeries` holds while it would change a weapon, an entry or a trophy, so it also repairs a save with the weapons already maxed.
+`maxWeaponSeries` unlocks a character's missing weapons, then takes the held weapons of the Collection series to uncap 6 and level 150, no rupies or materials spent. It adds the uncaps to 186, sets 185 and the owner's Trove entry, and earns the trophies they meet. 501 is left to the game, which recounts it at a load. `canMaxWeaponSeries` holds while it would change a weapon, an entry or a trophy, so it also repairs a save with the weapons already maxed. `maxAllWeaponSeries` runs it on every character it would change, and `canMaxAllWeaponSeries` holds while one remains.
 
 ## Forging
 
@@ -72,7 +72,7 @@ The 185 sum matches finished and played saves. Each of these functions earns the
 
 The Collection and Trove counts of `PL2100`, `PL2200` and `PL2300` leave out weapons with a `weapon.MinFeatureVersion` of 5 or more. The Trove also counts a held series 0 weapon below its last stage. The rupies, items and 225 belong to the blacksmith's `FUN_1441c8b10`. 8913 counts forges.
 
-`unlockWeaponSeries` makes these writes for each series the character does not hold, none on the captain not in play, with no rupies or materials spent, and earns the trophies the counts meet. It adds the row with `forged` in `WEAPON_ROWS`, one per character and series: not a `WeaponId2` variant, and preferring a row whose `ForgeUnlockQuestId` is not `00999999`.
+`unlockWeaponSeries` makes these writes for each series the character does not hold, none on the captain not in play, with no rupies or materials spent, and earns the trophies the counts meet. It adds the row with `forged` in `WEAPON_ROWS`, one per character and series: not a `WeaponId2` variant, and preferring a row whose `ForgeUnlockQuestId` is not `00999999`. `unlockAllWeaponSeries` runs it on every character.
 
 ## Series
 

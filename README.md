@@ -148,9 +148,11 @@ A save editor for Granblue Fantasy: Relink. Still work in progress and planned w
 - [x] Remove wrightstone
 - [ ] Apply wrightstone
 - [x] Max all weapon series level
+- [x] Max all weapons
 - [ ] Upgrade weapon: plus, awakening, transcendence, or max all
 - [ ] Unlock weapon
 - [x] Unlock weapon series
+- [x] Unlock all weapons
 - [ ] Set appearance
 
 #### Wrightstones

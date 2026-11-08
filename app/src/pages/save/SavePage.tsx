@@ -5,6 +5,8 @@ import {
   addWrightstone,
   advanceStory,
   disableHints,
+  maxAllWeaponSeries,
+  unlockAllWeaponSeries,
   unlockAllCharacters,
   editSigil,
   editWrightstone,
@@ -142,6 +144,10 @@ export function SavePage({
   const canUnlock = useSave((save) => save?.view.canUnlockProudQuests);
   const canDisable = useSave((save) => save?.view.canDisableHints);
   const canUnlockAll = useSave((save) => save?.view.canUnlockAllCharacters);
+  const canUnlockWeapons = useSave(
+    (save) => save?.view.canUnlockAllWeaponSeries,
+  );
+  const canMaxWeapons = useSave((save) => save?.view.canMaxAllWeaponSeries);
   // Selecting a row leaves the add form.
   const [prevRef, setPrevRef] = useState(ref);
   if (ref !== prevRef) {
@@ -316,6 +322,27 @@ export function SavePage({
                     ]
                   : []
               }
+            />
+          ) : table.id === "weapons" ? (
+            <EditMenu
+              actions={[
+                ...(canUnlockWeapons
+                  ? [
+                      {
+                        label: t("edit.unlockAllWeapons"),
+                        run: () => edit(unlockAllWeaponSeries),
+                      },
+                    ]
+                  : []),
+                ...(canMaxWeapons
+                  ? [
+                      {
+                        label: t("edit.maxAllWeapons"),
+                        run: () => edit(maxAllWeaponSeries),
+                      },
+                    ]
+                  : []),
+              ]}
             />
           ) : table.id === "sigils" ? (
             <EditMenu

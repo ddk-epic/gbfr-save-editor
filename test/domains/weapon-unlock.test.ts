@@ -17,8 +17,12 @@ import {
 } from "../../packages/trophy/attributes";
 import { SAVE_ENTITY } from "../../packages/core/save-entity";
 import {
+  canMaxAllWeaponSeries,
   canMaxWeaponSeries,
+  canUnlockAllWeaponSeries,
+  maxAllWeaponSeries,
   maxWeaponSeries,
+  unlockAllWeaponSeries,
   unlockWeapon,
   unlockWeaponSeries,
 } from "../../packages/workflows/weapon";
@@ -47,7 +51,13 @@ const ENTRIES = 12;
 const open = (
   character: string,
   held: readonly (readonly [key: string, xp: number, uncap: number])[],
-  options: { flags?: number; note?: string; noteFlags?: number } = {},
+  options: {
+    flags?: number;
+    note?: string;
+    noteFlags?: number;
+    /** Characters at the entities after `CHARACTER`. */
+    others?: string[];
+  } = {},
 ) => {
   const counts = Array<bigint>(1200).fill(0n);
   const rows = Array.from(
@@ -66,6 +76,15 @@ const open = (
         [CHARACTER_KEY, hashId(character)],
         [CHARACTER_FLAGS, options.flags ?? 1],
       ],
+      ...Object.fromEntries(
+        (options.others ?? []).map((other, i) => [
+          CHARACTER + 1 + i,
+          [
+            [CHARACTER_KEY, hashId(other)],
+            [CHARACTER_FLAGS, 1],
+          ],
+        ]),
+      ),
       [NOTE]: [
         [FIELD_NOTE_WEAPON_KEY, hashId(options.note ?? "")],
         [FIELD_NOTE_WEAPON_FLAGS, options.noteFlags ?? 0],
@@ -263,5 +282,35 @@ describe("maxWeaponSeries with weapons missing", () => {
     maxWeaponSeries(session, CHARACTER);
     expect(progress(session)[491]).toBe(2n);
     expect(earned(session)[679]).toBe(true);
+  });
+});
+
+describe("all weapon series", () => {
+  const owned = (session: SaveSession, character: string) => [
+    ...(readOwnedWeapons(units(session)).get(character)?.values() ?? []),
+  ];
+
+  it("unlocks every character's series", () => {
+    const session = open("PL0000", [], { others: ["PL0200"] });
+    expect(canUnlockAllWeaponSeries(session.save)).toBe(true);
+    unlockAllWeaponSeries(session);
+    expect(owned(session, "PL0000")).toHaveLength(6);
+    expect(owned(session, "PL0200")).toHaveLength(6);
+    expect(canUnlockAllWeaponSeries(session.save)).toBe(false);
+  });
+
+  it("maxes every character's series", () => {
+    const session = open("PL0000", [["WEP_PL0000_02", 790, 2]], {
+      others: ["PL0200"],
+    });
+    expect(canMaxAllWeaponSeries(session.save)).toBe(true);
+    maxAllWeaponSeries(session);
+    for (const character of ["PL0000", "PL0200"]) {
+      const held = owned(session, character);
+      expect(held).toHaveLength(6);
+      expect(held.every((w) => w.uncap === 6 && w.xp === LAST_XP)).toBe(true);
+    }
+    expect(progress(session)[184]).toBe(12n);
+    expect(canMaxAllWeaponSeries(session.save)).toBe(false);
   });
 });

@@ -1,8 +1,12 @@
 export { SaveSession, type Patch } from "@gbfr/core/session";
 export {
+  canMaxAllWeaponSeries,
   canMaxWeaponSeries,
+  canUnlockAllWeaponSeries,
   canUnlockWeaponSeries,
+  maxAllWeaponSeries,
   maxWeaponSeries,
+  unlockAllWeaponSeries,
   unlockWeaponSeries,
 } from "@gbfr/workflows";
 export { removeWrightstone } from "@gbfr/weapon/edit";

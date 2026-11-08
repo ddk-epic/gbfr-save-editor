@@ -1,4 +1,4 @@
-import type { UnitEntity, UnitStore } from "@gbfr/core";
+import type { Save, UnitEntity, UnitStore } from "@gbfr/core";
 import type { SaveSession } from "@gbfr/core/session";
 import { WEAPON_ROWS, raisableWeapons, unlockableWeapons } from "@gbfr/weapon";
 import { CHARACTER_KEY } from "@gbfr/character";
@@ -67,4 +67,29 @@ export function maxWeaponSeries(session: SaveSession, character: UnitEntity) {
   if (!plan?.changed)
     throw new Error(`character ${character} has no weapon series to raise`);
   session.patch([...raiseWeapons(units, plan.raised), ...plan.patches]);
+}
+
+const characters = (units: UnitStore) => units.entitiesWith(CHARACTER_KEY);
+
+export const canUnlockAllWeaponSeries = (save: Save) =>
+  characters(save.slotData.units).some((entity) =>
+    canUnlockWeaponSeries(save.slotData.units, entity),
+  );
+
+/** `unlockWeaponSeries` on every character. */
+export function unlockAllWeaponSeries(session: SaveSession) {
+  for (const entity of characters(session.save.slotData.units))
+    unlockWeaponSeries(session, entity);
+}
+
+export const canMaxAllWeaponSeries = (save: Save) =>
+  characters(save.slotData.units).some((entity) =>
+    canMaxWeaponSeries(save.slotData.units, entity),
+  );
+
+/** `maxWeaponSeries` on every character it would change. */
+export function maxAllWeaponSeries(session: SaveSession) {
+  for (const entity of characters(session.save.slotData.units))
+    if (canMaxWeaponSeries(session.save.slotData.units, entity))
+      maxWeaponSeries(session, entity);
 }
