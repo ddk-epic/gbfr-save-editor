@@ -54,7 +54,7 @@ public sealed unsafe class StartupLogos
         if (_logged)
             return;
         _logged = true;
-        _logger.WriteLine(skipped ? "[quick] startup logos skipped" : "[quick] boot flow logo transition not found");
+        _logger.WriteLine(skipped ? "[gbfr.dev.quickstart] startup logos skipped" : "[gbfr.dev.quickstart] boot flow logo transition not found");
     }
 
     // Retargets the start node's logo transition to the load node.

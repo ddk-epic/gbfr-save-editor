@@ -77,7 +77,7 @@ public sealed unsafe class Boosts
         if (!_loggedHit)
         {
             _loggedHit = true;
-            _logger.WriteLine($"[quick] first boosted hit: {damage} -> {boosted}");
+            _logger.WriteLine($"[gbfr.dev.quickstart] first boosted hit: {damage} -> {boosted}");
         }
     }
 
@@ -98,7 +98,7 @@ public sealed unsafe class Boosts
             if (!_loggedNoTime)
             {
                 _loggedNoTime = true;
-                _logger.WriteLine("[quick] the character has no time object; run speed unchanged");
+                _logger.WriteLine("[gbfr.dev.quickstart] the character has no time object; run speed unchanged");
             }
             return;
         }
@@ -111,7 +111,7 @@ public sealed unsafe class Boosts
         if (!_loggedRun)
         {
             _loggedRun = true;
-            _logger.WriteLine($"[quick] first boosted run: rate {rate}");
+            _logger.WriteLine($"[gbfr.dev.quickstart] first boosted run: rate {rate}");
         }
     }
 

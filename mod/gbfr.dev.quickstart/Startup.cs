@@ -51,7 +51,7 @@ public class Startup : IMod
         loader.GetController<IReloadedHooks>()?.TryGetTarget(out _hooks);
         if (_hooks == null)
         {
-            _logger.WriteLine("[quick] Reloaded hooks not available");
+            _logger.WriteLine("[gbfr.dev.quickstart] Reloaded hooks not available");
             return;
         }
         _settings = Settings.Load(loader.GetDirectoryForModId(modConfig.ModId));
@@ -61,7 +61,7 @@ public class Startup : IMod
         }
         catch (Exception e)
         {
-            _logger.WriteLine($"[quick] stopped: {e}");
+            _logger.WriteLine($"[gbfr.dev.quickstart] stopped: {e}");
         }
     }
 
@@ -76,14 +76,14 @@ public class Startup : IMod
         var load = scanner.FindPattern(LoadDataFileSignature);
         if (!hit.Found || !run.Found || !flow.Found || !guide.Found || !load.Found)
         {
-            _logger.WriteLine("[quick] signatures not found; nothing hooked; is this game version 2.0.6?");
+            _logger.WriteLine("[gbfr.dev.quickstart] signatures not found; nothing hooked; is this game version 2.0.6?");
             return;
         }
         nint runUpdate = module.BaseAddress + run.Offset;
         byte* mov = (byte*)runUpdate + SessionMov;
         if (mov[0] != 0x48 || mov[1] != 0x8B || mov[2] != 0x05)
         {
-            _logger.WriteLine("[quick] session global not found; nothing hooked");
+            _logger.WriteLine("[gbfr.dev.quickstart] session global not found; nothing hooked");
             return;
         }
         nint session = runUpdate + SessionNext + *(int*)(runUpdate + SessionDisp);
@@ -95,7 +95,7 @@ public class Startup : IMod
         if (_settings.SkipStartupLogos)
             _startupLogos = new StartupLogos(_hooks!, _logger, module.BaseAddress + load.Offset);
         _logger.WriteLine(
-            $"[quick] hooked: damage x{_settings.DamageMultiplier}, run x{_settings.RunSpeedMultiplier}, " +
+            $"[gbfr.dev.quickstart] hooked: damage x{_settings.DamageMultiplier}, run x{_settings.RunSpeedMultiplier}, " +
             $"skip chest timer {_settings.SkipChestTimer}, skip result timer {_settings.SkipResultTimer}, " +
             $"skip startup logos {_settings.SkipStartupLogos}");
     }

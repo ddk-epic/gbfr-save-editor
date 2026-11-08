@@ -43,7 +43,7 @@ public sealed unsafe class ChestTimer
             if (!_logged)
             {
                 _logged = true;
-                _logger.WriteLine("[quick] first chest timer ended");
+                _logger.WriteLine("[gbfr.dev.quickstart] first chest timer ended");
             }
         }
         return _hook.OriginalFunction(flow);

@@ -44,7 +44,7 @@ public sealed unsafe class ResultTimer
         if (!_logged)
         {
             _logged = true;
-            _logger.WriteLine("[quick] first result timer ended");
+            _logger.WriteLine("[gbfr.dev.quickstart] first result timer ended");
         }
     }
 }
