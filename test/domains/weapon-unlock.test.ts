@@ -1,28 +1,32 @@
 import { describe, expect, it } from "vitest";
-import { hashId } from "../../src/core/xxhash32-custom";
-import { WEAPON_ROWS } from "../../src/domains/weapon/data.gen";
-import { WEAPONS_HELD_ALL_BADGES } from "../../src/domains/trophy/data.gen";
+import { hashId } from "../../packages/core/xxhash32-custom";
+import { WEAPON_ROWS } from "../../packages/weapon/data.gen";
+import { WEAPONS_HELD_ALL_BADGES } from "../../packages/trophy/data.gen";
 import {
   CHARACTER_FLAGS,
   CHARACTER_KEY,
   CAPTAIN,
-} from "../../src/domains/character/attributes";
+} from "../../packages/character/attributes";
 import {
   FIELD_NOTE_WEAPON_FLAGS,
   FIELD_NOTE_WEAPON_KEY,
-} from "../../src/domains/journal/attributes";
+} from "../../packages/journal/attributes";
 import {
   TROPHY_EARNED,
   TROPHY_PROGRESS,
-} from "../../src/domains/trophy/attributes";
-import { SAVE_ENTITY } from "../../src/core/save-entity";
+} from "../../packages/trophy/attributes";
+import { SAVE_ENTITY } from "../../packages/core/save-entity";
 import {
   canMaxWeaponSeries,
   maxWeaponSeries,
   unlockWeapon,
   unlockWeaponSeries,
-} from "../../src/workflows/weapon";
-import { unlockableWeapons } from "../../src/domains/weapon/read";
+} from "../../packages/workflows/weapon";
+import {
+  unlockableWeapons,
+  readOwnedWeapons,
+  readWeapons,
+} from "../../packages/weapon/read";
 import {
   WEAPON_FIRST,
   WEAPON_FLAGS,
@@ -31,10 +35,9 @@ import {
   WEAPON_LAST_ID,
   WEAPON_UNCAP,
   WEAPON_XP,
-} from "../../src/domains/weapon/attributes";
-import { readOwnedWeapons, readWeapons } from "../../src/domains/weapon/read";
-import { SaveSession } from "../../src/core/session";
-import { fixtureFile } from "../../src/testing";
+} from "../../packages/weapon/attributes";
+import { SaveSession } from "../../packages/core/session";
+import { fixtureFile } from "../../packages/gbfr-save-editor/testing";
 
 const CHARACTER = 10000;
 const NOTE = 700;

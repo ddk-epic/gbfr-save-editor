@@ -1,0 +1,17 @@
+{
+  "name": "@gbfr/weapon",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./edit": "./edit.ts"
+  },
+  "dependencies": {
+    "@gbfr/character": "workspace:*",
+    "@gbfr/core": "workspace:*",
+    "@gbfr/tables": "workspace:*",
+    "@gbfr/trait": "workspace:*",
+    "@gbfr/wrightstone": "workspace:*"
+  }
+}

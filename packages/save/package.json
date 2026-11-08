@@ -1,0 +1,33 @@
+{
+  "name": "@gbfr/save",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {
+    "@gbfr/character": "workspace:*",
+    "@gbfr/conflux": "workspace:*",
+    "@gbfr/core": "workspace:*",
+    "@gbfr/curio": "workspace:*",
+    "@gbfr/equipment": "workspace:*",
+    "@gbfr/fate-episode": "workspace:*",
+    "@gbfr/item": "workspace:*",
+    "@gbfr/journal": "workspace:*",
+    "@gbfr/master-trait": "workspace:*",
+    "@gbfr/mastery": "workspace:*",
+    "@gbfr/over-mastery": "workspace:*",
+    "@gbfr/party": "workspace:*",
+    "@gbfr/profile": "workspace:*",
+    "@gbfr/quest": "workspace:*",
+    "@gbfr/sigil": "workspace:*",
+    "@gbfr/skill": "workspace:*",
+    "@gbfr/summon": "workspace:*",
+    "@gbfr/tables": "workspace:*",
+    "@gbfr/trophy": "workspace:*",
+    "@gbfr/user": "workspace:*",
+    "@gbfr/weapon": "workspace:*",
+    "@gbfr/wrightstone": "workspace:*"
+  }
+}

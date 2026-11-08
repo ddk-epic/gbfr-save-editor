@@ -10,7 +10,7 @@ pnpm test
 
 ## Fixtures
 
-`src/testing.ts` builds units from typed attributes. A value that is not an array stands for a unit holding that one value.
+`packages/gbfr-save-editor/testing.ts` builds units from typed attributes. A value that is not an array stands for a unit holding that one value.
 
 ```ts
 const units = unitStore({
@@ -33,13 +33,13 @@ const units = unitStore({
 | Path                    | Holds                                                                                                         |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------- |
 | `test/core/`            | The container, the unit store, the hashes, and `SaveSession`: patching, export and the checksum it recomputes |
-| `test/domains/`         | One file per `src/domains` module with a reader or checks worth pinning                                       |
+| `test/domains/`         | One file per `packages/<domain>` package with a reader or checks worth pinning                                |
 | `test/read/`            | The readers spanning domains, and their checks                                                                |
-| `test/save/`            | The compositions and validation in `src/save`                                                                 |
+| `test/save/`            | The compositions and validation in `packages/save`                                                            |
 | `test/data.test.ts`     | The generated `data.gen.ts` tables on their own, no reader and no save                                        |
 | `test/validate.test.ts` | `validateSave` over a whole save                                                                              |
 
-The edits in `src/workflows` are tested in the `test/domains/` file of the domain they act on.
+The edits in `packages/workflows` are tested in the `test/domains/` file of the domain they act on.
 
 A function belongs to the test of the module that exports it, whatever table it reads. `questOrder` indexes `QUEST_COUNTER`, so it is tested in `test/domains/quest.test.ts`, while `test/data.test.ts` holds the claims about `QUEST_COUNTER` itself.
 

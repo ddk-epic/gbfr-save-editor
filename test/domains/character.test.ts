@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hashId } from "../../src/core/xxhash32-custom";
+import { hashId } from "../../packages/core/xxhash32-custom";
 import {
   CHARACTER_BASE_ATTACK,
   CHARACTER_BASE_HP,
@@ -12,32 +12,35 @@ import {
   CHARACTER_XP,
   masteryRange,
   CAPTAIN,
-} from "../../src/domains/character/attributes";
+} from "../../packages/character/attributes";
 import {
   canUnlockAllCharacters,
   canUnlockCharacter,
   maxCharacterLevel,
-} from "../../src/domains/character/edit";
+} from "../../packages/character/edit";
 import {
   maxMasterLevel,
   unlockAllCharacters,
   unlockCharacter,
-} from "../../src/workflows/character";
+} from "../../packages/workflows/character";
 import {
   characterEntities,
   joinedCharacters,
   playableCharacters,
   readCaptain,
   readMasterLevel,
-} from "../../src/domains/character/read";
+} from "../../packages/character/read";
 import {
   TROPHY_CHARACTER_LEVEL,
   TROPHY_EARNED,
   TROPHY_PROGRESS,
-} from "../../src/domains/trophy/attributes";
-import { SAVE_ENTITY } from "../../src/core/save-entity";
-import { SaveSession } from "../../src/core/session";
-import { fixtureFile, unitStore } from "../../src/testing";
+} from "../../packages/trophy/attributes";
+import { SAVE_ENTITY } from "../../packages/core/save-entity";
+import { SaveSession } from "../../packages/core/session";
+import {
+  fixtureFile,
+  unitStore,
+} from "../../packages/gbfr-save-editor/testing";
 
 describe("characterEntities", () => {
   it("gives each character's id with its coordinates, skipping empty entities", () => {

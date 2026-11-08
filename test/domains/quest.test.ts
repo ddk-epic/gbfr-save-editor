@@ -7,20 +7,20 @@ import {
   SIDE_QUEST_ACCEPTED,
   SIDE_QUEST_IDS,
   SIDE_QUEST_STATE,
-} from "../../src/domains/quest/attributes";
-import { QUEST_COUNTER } from "../../src/domains/quest/data.gen";
+} from "../../packages/quest/attributes";
+import { QUEST_COUNTER } from "../../packages/quest/data.gen";
 import {
   questOrder,
   readCounterQuests,
   readSideQuests,
   type CounterQuest,
-} from "../../src/domains/quest/read";
+} from "../../packages/quest/read";
 import {
   validateCounterQuests,
   validateSideQuests,
-} from "../../src/domains/quest/validate";
-import { SAVE_ENTITY } from "../../src/core/save-entity";
-import { unitStore } from "../../src/testing";
+} from "../../packages/quest/validate";
+import { SAVE_ENTITY } from "../../packages/core/save-entity";
+import { unitStore } from "../../packages/gbfr-save-editor/testing";
 
 describe("readSideQuests", () => {
   it("joins the parallel lists by position, skipping empty ids", () => {

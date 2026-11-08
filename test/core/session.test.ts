@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { Attribute } from "../../src/core/attribute";
-import { checksumIndex, slotChecksum } from "../../src/core/checksum";
-import { readContainer } from "../../src/core/container";
-import { readSave } from "../../src/core/read-save";
-import { SAVE_HASHSEED } from "../../src/core/save-entity";
-import { SaveSession } from "../../src/core/session";
-import { fixtureFile } from "../../src/testing";
+import { Attribute } from "../../packages/core/attribute";
+import { checksumIndex, slotChecksum } from "../../packages/core/checksum";
+import { readContainer } from "../../packages/core/container";
+import { readSave } from "../../packages/core/read-save";
+import { SAVE_HASHSEED } from "../../packages/core/save-entity";
+import { SaveSession } from "../../packages/core/session";
+import { fixtureFile } from "../../packages/gbfr-save-editor/testing";
 
 const LEVEL = Attribute.int(2704);
 const LIST = Attribute.uintList(2818);

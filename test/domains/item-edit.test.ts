@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { hashId } from "../../src/core/xxhash32-custom";
-import { canMaxTreasures, maxTreasures } from "../../src/domains/item/edit";
+import { hashId } from "../../packages/core/xxhash32-custom";
+import { canMaxTreasures, maxTreasures } from "../../packages/item/edit";
 import {
   INVENTORY_TABS,
   ITEM_ACQUIRED,
@@ -8,10 +8,10 @@ import {
   ITEM_COUNT,
   ITEM_FLAGS,
   ITEM_KEY,
-} from "../../src/domains/item/attributes";
-import { SAVE_ENTITY } from "../../src/core/save-entity";
-import { SaveSession } from "../../src/core/session";
-import { fixtureFile } from "../../src/testing";
+} from "../../packages/item/attributes";
+import { SAVE_ENTITY } from "../../packages/core/save-entity";
+import { SaveSession } from "../../packages/core/session";
+import { fixtureFile } from "../../packages/gbfr-save-editor/testing";
 
 const ROWS: readonly [
   key: number,

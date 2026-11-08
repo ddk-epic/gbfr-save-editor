@@ -1,0 +1,13 @@
+{
+  "name": "@gbfr/fate-episode",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./edit": "./edit.ts"
+  },
+  "dependencies": {
+    "@gbfr/core": "workspace:*"
+  }
+}

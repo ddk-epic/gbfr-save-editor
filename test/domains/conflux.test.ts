@@ -1,24 +1,21 @@
 import { describe, expect, it } from "vitest";
-import {
-  CONFLUX_AURAS,
-  CONFLUX_TREE,
-} from "../../src/domains/conflux/data.gen";
+import { CONFLUX_AURAS, CONFLUX_TREE } from "../../packages/conflux/data.gen";
 import {
   CONFLUX_AURA_FLAGS,
   CONFLUX_AURA_KEY,
   RESONANCE_BITS,
   RESONANCE_KEY,
   RESONANCE_POINTS,
-} from "../../src/domains/conflux/attributes";
+} from "../../packages/conflux/attributes";
 import {
   readConflux,
   type Aura,
   type Conflux,
   type ResonanceNode,
-} from "../../src/domains/conflux/read";
-import { validateConflux } from "../../src/domains/conflux/validate";
-import { SAVE_ENTITY } from "../../src/core/save-entity";
-import { unitStore } from "../../src/testing";
+} from "../../packages/conflux/read";
+import { validateConflux } from "../../packages/conflux/validate";
+import { SAVE_ENTITY } from "../../packages/core/save-entity";
+import { unitStore } from "../../packages/gbfr-save-editor/testing";
 
 const node = (taken: boolean): ResonanceNode => ({
   key: "LB",

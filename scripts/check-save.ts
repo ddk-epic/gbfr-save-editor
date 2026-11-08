@@ -4,7 +4,11 @@
 
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { SaveFormatError, readSave, validateSave } from "../src/index";
+import {
+  SaveFormatError,
+  readSave,
+  validateSave,
+} from "../packages/gbfr-save-editor/index";
 
 const files = process.argv.slice(2);
 if (files.length === 0)

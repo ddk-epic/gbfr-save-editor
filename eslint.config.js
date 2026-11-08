@@ -3,70 +3,42 @@ import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import prettier from "eslint-config-prettier";
 
-const SRC = path.resolve(import.meta.dirname, "src");
+const PACKAGES = path.resolve(import.meta.dirname, "packages");
 
-// Layers each layer may import.
-const LAYERS = {
-  core: ["core"],
-  text: ["text"],
-  tables: ["core", "tables"],
-  domains: ["core", "tables", "domains"],
-  save: ["core", "tables", "domains", "save"],
-  workflows: ["core", "tables", "domains", "workflows"],
-  entry: ["core", "text", "tables", "domains", "save", "workflows", "entry"],
-};
+// Package specifiers that resolve to write code.
+const WRITE_SPECIFIER =
+  /^(@gbfr\/[^/]+\/edit|@gbfr\/core\/session|@gbfr\/workflows|gbfr-save-editor\/edit)$/;
 
-const ENTRIES = ["index", "edit", "language", "testing"];
+const isWriteFile = (rel) =>
+  /(^|\/)(edit|session)$/.test(rel) || rel.startsWith("workflows/");
 
-// Layer of a src-relative path.
-function layerOf(rel) {
-  const top = rel.split("/")[0];
-  if (ENTRIES.includes(top)) return "entry";
-  return Object.hasOwn(LAYERS, top) ? top : undefined;
-}
-
-const isWrite = (rel) =>
-  /(^|\/)(edit|fill|clear|session)$/.test(rel) || rel.startsWith("workflows/");
-
-// Reason an import is not allowed, or null.
-function violation(fromRel, toRel) {
-  const from = layerOf(fromRel);
-  const to = layerOf(toRel);
-  if (!from) return `${fromRel} is in no layer; add it to LAYERS`;
-  if (!to) return `${toRel} is in no layer; add it to LAYERS`;
-  if (isWrite(toRel) && !isWrite(fromRel))
-    return "read code cannot import write code";
-  if (!LAYERS[from].includes(to)) return `${from} cannot import ${to}`;
-  return null;
-}
-
-const layers = {
+const readWrite = {
   rules: {
     imports: {
       meta: { type: "problem", schema: [] },
       create(context) {
         const rel = (file) =>
           path
-            .relative(SRC, file)
+            .relative(PACKAGES, file)
             .split(path.sep)
             .join("/")
             .replace(/\.[cm]?[jt]sx?$/, "");
         const fromRel = rel(context.filename);
         const check = (node) => {
           const source = node.source;
-          if (source?.type !== "Literal" || !source.value.startsWith("."))
+          if (source?.type !== "Literal" || typeof source.value !== "string")
             return;
-          const target = path.resolve(
-            path.dirname(context.filename),
-            source.value,
-          );
-          const toRel = rel(target);
-          if (toRel.startsWith("..")) return;
-          const reason = violation(fromRel, toRel);
-          if (reason)
+          if (isWriteFile(fromRel)) return;
+          const spec = source.value;
+          const write = spec.startsWith(".")
+            ? isWriteFile(
+                rel(path.resolve(path.dirname(context.filename), spec)),
+              )
+            : WRITE_SPECIFIER.test(spec);
+          if (write)
             context.report({
               node: source,
-              message: `${reason} (${source.value}).`,
+              message: `read code cannot import write code (${spec}).`,
             });
         };
         return {
@@ -110,9 +82,9 @@ export default tseslint.config(
       ],
     },
   },
-  // src runs in the browser: no Node modules, no aliases.
+  // packages run in the browser: no Node modules, no aliases.
   {
-    files: ["src/**"],
+    files: ["packages/**"],
     rules: {
       "no-restricted-imports": [
         "error",
@@ -121,18 +93,18 @@ export default tseslint.config(
             {
               group: ["node:*", "fs", "path", "@/*"],
               message:
-                "src runs in the browser and uses relative imports; file access belongs in scripts or test.",
+                "packages run in the browser and import only relative paths or @gbfr/* packages; file access belongs in scripts or test.",
             },
           ],
         },
       ],
     },
   },
-  // Restricts imports between src layers.
+  // Read code never imports write code.
   {
-    files: ["src/**"],
-    plugins: { layers },
-    rules: { "layers/imports": "error" },
+    files: ["packages/**"],
+    plugins: { "read-write": readWrite },
+    rules: { "read-write/imports": "error" },
   },
   prettier,
 );

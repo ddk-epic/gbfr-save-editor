@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { ITEM_KEYS } from "../../src/tables/data.gen";
-import { itemTab } from "../../src/domains/item/read";
-import { validateItems } from "../../src/domains/item/validate";
+import { ITEM_KEYS } from "../../packages/tables/data.gen";
+import { itemTab } from "../../packages/item/read";
+import { validateItems } from "../../packages/item/validate";
 
 // Every item row, as the save holds them.
 const KEYS = Object.values(ITEM_KEYS);

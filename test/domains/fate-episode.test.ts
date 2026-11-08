@@ -1,29 +1,30 @@
 import { describe, expect, it } from "vitest";
-import { hashId } from "../../src/core/xxhash32-custom";
+import { hashId } from "../../packages/core/xxhash32-custom";
 import {
   FATE_EPISODE_KEY,
   FATE_EPISODE_STATE,
-} from "../../src/domains/fate-episode/attributes";
-import { completeFateEpisodes } from "../../src/workflows/fate-episode";
-import { readFateEpisodes } from "../../src/domains/fate-episode/read";
-import { validateFateEpisodes } from "../../src/domains/fate-episode/validate";
+} from "../../packages/fate-episode/attributes";
+import { completeFateEpisodes } from "../../packages/workflows/fate-episode";
+import { readFateEpisodes } from "../../packages/fate-episode/read";
+import { validateFateEpisodes } from "../../packages/fate-episode/validate";
 import {
   ITEM_ACQUIRED,
   ITEM_ACQUIRED_LAST,
   ITEM_COUNT,
   ITEM_FLAGS,
   ITEM_KEY,
-} from "../../src/domains/item/attributes";
-import {
-  ARCHIVE_FLAGS,
-  ARCHIVE_KEY,
-} from "../../src/domains/journal/attributes";
+} from "../../packages/item/attributes";
+import { ARCHIVE_FLAGS, ARCHIVE_KEY } from "../../packages/journal/attributes";
 import {
   FATE_QUEST_CLEARED,
   FATE_QUEST_IDS,
-} from "../../src/domains/quest/attributes";
-import { SaveSession } from "../../src/core/session";
-import { fixtureFile, unitStore, type EntityUnits } from "../../src/testing";
+} from "../../packages/quest/attributes";
+import { SaveSession } from "../../packages/core/session";
+import {
+  fixtureFile,
+  unitStore,
+  type EntityUnits,
+} from "../../packages/gbfr-save-editor/testing";
 
 describe("readFateEpisodes", () => {
   it("groups episodes by character in save order, leaving out untitled ones", () => {

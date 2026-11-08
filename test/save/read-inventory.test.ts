@@ -1,47 +1,50 @@
 import { describe, expect, it } from "vitest";
-import { hashId } from "../../src/core/xxhash32-custom";
-import { CURIO_KEY, CURIO_SERIAL } from "../../src/domains/curio/attributes";
+import { hashId } from "../../packages/core/xxhash32-custom";
+import { CURIO_KEY, CURIO_SERIAL } from "../../packages/curio/attributes";
 import {
   ITEM_COUNT,
   ITEM_FLAGS,
   ITEM_KEY,
-} from "../../src/domains/item/attributes";
+} from "../../packages/item/attributes";
 import {
   SIGIL_FIRST,
   SIGIL_ID,
   SIGIL_KEY,
-} from "../../src/domains/sigil/attributes";
-import { SKILL_FLAGS, SKILL_KEY } from "../../src/domains/skill/attributes";
+} from "../../packages/sigil/attributes";
+import { SKILL_FLAGS, SKILL_KEY } from "../../packages/skill/attributes";
 import {
   SUMMON_FLAGS,
   SUMMON_ID,
   SUMMON_KEY,
-} from "../../src/domains/summon/attributes";
+} from "../../packages/summon/attributes";
 import {
   TRAIT_FIRST,
   TRAIT_KEY,
   TRAIT_LEVEL,
   TRAIT_STRIDE,
   TRAIT_WRIGHTSTONE,
-} from "../../src/domains/trait/attributes";
-import { SAVE_ENTITY } from "../../src/core/save-entity";
+} from "../../packages/trait/attributes";
+import { SAVE_ENTITY } from "../../packages/core/save-entity";
 import {
   USER_MASTERY_POINTS,
   USER_RUPIES,
-} from "../../src/domains/user/attributes";
+} from "../../packages/user/attributes";
 import {
   WEAPON_FIRST,
   WEAPON_ID,
   WEAPON_KEY,
   WEAPON_UNCAP,
-} from "../../src/domains/weapon/attributes";
+} from "../../packages/weapon/attributes";
 import {
   WRIGHTSTONE_FIRST,
   WRIGHTSTONE_ID,
   WRIGHTSTONE_KEY,
-} from "../../src/domains/wrightstone/attributes";
-import { readInventory } from "../../src/save/read-inventory";
-import { unitStore, type EntityUnits } from "../../src/testing";
+} from "../../packages/wrightstone/attributes";
+import { readInventory } from "../../packages/save/read-inventory";
+import {
+  unitStore,
+  type EntityUnits,
+} from "../../packages/gbfr-save-editor/testing";
 
 const POTION = "ITEM_10_0000";
 const MATERIAL = "ITEM_11_0000";

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import type { Attribute } from "../../src/core/attribute";
-import { readSave } from "../../src/core/read-save";
-import { hashId } from "../../src/core/xxhash32-custom";
+import type { Attribute } from "../../packages/core/attribute";
+import { readSave } from "../../packages/core/read-save";
+import { hashId } from "../../packages/core/xxhash32-custom";
 import {
   CHARACTER_BASE_ATTACK,
   CHARACTER_BASE_HP,
@@ -12,36 +12,36 @@ import {
   CHARACTER_OUTFITS_OWNED,
   CHARACTER_XP,
   CAPTAIN,
-} from "../../src/domains/character/attributes";
-import { EQUIP_WEAPON } from "../../src/domains/equipment/attributes";
+} from "../../packages/character/attributes";
+import { EQUIP_WEAPON } from "../../packages/equipment/attributes";
 import {
   ITEM_ACQUIRED,
   ITEM_ACQUIRED_LAST,
   ITEM_COUNT,
   ITEM_FLAGS,
   ITEM_KEY,
-} from "../../src/domains/item/attributes";
+} from "../../packages/item/attributes";
 import {
   ARCHIVE_FLAGS,
   ARCHIVE_KEY,
   FIELD_NOTE_WEAPON_FLAGS,
   FIELD_NOTE_WEAPON_KEY,
-} from "../../src/domains/journal/attributes";
-import { MASTERY_NODE_BITS } from "../../src/domains/mastery/attributes";
+} from "../../packages/journal/attributes";
+import { MASTERY_NODE_BITS } from "../../packages/mastery/attributes";
 import {
   EQUIP_SKILLS,
   SKILL_FLAGS,
   SKILL_KEY,
-} from "../../src/domains/skill/attributes";
+} from "../../packages/skill/attributes";
 import {
   CURRENT_CHAPTER,
   UI_FEATURE_UNLOCKED,
-} from "../../src/domains/story/attributes";
-import { fillSkippedStory } from "../../src/workflows/story-fill";
+} from "../../packages/story/attributes";
+import { fillSkippedStory } from "../../packages/workflows/story-fill";
 import {
   PROFILE_FIRST,
   PROFILE_QUESTS_CLEARED,
-} from "../../src/domains/profile/attributes";
+} from "../../packages/profile/attributes";
 import {
   COUNTER_QUEST_CLEARED,
   COUNTER_QUEST_CLEARS,
@@ -52,13 +52,13 @@ import {
   SHORT_STORY_CHECKPOINTS,
   SHORT_STORY_CLEARS,
   SHORT_STORY_IDS,
-} from "../../src/domains/quest/attributes";
+} from "../../packages/quest/attributes";
 import {
   TROPHY_EARNED,
   TROPHY_PROGRESS,
-} from "../../src/domains/trophy/attributes";
-import { SAVE_HASHSEED } from "../../src/core/save-entity";
-import { USER_RUPIES } from "../../src/domains/user/attributes";
+} from "../../packages/trophy/attributes";
+import { SAVE_HASHSEED } from "../../packages/core/save-entity";
+import { USER_RUPIES } from "../../packages/user/attributes";
 import {
   WEAPON_FLAGS,
   WEAPON_ID,
@@ -66,9 +66,9 @@ import {
   WEAPON_LAST_ID,
   WEAPON_UNCAP,
   WEAPON_XP,
-} from "../../src/domains/weapon/attributes";
-import { SaveSession } from "../../src/core/session";
-import { fixtureFile } from "../../src/testing";
+} from "../../packages/weapon/attributes";
+import { SaveSession } from "../../packages/core/session";
+import { fixtureFile } from "../../packages/gbfr-save-editor/testing";
 
 const ITEMS = [
   "ITEM_70_0004",

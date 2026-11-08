@@ -1,21 +1,24 @@
 import { describe, expect, it } from "vitest";
-import { Attribute } from "../../src/core/attribute";
-import { FILE_SIZE } from "../../src/core/container";
-import { CHARACTER_KEYS, ITEM_KEYS } from "../../src/tables/data.gen";
+import { Attribute } from "../../packages/core/attribute";
+import { FILE_SIZE } from "../../packages/core/container";
+import { CHARACTER_KEYS, ITEM_KEYS } from "../../packages/tables/data.gen";
 import {
   COUNTER_QUEST_CLEARS,
   COUNTER_QUEST_IDS,
   COUNTER_QUEST_LAST_CLEARED,
-} from "../../src/domains/quest/attributes";
+} from "../../packages/quest/attributes";
 import {
   SIGIL_FIRST,
   SIGIL_ID,
   SIGIL_KEY,
-} from "../../src/domains/sigil/attributes";
-import { SAVE_ENTITY } from "../../src/core/save-entity";
-import { fixtureSave, unitStore } from "../../src/testing";
-import { containerModule } from "../../src/core/validate-container";
-import { SAVE_MODULES, validateSave } from "../../src/save/validate";
+} from "../../packages/sigil/attributes";
+import { SAVE_ENTITY } from "../../packages/core/save-entity";
+import {
+  fixtureSave,
+  unitStore,
+} from "../../packages/gbfr-save-editor/testing";
+import { containerModule } from "../../packages/core/validate-container";
+import { SAVE_MODULES, validateSave } from "../../packages/save/validate";
 
 /** Issues of an empty save. */
 const EMPTY_TABLES = [

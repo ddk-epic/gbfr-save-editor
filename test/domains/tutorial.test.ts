@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { hashId } from "../../src/core/xxhash32-custom";
-import { TIP_FLAGS, TIP_KEY } from "../../src/domains/journal/attributes";
+import { hashId } from "../../packages/core/xxhash32-custom";
+import { TIP_FLAGS, TIP_KEY } from "../../packages/journal/attributes";
 import {
   INFORMATION_DIALOG_KEY,
   INFORMATION_DIALOG_SHOWN,
@@ -8,11 +8,14 @@ import {
   TUTORIAL_MENU_KEY,
   TUTORIAL_WINDOW_FLAGS,
   TUTORIAL_WINDOW_KEY,
-} from "../../src/domains/tutorial/attributes";
-import { canDisableHints, disableHints } from "../../src/workflows/tutorial";
-import { SAVE_HASHSEED } from "../../src/core/save-entity";
-import { SaveSession } from "../../src/core/session";
-import { fixtureFile } from "../../src/testing";
+} from "../../packages/tutorial/attributes";
+import {
+  canDisableHints,
+  disableHints,
+} from "../../packages/workflows/tutorial";
+import { SAVE_HASHSEED } from "../../packages/core/save-entity";
+import { SaveSession } from "../../packages/core/session";
+import { fixtureFile } from "../../packages/gbfr-save-editor/testing";
 
 const save = () =>
   SaveSession.open(

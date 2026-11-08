@@ -1,38 +1,39 @@
 import { describe, expect, it } from "vitest";
-import { hashId } from "../../src/core/xxhash32-custom";
+import { hashId } from "../../packages/core/xxhash32-custom";
 import {
   CHARACTER_FIRST,
   CHARACTER_KEY,
-} from "../../src/domains/character/attributes";
+} from "../../packages/character/attributes";
 import {
   EQUIP_CHARACTER,
   EQUIP_SIGIL_SLOTS,
   EQUIP_SIGILS,
   EQUIP_WEAPON,
   LOADOUT_FIRST,
-} from "../../src/domains/equipment/attributes";
-import {
-  equipWeapon,
-  equippableWeapons,
-} from "../../src/domains/equipment/edit";
+} from "../../packages/equipment/attributes";
+import { equipWeapon, equippableWeapons } from "../../packages/equipment/edit";
 import {
   equipmentLookup,
   readCharacterEquipment,
   readEquipment,
-} from "../../src/domains/equipment/read";
+} from "../../packages/equipment/read";
 import {
   SIGIL_FIRST,
   SIGIL_ID,
   SIGIL_KEY,
-} from "../../src/domains/sigil/attributes";
+} from "../../packages/sigil/attributes";
 import {
   WEAPON_FIRST,
   WEAPON_FLAGS,
   WEAPON_ID,
   WEAPON_KEY,
-} from "../../src/domains/weapon/attributes";
-import { SaveSession } from "../../src/core/session";
-import { fixtureFile, unitStore, type EntityUnits } from "../../src/testing";
+} from "../../packages/weapon/attributes";
+import { SaveSession } from "../../packages/core/session";
+import {
+  fixtureFile,
+  unitStore,
+  type EntityUnits,
+} from "../../packages/gbfr-save-editor/testing";
 
 /** WEAPON_FLAGS held bit. */
 const WEAPON_OWNED = 1;

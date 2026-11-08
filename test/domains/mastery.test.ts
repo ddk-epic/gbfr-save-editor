@@ -2,17 +2,17 @@ import { describe, expect, it } from "vitest";
 import {
   MASTERY_FIRST,
   MASTERY_ENTRIES,
-} from "../../src/domains/character/attributes";
+} from "../../packages/character/attributes";
 import {
   MASTERY_NODE_BITS,
   MASTERY_NODE_KEY,
-} from "../../src/domains/mastery/attributes";
+} from "../../packages/mastery/attributes";
 import {
   readMasteries,
   type MasteryProgress,
-} from "../../src/domains/mastery/read";
-import { validateMasteries } from "../../src/domains/mastery/validate";
-import { unitStore } from "../../src/testing";
+} from "../../packages/mastery/read";
+import { validateMasteries } from "../../packages/mastery/validate";
+import { unitStore } from "../../packages/gbfr-save-editor/testing";
 
 const MASTERY = { first: MASTERY_FIRST, count: MASTERY_ENTRIES };
 

@@ -9,17 +9,17 @@ const archives = readArchives(save.slotData.units);
 
 ## Stage 1, core
 
-`readSave` in `src/core/read-save.ts` runs three steps. None of them know what a unit means.
+`readSave` in `packages/core/read-save.ts` runs three steps. None of them know what a unit means.
 
 ### Container
 
-`readContainer` in `src/core/container.ts` reads the 0x34 byte header. It holds the main and sub versions, the Steam ID, and the offset and size of SystemData and SlotData. It cuts both sections out of the file. The last 0x14 bytes of SlotData are a footer that gives the offset and byte count of the ten xxHash64 checksums. `readContainer` reads the checksums and trims them off, so `slotData` ends at the FlatBuffer.
+`readContainer` in `packages/core/container.ts` reads the 0x34 byte header. It holds the main and sub versions, the Steam ID, and the offset and size of SystemData and SlotData. It cuts both sections out of the file. The last 0x14 bytes of SlotData are a footer that gives the offset and byte count of the ten xxHash64 checksums. `readContainer` reads the checksums and trims them off, so `slotData` ends at the FlatBuffer.
 
 Every offset and size gets checked against the file. A section out of bounds or a footer that does not line up throws `SaveFormatError`. Its `issue` holds a `code` naming the failed check and that check's parameters, such as `{ code: "outOfBounds", what: "SlotData", at, size, length }`, so callers phrase the reason in their own language. The library holds no text for them; the message is the code and its parameters.
 
 ### FlatBuffer
 
-`decodeSaveDataBinary` in `src/core/save-data-binary.ts` decodes each section. The root table has a version field, absent in SystemData, then one vector per value type in this order.
+`decodeSaveDataBinary` in `packages/core/save-data-binary.ts` decodes each section. The root table has a version field, absent in SystemData, then one vector per value type in this order.
 
 `bool`, `byte`, `ubyte`, `short`, `ushort`, `int`, `uint`, `long`, `ulong`, `float`
 
@@ -31,7 +31,7 @@ Each vector entry is a unit table with an attribute, an entity and a value vecto
 
 ### Unit store
 
-`UnitStore` in `src/core/unit-store.ts` indexes the units by attribute, then entity. It throws if one attribute appears under two value types, or if an attribute and entity pair appears twice.
+`UnitStore` in `packages/core/unit-store.ts` indexes the units by attribute, then entity. It throws if one attribute appears under two value types, or if an attribute and entity pair appears twice.
 
 Every method addressing an attribute takes a typed attribute and throws if the save stores it as another value type.
 
@@ -48,12 +48,12 @@ The result is a `Save` with `header`, `checksums`, `systemData` and `slotData`. 
 
 ## Stage 2, domains
 
-`src/domains/` holds one module per thing: sigil, weapon, character, journal and the rest. Each has two files.
+Each domain is a package under `packages/` (sigil, weapon, character, journal and the rest), named `@gbfr/<domain>`. Its `index.ts` re-exports the read side, and `edit.ts`, where the domain has one, is the `@gbfr/<domain>/edit` entry. Its `package.json` lists the packages it imports. A domain holds two main files.
 
 - `attributes.ts` names the attribute numbers, the entity ranges and the flag bits, and states the value type each attribute is stored as. It says where a thing lives and nothing about reading it, so reading and writing can both build on it.
 - `read.ts` holds the record type and the functions producing it.
 
-`src/save/` holds what spans several domains: the compositions `readInventory` and `readCharacterData`, and validation. The edit session, `SaveSession`, is in `src/core/session.ts`. Each domain's `data.gen.ts` and `src/tables/data.gen.ts` map key hashes back to game table keys; `pnpm gen:data` generates these files. `src/tables/` holds the key tables several domains share, built over `src/tables/data.gen.ts`. `src/workflows/` holds the edits writing several domains, composed from the domains' own edits.
+`packages/save` holds what spans several domains: the compositions `readInventory` and `readCharacterData`, and validation. The edit session, `SaveSession`, is in `packages/core/session.ts`, the `@gbfr/core/session` entry. Each domain's `data.gen.ts` and `packages/tables/data.gen.ts` map key hashes back to game table keys; `pnpm gen:data` generates these files. `packages/tables` holds the key tables several domains share, built over `packages/tables/data.gen.ts`. `packages/workflows` holds the edits writing several domains, composed from the domains' own edits. `packages/gbfr-save-editor` is the public entry over all of them.
 
 ### Typed attributes
 
@@ -84,7 +84,7 @@ session.patch([
 ]);
 ```
 
-`keyAttribute` resolves a hash to its archive key. `keyOf` in `src/core/keys.ts` does the lookup and takes the table as a parameter, so it holds no table of its own. It returns undefined for the hash of an empty string, which marks an empty slot. A hash missing from the table comes back as `#` plus 8 hex digits, with one console warning per hash.
+`keyAttribute` resolves a hash to its archive key. `keyOf` in `packages/core/keys.ts` does the lookup and takes the table as a parameter, so it holds no table of its own. It returns undefined for the hash of an empty string, which marks an empty slot. A hash missing from the table comes back as `#` plus 8 hex digits, with one console warning per hash.
 
 ### Record coordinates
 
@@ -103,7 +103,7 @@ Every record carries the entity it was read from, and its id where it has one. T
 
 ### Example, Journal Archives
 
-`readArchives` in `src/domains/journal/read.ts` reads attribute 7901 for the archive key and 7902 for its flags. Units with the same entity belong to one entry. Suppose SlotData holds these units.
+`readArchives` in `packages/journal/read.ts` reads attribute 7901 for the archive key and 7902 for its flags. Units with the same entity belong to one entry. Suppose SlotData holds these units.
 
 | Attribute | Entity | Type | Values         |
 | --------- | ------ | ---- | -------------- |
@@ -123,7 +123,7 @@ For entity 0, `ARCHIVE_KEY` resolves `0x00178066` to `ARC_OTHER_004`. `ARCHIVE_F
 
 ### Example, profile
 
-`readProfile` in `src/domains/profile/read.ts` needs no key lookup. It reads one value at a fixed address, attribute 4901 at entity 10600, and falls back to 0 when the unit is missing.
+`readProfile` in `packages/profile/read.ts` needs no key lookup. It reads one value at a fixed address, attribute 4901 at entity 10600, and falls back to 0 when the unit is missing.
 
 ```ts
 units.of(PROFILE_FIRST).get(PROFILE_QUESTS_CLEARED);

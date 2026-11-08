@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { Attribute } from "../../src/core/attribute";
+import { Attribute } from "../../packages/core/attribute";
 import {
   EMPTY_HASH,
   hashAttribute,
   keyAttribute,
   keyTable,
-} from "../../src/core/keys";
-import { hashId } from "../../src/core/xxhash32-custom";
-import { unitStore } from "../../src/testing";
+} from "../../packages/core/keys";
+import { hashId } from "../../packages/core/xxhash32-custom";
+import { unitStore } from "../../packages/gbfr-save-editor/testing";
 
 const COUNT = Attribute.int(10);
 const IDS = Attribute.uintList(11);

@@ -3,7 +3,7 @@ import {
   SAVE_ENTITY,
   SAVE_FEATURE_VERSION,
   SAVE_SLOT_VERSION,
-} from "../../src/core/save-entity";
+} from "../../packages/core/save-entity";
 import {
   LOCATION_PARTY_HP,
   LOCATION_SPOT,
@@ -14,11 +14,14 @@ import {
   USER_ONLINE_STATUS_FLAGS,
   USER_PLAYER_NAME,
   USER_RUPIES,
-} from "../../src/domains/user/attributes";
-import { maxMasteryPoints, maxRupies } from "../../src/domains/user/edit";
-import { readSystem, readUser } from "../../src/domains/user/read";
-import { SaveSession } from "../../src/core/session";
-import { fixtureFile, unitStore } from "../../src/testing";
+} from "../../packages/user/attributes";
+import { maxMasteryPoints, maxRupies } from "../../packages/user/edit";
+import { readSystem, readUser } from "../../packages/user/read";
+import { SaveSession } from "../../packages/core/session";
+import {
+  fixtureFile,
+  unitStore,
+} from "../../packages/gbfr-save-editor/testing";
 
 /** Text is stored as char codes, terminated by a zero. */
 const text = (value: string) =>

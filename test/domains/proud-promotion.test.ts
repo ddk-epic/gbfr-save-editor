@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { CAPTAIN } from "../../src/domains/character/attributes";
-import { readSave } from "../../src/core/read-save";
-import { ITEM_ACQUIRED_LAST } from "../../src/domains/item/attributes";
+import { CAPTAIN } from "../../packages/character/attributes";
+import { readSave } from "../../packages/core/read-save";
+import { ITEM_ACQUIRED_LAST } from "../../packages/item/attributes";
 import {
   PROFILE_FIRST,
   PROFILE_QUESTS_CLEARED,
-} from "../../src/domains/profile/attributes";
+} from "../../packages/profile/attributes";
 import {
   COUNTER_QUEST_CLEARED,
   COUNTER_QUEST_CLEARS,
@@ -16,23 +16,23 @@ import {
   SHORT_STORY_CHECKPOINTS,
   SHORT_STORY_CLEARS,
   SHORT_STORY_IDS,
-} from "../../src/domains/quest/attributes";
-import { UI_FEATURE_UNLOCKED } from "../../src/domains/story/attributes";
+} from "../../packages/quest/attributes";
+import { UI_FEATURE_UNLOCKED } from "../../packages/story/attributes";
 import {
   canPromoteToProud,
   canUnlockProudQuests,
   promoteToProud,
   unlockProudQuests,
-} from "../../src/workflows/story-fill";
+} from "../../packages/workflows/story-fill";
 import {
   TROPHY_EARNED,
   TROPHY_PROGRESS,
-} from "../../src/domains/trophy/attributes";
-import { SAVE_HASHSEED } from "../../src/core/save-entity";
-import { USER_RUPIES } from "../../src/domains/user/attributes";
-import { WEAPON_LAST_ID } from "../../src/domains/weapon/attributes";
-import { SaveSession } from "../../src/core/session";
-import { fixtureFile } from "../../src/testing";
+} from "../../packages/trophy/attributes";
+import { SAVE_HASHSEED } from "../../packages/core/save-entity";
+import { USER_RUPIES } from "../../packages/user/attributes";
+import { WEAPON_LAST_ID } from "../../packages/weapon/attributes";
+import { SaveSession } from "../../packages/core/session";
+import { fixtureFile } from "../../packages/gbfr-save-editor/testing";
 
 const MANIAC_QUESTS = [
   0x406325, 0x406330, 0x406331, 0x406332, 0x406333, 0x406334, 0x406335,

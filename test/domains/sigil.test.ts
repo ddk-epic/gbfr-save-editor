@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { EMPTY_HASH } from "../../src/core/keys";
-import { hashId } from "../../src/core/xxhash32-custom";
+import { EMPTY_HASH } from "../../packages/core/keys";
+import { hashId } from "../../packages/core/xxhash32-custom";
 import {
   SIGIL_FIRST,
   SIGIL_FLAGS,
@@ -9,27 +9,31 @@ import {
   SIGIL_LAST_ID,
   SIGIL_LEVEL,
   SIGIL_LIST_FLAGS,
-} from "../../src/domains/sigil/attributes";
-import { addSigil, editSigil } from "../../src/domains/sigil/edit";
+} from "../../packages/sigil/attributes";
+import { addSigil, editSigil } from "../../packages/sigil/edit";
 import {
   sigilGem,
   sigilPrimaries,
   sigilSecondaries,
-} from "../../src/domains/sigil/rolls";
+} from "../../packages/sigil/rolls";
 import {
   findSigilById,
   readSigil,
   readSigils,
-} from "../../src/domains/sigil/read";
+} from "../../packages/sigil/read";
 import {
   TRAIT_KEY,
   TRAIT_LEVEL,
   TRAIT_SIGIL,
   traitRange,
-} from "../../src/domains/trait/attributes";
-import { SAVE_HASHSEED } from "../../src/core/save-entity";
-import { SaveSession } from "../../src/core/session";
-import { fixtureFile, unitStore, type EntityUnits } from "../../src/testing";
+} from "../../packages/trait/attributes";
+import { SAVE_HASHSEED } from "../../packages/core/save-entity";
+import { SaveSession } from "../../packages/core/session";
+import {
+  fixtureFile,
+  unitStore,
+  type EntityUnits,
+} from "../../packages/gbfr-save-editor/testing";
 
 /** The entity of a sigil's trait at one index. */
 const traitAt = (sigil: number, index: number) =>

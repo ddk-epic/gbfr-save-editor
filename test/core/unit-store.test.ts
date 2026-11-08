@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { Attribute } from "../../src/core/attribute";
-import { SaveFormatError } from "../../src/core/errors";
-import { unitStore } from "../../src/testing";
+import { Attribute } from "../../packages/core/attribute";
+import { SaveFormatError } from "../../packages/core/errors";
+import { unitStore } from "../../packages/gbfr-save-editor/testing";
 
 const COUNT = Attribute.int(10);
 const ID = Attribute.uint(20);

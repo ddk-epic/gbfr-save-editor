@@ -1,0 +1,15 @@
+{
+  "name": "@gbfr/wrightstone",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./edit": "./edit.ts"
+  },
+  "dependencies": {
+    "@gbfr/core": "workspace:*",
+    "@gbfr/tables": "workspace:*",
+    "@gbfr/trait": "workspace:*"
+  }
+}

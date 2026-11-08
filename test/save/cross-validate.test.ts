@@ -1,25 +1,25 @@
 import { describe, expect, it } from "vitest";
-import { CHARACTER_KEYS } from "../../src/tables/data.gen";
-import { MASTERY_SECTIONS } from "../../src/domains/mastery/data.gen";
+import { CHARACTER_KEYS } from "../../packages/tables/data.gen";
+import { MASTERY_SECTIONS } from "../../packages/mastery/data.gen";
 import type {
   MasteryProgress,
   MasterySection,
-} from "../../src/domains/mastery/read";
-import type { CounterQuest } from "../../src/domains/quest/read";
-import type { Sigil } from "../../src/domains/sigil/read";
-import type { Weapon } from "../../src/domains/weapon/read";
-import type { Wrightstone } from "../../src/domains/wrightstone/read";
+} from "../../packages/mastery/read";
+import type { CounterQuest } from "../../packages/quest/read";
+import type { Sigil } from "../../packages/sigil/read";
+import type { Weapon } from "../../packages/weapon/read";
+import type { Wrightstone } from "../../packages/wrightstone/read";
 import type {
   Character,
   CharacterData,
   Loadout,
-} from "../../src/save/read-characters";
-import type { Inventory } from "../../src/save/read-inventory";
+} from "../../packages/save/read-characters";
+import type { Inventory } from "../../packages/save/read-inventory";
 import {
   validateCharacterData,
   validateInventory,
   validateQuestClears,
-} from "../../src/save/cross-validate";
+} from "../../packages/save/cross-validate";
 
 const CHARACTER_COUNT = Object.keys(CHARACTER_KEYS).length;
 

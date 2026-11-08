@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { Curio } from "../../src/domains/curio/read";
-import { validateCurios } from "../../src/domains/curio/validate";
+import type { Curio } from "../../packages/curio/read";
+import { validateCurios } from "../../packages/curio/validate";
 
 const curio = (entity: number, serial: number): Curio => ({
   entity,

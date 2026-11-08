@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hashId } from "../../src/core/xxhash32-custom";
+import { hashId } from "../../packages/core/xxhash32-custom";
 import {
   CARD_CHARACTER_KEY,
   CARD_CHARACTER_LAST_PLAYED,
@@ -10,9 +10,9 @@ import {
   CARD_CHARACTER_STRIDE,
   PROFILE_FIRST,
   PROFILE_QUESTS_CLEARED,
-} from "../../src/domains/profile/attributes";
-import { readProfile } from "../../src/domains/profile/read";
-import { unitStore } from "../../src/testing";
+} from "../../packages/profile/attributes";
+import { readProfile } from "../../packages/profile/read";
+import { unitStore } from "../../packages/gbfr-save-editor/testing";
 
 /** A card's characters sit at card * 100 + index, not on the card itself. */
 const card = (index: number) => PROFILE_FIRST * CARD_CHARACTER_STRIDE + index;

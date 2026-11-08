@@ -4,8 +4,8 @@
 
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { readContainer } from "../src/core/container";
-import { decodeSaveDataBinary } from "../src/core/save-data-binary";
+import { readContainer } from "../packages/core/container";
+import { decodeSaveDataBinary } from "../packages/core/save-data-binary";
 import type { LiveUnit } from "./save-diff";
 
 const savePath = process.argv[2];

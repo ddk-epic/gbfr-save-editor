@@ -1,0 +1,13 @@
+{
+  "name": "@gbfr/curio",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {
+    "@gbfr/core": "workspace:*",
+    "@gbfr/tables": "workspace:*"
+  }
+}

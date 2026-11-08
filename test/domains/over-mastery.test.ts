@@ -1,20 +1,24 @@
 import { describe, expect, it } from "vitest";
-import { EMPTY_HASH } from "../../src/core/keys";
-import { hashId } from "../../src/core/xxhash32-custom";
+import { EMPTY_HASH } from "../../packages/core/keys";
+import { hashId } from "../../packages/core/xxhash32-custom";
 import {
   CHARACTER_FIRST,
   CHARACTER_KEY,
   masteryRange,
-} from "../../src/domains/character/attributes";
+} from "../../packages/character/attributes";
 import {
   OVER_MASTERY_KEY,
   OVER_MASTERY_LEVEL,
-} from "../../src/domains/over-mastery/attributes";
-import { removeOverMasteries } from "../../src/domains/over-mastery/edit";
-import { readOverMasteries } from "../../src/domains/over-mastery/read";
-import { validateOverMasteries } from "../../src/domains/over-mastery/validate";
-import { SaveSession } from "../../src/core/session";
-import { fixtureFile, unitStore, type EntityUnits } from "../../src/testing";
+} from "../../packages/over-mastery/attributes";
+import { removeOverMasteries } from "../../packages/over-mastery/edit";
+import { readOverMasteries } from "../../packages/over-mastery/read";
+import { validateOverMasteries } from "../../packages/over-mastery/validate";
+import { SaveSession } from "../../packages/core/session";
+import {
+  fixtureFile,
+  unitStore,
+  type EntityUnits,
+} from "../../packages/gbfr-save-editor/testing";
 
 describe("readOverMasteries", () => {
   it("gives each line's value at its roll level", () => {

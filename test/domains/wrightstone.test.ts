@@ -1,38 +1,41 @@
 import { describe, expect, it } from "vitest";
-import { EMPTY_HASH } from "../../src/core/keys";
-import { hashId } from "../../src/core/xxhash32-custom";
+import { EMPTY_HASH } from "../../packages/core/keys";
+import { hashId } from "../../packages/core/xxhash32-custom";
 import {
   ITEM_ACQUIRED,
   ITEM_ACQUIRED_LAST,
   ITEM_COUNT,
   ITEM_KEY,
-} from "../../src/domains/item/attributes";
+} from "../../packages/item/attributes";
 import {
   TRAIT_FIRST,
   TRAIT_KEY,
   TRAIT_LEVEL,
   TRAIT_STRIDE,
   TRAIT_WRIGHTSTONE,
-} from "../../src/domains/trait/attributes";
-import { SAVE_HASHSEED } from "../../src/core/save-entity";
+} from "../../packages/trait/attributes";
+import { SAVE_HASHSEED } from "../../packages/core/save-entity";
 import {
   WRIGHTSTONE_FIRST,
   WRIGHTSTONE_ID,
   WRIGHTSTONE_KEY,
   WRIGHTSTONE_LAST_ID,
-} from "../../src/domains/wrightstone/attributes";
+} from "../../packages/wrightstone/attributes";
 import {
   addWrightstone,
   editWrightstone,
-} from "../../src/workflows/wrightstone";
-import { readWrightstones } from "../../src/domains/wrightstone/read";
+} from "../../packages/workflows/wrightstone";
+import { readWrightstones } from "../../packages/wrightstone/read";
 import {
   wrightstoneRoll,
   type WrightstoneRoll,
-} from "../../src/domains/wrightstone/rolls";
-import { validateWrightstone } from "../../src/domains/wrightstone/validate";
-import { SaveSession } from "../../src/core/session";
-import { fixtureFile, type EntityUnits } from "../../src/testing";
+} from "../../packages/wrightstone/rolls";
+import { validateWrightstone } from "../../packages/wrightstone/validate";
+import { SaveSession } from "../../packages/core/session";
+import {
+  fixtureFile,
+  type EntityUnits,
+} from "../../packages/gbfr-save-editor/testing";
 
 const stone = (...levels: number[]) => ({
   key: "ITEM_28_0000",

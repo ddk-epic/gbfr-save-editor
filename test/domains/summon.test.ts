@@ -5,10 +5,10 @@ import {
   SUMMON_KEY,
   SUMMON_LEVELS,
   SUMMON_TRAIT_AND_BONUS,
-} from "../../src/domains/summon/attributes";
-import { readEquippedSummons, readSummon } from "../../src/domains/summon/read";
-import { SAVE_ENTITY } from "../../src/core/save-entity";
-import { unitStore } from "../../src/testing";
+} from "../../packages/summon/attributes";
+import { readEquippedSummons, readSummon } from "../../packages/summon/read";
+import { SAVE_ENTITY } from "../../packages/core/save-entity";
+import { unitStore } from "../../packages/gbfr-save-editor/testing";
 
 // The summon table names unresolved keys in hex; the save stores the hash.
 const SUMMON_HASH = 0x0033943a;

@@ -1,16 +1,15 @@
-import { SAVE_ENTITY } from "../../src/core/save-entity";
-import { CAPTAIN } from "../../src/domains/character/attributes";
+import { SAVE_ENTITY, SAVE_HASHSEED } from "../../packages/core/save-entity";
+import { CAPTAIN } from "../../packages/character/attributes";
 import { describe, expect, it } from "vitest";
-import { EMPTY_HASH } from "../../src/core/keys";
-import { hashId } from "../../src/core/xxhash32-custom";
+import { EMPTY_HASH } from "../../packages/core/keys";
+import { hashId } from "../../packages/core/xxhash32-custom";
 import {
   TRAIT_FIRST,
   TRAIT_KEY,
   TRAIT_LEVEL,
   TRAIT_STRIDE,
   TRAIT_WEAPON,
-} from "../../src/domains/trait/attributes";
-import { SAVE_HASHSEED } from "../../src/core/save-entity";
+} from "../../packages/trait/attributes";
 import {
   WEAPON_APPEARANCE,
   WEAPON_FIRST,
@@ -20,15 +19,19 @@ import {
   WEAPON_TRAITS,
   WEAPON_TRAIT_POSITIONS,
   WEAPON_WRIGHTSTONE,
-} from "../../src/domains/weapon/attributes";
-import { removeWrightstone } from "../../src/domains/weapon/edit";
+} from "../../packages/weapon/attributes";
+import { removeWrightstone } from "../../packages/weapon/edit";
 import {
   findWeaponById,
   readOwnedWeapons,
   readWeapon,
-} from "../../src/domains/weapon/read";
-import { SaveSession } from "../../src/core/session";
-import { fixtureFile, unitStore, type EntityUnits } from "../../src/testing";
+} from "../../packages/weapon/read";
+import { SaveSession } from "../../packages/core/session";
+import {
+  fixtureFile,
+  unitStore,
+  type EntityUnits,
+} from "../../packages/gbfr-save-editor/testing";
 
 const WEAPON = WEAPON_FIRST + 3;
 

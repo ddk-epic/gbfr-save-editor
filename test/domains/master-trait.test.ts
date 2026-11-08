@@ -2,14 +2,14 @@ import { describe, expect, it } from "vitest";
 import {
   masteryRange,
   CHARACTER_FIRST,
-} from "../../src/domains/character/attributes";
-import { MASTER_TRAIT_KEY } from "../../src/domains/master-trait/attributes";
+} from "../../packages/character/attributes";
+import { MASTER_TRAIT_KEY } from "../../packages/master-trait/attributes";
 import {
   readMasterTraits,
   type MasterTrait,
-} from "../../src/domains/master-trait/read";
-import { validateMasterTraits } from "../../src/domains/master-trait/validate";
-import { unitStore } from "../../src/testing";
+} from "../../packages/master-trait/read";
+import { validateMasterTraits } from "../../packages/master-trait/validate";
+import { unitStore } from "../../packages/gbfr-save-editor/testing";
 
 const cell = (
   rank: MasterTrait["rank"],

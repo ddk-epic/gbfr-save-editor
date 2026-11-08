@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { xxhash64 } from "../../src/core/xxhash64";
+import { xxhash64 } from "../../packages/core/xxhash64";
 
 // Reference values of the xxHash project and python-xxhash, seed 0.
 const CASES: [string, bigint][] = [

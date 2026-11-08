@@ -1,24 +1,34 @@
-import { readdirSync } from "node:fs";
-import { readContainer } from "../src/core/container";
-import { EMPTY_HASH } from "../src/core/keys";
-import { decodeSaveDataBinary } from "../src/core/save-data-binary";
-import type { SaveHeader, SaveUnit, ValueType } from "../src/index";
+import { existsSync, readdirSync } from "node:fs";
+import { readContainer } from "../packages/core/container";
+import { EMPTY_HASH } from "../packages/core/keys";
+import { decodeSaveDataBinary } from "../packages/core/save-data-binary";
+import type {
+  SaveHeader,
+  SaveUnit,
+  ValueType,
+} from "../packages/gbfr-save-editor/index";
 
 /** Silences missing key warnings. */
 console.warn = () => {};
 
 type Section = "systemData" | "slotData";
 
-const load = async (dir: string) =>
+const load = async (file: string) =>
   Promise.all(
-    readdirSync(new URL(dir, import.meta.url), { recursive: true })
-      .filter((f) => String(f).endsWith(".ts"))
-      .map((f) => import(new URL(`${dir}/${f}`, import.meta.url).href)),
+    readdirSync(new URL("../packages", import.meta.url), {
+      withFileTypes: true,
+    })
+      .filter(
+        (d) =>
+          d.isDirectory() &&
+          existsSync(new URL(`../packages/${d.name}/${file}`, import.meta.url)),
+      )
+      .map((d) => import(`../packages/${d.name}/${file}`)),
   );
 
 /** Attribute id to the domain export names declaring it. */
 const labels = new Map<number, string[]>();
-for (const mod of await load("../src/domains"))
+for (const mod of await load("attributes.ts"))
   for (const [name, value] of Object.entries(mod)) {
     const id = (value as { id?: unknown; valueType?: unknown } | null)?.id;
     if (
@@ -32,7 +42,7 @@ for (const mod of await load("../src/domains"))
 
 /** Hash to archive key, across every generated key table. */
 const keys = new Map<number, string>([[EMPTY_HASH, '""']]);
-for (const mod of await load("../src/data"))
+for (const mod of await load("data.gen.ts"))
   for (const [name, table] of Object.entries(mod))
     if (name.endsWith("_KEYS"))
       for (const [hash, key] of Object.entries(table as Record<string, string>))

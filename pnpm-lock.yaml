@@ -46,7 +46,7 @@ importers:
     dependencies:
       gbfr-save-editor:
         specifier: workspace:*
-        version: link:..
+        version: link:../packages/gbfr-save-editor
       i18next:
         specifier: ^26.4.2
         version: 26.4.2(typescript@6.0.3)
@@ -111,6 +111,434 @@ importers:
       vite:
         specifier: ^8.1.5
         version: 8.2.2(@types/node@22.20.1)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)
+
+  packages/character:
+    dependencies:
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+      '@gbfr/tables':
+        specifier: workspace:*
+        version: link:../tables
+
+  packages/conflux:
+    dependencies:
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/core: {}
+
+  packages/curio:
+    dependencies:
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+      '@gbfr/tables':
+        specifier: workspace:*
+        version: link:../tables
+
+  packages/equipment:
+    dependencies:
+      '@gbfr/character':
+        specifier: workspace:*
+        version: link:../character
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+      '@gbfr/sigil':
+        specifier: workspace:*
+        version: link:../sigil
+      '@gbfr/tables':
+        specifier: workspace:*
+        version: link:../tables
+      '@gbfr/weapon':
+        specifier: workspace:*
+        version: link:../weapon
+
+  packages/fate-episode:
+    dependencies:
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/gbfr-save-editor:
+    dependencies:
+      '@gbfr/character':
+        specifier: workspace:*
+        version: link:../character
+      '@gbfr/conflux':
+        specifier: workspace:*
+        version: link:../conflux
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+      '@gbfr/curio':
+        specifier: workspace:*
+        version: link:../curio
+      '@gbfr/equipment':
+        specifier: workspace:*
+        version: link:../equipment
+      '@gbfr/fate-episode':
+        specifier: workspace:*
+        version: link:../fate-episode
+      '@gbfr/item':
+        specifier: workspace:*
+        version: link:../item
+      '@gbfr/journal':
+        specifier: workspace:*
+        version: link:../journal
+      '@gbfr/master-trait':
+        specifier: workspace:*
+        version: link:../master-trait
+      '@gbfr/mastery':
+        specifier: workspace:*
+        version: link:../mastery
+      '@gbfr/over-mastery':
+        specifier: workspace:*
+        version: link:../over-mastery
+      '@gbfr/party':
+        specifier: workspace:*
+        version: link:../party
+      '@gbfr/profile':
+        specifier: workspace:*
+        version: link:../profile
+      '@gbfr/quest':
+        specifier: workspace:*
+        version: link:../quest
+      '@gbfr/save':
+        specifier: workspace:*
+        version: link:../save
+      '@gbfr/sigil':
+        specifier: workspace:*
+        version: link:../sigil
+      '@gbfr/skill':
+        specifier: workspace:*
+        version: link:../skill
+      '@gbfr/story':
+        specifier: workspace:*
+        version: link:../story
+      '@gbfr/summon':
+        specifier: workspace:*
+        version: link:../summon
+      '@gbfr/trait':
+        specifier: workspace:*
+        version: link:../trait
+      '@gbfr/trophy':
+        specifier: workspace:*
+        version: link:../trophy
+      '@gbfr/user':
+        specifier: workspace:*
+        version: link:../user
+      '@gbfr/weapon':
+        specifier: workspace:*
+        version: link:../weapon
+      '@gbfr/workflows':
+        specifier: workspace:*
+        version: link:../workflows
+      '@gbfr/wrightstone':
+        specifier: workspace:*
+        version: link:../wrightstone
+
+  packages/item:
+    dependencies:
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+      '@gbfr/tables':
+        specifier: workspace:*
+        version: link:../tables
+
+  packages/journal:
+    dependencies:
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+      '@gbfr/item':
+        specifier: workspace:*
+        version: link:../item
+      '@gbfr/tables':
+        specifier: workspace:*
+        version: link:../tables
+
+  packages/master-trait:
+    dependencies:
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/mastery:
+    dependencies:
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/over-mastery:
+    dependencies:
+      '@gbfr/character':
+        specifier: workspace:*
+        version: link:../character
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/party:
+    dependencies:
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+      '@gbfr/equipment':
+        specifier: workspace:*
+        version: link:../equipment
+      '@gbfr/skill':
+        specifier: workspace:*
+        version: link:../skill
+      '@gbfr/tables':
+        specifier: workspace:*
+        version: link:../tables
+
+  packages/profile:
+    dependencies:
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+      '@gbfr/quest':
+        specifier: workspace:*
+        version: link:../quest
+      '@gbfr/tables':
+        specifier: workspace:*
+        version: link:../tables
+
+  packages/quest:
+    dependencies:
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/save:
+    dependencies:
+      '@gbfr/character':
+        specifier: workspace:*
+        version: link:../character
+      '@gbfr/conflux':
+        specifier: workspace:*
+        version: link:../conflux
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+      '@gbfr/curio':
+        specifier: workspace:*
+        version: link:../curio
+      '@gbfr/equipment':
+        specifier: workspace:*
+        version: link:../equipment
+      '@gbfr/fate-episode':
+        specifier: workspace:*
+        version: link:../fate-episode
+      '@gbfr/item':
+        specifier: workspace:*
+        version: link:../item
+      '@gbfr/journal':
+        specifier: workspace:*
+        version: link:../journal
+      '@gbfr/master-trait':
+        specifier: workspace:*
+        version: link:../master-trait
+      '@gbfr/mastery':
+        specifier: workspace:*
+        version: link:../mastery
+      '@gbfr/over-mastery':
+        specifier: workspace:*
+        version: link:../over-mastery
+      '@gbfr/party':
+        specifier: workspace:*
+        version: link:../party
+      '@gbfr/profile':
+        specifier: workspace:*
+        version: link:../profile
+      '@gbfr/quest':
+        specifier: workspace:*
+        version: link:../quest
+      '@gbfr/sigil':
+        specifier: workspace:*
+        version: link:../sigil
+      '@gbfr/skill':
+        specifier: workspace:*
+        version: link:../skill
+      '@gbfr/summon':
+        specifier: workspace:*
+        version: link:../summon
+      '@gbfr/tables':
+        specifier: workspace:*
+        version: link:../tables
+      '@gbfr/trophy':
+        specifier: workspace:*
+        version: link:../trophy
+      '@gbfr/user':
+        specifier: workspace:*
+        version: link:../user
+      '@gbfr/weapon':
+        specifier: workspace:*
+        version: link:../weapon
+      '@gbfr/wrightstone':
+        specifier: workspace:*
+        version: link:../wrightstone
+
+  packages/sigil:
+    dependencies:
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+      '@gbfr/tables':
+        specifier: workspace:*
+        version: link:../tables
+      '@gbfr/trait':
+        specifier: workspace:*
+        version: link:../trait
+
+  packages/skill:
+    dependencies:
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/story:
+    dependencies:
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/summon:
+    dependencies:
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+      '@gbfr/tables':
+        specifier: workspace:*
+        version: link:../tables
+      '@gbfr/trait':
+        specifier: workspace:*
+        version: link:../trait
+
+  packages/tables:
+    dependencies:
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/trait:
+    dependencies:
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+      '@gbfr/tables':
+        specifier: workspace:*
+        version: link:../tables
+
+  packages/trophy:
+    dependencies:
+      '@gbfr/character':
+        specifier: workspace:*
+        version: link:../character
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+      '@gbfr/weapon':
+        specifier: workspace:*
+        version: link:../weapon
+
+  packages/tutorial:
+    dependencies:
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/user:
+    dependencies:
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/weapon:
+    dependencies:
+      '@gbfr/character':
+        specifier: workspace:*
+        version: link:../character
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+      '@gbfr/tables':
+        specifier: workspace:*
+        version: link:../tables
+      '@gbfr/trait':
+        specifier: workspace:*
+        version: link:../trait
+      '@gbfr/wrightstone':
+        specifier: workspace:*
+        version: link:../wrightstone
+
+  packages/workflows:
+    dependencies:
+      '@gbfr/character':
+        specifier: workspace:*
+        version: link:../character
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+      '@gbfr/equipment':
+        specifier: workspace:*
+        version: link:../equipment
+      '@gbfr/fate-episode':
+        specifier: workspace:*
+        version: link:../fate-episode
+      '@gbfr/item':
+        specifier: workspace:*
+        version: link:../item
+      '@gbfr/journal':
+        specifier: workspace:*
+        version: link:../journal
+      '@gbfr/mastery':
+        specifier: workspace:*
+        version: link:../mastery
+      '@gbfr/profile':
+        specifier: workspace:*
+        version: link:../profile
+      '@gbfr/quest':
+        specifier: workspace:*
+        version: link:../quest
+      '@gbfr/skill':
+        specifier: workspace:*
+        version: link:../skill
+      '@gbfr/story':
+        specifier: workspace:*
+        version: link:../story
+      '@gbfr/trophy':
+        specifier: workspace:*
+        version: link:../trophy
+      '@gbfr/tutorial':
+        specifier: workspace:*
+        version: link:../tutorial
+      '@gbfr/user':
+        specifier: workspace:*
+        version: link:../user
+      '@gbfr/weapon':
+        specifier: workspace:*
+        version: link:../weapon
+      '@gbfr/wrightstone':
+        specifier: workspace:*
+        version: link:../wrightstone
+
+  packages/wrightstone:
+    dependencies:
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:../core
+      '@gbfr/tables':
+        specifier: workspace:*
+        version: link:../tables
+      '@gbfr/trait':
+        specifier: workspace:*
+        version: link:../trait
 
 packages:
 
