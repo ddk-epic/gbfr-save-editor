@@ -15,12 +15,19 @@ public class Startup : IMod
 
     private ILogger _logger = null!;
     private string _dir = null!;
+    private nint _global;
 
     public void StartEx(IModLoaderV1 loaderApi, IModConfigV1 modConfig)
     {
         var loader = (IModLoader)loaderApi;
         _logger = (ILogger)loader.GetLogger();
         _dir = loader.GetDirectoryForModId(modConfig.ModId);
+        _global = FindManagerGlobal();
+        if (_global == 0)
+        {
+            _logger.WriteLine("[gbfr.dev.savewatch] save manager signature not found");
+            return;
+        }
         new Thread(Run) { IsBackground = true, Name = "savewatch" }.Start();
     }
 
@@ -28,37 +35,23 @@ public class Startup : IMod
     {
         try
         {
-            nint global = FindManagerGlobal();
-            if (global == 0)
-            {
-                _logger.WriteLine("[savewatch] save manager signature not found");
-                return;
-            }
-            _logger.WriteLine($"[savewatch] writing to {_dir}");
-            new LiveLog(new SaveUnits(global), _dir, _logger).Run();
+            _logger.WriteLine($"[gbfr.dev.savewatch] writing to {_dir}");
+            new LiveLog(new SaveUnits(_global), _dir, _logger).Run();
         }
         catch (Exception e)
         {
-            _logger.WriteLine($"[savewatch] stopped: {e}");
+            _logger.WriteLine($"[gbfr.dev.savewatch] stopped: {e}");
         }
     }
 
-    // Retries while SteamStub may still be unpacking the code.
     private static unsafe nint FindManagerGlobal()
     {
         var module = Process.GetCurrentProcess().MainModule!;
-        for (int attempt = 0; attempt < 60; attempt++)
-        {
-            var scanner = new Scanner((byte*)module.BaseAddress, module.ModuleMemorySize);
-            var result = scanner.FindPattern(ManagerSignature);
-            if (result.Found)
-            {
-                nint at = module.BaseAddress + result.Offset;
-                return at + GlobalNext + *(int*)(at + GlobalDisp);
-            }
-            Thread.Sleep(1000);
-        }
-        return 0;
+        var result = new Scanner((byte*)module.BaseAddress, module.ModuleMemorySize).FindPattern(ManagerSignature);
+        if (!result.Found)
+            return 0;
+        nint at = module.BaseAddress + result.Offset;
+        return at + GlobalNext + *(int*)(at + GlobalDisp);
     }
 
     public void Suspend() { }

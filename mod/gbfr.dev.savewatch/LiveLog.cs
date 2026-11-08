@@ -51,7 +51,7 @@ internal sealed class LiveLog
                 writer.WriteLine($"{{\"t\":{t},\"event\":\"registry\",\"registry\":{now.Count},\"map\":{now.MapSize}," +
                                  $"\"units\":{list.Count},\"unread\":{unread.Count}," +
                                  $"\"unreadAttributes\":[{string.Join(",", unread.Attributes)}],\"unreadVtables\":[{vtables}]}}");
-                _logger.WriteLine($"[savewatch] registry {now.Count}, map {now.MapSize}, {list.Count} units, {unread.Count} unread");
+                _logger.WriteLine($"[gbfr.dev.savewatch] registry {now.Count}, map {now.MapSize}, {list.Count} units, {unread.Count} unread");
                 if (last is not null)
                     DiffByKey(writer, t, last, next);
                 registry = now;
