@@ -14,6 +14,8 @@ public sealed unsafe class Boosts
     // in the hit
     private const int HitDamage = 0xD4;
     private const int HitDamageLimit = 0x2BC;
+    // FUN_1409c3230
+    private const int HitStun = 0xF4;
 
     // FUN_141fb8a70
     private const int MaxDamage = 99_999_999;
@@ -42,23 +44,27 @@ public sealed unsafe class Boosts
     private const int SessionOnline = 3;
 
     private delegate void CalculateHit(nint component, nint hit, nint victim);
+    private delegate void CalculateStun(nint component, nint hit);
     private delegate void RunUpdate(nint self);
 
     private readonly Settings _settings;
     private readonly ILogger _logger;
     private readonly nint _session;
     private readonly IHook<CalculateHit> _hitHook;
+    private readonly IHook<CalculateStun> _stunHook;
     private readonly IHook<RunUpdate> _runHook;
     private bool _loggedHit;
+    private bool _loggedStun;
     private bool _loggedRun;
     private bool _loggedNoTime;
 
-    public Boosts(IReloadedHooks hooks, Settings settings, ILogger logger, nint calculateHit, nint runUpdate, nint session)
+    public Boosts(IReloadedHooks hooks, Settings settings, ILogger logger, nint calculateHit, nint calculateStun, nint runUpdate, nint session)
     {
         _settings = settings;
         _logger = logger;
         _session = session;
         _hitHook = hooks.CreateHook<CalculateHit>(CalculateHitImpl, calculateHit).Activate();
+        _stunHook = hooks.CreateHook<CalculateStun>(CalculateStunImpl, calculateStun).Activate();
         _runHook = hooks.CreateHook<RunUpdate>(RunUpdateImpl, runUpdate).Activate();
     }
 
@@ -78,6 +84,24 @@ public sealed unsafe class Boosts
         {
             _loggedHit = true;
             _logger.WriteLine($"[gbfr.dev.quickstart] first boosted hit: {damage} -> {boosted}");
+        }
+    }
+
+    private void CalculateStunImpl(nint component, nint hit)
+    {
+        _stunHook.OriginalFunction(component, hit);
+        nint player = *(nint*)(component + ComponentPlayer);
+        if (player == 0 || !IsBoosted(player))
+            return;
+        float stun = *(float*)(hit + HitStun);
+        if (stun <= 0f)
+            return;
+        float boosted = stun * _settings.StunMultiplier;
+        *(float*)(hit + HitStun) = boosted;
+        if (!_loggedStun)
+        {
+            _loggedStun = true;
+            _logger.WriteLine($"[gbfr.dev.quickstart] first boosted stun: {stun} -> {boosted}");
         }
     }
 
