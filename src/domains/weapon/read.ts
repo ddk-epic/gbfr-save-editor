@@ -1,4 +1,4 @@
-import { WEAPON_LEVEL_XP, WEAPON_ROWS } from "../../data/weapons";
+import { WEAPON_LEVEL_XP, WEAPON_ROWS } from "./data.gen";
 import { CHARACTER_KEY } from "../character/attributes";
 import { keyOf } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";

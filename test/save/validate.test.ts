@@ -1,8 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Attribute } from "../../src/core/attribute";
 import { FILE_SIZE } from "../../src/core/container";
-import { ITEM_KEYS } from "../../src/data/items";
-import { CHARACTER_KEYS } from "../../src/data/characters";
+import { CHARACTER_KEYS, ITEM_KEYS } from "../../src/tables/data.gen";
 import {
   COUNTER_QUEST_CLEARS,
   COUNTER_QUEST_IDS,

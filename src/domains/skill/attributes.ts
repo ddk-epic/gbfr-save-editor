@@ -1,6 +1,6 @@
 import { Attribute } from "../../core/attribute";
 import { keyAttribute, keyTable } from "../../core/keys";
-import { ABILITY_KEYS } from "../../data/skills";
+import { ABILITY_KEYS } from "./data.gen";
 
 export const ABILITIES = keyTable("ability", ABILITY_KEYS);
 

@@ -1,6 +1,6 @@
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { UnitStore } from "../../core/unit-store";
-import { WEAPON_LEVEL_XP, WEAPON_ROWS } from "../../data/weapons";
+import { WEAPON_LEVEL_XP, WEAPON_ROWS } from "./data.gen";
 import type { Patch, SaveSession } from "../../core/session";
 import { SAVE_ENTITY } from "../../core/save-entity";
 import { clearTraits } from "../trait/edit";

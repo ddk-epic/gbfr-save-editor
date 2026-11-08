@@ -1,4 +1,4 @@
-import { QUEST_COUNTER } from "../../data/quests";
+import { QUEST_COUNTER } from "./data.gen";
 import type { UnitStore } from "../../core/unit-store";
 import { SAVE_ENTITY } from "../../core/save-entity";
 import {

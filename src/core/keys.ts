@@ -55,7 +55,7 @@ export function hashAttribute(
 const hashesByTable = new WeakMap<KeyTable, Map<string, number>>();
 
 /** Hash of a table key, hashing the key when the table lacks it. */
-function hashOfKey(table: KeyTable, key: string): number {
+export function hashOfKey(table: KeyTable, key: string): number {
   let hashes = hashesByTable.get(table);
   if (!hashes) {
     hashes = new Map(

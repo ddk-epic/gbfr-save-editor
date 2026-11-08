@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { CONFLUX_AURAS, CONFLUX_TREE } from "../../src/data/conflux";
+import {
+  CONFLUX_AURAS,
+  CONFLUX_TREE,
+} from "../../src/domains/conflux/data.gen";
 import {
   CONFLUX_AURA_FLAGS,
   CONFLUX_AURA_KEY,

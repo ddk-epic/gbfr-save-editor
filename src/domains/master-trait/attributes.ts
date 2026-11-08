@@ -1,6 +1,6 @@
 import { Attribute } from "../../core/attribute";
 import { hashAttribute, keyTable } from "../../core/keys";
-import { SKILLBOARD_EFFECT_KEYS } from "../../data/master-traits";
+import { SKILLBOARD_EFFECT_KEYS } from "./data.gen";
 
 export const SKILLBOARD_EFFECTS = keyTable(
   "skillboard_effect",

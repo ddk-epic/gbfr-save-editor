@@ -1,10 +1,9 @@
+import { GEM_ROWS, type Gem } from "../../tables/gems";
 import {
-  GEM_ROWS,
   SIGIL_RARITY_LEVELS,
   SIGIL_SECONDARIES,
   TRAIT_INVENTORY_SORT_ORDER,
-  type Gem,
-} from "../../data/sigils";
+} from "./data.gen";
 
 export interface SigilRoll {
   level: number;

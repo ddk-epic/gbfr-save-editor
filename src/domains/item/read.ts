@@ -1,4 +1,4 @@
-import { ITEM_SORT_ORDER } from "../../data/items";
+import { ITEM_SORT_ORDER } from "./data.gen";
 import type { UnitStore } from "../../core/unit-store";
 import { ITEM_COUNT, ITEM_FLAGS, ITEM_KEY } from "./attributes";
 

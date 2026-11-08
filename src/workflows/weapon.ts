@@ -1,7 +1,7 @@
 import type { UnitEntity } from "../core/save-data-binary";
 import type { UnitStore } from "../core/unit-store";
 import type { SaveSession } from "../core/session";
-import { WEAPON_ROWS } from "../data/weapons";
+import { WEAPON_ROWS } from "../domains/weapon/data.gen";
 import { CHARACTER_KEY } from "../domains/character/attributes";
 import { registerFieldNoteWeapon } from "../domains/journal/edit";
 import {

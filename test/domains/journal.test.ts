@@ -7,7 +7,7 @@ import {
   GLOSSARY_KEYS,
   MUSIC_KEYS,
   TIP_KEYS,
-} from "../../src/data/journal";
+} from "../../src/domains/journal/data.gen";
 import { ITEM_FLAGS, ITEM_KEY } from "../../src/domains/item/attributes";
 import {
   ARCHIVE_FLAGS,

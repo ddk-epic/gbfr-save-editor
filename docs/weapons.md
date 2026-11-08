@@ -31,7 +31,7 @@ Bit 0 of the flags does not mark ownership. `FUN_140316020`, called from `ui::co
 
 A `_99` key is also a weapon for a story fight. `WEP_PL0000_99` and `WEP_PL0100_99`, XP 162540 and uncap 6, are added and equipped on both captains for the fight in story Chapter 8, without bit 0. After it the captain in play returns to `_03`, which the game raises to XP 1740 and uncap 3, and the other captain stays on `_99`. Both entries stay in the list.
 
-The save holds no owner. A weapon belongs to the character in the `weapon` table's `CharaId`, as `WEAPON_ROWS` in `src/data/weapons.ts`, read into `Weapon.character`. For a `WEP_<CharId>_*` key this is the character the key names. A DLC weapon's key is a bare hash, such as `219EE448`, and only the table names its owner. The inventory keeps a separate entry per character even where two hold the same weapon, so the two captains never share one.
+The save holds no owner. A weapon belongs to the character in the `weapon` table's `CharaId`, as `WEAPON_ROWS` in `src/domains/weapon/data.gen.ts`, read into `Weapon.character`. For a `WEP_<CharId>_*` key this is the character the key names. A DLC weapon's key is a bare hash, such as `219EE448`, and only the table names its owner. The inventory keeps a separate entry per character even where two hold the same weapon, so the two captains never share one.
 
 `readOwnedWeapons` gives the held weapons of the Collection series by `chara.CharId`, then by series. No save holds two held weapons of one series for a character; the first held is kept.
 
@@ -76,7 +76,7 @@ The Collection and Trove counts of `PL2100`, `PL2200` and `PL2300` leave out wea
 
 ## Series
 
-The save holds no series. It comes from the `weapon` table's `Unk30`, as `WEAPON_ROWS` in `src/data/weapons.ts`. A character has at most one weapon of each series, some later characters only four of the six, and the traits the weapon carries name it.
+The save holds no series. It comes from the `weapon` table's `Unk30`, as `WEAPON_ROWS` in `src/domains/weapon/data.gen.ts`. A character has at most one weapon of each series, some later characters only four of the six, and the traits the weapon carries name it.
 
 | Series | Name             | Traits                              |
 | ------ | ---------------- | ----------------------------------- |

@@ -53,7 +53,7 @@ The result is a `Save` with `header`, `checksums`, `systemData` and `slotData`. 
 - `attributes.ts` names the attribute numbers, the entity ranges and the flag bits, and states the value type each attribute is stored as. It says where a thing lives and nothing about reading it, so reading and writing can both build on it.
 - `read.ts` holds the record type and the functions producing it.
 
-`src/save/` holds what spans several domains: the compositions `readInventory` and `readCharacterData`, and validation. The edit session, `SaveSession`, is in `src/core/session.ts`. `src/data/*.ts` maps key hashes back to game table keys; `pnpm gen:data` generates these files. `src/tables/` holds the key tables several domains share, built over `src/data`. `src/workflows/` holds the edits writing several domains, composed from the domains' own edits.
+`src/save/` holds what spans several domains: the compositions `readInventory` and `readCharacterData`, and validation. The edit session, `SaveSession`, is in `src/core/session.ts`. Each domain's `data.gen.ts` and `src/tables/data.gen.ts` map key hashes back to game table keys; `pnpm gen:data` generates these files. `src/tables/` holds the key tables several domains share, built over `src/tables/data.gen.ts`. `src/workflows/` holds the edits writing several domains, composed from the domains' own edits.
 
 ### Typed attributes
 

@@ -1,4 +1,4 @@
-import { CONFLUX_AURAS, CONFLUX_TREE } from "../../data/conflux";
+import { CONFLUX_AURAS, CONFLUX_TREE } from "./data.gen";
 import type { Attribute } from "../../core/attribute";
 import type { EntityRange, UnitStore } from "../../core/unit-store";
 import { SAVE_ENTITY } from "../../core/save-entity";

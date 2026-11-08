@@ -2,7 +2,7 @@ import { SaveFormatError } from "../../core/errors";
 import type { OverMasteryFormatIssue } from "./issues";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { EntityRange, UnitStore } from "../../core/unit-store";
-import { OVER_MASTERY_VALUES } from "../../data/over-masteries";
+import { OVER_MASTERY_VALUES } from "./data.gen";
 import {
   OVER_MASTERY_KEY,
   OVER_MASTERY_LEVEL,

@@ -1,7 +1,8 @@
 import type { UnitStore } from "../../core/unit-store";
 import type { Patch } from "../../core/session";
 import { hashId } from "../../core/xxhash32-custom";
-import { WEAPON_KEYS } from "../../data/weapons";
+import { hashOfKey } from "../../core/keys";
+import { WEAPONS } from "../../tables/weapons";
 import {
   ARCHIVE_FLAGS,
   ARCHIVE_KEY,
@@ -10,11 +11,6 @@ import {
   TIP_FLAGS,
   TIP_KEY,
 } from "./attributes";
-
-/** weapon.Key to hash, a DLC key being its hash in hex. */
-const WEAPON_HASHES = new Map(
-  Object.entries(WEAPON_KEYS).map(([hash, key]) => [key, Number(hash)]),
-);
 
 /** Unlocks one archive entry. */
 export const unlockArchive = (units: UnitStore, archive: string): Patch =>
@@ -29,7 +25,7 @@ export function registerFieldNoteWeapon(
 ): Patch[] {
   const note = units.entitiesWhere(
     FIELD_NOTE_WEAPON_KEY,
-    WEAPON_HASHES.get(key)!,
+    hashOfKey(WEAPONS, key),
   )[0];
   return note === undefined
     ? []

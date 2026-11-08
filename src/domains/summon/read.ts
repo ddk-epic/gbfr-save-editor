@@ -1,7 +1,7 @@
 import { keyOf } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { UnitStore } from "../../core/unit-store";
-import { SUMMON_BONUS_VALUES } from "../../data/summons";
+import { SUMMON_BONUS_VALUES } from "./data.gen";
 import { SKILLS } from "../../tables/skills";
 import type { Trait } from "../trait/read";
 import {

@@ -1,6 +1,6 @@
 import { Attribute } from "../../core/attribute";
 import { keyAttribute, keyTable } from "../../core/keys";
-import { LIMIT_BONUS_PARAM_KEYS } from "../../data/over-masteries";
+import { LIMIT_BONUS_PARAM_KEYS } from "./data.gen";
 
 export const LIMIT_BONUS_PARAMS = keyTable(
   "limit_bonus_param",

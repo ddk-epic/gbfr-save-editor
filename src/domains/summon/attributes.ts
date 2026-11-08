@@ -1,6 +1,6 @@
 import { Attribute } from "../../core/attribute";
 import { keyAttribute, keyTable } from "../../core/keys";
-import { SUMMON_BASE_PARAM_KEYS, SUMMON_KEYS } from "../../data/summons";
+import { SUMMON_BASE_PARAM_KEYS, SUMMON_KEYS } from "./data.gen";
 
 export const SUMMONS = keyTable("summon", SUMMON_KEYS);
 export const SUMMON_BASE_PARAMS = keyTable(

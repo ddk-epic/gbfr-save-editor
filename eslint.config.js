@@ -8,12 +8,12 @@ const SRC = path.resolve(import.meta.dirname, "src");
 // Layers each layer may import.
 const LAYERS = {
   core: ["core"],
-  data: ["data"],
-  tables: ["core", "data", "tables"],
-  domains: ["core", "data", "tables", "domains"],
-  save: ["core", "data", "tables", "domains", "save"],
-  workflows: ["core", "data", "tables", "domains", "workflows"],
-  entry: ["core", "data", "tables", "domains", "save", "workflows", "entry"],
+  text: ["text"],
+  tables: ["core", "tables"],
+  domains: ["core", "tables", "domains"],
+  save: ["core", "tables", "domains", "save"],
+  workflows: ["core", "tables", "domains", "workflows"],
+  entry: ["core", "text", "tables", "domains", "save", "workflows", "entry"],
 };
 
 const ENTRIES = ["index", "edit", "language", "testing"];

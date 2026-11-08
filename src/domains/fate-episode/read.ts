@@ -1,4 +1,4 @@
-import { FATE_EPISODE_CHARACTERS } from "../../data/characters";
+import { FATE_EPISODE_CHARACTERS } from "./data.gen";
 import { keyOf } from "../../core/keys";
 import type { UnitStore } from "../../core/unit-store";
 import {

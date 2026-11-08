@@ -1,4 +1,4 @@
-import en from "./data/text/en.json";
+import en from "./text/en.json";
 
 /** Game text tables, named by gt() table: item, weapon, character... */
 export type GameTextTable = keyof typeof en;
@@ -11,7 +11,7 @@ export const EN_TEXT: GameText = en;
 
 /** Languages besides en, each a separate chunk. */
 const LOADERS: Record<string, () => Promise<{ default: GameText }>> = {
-  ja: () => import("./data/text/ja.json"),
+  ja: () => import("./text/ja.json"),
 };
 
 /** Game text for a language, undefined when none is generated. */

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MASTERY_SECTIONS } from "../../src/data/masteries";
+import { MASTERY_SECTIONS } from "../../src/domains/mastery/data.gen";
 import { sigilSlots } from "../../src/save/sigil-slots";
 import type {
   MasteryNode,

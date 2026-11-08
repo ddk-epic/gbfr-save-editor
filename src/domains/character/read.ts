@@ -1,4 +1,4 @@
-import { CHARACTER_UI_ORDER, MASTER_LEVEL_MSP } from "../../data/characters";
+import { CHARACTER_UI_ORDER, MASTER_LEVEL_MSP } from "./data.gen";
 import { hashId } from "../../core/xxhash32-custom";
 import type { EntityRange, UnitStore } from "../../core/unit-store";
 import type { UnitEntity } from "../../core/save-data-binary";

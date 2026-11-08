@@ -177,4 +177,4 @@ export {
   type StoryEntry,
 } from "./domains/journal/read";
 export { readTrophies, type Trophy } from "./domains/trophy/read";
-export { TROPHY_TABS, type TrophyTab } from "./data/trophies";
+export { TROPHY_TABS, type TrophyTab } from "./domains/trophy/data.gen";

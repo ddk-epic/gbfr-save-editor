@@ -1,4 +1,4 @@
-import { ITEM_KEYS } from "../../data/items";
+import { ITEMS } from "../../tables/items";
 import {
   duplicates,
   reject,
@@ -16,7 +16,7 @@ export function validateItems(
 ): Graded<ItemIssue>[] {
   const issues: Graded<ItemIssue>[] = [];
   // The save keeps a unit for every item row, held or not.
-  const expected = Object.keys(ITEM_KEYS).length;
+  const expected = Object.keys(ITEMS.keys).length;
   if (items.size !== expected)
     issues.push(
       warning({

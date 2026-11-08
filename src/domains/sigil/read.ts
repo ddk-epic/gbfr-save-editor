@@ -1,4 +1,4 @@
-import { TRAIT_INVENTORY_SORT_ORDER } from "../../data/sigils";
+import { TRAIT_INVENTORY_SORT_ORDER } from "./data.gen";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { UnitStore } from "../../core/unit-store";
 import { TRAIT_SIGIL } from "../trait/attributes";

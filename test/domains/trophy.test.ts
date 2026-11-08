@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { TROPHIES } from "../../src/data/trophies";
+import { TROPHIES } from "../../src/domains/trophy/data.gen";
 import {
   TROPHY_EARNED,
   TROPHY_SEEN,

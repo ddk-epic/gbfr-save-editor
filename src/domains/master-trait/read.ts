@@ -2,7 +2,7 @@ import {
   MASTER_TRAIT_VALUES,
   MASTER_TRAIT_VALUE_SCALES,
   SKILLBOARD_CELLS,
-} from "../../data/master-traits";
+} from "./data.gen";
 import { keyOf } from "../../core/keys";
 import type { UnitEntity } from "../../core/save-data-binary";
 import type { EntityRange, UnitStore } from "../../core/unit-store";

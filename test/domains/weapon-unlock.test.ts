@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { hashId } from "../../src/core/xxhash32-custom";
-import { WEAPON_ROWS, WEAPONS_HELD_ALL_BADGES } from "../../src/data/weapons";
+import { WEAPON_ROWS } from "../../src/domains/weapon/data.gen";
+import { WEAPONS_HELD_ALL_BADGES } from "../../src/domains/trophy/data.gen";
 import {
   CHARACTER_FLAGS,
   CHARACTER_KEY,

@@ -1,4 +1,4 @@
-import { SIGIL_SLOT_PARAMS } from "../data/masteries";
+import { SIGIL_SLOT_PARAMS } from "../domains/mastery/data.gen";
 import type { FateEpisode } from "../domains/fate-episode/read";
 import type { MasteryProgress, MasterySection } from "../domains/mastery/read";
 

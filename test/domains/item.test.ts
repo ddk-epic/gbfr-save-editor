@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ITEM_KEYS } from "../../src/data/items";
+import { ITEM_KEYS } from "../../src/tables/data.gen";
 import { itemTab } from "../../src/domains/item/read";
 import { validateItems } from "../../src/domains/item/validate";
 

@@ -26,7 +26,7 @@ const units = unitStore({
 - `sampleUnits()` holds one character, one item and one sigil, for anything reading across domains.
 - `fixtureFile(entities)` gives the bytes of a whole save file around the units, for `readSave` and `SaveSession`. It computes the checksum `SAVE_HASHSEED` selects when the units hold one. `encodeSaveDataBinary(units)` gives the FlatBuffer alone. Its layout differs from the game's, and the decoder reads it back as the same units.
 
-`hashId(key)` stores a key the way the save does. The key has to come from the table the attribute reads against, or the reader warns and keeps the hash: `SKILL_000_00` is a gem trait, not one of the skills a loadout equips. `src/data` is the list to pick from.
+`hashId(key)` stores a key the way the save does. The key has to come from the table the attribute reads against, or the reader warns and keeps the hash: `SKILL_000_00` is a gem trait, not one of the skills a loadout equips. The `data.gen.ts` files are the list to pick from.
 
 ## Layout
 
@@ -36,7 +36,7 @@ const units = unitStore({
 | `test/domains/`         | One file per `src/domains` module with a reader or checks worth pinning                                       |
 | `test/read/`            | The readers spanning domains, and their checks                                                                |
 | `test/save/`            | The compositions and validation in `src/save`                                                                 |
-| `test/data.test.ts`     | The generated `src/data` tables on their own, no reader and no save                                           |
+| `test/data.test.ts`     | The generated `data.gen.ts` tables on their own, no reader and no save                                        |
 | `test/validate.test.ts` | `validateSave` over a whole save                                                                              |
 
 The edits in `src/workflows` are tested in the `test/domains/` file of the domain they act on.

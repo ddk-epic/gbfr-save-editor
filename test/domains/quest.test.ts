@@ -8,7 +8,7 @@ import {
   SIDE_QUEST_IDS,
   SIDE_QUEST_STATE,
 } from "../../src/domains/quest/attributes";
-import { QUEST_COUNTER } from "../../src/data/quests";
+import { QUEST_COUNTER } from "../../src/domains/quest/data.gen";
 import {
   questOrder,
   readCounterQuests,

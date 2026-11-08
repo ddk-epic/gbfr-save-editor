@@ -9,16 +9,14 @@ import {
   LAST_RAISED_LEVEL_BADGES,
   MASTER_LEVEL_BADGE_QUANTITIES,
   MASTER_LEVEL_BADGES,
-} from "../../data/characters";
-import {
   WEAPON_COLLECTIONS,
   WEAPON_LEVELS_TOTAL_BADGES,
-  WEAPON_ROWS,
   WEAPON_TROVES,
   WEAPON_UNCAPS_BADGES,
   WEAPONS_HELD_ALL_BADGES,
   WEAPONS_HELD_BADGES,
-} from "../../data/weapons";
+} from "./data.gen";
+import { WEAPON_ROWS } from "../weapon/data.gen";
 import { CHARACTER_KEY, CHARACTER_MAX_LEVEL } from "../character/attributes";
 import { CAPTAINS, crewLevelTotal, isCrewMember } from "../character/read";
 import {

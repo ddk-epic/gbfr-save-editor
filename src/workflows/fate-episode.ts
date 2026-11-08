@@ -3,7 +3,7 @@ import { hashId } from "../core/xxhash32-custom";
 import {
   FATE_EPISODE_CHARACTERS,
   FATE_EPISODE_REWARDS,
-} from "../data/characters";
+} from "../domains/fate-episode/data.gen";
 import type { Patch, SaveSession } from "../core/session";
 import { SAVE_ENTITY } from "../core/save-entity";
 import {

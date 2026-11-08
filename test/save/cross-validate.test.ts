@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { CHARACTER_KEYS } from "../../src/data/characters";
-import { MASTERY_SECTIONS } from "../../src/data/masteries";
+import { CHARACTER_KEYS } from "../../src/tables/data.gen";
+import { MASTERY_SECTIONS } from "../../src/domains/mastery/data.gen";
 import type {
   MasteryProgress,
   MasterySection,

@@ -4,9 +4,9 @@ import type { UnitStore } from "../../core/unit-store";
 import {
   CHARACTER_MAX_STATS,
   UNLOCKABLE_CHARACTERS,
-  MASTER_LEVEL_BADGES,
+  MASTER_LEVEL_CHARACTERS,
   MASTER_LEVEL_MSP,
-} from "../../data/characters";
+} from "./data.gen";
 import type { Patch, SaveSession } from "../../core/session";
 import {
   CHARACTER_BASE_ATTACK,
@@ -89,7 +89,7 @@ export const canUnlockAllCharacters = (save: Save) =>
 
 /** False for characters with no master level badges. */
 export const characterMasterLevels = (character: string) =>
-  character in MASTER_LEVEL_BADGES;
+  MASTER_LEVEL_CHARACTERS.includes(character);
 
 /** Patches setting a character to the last master level, no MSP spent. */
 export function maxMasterLevelPatches(
@@ -98,7 +98,7 @@ export function maxMasterLevelPatches(
 ): Patch[] {
   const at = units.of(character);
   const key = at.get(CHARACTER_KEY);
-  if (key === undefined || MASTER_LEVEL_BADGES[key] === undefined)
+  if (key === undefined || !MASTER_LEVEL_CHARACTERS.includes(key))
     throw new Error(`character ${character} has no master level`);
   if (masterLevelOf(at.get(CHARACTER_MASTER_XP)) >= MAX_MASTER_LEVEL)
     throw new Error(

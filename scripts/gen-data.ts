@@ -1,5 +1,5 @@
-// Generates the src/data/ tables (hash -> key per archive table, masteries, master traits)
-// and src/data/text/ (key -> game text per language).
+// Generates src/tables/data.gen.ts (tables several domains share), a data.gen.ts per
+// domain, and src/text/ (key -> game text per language).
 // pnpm gen:data [tables.sqlite] [text dir]
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
@@ -11,33 +11,53 @@ const [
 ] = process.argv.slice(2);
 
 type DataFile =
-  | "characters"
-  | "master-traits"
-  | "masteries"
-  | "over-masteries"
-  | "weapons"
-  | "sigils"
-  | "skills"
-  | "items"
-  | "summons"
+  | "tables"
+  | "character"
+  | "conflux"
+  | "fate-episode"
+  | "item"
   | "journal"
-  | "trophies"
-  | "quests"
-  | "conflux";
+  | "master-trait"
+  | "mastery"
+  | "over-mastery"
+  | "quest"
+  | "sigil"
+  | "skill"
+  | "summon"
+  | "trophy"
+  | "weapon";
+
+const OUTPUT: Record<DataFile, string> = {
+  tables: "tables/data.gen.ts",
+  character: "domains/character/data.gen.ts",
+  conflux: "domains/conflux/data.gen.ts",
+  "fate-episode": "domains/fate-episode/data.gen.ts",
+  item: "domains/item/data.gen.ts",
+  journal: "domains/journal/data.gen.ts",
+  "master-trait": "domains/master-trait/data.gen.ts",
+  mastery: "domains/mastery/data.gen.ts",
+  "over-mastery": "domains/over-mastery/data.gen.ts",
+  quest: "domains/quest/data.gen.ts",
+  sigil: "domains/sigil/data.gen.ts",
+  skill: "domains/skill/data.gen.ts",
+  summon: "domains/summon/data.gen.ts",
+  trophy: "domains/trophy/data.gen.ts",
+  weapon: "domains/weapon/data.gen.ts",
+};
 
 /** Export name -> output file, table and key column. */
 const SOURCES = {
-  CHARACTER_KEYS: ["characters", "chara", "CharId"],
-  WEAPON_KEYS: ["weapons", "weapon", "Key"],
-  GEM_KEYS: ["sigils", "gem", "Key"],
-  SKILL_KEYS: ["sigils", "skill", "Key"],
-  ABILITY_KEYS: ["skills", "ability", "Key"],
-  ITEM_KEYS: ["items", "item", "Key"],
-  LIMIT_BONUS_PARAM_KEYS: ["over-masteries", "limit_bonus_param", "Key"],
-  SKILLBOARD_EFFECT_KEYS: ["master-traits", "skillboard_effect", "Key"],
-  SUMMON_KEYS: ["summons", "summon", "Key"],
-  SUMMON_BASE_PARAM_KEYS: ["summons", "summon_base_param", "Key"],
-  FATE_EPISODE_KEYS: ["characters", "fate_episode", "Key"],
+  CHARACTER_KEYS: ["tables", "chara", "CharId"],
+  WEAPON_KEYS: ["tables", "weapon", "Key"],
+  GEM_KEYS: ["tables", "gem", "Key"],
+  SKILL_KEYS: ["tables", "skill", "Key"],
+  ABILITY_KEYS: ["skill", "ability", "Key"],
+  ITEM_KEYS: ["tables", "item", "Key"],
+  LIMIT_BONUS_PARAM_KEYS: ["over-mastery", "limit_bonus_param", "Key"],
+  SKILLBOARD_EFFECT_KEYS: ["master-trait", "skillboard_effect", "Key"],
+  SUMMON_KEYS: ["summon", "summon", "Key"],
+  SUMMON_BASE_PARAM_KEYS: ["summon", "summon_base_param", "Key"],
+  FATE_EPISODE_KEYS: ["fate-episode", "fate_episode", "Key"],
   ARCHIVE_KEYS: ["journal", "story_note_archive", "Key"],
   STORY_KEYS: ["journal", "story", "Key"],
   FIELD_NOTE_CHARACTER_KEYS: ["journal", "story_note_picturebook_chara", "Key"],
@@ -136,7 +156,7 @@ const summonBonusBlock = (
     ([key, values]) => `  ${JSON.stringify(key)}: ${JSON.stringify(values)},`,
   );
 emit(
-  "summons",
+  "summon",
   `/** summon_base_param.Key -> Level1Value-Level10Value. */
 export const SUMMON_BONUS_VALUES: Readonly<Record<string, readonly number[]>> = {
 ${summonBonusBlock.join("\n")}
@@ -242,7 +262,7 @@ for (const effect of db
     );
 }
 emit(
-  "master-traits",
+  "master-trait",
   `/**
  * skillboard_layout by skillboard_effect key hash, ${cells.length} cells: [category, rank,
  * board order (Unk30), perk, position]. Position is 1-based among the non-perk cells of
@@ -289,7 +309,7 @@ const episodes = (
     `  0x${(UNNAMED_KEY.test(Key) ? parseInt(Key, 16) : hashId(Key)).toString(16).padStart(8, "0")}: ${JSON.stringify(CharaId)},`,
 );
 emit(
-  "characters",
+  "fate-episode",
   `/** fate_episode.CharaId by fate_episode key, ${episodes.length} titled episodes. */
 export const FATE_EPISODE_CHARACTERS: Readonly<Record<number, string>> = {
 ${episodes.sort().join("\n")}
@@ -325,7 +345,7 @@ const rewards = (
   return `  ${JSON.stringify(row.Key)}: { ${fields.join(", ")} },`;
 });
 emit(
-  "characters",
+  "fate-episode",
   `/** Completion rewards by fate_episode.Key, ${rewards.length} episodes; keyItem is ItemCategoryId 14. */
 export const FATE_EPISODE_REWARDS: Readonly<
   Record<
@@ -351,7 +371,7 @@ const slotParams = (
     .all() as { Key: string }[]
 ).map(({ Key }) => Key);
 emit(
-  "masteries",
+  "mastery",
   `/** limit_bonus_param.Key of "Sigil Slot +{0}". */
 export const SIGIL_SLOT_PARAMS: readonly string[] = ${JSON.stringify(slotParams.sort())};`,
 );
@@ -365,7 +385,7 @@ const uiOrder = (
   }[]
 ).map(({ CharId, UIOrder }) => `  ${CharId}: ${UIOrder},`);
 emit(
-  "characters",
+  "character",
   `/** chara.UIOrder by chara.CharId. */
 export const CHARACTER_UI_ORDER: Readonly<Record<string, number>> = {
 ${uiOrder.sort().join("\n")}
@@ -374,8 +394,8 @@ ${uiOrder.sort().join("\n")}
 
 // Inventory order: items by item.SortOrder, sigils by trait's skill.InventorySortOrder.
 for (const [file, name, table, column] of [
-  ["items", "ITEM_SORT_ORDER", "item", "SortOrder"],
-  ["sigils", "TRAIT_INVENTORY_SORT_ORDER", "skill", "InventorySortOrder"],
+  ["item", "ITEM_SORT_ORDER", "item", "SortOrder"],
+  ["sigil", "TRAIT_INVENTORY_SORT_ORDER", "skill", "InventorySortOrder"],
 ] as const) {
   const rows = (
     db
@@ -451,7 +471,7 @@ const secondaries = [
   .filter(Boolean)
   .sort();
 emit(
-  "sigils",
+  "tables",
   `export interface Gem {
   /** gem.Rarity */
   rarity: number;
@@ -466,9 +486,11 @@ emit(
 /** By gem.Key. */
 export const GEM_ROWS: Readonly<Record<string, Gem>> = {
 ${gemRows.sort().join("\n")}
-};
-
-/** gem_rare: DefaultLevel and MaxedLevel by rarity. */
+};`,
+);
+emit(
+  "sigil",
+  `/** gem_rare: DefaultLevel and MaxedLevel by rarity. */
 export const SIGIL_RARITY_LEVELS: Readonly<
   Record<number, readonly [number, number]>
 > = {
@@ -489,7 +511,7 @@ const masterMsp = (
   }[]
 ).map((row) => row.TotalMSP);
 emit(
-  "characters",
+  "character",
   `/** chara_master_exp.TotalMSP, index = master level. */
 export const MASTER_LEVEL_MSP: readonly number[] = [${masterMsp.join(", ")}];`,
 );
@@ -529,7 +551,12 @@ const accountMasterBadges = (
     .all() as { Key: number; BehaviorId: number; ReqQuantity: number }[]
 ).map((r) => `[${r.Key}, ${r.BehaviorId}, ${r.ReqQuantity}]`);
 emit(
-  "characters",
+  "character",
+  `/** chara.CharId with master level badges. */
+export const MASTER_LEVEL_CHARACTERS: readonly string[] = ${JSON.stringify([...masterBadges.keys()].sort())};`,
+);
+emit(
+  "trophy",
   `/** badge Key and BehaviorId. */
 export type BadgeRow = readonly [key: number, progress: number];
 
@@ -568,7 +595,7 @@ const maxStats = (
     .all() as { CharId: string; Hp: number; Attack: number }[]
 ).map((r) => `  ${r.CharId}: { hp: ${r.Hp}, attack: ${r.Attack} },`);
 emit(
-  "characters",
+  "character",
   `/** chara_status Hp and Attack at level 100 by chara.CharId. */
 export const CHARACTER_MAX_STATS: Readonly<
   Record<string, { hp: number; attack: number }>
@@ -626,7 +653,7 @@ const unlockable = (
     .all() as { CharId: string }[]
 ).map((r) => `"${r.CharId}"`);
 emit(
-  "characters",
+  "trophy",
   `/** Level badges by chara.CharId: 5802 index, BehaviorId, badge.Key and ReqQuantity. */
 export const CHARACTER_LEVEL_BADGES: Readonly<
   Record<
@@ -651,9 +678,11 @@ export const CREW_LEVEL_BADGES: readonly (readonly [
 export const LAST_RAISED_LEVEL_BADGES: readonly (readonly [
   badge: number,
   quantity: number,
-])[] = [${tierBadges(1028)}];
-
-/** chara.CharId listed in the Crewmate menu. */
+])[] = [${tierBadges(1028)}];`,
+);
+emit(
+  "character",
+  `/** chara.CharId listed in the Crewmate menu. */
 export const UNLOCKABLE_CHARACTERS: readonly string[] = [${unlockable.join(", ")}];`,
 );
 console.log(
@@ -803,7 +832,7 @@ const overMasteryBlock = [...paramValues]
       `  ${JSON.stringify(param)}: ${JSON.stringify(values)},`,
   );
 emit(
-  "over-masteries",
+  "over-mastery",
   `/** MED_EFF_* limit_bonus_param.Key -> Lv1Value-Lv10Value. */
 export const OVER_MASTERY_VALUES: Readonly<Record<string, readonly number[]>> = {
 ${overMasteryBlock.join("\n")}
@@ -827,7 +856,7 @@ const characterBlocks = [...nodes]
     return [`  ${chara}: {`, ...entries, "  },"].join("\n");
   });
 emit(
-  "masteries",
+  "mastery",
   `export const MASTERY_SECTIONS = ${JSON.stringify(SECTIONS)} as const;
 
 /** Section index of T1-6 transcendence rows, never set; the T7 rows hold the bought nodes. */
@@ -953,7 +982,7 @@ for (const row of weaponRows) {
 }
 const unlockKeys = new Set([...unlockRows.values()].map(({ Key }) => Key));
 emit(
-  "weapons",
+  "weapon",
   `export interface WeaponRow {
   /** weapon.Unk30 */
   series: number;
@@ -986,7 +1015,7 @@ const weaponLevelXp = (
   db.prepare("select Exp from weapon_exp").all() as { Exp: number }[]
 ).map(({ Exp }) => Exp);
 emit(
-  "weapons",
+  "weapon",
   `/** weapon_exp.Exp by level - 1. */
 export const WEAPON_LEVEL_XP: readonly number[] = [${weaponLevelXp.join(", ")}];`,
 );
@@ -1024,7 +1053,7 @@ const weaponTierBadges = (behavior: number) =>
     .map((row) => `[${row.Key}, ${row.ReqQuantity}]`)
     .join(", ");
 emit(
-  "weapons",
+  "trophy",
   `/** Collection trophy by chara.CharId: BehaviorId, badge.Key and ReqQuantity. */
 export const WEAPON_COLLECTIONS: Readonly<
   Record<
@@ -1219,7 +1248,7 @@ function loadMsg(folder: string): Map<string, string> {
   return texts;
 }
 
-mkdirSync(new URL("../src/data/text/", import.meta.url), { recursive: true });
+mkdirSync(new URL("../src/text/", import.meta.url), { recursive: true });
 /** Quest names in en, for the comments on the quest counter list. */
 let questNames: Record<string, string> = {};
 /** Main story entry titles in en, for the comments on the story order. */
@@ -1255,7 +1284,7 @@ for (const [lang, folder] of Object.entries(TEXT_LANGUAGES)) {
     counts.push(`${table} ${texts.size}/${keys.size}`);
   }
   writeFileSync(
-    new URL(`../src/data/text/${lang}.json`, import.meta.url),
+    new URL(`../src/text/${lang}.json`, import.meta.url),
     `${JSON.stringify(out, null, 2)}\n`,
   );
   console.log(`text ${lang}: ${counts.join(", ")}`);
@@ -1380,7 +1409,7 @@ for (const b of badges)
 const trophyTab = (sortOrder: number) =>
   [...TROPHY_TAB_STARTS].reverse().find(([start]) => start <= sortOrder)![1];
 emit(
-  "trophies",
+  "trophy",
   `/** The journal's trophy tabs, base game and Endless Ragnarok together. */
 export const TROPHY_TABS = ${JSON.stringify(TROPHY_TABS)} as const;
 
@@ -1445,7 +1474,7 @@ const counterQuests = questRows
       a.Key.localeCompare(b.Key),
   );
 emit(
-  "quests",
+  "quest",
   `/** Quest id and quest_baseinfo_ex_data.AdvisedPWR, in quest counter order, ${counterQuests.length} quests. */
 export const QUEST_COUNTER: readonly (readonly [id: string, pwr: number])[] = [
 ${counterQuests
@@ -1461,7 +1490,7 @@ console.log(
 );
 
 for (const [file, fileBlocks] of blocks) {
-  const out = new URL(`../src/data/${file}.ts`, import.meta.url);
+  const out = new URL(`../src/${OUTPUT[file]}`, import.meta.url);
   writeFileSync(
     out,
     `// Generated by scripts/gen-data.ts from the game archive tables. Do not edit.\n\n${fileBlocks.join("\n\n")}\n`,

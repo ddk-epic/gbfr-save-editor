@@ -1,4 +1,4 @@
-import { CHARACTER_KEYS } from "../data/characters";
+import { CHARACTERS } from "../tables/characters";
 import type { SaveModule } from "../core/module";
 import { warning, reject, type Graded } from "../core/validation";
 import { characterOrder } from "../domains/character/read";
@@ -28,7 +28,7 @@ export function validateCharacterData(
   data: CharacterData,
 ): Graded<CharacterDataIssue>[] {
   const issues: Graded<CharacterDataIssue>[] = [];
-  const expected = Object.keys(CHARACTER_KEYS).length;
+  const expected = Object.keys(CHARACTERS.keys).length;
   if (data.characters.length !== expected)
     issues.push(
       warning({

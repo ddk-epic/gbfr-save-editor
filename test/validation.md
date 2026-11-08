@@ -16,15 +16,15 @@ An issue is a `code` and that check's parameters, in the shape `SaveFormatError`
 { severity: "warning", code: "tableCount", table: "item", held: 447, expected: 448 }
 ```
 
-| Severity  | Means                                                                    |
-| --------- | ------------------------------------------------------------------------ |
-| `reject`  | The reading cannot be trusted, or the game would refuse the save         |
-| `warning` | The save reads, but something is off, usually `src/data` behind the game |
+| Severity  | Means                                                                            |
+| --------- | -------------------------------------------------------------------------------- |
+| `reject`  | The reading cannot be trusted, or the game would refuse the save                 |
+| `warning` | The save reads, but something is off, usually the generated data behind the game |
 
 Three kinds of check make up the list.
 
 - **Save invariants.** Claims about one save's own consistency: counter quest clears add up to the profile's count, a completed side quest was accepted, a wish list holds at most 20 materials the inventory holds, a wrightstone rolls at most three traits in descending level, a mastery section takes no more nodes than it holds.
-- **Table counts.** The save keeps a row for every game table row from the start, so a count below the table means a misread and one above it means `src/data` is behind the game. Items, characters and the journal lists are counted this way, as `tableCount`.
+- **Table counts.** The save keeps a row for every game table row from the start, so a count below the table means a misread and one above it means the generated data is behind the game. Items, characters and the journal lists are counted this way, as `tableCount`.
 - **Container checks.** The header fields the format fixes, the versions the readers were written against, and ten non-zero SlotData checksums.
 
 Unresolved keys are not reported here yet. They still surface as a console warning while reading and as the app's `unresolved` count.

@@ -4,7 +4,7 @@ import {
   MASTERY_PARAM_VALUES,
   MASTERY_SECTIONS,
   REPLACED_TRANSCENDENCE,
-} from "../../data/masteries";
+} from "./data.gen";
 import { SaveFormatError } from "../../core/errors";
 import type { MasteryFormatIssue } from "./issues";
 import type { UnitEntity } from "../../core/save-data-binary";

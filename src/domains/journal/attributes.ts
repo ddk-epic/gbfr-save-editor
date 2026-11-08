@@ -9,7 +9,7 @@ import {
   MUSIC_KEYS,
   STORY_KEYS,
   TIP_KEYS,
-} from "../../data/journal";
+} from "./data.gen";
 import { WEAPONS } from "../../tables/weapons";
 
 const journalFlags = (id: number) =>

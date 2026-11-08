@@ -2,7 +2,7 @@ import {
   FIELD_NOTE_TREASURE,
   FIELD_NOTE_WEAPONS,
   STORY_ORDER,
-} from "../../data/journal";
+} from "./data.gen";
 import type { Attribute } from "../../core/attribute";
 import type { UnitStore } from "../../core/unit-store";
 import { ITEM_FLAGS, ITEM_KEY } from "../item/attributes";
