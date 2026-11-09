@@ -5,9 +5,9 @@ namespace gbfr.dev.quickstart;
 // config.json in the mod's folder, read at game start.
 public sealed class Settings
 {
-    public int DamageMultiplier { get; set; } = 10000;
+    public int DamageMultiplier { get; set; } = 1000000;
     public float RunSpeedMultiplier { get; set; } = 3f;
-    public float StunMultiplier { get; set; } = 1000f;
+    public float StunMultiplier { get; set; } = 100000f;
     public bool SkipChestTimer { get; set; } = true;
     public bool SkipResultTimer { get; set; } = true;
     public bool SkipStartupLogos { get; set; } = true;
