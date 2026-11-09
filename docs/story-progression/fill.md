@@ -2,22 +2,23 @@
 
 `fillSkippedStory` adds what the story checkpoints up to the save's own should have left, for a save moved forward by `advanceStory`. It runs after `advanceStory`, like `clearHints`. It takes every row due by the checkpoint `storyPosition` finds. A save between chapter starts takes the rows of the chapter starts at or below its `CURRENT_CHAPTER` (2506). Each row checks the save first, so a played save, or a second run, changes nothing it already holds.
 
-| Due by           | Key | Trophies                   | Items                                 | Archives                                                           | UI features | Other                                          |
-| ---------------- | --- | -------------------------- | ------------------------------------- | ------------------------------------------------------------------ | ----------- | ---------------------------------------------- |
-| Chapter 2        | 40  | 0, 10, 1, 1405             |                                       |                                                                    | 7           |                                                |
-| Chapter 3        | 60  | 2, 1406                    | `ITEM_70_0004` Rolan's Transceiver    |                                                                    |             |                                                |
-| Chapter 4        | 80  | 3, 1407                    | `ITEM_70_0005` Rebelwear              | `ARC_OTHER_011`                                                    |             | `WEP_PL0000_03`, `WEP_PL0100_03` replace `_01` |
-| Chapter 5        | 100 | 4, 1408                    |                                       |                                                                    |             |                                                |
-| Chapter 6        | 120 | 5, 1409                    |                                       |                                                                    |             |                                                |
-| Chapter 7        | 140 | 6, 1410                    |                                       |                                                                    |             |                                                |
-| Chapter 8        | 160 | 7, 1411                    | `ITEM_70_0006` Elpis, the Mind Sealer | `ARC_OTHER_026`, `ARC_OTHER_058`, `ARC_OTHER_059`, `ARC_OTHER_060` |             | `WEP_PL1900_A0`, `WEP_NP0300_01`               |
-| Chapter 9        | 180 | 8, 1412                    |                                       |                                                                    |             | `WEP_PL0000_99`, `WEP_PL0100_99`               |
-| Final Chapter    | 200 | 9, 1413                    | `ITEM_70_0010` Rolan's Notes          | `ARC_ROLANNOTE_08`                                                 |             | Stand-in weapons raised                        |
-| Chapter Ø        | 220 | 11, 1397                   |                                       |                                                                    | 0-6         | `PL1900` joins                                 |
-| Chapter Ø end    | 222 | 22-25, 19, 1398            |                                       | `ARC_ROLANNOTE_01`-`07`                                            |             | Story cutscenes, counter quests, see below     |
-| `promoteToProud` | 222 | 542                        |                                       |                                                                    |             |                                                |
-| `dlcStart`       | 222 | 52, 1594, 1595, 1253, 1470 | `ITEM_23_0000` Crewmate Card, 2       |                                                                    |             | 5815 counts, see below                         |
-| `unlockChaos`    | 241 | 746, 1468                  |                                       |                                                                    |             |                                                |
+| Due by            | Key | Trophies                   | Items                                 | Archives                                                           | UI features | Other                                          |
+| ----------------- | --- | -------------------------- | ------------------------------------- | ------------------------------------------------------------------ | ----------- | ---------------------------------------------- |
+| Chapter 2         | 40  | 0, 10, 1, 1405             |                                       |                                                                    | 7           |                                                |
+| Chapter 3         | 60  | 2, 1406                    | `ITEM_70_0004` Rolan's Transceiver    |                                                                    |             |                                                |
+| Chapter 4         | 80  | 3, 1407                    | `ITEM_70_0005` Rebelwear              | `ARC_OTHER_011`                                                    |             | `WEP_PL0000_03`, `WEP_PL0100_03` replace `_01` |
+| Chapter 5         | 100 | 4, 1408                    |                                       |                                                                    |             |                                                |
+| Chapter 6         | 120 | 5, 1409                    |                                       |                                                                    |             |                                                |
+| Chapter 7         | 140 | 6, 1410                    |                                       |                                                                    |             |                                                |
+| Chapter 8         | 160 | 7, 1411                    | `ITEM_70_0006` Elpis, the Mind Sealer | `ARC_OTHER_026`, `ARC_OTHER_058`, `ARC_OTHER_059`, `ARC_OTHER_060` |             | `WEP_PL1900_A0`, `WEP_NP0300_01`               |
+| Chapter 9         | 180 | 8, 1412                    |                                       |                                                                    |             | `WEP_PL0000_99`, `WEP_PL0100_99`               |
+| Final Chapter     | 200 | 9, 1413                    | `ITEM_70_0010` Rolan's Notes          | `ARC_ROLANNOTE_08`                                                 |             | Stand-in weapons raised                        |
+| Chapter Ø         | 220 | 11, 1397                   |                                       |                                                                    | 0-6         | `PL1900` joins                                 |
+| Chapter Ø end     | 222 | 22-25, 19, 1398            |                                       | `ARC_ROLANNOTE_01`-`07`                                            |             | Story cutscenes, counter quests, see below     |
+| `promoteToProud`  | 222 | 542                        |                                       |                                                                    |             |                                                |
+| `dlcStart`        | 222 | 52, 1594, 1595, 1253, 1470 | `ITEM_23_0000` Crewmate Card, 2       |                                                                    |             | 5815 counts, see below                         |
+| `unlockChaos`     | 241 | 746, 1468                  |                                       |                                                                    |             |                                                |
+| `unlockChaosPlus` | 242 | 747, 1467, 1254, 1469      | Six key items, see below              |                                                                    |             | `WEP_PL2800_A0`, 5815 at 918, fate episodes    |
 
 ## Checks and writes
 
@@ -32,6 +33,7 @@
 | Weapon         | 7403 at its row is not 0  | The first free weapon entry, see below                                                |
 | `PL1900`       | 1305 bit 0 is set         | See below                                                                             |
 | Story cutscene | 2581 is not 0             | 2581 to 1                                                                             |
+| Fate episode   | 3502 bit 3 is set         | 3502 sets bits 1 and 3, the other bits stay                                           |
 | Counter quest  | 2571 is not 0             | See below                                                                             |
 
 - 2600 holds one bool per `UnlockUIAction.feature_`, see [`quests.md`](../quests.md).
@@ -58,6 +60,10 @@ A story cutscene is cleared by the fill row of the checkpoint after the one wher
 
 - The `promoteToProud` row clears `00725100` and `00730311`, which open on `0010A025`, and `00730000` and `00730001`, which open on two Hard clears.
 - The `dlcStart` row clears `00725101`, which opens on `0010A031` and 10 Maniac clears, and `00710010`, which opens on `00407101` and `0010A031`.
+
+## Chaos
+
+The `unlockChaosPlus` row adds key items `CF24B2F6`, `C93E2FDD` and `8BF58697`, which `0010B002` gives with `AddImportantItem`, and what `00730331`-`00730333` give after the records of `00408314`, `00408308` and `00409302`: `FATE_PL2900_01`-`03` move 3502 from 5 to 15, and key items `84292D6A`, `54AE4C95` and `75A25FB1` take 1803 4.
 
 ## DLC start
 

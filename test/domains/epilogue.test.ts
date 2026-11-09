@@ -97,6 +97,15 @@ const STORY_CUTSCENES = [
   0x730102, 0x730005,
 ];
 
+const emptySummon = (): [Attribute<unknown>, unknown][] => [
+  [SUMMON_ID, 0],
+  [SUMMON_KEY_HASH, 0x887ae0b0],
+  [SUMMON_TRAIT_AND_BONUS, [0x887ae0b0, 0x887ae0b0]],
+  [SUMMON_LEVELS, [-1, -1]],
+  [SUMMON_FLAGS_RAW, 0],
+  [SUMMONS_OBTAINED, 0],
+];
+
 const save = (difficulty: number, chapter: number) => {
   const bytes = fixtureFile(
     {
@@ -170,11 +179,8 @@ const save = (difficulty: number, chapter: number) => {
         [SUMMONS_KEY, hashId("su_So0001")],
         [SUMMONS_OBTAINED, 0],
       ],
-      1: [
-        [SUMMON_ID, 0],
-        [SUMMONS_KEY, hashId("su_So4900_TU")],
-        [SUMMONS_OBTAINED, 0],
-      ],
+      1: [...emptySummon(), [SUMMONS_KEY, hashId("su_So4900_TU")]],
+      2: emptySummon(),
       360: [
         [ITEM_KEY, hashId("ITEM_23_0000")],
         [ITEM_COUNT, 3],
@@ -190,7 +196,7 @@ const save = (difficulty: number, chapter: number) => {
   return SaveSession.open(roomy);
 };
 
-const CHAOS = ["unlockChaos"];
+const CHAOS = ["unlockChaos", "unlockChaosPlus"];
 
 const targets = (session: SaveSession) =>
   storyTargets(session.save).map(({ id }) => id);
@@ -301,6 +307,42 @@ describe("unlockChaos", () => {
     expect(at.get(SUMMON_LAST_ID)).toBe(1);
     expect(at.get(SUMMONS_UNLOCKED)).toBe(1);
     expect(units.of(1).get(SUMMONS_OBTAINED)).toBe(1);
+    expect(targets(session)).toEqual(["unlockChaosPlus"]);
+  });
+
+  it("follows the trace to the record of 00409302", () => {
+    const session = save(7, 240);
+    advanceStory(session, "unlockChaosPlus", NOW);
+    const at = readSave(session.export()).slotData.units.of(0);
+
+    expect(at.get(QUEST_DIFFICULTY_UNLOCKED)).toBe(9);
+    expect(at.get(QUEST_DIFFICULTY_STAGE)).toBe(8);
+    expect(at.get(CURRENT_CHAPTER)).toEqual([242, -1]);
+    expect(at.get(STORY_QUEST_CLEARED)).toEqual([1, 1, 1, 1, 1, 0]);
+    expect(at.get(STORY_QUEST_THIRD_CLEARED)).toEqual([1, 1, 1, 1, 1, 0]);
+    expect(at.get(BETWEEN_STORY_QUESTS)).toBe(1);
+    expect(at.get(CHAPTER_KEYS)).toEqual([222, 240, 241]);
+    expect(at.get(CHAPTER_BEST_DIFFICULTY)).toEqual([1, 1, 1]);
+    expect(at.get(COUNTER_QUEST_CLEARS)).toEqual([1, 1, 0, 1, 0]);
+    const progress = at.get(TROPHY_PROGRESS);
+    expect([progress[557], progress[558], progress[559]]).toEqual([2n, 1n, 0n]);
+    expect(at.get(CONFLUX_CYCLE_CLEARED)).toEqual([1, 1, 1, 1, 0]);
+    expect(at.get(CURRENT_TOWN)).toBe(0xc00);
+    expect(at.get(LOCATION_SPOT)).toBe("1_START");
+    expect(at.get(STORY_CUTSCENE_CLEARS).slice(-2)).toEqual([1, 1]);
+    expect(at.get(STORY_CUTSCENE_CHECKPOINTS)[2 * 64]).toBe(1174902544);
     expect(targets(session)).toEqual([]);
+
+    const summons = readSave(session.export()).slotData.units;
+    expect(
+      [1, 2].map((entity) => summons.of(entity).get(SUMMON_KEY_HASH)),
+    ).toEqual([hashId("su_So3300_TU"), hashId("su_So4b00_TU")]);
+    expect(summons.of(2).get(SUMMON_TRAIT_AND_BONUS)).toEqual([
+      hashId("SKILL_069_00"),
+      0xf7b0316f,
+    ]);
+    expect(summons.of(2).get(SUMMON_LEVELS)).toEqual([5, 1]);
+    expect(at.get(SUMMONS_EQUIPPED)).toEqual([1, 3, 0, 0]);
+    expect(at.get(SUMMON_LAST_ID)).toBe(3);
   });
 });

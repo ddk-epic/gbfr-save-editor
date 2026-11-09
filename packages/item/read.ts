@@ -1,9 +1,13 @@
 import { ITEM_SORT_ORDER } from "./data.gen";
-import type { UnitStore } from "@gbfr/core";
+import { hashOfKey, type UnitStore } from "@gbfr/core";
+import { ITEMS } from "@gbfr/tables";
 import { ITEM_COUNT, ITEM_FLAGS, ITEM_KEY } from "./attributes";
 
 /** item.SortOrder, the inventory's item order; unresolved keys last. */
 export const itemOrder = (key: string) => ITEM_SORT_ORDER[key] ?? Infinity;
+
+/** `item.Key` hash, hex keys included. */
+export const itemHash = (key: string) => hashOfKey(ITEMS, key);
 
 /** Tabs of the item menu. Sigils, weapons, wrightstones, summons and curios have their own menus. */
 export const ITEM_TABS = ["treasures", "keyItems"] as const;

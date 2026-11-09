@@ -14,8 +14,15 @@ import {
   joinedCharacters,
 } from "@gbfr/character";
 import { acquisitions } from "@gbfr/item/edit";
+import { FATE_EPISODE_KEY, FATE_EPISODE_STATE } from "@gbfr/fate-episode";
 import { EQUIP_WEAPON } from "@gbfr/equipment";
-import { ITEM_ACQUIRED, ITEM_COUNT, ITEM_FLAGS, ITEM_KEY } from "@gbfr/item";
+import {
+  ITEM_ACQUIRED,
+  ITEM_COUNT,
+  ITEM_FLAGS,
+  ITEM_KEY,
+  itemHash,
+} from "@gbfr/item";
 import {
   ARCHIVE_FLAGS,
   ARCHIVE_KEY,
@@ -94,6 +101,8 @@ interface StoryFillEntry {
     startWeapon: string;
   }[];
   joinsId?: boolean;
+  /** `fate_episode.Key`, marked started and completed. */
+  fateEpisodes?: readonly string[];
   /** `TROPHY_PROGRESS` indexes and the amount each rises by, once the entry earns a trophy. */
   counts?: readonly (readonly [index: number, amount: number])[];
   /** Items given as rewards, by key and count, once the entry earns a trophy. */
@@ -244,6 +253,26 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     storyCutscenes: [0x725101, 0x710010],
   },
   { checkpoint: "unlockChaos", trophies: [746, 1468], chapterKeysCleared: 41n },
+  {
+    checkpoint: "unlockChaosPlus",
+    // Conflux Cycle 4.
+    trophies: [747, 1467, 1254, 1469],
+    chapterKeysCleared: 41n,
+    counts: [[918, 1]],
+    // From `0010B002` and `00730331`-`00730333`.
+    items: [
+      { item: "CF24B2F6", flags: { fieldNote: true } },
+      { item: "C93E2FDD", flags: { fieldNote: true } },
+      { item: "8BF58697", flags: { fieldNote: true } },
+      { item: "84292D6A", flags: { fieldNote: true } },
+      { item: "54AE4C95", flags: { fieldNote: true } },
+      { item: "75A25FB1", flags: { fieldNote: true } },
+    ],
+    fateEpisodes: ["FATE_PL2900_01", "FATE_PL2900_02", "FATE_PL2900_03"],
+    standInWeapons: [
+      { key: "WEP_PL2800_A0", xp: FIGHT_WEAPON_XP, uncap: FIGHT_WEAPON_UNCAP },
+    ],
+  },
 ];
 
 /** Rupies and items the game does not give for a trophy written here, by `badge.Key`. */
@@ -491,7 +520,7 @@ function applyFill(
       progress[CHAPTER_KEYS_CLEARED] = entry.chapterKeysCleared;
 
     for (const { item, flags } of entry.items ?? []) {
-      const entity = units.onlyEntityWhere(ITEM_KEY, hashId(item));
+      const entity = units.onlyEntityWhere(ITEM_KEY, itemHash(item));
       if (units.of(entity).get(ITEM_ACQUIRED) !== 0) continue;
       const held = units.of(entity);
       patches.push(
@@ -503,8 +532,19 @@ function applyFill(
       added.push(item);
     }
 
+    for (const key of entry.fateEpisodes ?? []) {
+      const episode = units.of(
+        units.onlyEntityWhere(FATE_EPISODE_KEY, hashId(key)),
+      );
+      if (episode.get(FATE_EPISODE_STATE).completed) continue;
+      patches.push(
+        episode.patch(FATE_EPISODE_STATE, { started: true, completed: true }),
+      );
+      added.push(key);
+    }
+
     for (const item of entry.takenItems ?? []) {
-      const entity = units.onlyEntityWhere(ITEM_KEY, hashId(item));
+      const entity = units.onlyEntityWhere(ITEM_KEY, itemHash(item));
       if (!givenItems.has(item) && units.of(entity).get(ITEM_COUNT) === 0)
         continue;
       patches.push(units.of(entity).patch(ITEM_COUNT, 0));
@@ -512,7 +552,7 @@ function applyFill(
     }
 
     for (const item of entry.newMarks ?? []) {
-      const entity = units.onlyEntityWhere(ITEM_KEY, hashId(item));
+      const entity = units.onlyEntityWhere(ITEM_KEY, itemHash(item));
       if (!units.of(entity).get(ITEM_FLAGS).seen) continue;
       patches.push(units.of(entity).patch(ITEM_FLAGS, { seen: false }));
       added.push(`${item} new mark`);
@@ -662,7 +702,7 @@ function applyFill(
 
   if (added.length === 0) return added;
   for (const [item, count] of rewardItems) {
-    const entity = units.onlyEntityWhere(ITEM_KEY, hashId(item));
+    const entity = units.onlyEntityWhere(ITEM_KEY, itemHash(item));
     const held = units.of(entity);
     patches.push(
       held.patch(ITEM_COUNT, held.get(ITEM_COUNT) + count),

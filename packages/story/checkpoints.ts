@@ -314,4 +314,48 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     difficultyStage: 7,
     location: { town: 0xc00, townCheckpoint: 939223336, spot: "START" },
   },
+  // The Chaos quests, Conflux Cycle 4 and `0010C001`, up to the record of `00409302`.
+  {
+    id: "unlockChaosPlus",
+    questDifficulty: difficultyDigit("chaos+"),
+    counterQuests: [
+      0x408311, 0x408312, 0x408302, 0x408305, 0x408314, 0x408308, 0x408306,
+      0x408313, 0x408315, 0x409302,
+    ],
+    storyCutscenes: [
+      0x730103, 0x730410, 0x730400, 0x730207, 0x730048, 0x730031, 0x730022,
+      0x730331, 0x730332, 0x730101, 0x730312, 0x730200, 0x730333, 0x730202,
+    ],
+    storyCutsceneSections: [
+      [0x730020, 1174902544],
+      [0x730006, 739676793],
+    ],
+    sideQuestSections: [
+      [0x230401, 498758966],
+      [0x220411, 793767595],
+    ],
+    storyQuests: [0x10b002, 0x10c001],
+    // From `0010B002` and its tutorial.
+    summons: [
+      {
+        key: "su_So3300_TU",
+        trait: "SKILL_068_00",
+        bonus: 0x2270bc40,
+        levels: [5, 1],
+        equip: false,
+      },
+      {
+        key: "su_So4b00_TU",
+        trait: "SKILL_069_00",
+        bonus: 0xf7b0316f,
+        levels: [5, 1],
+        equip: true,
+      },
+    ],
+    chapterKeys: [240, 241],
+    chapter: 242,
+    difficultyStage: 8,
+    confluxCycles: 4,
+    location: { town: 0xc00, townCheckpoint: 939223336, spot: "1_START" },
+  },
 ];

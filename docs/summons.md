@@ -36,6 +36,14 @@ Every non-zero id in 1451 belongs to a held summon. The slots are shared by the 
 
 1455 is 1 in a save with access to summons and 0 otherwise. The first summon, `su_So4900_TU` from `0010B001`, takes it 0 to 1 with 1453 at its row and 1454 to 1.
 
+The story gives three fixed summons. Each one's `summon_lot` rows hold a single trait and a single bonus at weight 10000, and none of them is in `reward_summon_lot` or `summon_preset`:
+
+| Key            | Hash       | Name         | Given by                                                                     | Trait          | Bonus      |
+| -------------- | ---------- | ------------ | ---------------------------------------------------------------------------- | -------------- | ---------- |
+| `su_So4900_TU` | `7996A856` | Furycane I   | `AddSummonStone` in `0010B001`, equipped at once                             | `SKILL_013_00` | `00D171E0` |
+| `su_So3300_TU` | `CC3C45F3` | Rock Golem I | `AddSummonStone` in `0010B002`                                               | `SKILL_068_00` | `2270BC40` |
+| `su_So4b00_TU` | `23D839A3` | Managarmr I  | Tutorial action step `0x10` (`FUN_140a79020`), which also re-equips Furycane | `SKILL_069_00` | `F7B0316F` |
+
 - `summon` has 189 rows, one per summon. 1452 lists all of them in every save, a new game included.
 - Every held summon key has a 1 in 1453, and so do keys never held. 1453 does not mark held summons.
 - A save with only part of the summons obtained is needed to confirm 1453.
