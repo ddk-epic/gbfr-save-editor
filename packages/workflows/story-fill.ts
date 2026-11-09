@@ -273,6 +273,28 @@ const STORY_FILL: readonly StoryFillEntry[] = [
       { key: "WEP_PL2800_A0", xp: FIGHT_WEAPON_XP, uncap: FIGHT_WEAPON_UNCAP },
     ],
   },
+  {
+    checkpoint: "unlockChaosPlusPlus",
+    trophies: [748, 1457, 750],
+    chapterKeysCleared: 41n,
+    counts: [[SIDE_QUESTS_COMPLETED, 3]],
+    // From `00730334`-`00730337`.
+    items: [
+      { item: "7BCDAA54", flags: { fieldNote: true } },
+      { item: "946B78EE", flags: { fieldNote: true } },
+      { item: "5030BEBA", flags: { fieldNote: true } },
+      { item: "6DD50A91", flags: { fieldNote: true } },
+    ],
+    fateEpisodes: [
+      "FATE_PL2900_04",
+      "FATE_PL2900_05",
+      "FATE_PL2900_06",
+      "FATE_PL2900_07",
+    ],
+    standInWeapons: [
+      { key: "WEP_PL2900_A0", xp: FIGHT_WEAPON_XP, uncap: FIGHT_WEAPON_UNCAP },
+    ],
+  },
 ];
 
 /** Rupies and items the game does not give for a trophy written here, by `badge.Key`. */

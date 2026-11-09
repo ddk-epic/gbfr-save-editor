@@ -323,13 +323,10 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
       0x408313, 0x408315, 0x409302,
     ],
     storyCutscenes: [
-      0x730103, 0x730410, 0x730400, 0x730207, 0x730048, 0x730031, 0x730022,
-      0x730331, 0x730332, 0x730101, 0x730312, 0x730200, 0x730333, 0x730202,
+      0x730410, 0x730400, 0x730207, 0x730048, 0x730031, 0x730022, 0x730331,
+      0x730332, 0x730101, 0x730312, 0x730200, 0x730333, 0x730202,
     ],
-    storyCutsceneSections: [
-      [0x730020, 1174902544],
-      [0x730006, 739676793],
-    ],
+    storyCutsceneSections: [[0x730020, 1174902544]],
     sideQuestSections: [
       [0x230401, 498758966],
       [0x220411, 793767595],
@@ -352,10 +349,36 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
         equip: true,
       },
     ],
-    chapterKeys: [240, 241],
+    chapterKeys: [241],
     chapter: 242,
     difficultyStage: 8,
     confluxCycles: 4,
+    location: { town: 0xc00, townCheckpoint: 939223336, spot: "1_START" },
+  },
+  // The Chaos+ quests, `00220001`-`00220003` and `0010D001`, up to the record of `0040A305`.
+  {
+    id: "unlockChaosPlusPlus",
+    questDifficulty: difficultyDigit("chaos++"),
+    counterQuests: [
+      0x409308, 0x409305, 0x409313, 0x409317, 0x409314, 0x409319, 0x409311,
+      0x409320, 0x409303, 0x409312, 0x409307, 0x409309, 0x409315, 0x40a305,
+    ],
+    openedQuests: [0x408310],
+    storyCutscenes: [
+      0x730221, 0x730220, 0x730334, 0x730335, 0x730336, 0x730208, 0x730337,
+      0x730222, 0x730223, 0x730313, 0x730224, 0x730225, 0x730204, 0x730006,
+      0x730205,
+    ],
+    storyCutsceneSections: [
+      [0x730020, 0],
+      [0x730013, 157022807],
+      [0x730007, 832412207],
+    ],
+    sideQuests: [0x220001, 0x220002, 0x220003],
+    storyQuests: [0x10d001],
+    chapterKeys: [242],
+    chapter: 243,
+    difficultyStage: 9,
     location: { town: 0xc00, townCheckpoint: 939223336, spot: "1_START" },
   },
 ];

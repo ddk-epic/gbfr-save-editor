@@ -33,7 +33,7 @@ A save editor for Granblue Fantasy: Relink. Still work in progress and planned w
 - [x] Unlock all Proud quests
 - [x] Advance to the DLC start
 - [x] Advance to the Epilogue
-- [x] Unlock Chaos and Chaos+ quests
+- [x] Unlock Chaos, Chaos+ and Chaos++ quests
 
 #### Party
 
@@ -132,7 +132,7 @@ A save editor for Granblue Fantasy: Relink. Still work in progress and planned w
 - [x] Unlock all Proud quests
 - [x] Advance to the DLC start
 - [x] Advance to the Epilogue
-- [x] Unlock Chaos and Chaos+ quests
+- [x] Unlock Chaos, Chaos+ and Chaos++ quests
 - [x] Clear hints
 
 #### Characters

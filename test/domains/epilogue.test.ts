@@ -196,7 +196,7 @@ const save = (difficulty: number, chapter: number) => {
   return SaveSession.open(roomy);
 };
 
-const CHAOS = ["unlockChaos", "unlockChaosPlus"];
+const CHAOS = ["unlockChaos", "unlockChaosPlus", "unlockChaosPlusPlus"];
 
 const targets = (session: SaveSession) =>
   storyTargets(session.save).map(({ id }) => id);
@@ -307,30 +307,39 @@ describe("unlockChaos", () => {
     expect(at.get(SUMMON_LAST_ID)).toBe(1);
     expect(at.get(SUMMONS_UNLOCKED)).toBe(1);
     expect(units.of(1).get(SUMMONS_OBTAINED)).toBe(1);
-    expect(targets(session)).toEqual(["unlockChaosPlus"]);
+    expect(targets(session)).toEqual([
+      "unlockChaosPlus",
+      "unlockChaosPlusPlus",
+    ]);
   });
 
-  it("follows the trace to the record of 00409302", () => {
+  it("follows the trace to the record of 0040A305", () => {
     const session = save(7, 240);
-    advanceStory(session, "unlockChaosPlus", NOW);
+    advanceStory(session, "unlockChaosPlusPlus", NOW);
     const at = readSave(session.export()).slotData.units.of(0);
 
-    expect(at.get(QUEST_DIFFICULTY_UNLOCKED)).toBe(9);
-    expect(at.get(QUEST_DIFFICULTY_STAGE)).toBe(8);
-    expect(at.get(CURRENT_CHAPTER)).toEqual([242, -1]);
-    expect(at.get(STORY_QUEST_CLEARED)).toEqual([1, 1, 1, 1, 1, 0]);
-    expect(at.get(STORY_QUEST_THIRD_CLEARED)).toEqual([1, 1, 1, 1, 1, 0]);
-    expect(at.get(BETWEEN_STORY_QUESTS)).toBe(1);
-    expect(at.get(CHAPTER_KEYS)).toEqual([222, 240, 241]);
-    expect(at.get(CHAPTER_BEST_DIFFICULTY)).toEqual([1, 1, 1]);
-    expect(at.get(COUNTER_QUEST_CLEARS)).toEqual([1, 1, 0, 1, 0]);
+    expect(at.get(QUEST_DIFFICULTY_UNLOCKED)).toBe(10);
+    expect(at.get(QUEST_DIFFICULTY_STAGE)).toBe(9);
+    expect(at.get(CURRENT_CHAPTER)).toEqual([243, -1]);
+    expect(at.get(STORY_QUEST_CLEARED)).toEqual([1, 1, 1, 1, 1, 1]);
+    expect(at.get(STORY_QUEST_THIRD_CLEARED)).toEqual([1, 1, 1, 1, 1, 1]);
+    expect(at.get(CHAPTER_KEYS)).toEqual([222, 240, 241, 242]);
+    expect(at.get(CHAPTER_BEST_DIFFICULTY)).toEqual([1, 1, 1, 1]);
+    expect(at.get(COUNTER_QUEST_CLEARS)).toEqual([1, 1, 0, 1, 1]);
+    expect(at.get(COUNTER_QUEST_OPENED)).toEqual([
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]);
     const progress = at.get(TROPHY_PROGRESS);
-    expect([progress[557], progress[558], progress[559]]).toEqual([2n, 1n, 0n]);
+    expect([progress[557], progress[558], progress[559]]).toEqual([2n, 1n, 1n]);
     expect(at.get(CONFLUX_CYCLE_CLEARED)).toEqual([1, 1, 1, 1, 0]);
     expect(at.get(CURRENT_TOWN)).toBe(0xc00);
     expect(at.get(LOCATION_SPOT)).toBe("1_START");
     expect(at.get(STORY_CUTSCENE_CLEARS).slice(-2)).toEqual([1, 1]);
-    expect(at.get(STORY_CUTSCENE_CHECKPOINTS)[2 * 64]).toBe(1174902544);
+    expect(at.get(STORY_CUTSCENE_CHECKPOINTS)[2 * 64]).toBe(0);
     expect(targets(session)).toEqual([]);
 
     const summons = readSave(session.export()).slotData.units;
