@@ -17,7 +17,7 @@ import {
 import { itemTab } from "./read";
 
 const ITEM_ENTITIES = 500;
-const TREASURE_CAP = 999;
+export const TREASURE_CAP = 999;
 const KNICKKNACK_VOUCHER_CAP = 99999;
 const KNICKKNACK_VOUCHER = "ITEM_21_0000";
 const CURIO_PREFIX = "ITEM_19_";

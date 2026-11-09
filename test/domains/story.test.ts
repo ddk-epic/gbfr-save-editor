@@ -22,7 +22,10 @@ import {
   SYSTEM_STORY_DIFFICULTY,
 } from "../../packages/story/attributes";
 import { advanceStory, storyTargets } from "../../packages/story/edit";
-import { QUEST_DIFFICULTY_UNLOCKED } from "../../packages/quest/attributes";
+import {
+  QUEST_DIFFICULTY_STAGE,
+  QUEST_DIFFICULTY_UNLOCKED,
+} from "../../packages/quest/attributes";
 import { SAVE_HASHSEED } from "../../packages/core/save-entity";
 import { SaveSession } from "../../packages/core/session";
 import { fixtureFile } from "../../packages/gbfr-save-editor/testing";
@@ -87,6 +90,7 @@ const newSave = (overrides: { chapter?: number[]; section?: number } = {}) => {
         [CHAPTER_GROUPS, []],
         [CHAPTER_GROUP_FLAGS, []],
         [QUEST_DIFFICULTY_UNLOCKED, 2],
+        [QUEST_DIFFICULTY_STAGE, 0],
       ],
       2: [
         [ISLAND_KEY, hashId("ISLAND_1ST")],

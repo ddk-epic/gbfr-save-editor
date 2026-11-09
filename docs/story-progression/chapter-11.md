@@ -50,7 +50,7 @@ Quest records cleared:
 - 2517 and 2519, which return to their start values as `0010AF02` clears. 2518 keeps 515372814 in the traced run and 0 here.
 - The party writes of `0010AF02`, which end before it clears.
 - Key 222 in 2590, group 11 in 2595 and 2596, and 2501 to 1. The game writes them as it clears `0010A031` after a load, with no quest played. A traced clear writes them at the first Maniac clear, and `promoteToProud` writes them, see [`quests.md`](../quests.md).
-- 2508, which a load takes to 5, and the 2575 rows of the uncleared quests.
+- The 2575 rows of the uncleared quests.
 
 ### Status
 

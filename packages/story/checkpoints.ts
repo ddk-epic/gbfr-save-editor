@@ -5,7 +5,7 @@ import type { GivenSummon } from "@gbfr/summon";
 interface CheckpointBase {
   /** Names the checkpoint for `advanceStory` and the fill. */
   id: string;
-  /** 7303 digit. */
+  /** 7303 digit, with 2508 one lower. */
   questDifficulty?: number;
 }
 
@@ -56,7 +56,6 @@ export interface ProgressCheckpoint extends CheckpointBase {
   chapterGroups?: readonly (readonly [group: number, flag: number])[];
   /** 2506 after the step. */
   chapter?: number;
-  difficultyStage?: number;
   /** Conflux runs cleared, from the first. */
   confluxCycles?: number;
   /** Where the save loads: 2502, 2503, 2606, 1201 and 1202. */
@@ -311,7 +310,6 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     ],
     chapterKeys: [240],
     chapter: 241,
-    difficultyStage: 7,
     location: { town: 0xc00, townCheckpoint: 939223336, spot: "START" },
   },
   // The Chaos quests, Conflux Cycle 4 and `0010C001`, up to the record of `00409302`.
@@ -351,7 +349,6 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     ],
     chapterKeys: [241],
     chapter: 242,
-    difficultyStage: 8,
     confluxCycles: 4,
     location: { town: 0xc00, townCheckpoint: 939223336, spot: "1_START" },
   },
@@ -378,7 +375,6 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     storyQuests: [0x10d001],
     chapterKeys: [242],
     chapter: 243,
-    difficultyStage: 9,
     location: { town: 0xc00, townCheckpoint: 939223336, spot: "1_START" },
   },
 ];

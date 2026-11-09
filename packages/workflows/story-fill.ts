@@ -13,7 +13,7 @@ import {
   masteryRange,
   joinedCharacters,
 } from "@gbfr/character";
-import { acquisitions } from "@gbfr/item/edit";
+import { acquisitions, TREASURE_CAP } from "@gbfr/item/edit";
 import { FATE_EPISODE_KEY, FATE_EPISODE_STATE } from "@gbfr/fate-episode";
 import { EQUIP_WEAPON } from "@gbfr/equipment";
 import {
@@ -210,6 +210,10 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     checkpoint: "chapterZeroEnd",
     trophies: [22, 23, 24, 25, 19, 1398],
     chapterKeysCleared: 41n,
+    // Whitewing Key, from `RW_QUEST_RANK_QR6`.
+    items: [
+      { item: "ITEM_80_0002", flags: { fieldNote: true, keyItem: true } },
+    ],
     archives: [
       { archive: "ARC_ROLANNOTE_02", flags: { unlocked: true, seen: true } },
       { archive: "ARC_ROLANNOTE_03", flags: { unlocked: true, seen: true } },
@@ -308,29 +312,80 @@ const STORY_FILL: readonly StoryFillEntry[] = [
   },
 ];
 
-/** Rupies and items the game does not give for a trophy written here, by `badge.Key`. */
-const TROPHY_REWARDS: Readonly<
-  Record<number, { rupies: number; items?: readonly [string, number][] }>
+/** `reward_quest_rank` rows by trophy, without Crewmate Cards. */
+const QUEST_RANK_REWARDS: Readonly<
+  Record<number, { rupies: number; items: readonly [string, number][] }>
 > = {
+  // QR3
   22: {
     rupies: 20000,
     items: [
+      ["ITEM_16_0000", 1],
       ["ITEM_10_0001", 50],
       ["ITEM_10_0002", 5],
     ],
   },
+  // QR4
   23: {
     rupies: 30000,
     items: [
-      ["ITEM_10_0001", 50],
-      ["ITEM_10_0002", 25],
+      ["ITEM_10_0001", 100],
+      ["ITEM_10_0002", 30],
     ],
   },
+  // QR5
   24: {
     rupies: 30000,
     items: [
       ["ITEM_10_0002", 50],
       ["ITEM_10_0003", 10],
+    ],
+  },
+  // QR6
+  25: {
+    rupies: 50000,
+    items: [
+      ["ITEM_14_0003", 1],
+      ["ITEM_10_0003", 50],
+      ["ITEM_14_0012", 10],
+    ],
+  },
+  // QR7
+  542: {
+    rupies: 50000,
+    items: [
+      ["ITEM_10_0003", 100],
+      ["ITEM_11_0002", 1],
+      ["ITEM_11_0001", 2],
+    ],
+  },
+  // QR8
+  746: {
+    rupies: 100000,
+    items: [
+      ["ITEM_10_0003", 150],
+      ["ITEM_12_0000", 2],
+      ["20C742DE", 5],
+    ],
+  },
+  // QR9
+  747: {
+    rupies: 120000,
+    items: [
+      ["ITEM_10_0003", 200],
+      ["ITEM_12_0000", 2],
+      ["20C742DE", 10],
+      ["98CDB46F", 1],
+    ],
+  },
+  // QRA
+  748: {
+    rupies: 150000,
+    items: [
+      ["ITEM_14_0003", 10],
+      ["ITEM_12_0000", 2],
+      ["ITEM_14_0000", 5],
+      ["64A63FBC", 1],
     ],
   },
 };
@@ -535,12 +590,12 @@ function applyFill(
       if (counter !== undefined) progress[counter] = progress[counter]! + 1n;
       added.push(`trophy ${trophy}`);
 
-      const reward = TROPHY_REWARDS[trophy];
+      const reward = QUEST_RANK_REWARDS[trophy];
       if (!reward) continue;
       rupies = Math.min(rupies + reward.rupies, USER_MAX_RUPIES);
       progress[RUPIES_EARNED] =
         progress[RUPIES_EARNED]! + BigInt(reward.rupies);
-      for (const [item, count] of reward.items ?? [])
+      for (const [item, count] of reward.items)
         rewardItems.set(item, (rewardItems.get(item) ?? 0) + count);
     }
     for (const [index, amount] of earnedHere ? (entry.counts ?? []) : [])
@@ -747,7 +802,10 @@ function applyFill(
     const entity = units.onlyEntityWhere(ITEM_KEY, itemHash(item));
     const held = units.of(entity);
     patches.push(
-      held.patch(ITEM_COUNT, held.get(ITEM_COUNT) + count),
+      held.patch(
+        ITEM_COUNT,
+        Math.min(held.get(ITEM_COUNT) + count, TREASURE_CAP),
+      ),
       held.replace(ITEM_FLAGS, { fieldNote: true }),
     );
     if (held.get(ITEM_ACQUIRED) === 0) patches.push(stamps.stamp(entity));

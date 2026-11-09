@@ -14,7 +14,7 @@
 | Chapter 9             | 180 | 8, 1412                    |                                       |                                                                    |             | `WEP_PL0000_99`, `WEP_PL0100_99`               |
 | Final Chapter         | 200 | 9, 1413                    | `ITEM_70_0010` Rolan's Notes          | `ARC_ROLANNOTE_08`                                                 |             | Stand-in weapons raised                        |
 | Chapter Ø             | 220 | 11, 1397                   |                                       |                                                                    | 0-6         | `PL1900` joins                                 |
-| Chapter Ø end         | 222 | 22-25, 19, 1398            |                                       | `ARC_ROLANNOTE_01`-`07`                                            |             | Story cutscenes, counter quests, see below     |
+| Chapter Ø end         | 222 | 22-25, 19, 1398            | `ITEM_80_0002` Whitewing Key          | `ARC_ROLANNOTE_01`-`07`                                            |             | Story cutscenes, counter quests, see below     |
 | `promoteToProud`      | 222 | 542                        |                                       |                                                                    |             |                                                |
 | `dlcStart`            | 222 | 52, 1594, 1595, 1253, 1470 | `ITEM_23_0000` Crewmate Card, 2       |                                                                    |             | 5815 counts, see below                         |
 | `unlockProudQuests`   | 222 |                            |                                       |                                                                    |             | Town event, see below                          |
@@ -76,13 +76,27 @@ The `unlockChaosPlus` row adds key items `CF24B2F6`, `C93E2FDD` and `8BF58697`, 
 
 The `dlcStart` row adds what `00220101`, `00220102` and Conflux Cycles 1-3 leave, once its trophies are new: 5815 at 27 up by 2, at 1139, 1140 and 917 up by 1, and one Crewmate Card (`ITEM_23_0000`) per side quest. 1470 moves no 5815 entry.
 
-| Trophy | Rupies, also on 5815 at 224 | `ITEM_10_0001` | `ITEM_10_0002` | `ITEM_10_0003` |
-| ------ | --------------------------- | -------------- | -------------- | -------------- |
-| 22     | 20000                       | 50             | 5              |                |
-| 23     | 30000                       | 50             | 25             |                |
-| 24     | 30000                       |                | 50             | 10             |
+## Quest rank rewards
 
-The game pays the trophy 25 reward by itself on a load, so trophy 25 writes none. The same load pays nothing for trophies 22-24.
+Each trophy that unlocks a difficulty pays its `reward_quest_rank` row when the fill sets it: the rupies, also on 5815 at 224, and the items, each capped at 999. The Crewmate Cards in the rows are left to Siero's shop, see below. `advanceStory` sets 2508 to the rank paid, so a load pays none again.
+
+| Trophy | Row                 | Rupies | Items                                                                    |
+| ------ | ------------------- | ------ | ------------------------------------------------------------------------ |
+| 22     | `RW_QUEST_RANK_QR3` | 20000  | `ITEM_16_0000` 1, `ITEM_10_0001` 50, `ITEM_10_0002` 5                    |
+| 23     | `RW_QUEST_RANK_QR4` | 30000  | `ITEM_10_0001` 100, `ITEM_10_0002` 30                                    |
+| 24     | `RW_QUEST_RANK_QR5` | 30000  | `ITEM_10_0002` 50, `ITEM_10_0003` 10                                     |
+| 25     | `RW_QUEST_RANK_QR6` | 50000  | `ITEM_14_0003` 1, `ITEM_10_0003` 50, `ITEM_14_0012` 10, `ITEM_80_0002` 1 |
+| 542    | `RW_QUEST_RANK_QR7` | 50000  | `ITEM_10_0003` 100, `ITEM_11_0002` 1, `ITEM_11_0001` 2                   |
+| 746    | `RW_QUEST_RANK_QR8` | 100000 | `ITEM_10_0003` 150, `ITEM_12_0000` 2, `20C742DE` 5                       |
+| 747    | `RW_QUEST_RANK_QR9` | 120000 | `ITEM_10_0003` 200, `ITEM_12_0000` 2, `20C742DE` 10, `98CDB46F` 1        |
+| 748    | `RW_QUEST_RANK_QRA` | 150000 | `ITEM_14_0003` 10, `ITEM_12_0000` 2, `ITEM_14_0000` 5, `64A63FBC` 1      |
+
+The Whitewing Key is written through the Chapter Ø end row's items, with 1803 at 36 as the game pays it, once the save never held one.
+
+Siero's shop (`EtSierokarteShop`, `FUN_1436c7a00`) repairs two rewards shortly after a load:
+
+- It gives the Whitewing Key, with 1803 at 4, when 2508 is above 4 and none is held.
+- It adds Crewmate Cards up to a count it takes from the `RW_TICKET_*` rewards received, the ranks 2508 has paid and a list of 15 other sources, less the cards held and the characters joined with one.
 
 ## `00730050`
 
@@ -133,7 +147,7 @@ When 1305 bit 3 was unset, meaning the save never played the character, the fill
 ## Not filled
 
 - The count of `ITEM_13_0000` Green Potion, which follows the character in control, see [`inventory.md`](../inventory.md).
-- `ITEM_23_0000` Crewmate Cards. The traced run gains three, and a loaded save gains one with the quest rank reward, so the count the game adds by itself is not settled.
+- `ITEM_23_0000` Crewmate Cards from the quest rank rewards, which Siero's shop adds.
 - 5815 at 184, 185 and 998, the weapon counts behind badges 360-368 and 1360-1362. They rise with no weapon unit moving when `PL1900` joins, and 998 can fall, so the game takes them again from the weapons held. A load does not.
 - The story party, 2201 at 103000-103003.
 - Story cutscenes `00720005`-`00720017`. They play voice lines at the quest counter, and their type 3 conditions close them on a save past `0010A025`.
@@ -142,4 +156,4 @@ When 1305 bit 3 was unset, meaning the save never played the character, the fill
 
 ## Status
 
-Applied to a new save with `advanceStory` to key 220 and `clearHints`, the fill loads in game. The weapons, 2600, the archives and 5815 at 46 and 47 hold after a save, and 46 and 47 reach 7 at note 02, as in the traced run. A save with the outfit writes also loads in game. At key 222 the game pays the trophy 25 reward, and the objective moves to "Progress through Maniac quests".
+Applied to a new save with `advanceStory` to key 220 and `clearHints`, the fill loads in game. The weapons, 2600, the archives and 5815 at 46 and 47 hold after a save, and 46 and 47 reach 7 at note 02, as in the traced run. A save with the outfit writes also loads in game. At key 222 the objective moves to "Progress through Maniac quests".

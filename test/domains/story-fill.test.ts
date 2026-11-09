@@ -21,6 +21,7 @@ import {
   ITEM_FLAGS,
   ITEM_KEY,
 } from "../../packages/item/attributes";
+import { itemHash } from "../../packages/item/read";
 import {
   ARCHIVE_FLAGS,
   ARCHIVE_KEY,
@@ -50,6 +51,7 @@ import {
   COUNTER_QUEST_FLAGS,
   COUNTER_QUEST_IDS,
   COUNTER_QUEST_OPENED,
+  QUEST_DIFFICULTY_STAGE,
   QUEST_DIFFICULTY_UNLOCKED,
   STORY_CUTSCENE_CHECKPOINTS,
   STORY_CUTSCENE_CLEARS,
@@ -84,12 +86,24 @@ const ITEMS = [
   "ITEM_70_0001",
   "ITEM_70_0003",
   "ITEM_23_0000",
+  "ITEM_80_0002",
+  "ITEM_16_0000",
+  "ITEM_14_0003",
+  "ITEM_14_0012",
+  "ITEM_11_0001",
+  "ITEM_11_0002",
+  "ITEM_12_0000",
+  "20C742DE",
+  "98CDB46F",
+  "ITEM_14_0000",
+  "64A63FBC",
 ] as const;
 const ITEM_ENTITY = 300;
 const STONE_ENTITY = ITEM_ENTITY + 7;
 const LIFE_LINK_ENTITY = ITEM_ENTITY + 8;
 const SKY_MAP_ENTITY = ITEM_ENTITY + 9;
 const CREWMATE_CARD_ENTITY = ITEM_ENTITY + 10;
+const WHITEWING_KEY_ENTITY = ITEM_ENTITY + 11;
 const HELD_SEEN_ITEMS: readonly string[] = ["ITEM_70_0001", "ITEM_70_0003"];
 const ARCHIVES = [
   "ARC_OTHER_011",
@@ -168,6 +182,7 @@ const save = (
       [CAPTAIN, overrides.captain ?? 1],
       [USER_RUPIES, 1000],
       [QUEST_DIFFICULTY_UNLOCKED, 2],
+      [QUEST_DIFFICULTY_STAGE, 0],
       [COUNTER_QUEST_IDS, [0x405204, 0x401301, ...COUNTER_QUESTS]],
       [COUNTER_QUEST_CLEARS, Array<number>(COUNTER_ROWS).fill(0)],
       [COUNTER_QUEST_FLAGS, Array<number>(COUNTER_ROWS).fill(7)],
@@ -187,7 +202,7 @@ const save = (
       ITEMS.map((item, index) => [
         ITEM_ENTITY + index,
         [
-          [ITEM_KEY, hashId(item)],
+          [ITEM_KEY, itemHash(item)],
           [ITEM_COUNT, HELD_SEEN_ITEMS.includes(item) ? 1 : 0],
           [ITEM_FLAGS, HELD_SEEN_ITEMS.includes(item) ? 12 : 0],
           [ITEM_ACQUIRED, 0],
@@ -506,11 +521,16 @@ describe("fillSkippedStory", () => {
     for (const trophy of [0, 10, 22, 23, 24, 25, 19, 1398])
       expect(at.get(TROPHY_EARNED)[trophy]).toBe(true);
     expect(at.get(TROPHY_EARNED)[12]).toBe(false);
-    expect(at.get(USER_RUPIES)).toBe(81000);
-    expect(at.get(TROPHY_PROGRESS)[224]).toBe(80000n);
-    expect(units.values(ITEM_COUNT, ITEM_ENTITY + 4)).toEqual([100]);
-    expect(units.values(ITEM_COUNT, ITEM_ENTITY + 5)).toEqual([80]);
-    expect(units.values(ITEM_COUNT, ITEM_ENTITY + 6)).toEqual([10]);
+    expect(at.get(USER_RUPIES)).toBe(131000);
+    expect(at.get(TROPHY_PROGRESS)[224]).toBe(130000n);
+    expect(units.values(ITEM_COUNT, ITEM_ENTITY + 4)).toEqual([150]);
+    expect(units.values(ITEM_COUNT, ITEM_ENTITY + 5)).toEqual([85]);
+    expect(units.values(ITEM_COUNT, ITEM_ENTITY + 6)).toEqual([60]);
+    expect(units.values(ITEM_COUNT, ITEM_ENTITY + 12)).toEqual([1]);
+    expect(units.values(ITEM_COUNT, ITEM_ENTITY + 13)).toEqual([1]);
+    expect(units.values(ITEM_COUNT, ITEM_ENTITY + 14)).toEqual([10]);
+    expect(units.values(ITEM_COUNT, WHITEWING_KEY_ENTITY)).toEqual([1]);
+    expect(units.values(ITEM_FLAGS, WHITEWING_KEY_ENTITY)).toEqual([36]);
   });
 
   it("adds what the side quests and Conflux cycles before the Epilogue leave", () => {

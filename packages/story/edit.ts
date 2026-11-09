@@ -291,6 +291,8 @@ function advanceChapters(
   );
   if (difficulty > at.get(QUEST_DIFFICULTY_UNLOCKED))
     set(QUEST_DIFFICULTY_UNLOCKED, difficulty);
+  if (difficulty - 1 > at.get(QUEST_DIFFICULTY_STAGE))
+    set(QUEST_DIFFICULTY_STAGE, difficulty - 1);
 
   set(CURRENT_TOWN, destination.town);
   set(CURRENT_TOWN_CHECKPOINT, destination.townCheckpoint);
@@ -336,13 +338,11 @@ function advanceProgress(
   now: number,
 ) {
   const at = session.save.slotData.units.of(SAVE_ENTITY);
-  if (
-    checkpoint.questDifficulty !== undefined &&
-    checkpoint.questDifficulty > at.get(QUEST_DIFFICULTY_UNLOCKED)
-  )
-    session.patch([
-      at.patch(QUEST_DIFFICULTY_UNLOCKED, checkpoint.questDifficulty),
-    ]);
+  const difficulty = checkpoint.questDifficulty ?? 0;
+  if (difficulty > at.get(QUEST_DIFFICULTY_UNLOCKED))
+    session.patch([at.patch(QUEST_DIFFICULTY_UNLOCKED, difficulty)]);
+  if (difficulty - 1 > at.get(QUEST_DIFFICULTY_STAGE))
+    session.patch([at.patch(QUEST_DIFFICULTY_STAGE, difficulty - 1)]);
   clearStoryCutscenes(session, checkpoint.storyCutscenes ?? []);
   clearCounterQuests(session, checkpoint.counterQuests ?? []);
   openCounterQuests(session, [
@@ -433,7 +433,7 @@ function advanceProgress(
     session.setList(SIDE_QUESTS_TAKEN, SAVE_ENTITY, sideQuestsTaken);
 }
 
-/** Clears the step's story quests, adds its chapter keys and sets 2506 and 2508. */
+/** Clears the step's story quests, adds its chapter keys and sets 2506. */
 function advanceStoryQuests(
   session: SaveSession,
   checkpoint: ProgressCheckpoint,
@@ -499,11 +499,6 @@ function advanceStoryQuests(
         at.get(CURRENT_CHAPTER)[1]!,
       ]),
     );
-  if (
-    checkpoint.difficultyStage !== undefined &&
-    checkpoint.difficultyStage > at.get(QUEST_DIFFICULTY_STAGE)
-  )
-    patches.push(at.patch(QUEST_DIFFICULTY_STAGE, checkpoint.difficultyStage));
   if (patches.length > 0) session.patch(patches);
 
   if (checkpoint.chapterGroups) {
