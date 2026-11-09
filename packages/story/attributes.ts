@@ -5,6 +5,7 @@ export const SYSTEM_STORY_DIFFICULTY = Attribute.byte(817);
 
 export const CURRENT_TOWN = Attribute.int(2502);
 export const CURRENT_TOWN_CHECKPOINT = Attribute.uint(2503);
+export const LAST_TOWN = Attribute.int(2606);
 /** Solo, then online. */
 export const CURRENT_CHAPTER = Attribute.intList(2506);
 export const NO_CHAPTER = -1;

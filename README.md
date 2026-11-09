@@ -26,12 +26,13 @@ A save editor for Granblue Fantasy: Relink. Still work in progress and planned w
 - [x] Card characters: last played and most used, with level, quests used and master level
 - [x] Recent players: name, player id, last seen, quest, grade, quests cleared and card characters
 
-#### Story
+#### Progression
 
 - [x] Advance to a chapter start
 - [x] Promote to Proud quests
 - [x] Unlock all Proud quests
-- [x] Disable hints
+- [x] Advance to the DLC start
+- [x] Advance to the Epilogue
 
 #### Party
 
@@ -122,6 +123,15 @@ A save editor for Granblue Fantasy: Relink. Still work in progress and planned w
 - [ ] Undo and reset
 - [ ] Steam ID entry on export
 - [ ] Export gated on legality
+
+### Progression
+
+- [x] Advance to a chapter start
+- [x] Promote to Proud quests
+- [x] Unlock all Proud quests
+- [x] Advance to the DLC start
+- [x] Advance to the Epilogue
+- [x] Disable hints
 
 #### Characters
 

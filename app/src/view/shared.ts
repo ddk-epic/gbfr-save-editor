@@ -33,17 +33,15 @@ import {
   type Inventory,
 } from "gbfr-save-editor";
 import {
-  STORY_END_KEY,
+  CHAPTER_ZERO_END_KEY,
   canDisableHints,
-  canPromoteToProud,
-  canUnlockProudQuests,
-  isPromotedToProud,
+  isChapterCheckpoint,
   storyProgress,
 } from "gbfr-save-editor/edit";
 import type { GameTextTable } from "../i18n/game-text";
 import { keyCell, trait, unknownCell } from "./cell";
 import { table } from "./table";
-import type { Cell, Table } from "./types";
+import type { Cell, Table, TableLabelId } from "./types";
 
 export const STORY_TABLE = "profile:story";
 export const OPTIONS_TABLE = "profile:options";
@@ -314,13 +312,17 @@ export function buildShared(
         ["chapterStart", 30],
         ["completed", 9],
       ],
-      storyProgress(save).map(({ key, completed }) => [
-        key === STORY_END_KEY
-          ? { message: "mainStoryEnd" }
-          : keyCell("chapterStartChapter", String(key)),
-        keyCell("chapterStart", String(key)),
-        completed,
-      ]),
+      storyProgress(save).map(({ checkpoint, completed }) =>
+        isChapterCheckpoint(checkpoint)
+          ? [
+              checkpoint.key === CHAPTER_ZERO_END_KEY
+                ? { message: "chapterZeroEnd" }
+                : keyCell("chapterStartChapter", String(checkpoint.key)),
+              keyCell("chapterStart", String(checkpoint.key)),
+              completed,
+            ]
+          : [{ message: checkpoint.id as TableLabelId }, undefined, completed],
+      ),
       { stretch: "chapter", tab: "profile", uiLabel: "mainStory", wide: true },
     ),
     table(
@@ -330,17 +332,7 @@ export function buildShared(
         ["option", 36],
         ["done", 9],
       ],
-      [
-        [
-          { message: "promoteToProud" },
-          isPromotedToProud(save) && !canPromoteToProud(save),
-        ],
-        [
-          { message: "unlockProudQuests" },
-          isPromotedToProud(save) && !canUnlockProudQuests(save),
-        ],
-        [{ message: "disableHints" }, !canDisableHints(save)],
-      ],
+      [[{ message: "disableHints" }, !canDisableHints(save)]],
       { stretch: "option", tab: "profile", label: "options", wide: true },
     ),
     ...itemTables(inventory.items, wished, unseen),

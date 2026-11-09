@@ -1,20 +1,22 @@
 # Story fill
 
-`fillSkippedStory` adds what the chapters up to the save's current chapter should have left, for a save moved forward by `advanceStory`. It runs after the chapters, like `disableHints`. It reads `CURRENT_CHAPTER` (2506) and takes every row with a key at or below it. Each row checks the save first, so a played save, or a second run, changes nothing it already holds.
+`fillSkippedStory` adds what the story checkpoints up to the save's own should have left, for a save moved forward by `advanceStory`. It runs after `advanceStory`, like `disableHints`. It takes every row due by the checkpoint `storyPosition` finds. A save between chapter starts takes the rows of the chapter starts at or below its `CURRENT_CHAPTER` (2506). Each row checks the save first, so a played save, or a second run, changes nothing it already holds.
 
-| Due by     | Key | Trophies        | Items                                 | Archives                                                           | UI features | Other                                          |
-| ---------- | --- | --------------- | ------------------------------------- | ------------------------------------------------------------------ | ----------- | ---------------------------------------------- |
-| Chapter 2  | 40  | 0, 10, 1, 1405  |                                       |                                                                    | 7           |                                                |
-| Chapter 3  | 60  | 2, 1406         | `ITEM_70_0004` Rolan's Transceiver    |                                                                    |             |                                                |
-| Chapter 4  | 80  | 3, 1407         | `ITEM_70_0005` Rebelwear              | `ARC_OTHER_011`                                                    |             | `WEP_PL0000_03`, `WEP_PL0100_03` replace `_01` |
-| Chapter 5  | 100 | 4, 1408         |                                       |                                                                    |             |                                                |
-| Chapter 6  | 120 | 5, 1409         |                                       |                                                                    |             |                                                |
-| Chapter 7  | 140 | 6, 1410         |                                       |                                                                    |             |                                                |
-| Chapter 8  | 160 | 7, 1411         | `ITEM_70_0006` Elpis, the Mind Sealer | `ARC_OTHER_026`, `ARC_OTHER_058`, `ARC_OTHER_059`, `ARC_OTHER_060` |             | `WEP_PL1900_A0`, `WEP_NP0300_01`               |
-| Chapter 9  | 180 | 8, 1412         |                                       |                                                                    |             | `WEP_PL0000_99`, `WEP_PL0100_99`               |
-| Chapter 10 | 200 | 9, 1413         | `ITEM_70_0010` Rolan's Notes          | `ARC_ROLANNOTE_08`                                                 |             | Stand-in weapons raised                        |
-| Chapter Ø  | 220 | 11, 1397        |                                       |                                                                    | 0-6         | `PL1900` joins                                 |
-| Story end  | 222 | 22-25, 19, 1398 |                                       | `ARC_ROLANNOTE_01`-`07`                                            |             | Short stories, counter quests, see below       |
+| Due by           | Key | Trophies                   | Items                                 | Archives                                                           | UI features | Other                                          |
+| ---------------- | --- | -------------------------- | ------------------------------------- | ------------------------------------------------------------------ | ----------- | ---------------------------------------------- |
+| Chapter 2        | 40  | 0, 10, 1, 1405             |                                       |                                                                    | 7           |                                                |
+| Chapter 3        | 60  | 2, 1406                    | `ITEM_70_0004` Rolan's Transceiver    |                                                                    |             |                                                |
+| Chapter 4        | 80  | 3, 1407                    | `ITEM_70_0005` Rebelwear              | `ARC_OTHER_011`                                                    |             | `WEP_PL0000_03`, `WEP_PL0100_03` replace `_01` |
+| Chapter 5        | 100 | 4, 1408                    |                                       |                                                                    |             |                                                |
+| Chapter 6        | 120 | 5, 1409                    |                                       |                                                                    |             |                                                |
+| Chapter 7        | 140 | 6, 1410                    |                                       |                                                                    |             |                                                |
+| Chapter 8        | 160 | 7, 1411                    | `ITEM_70_0006` Elpis, the Mind Sealer | `ARC_OTHER_026`, `ARC_OTHER_058`, `ARC_OTHER_059`, `ARC_OTHER_060` |             | `WEP_PL1900_A0`, `WEP_NP0300_01`               |
+| Chapter 9        | 180 | 8, 1412                    |                                       |                                                                    |             | `WEP_PL0000_99`, `WEP_PL0100_99`               |
+| Final Chapter    | 200 | 9, 1413                    | `ITEM_70_0010` Rolan's Notes          | `ARC_ROLANNOTE_08`                                                 |             | Stand-in weapons raised                        |
+| Chapter Ø        | 220 | 11, 1397                   |                                       |                                                                    | 0-6         | `PL1900` joins                                 |
+| Chapter Ø end    | 222 | 22-25, 19, 1398            |                                       | `ARC_ROLANNOTE_01`-`07`                                            |             | Short stories, counter quests, see below       |
+| `promoteToProud` | 222 | 542                        |                                       |                                                                    |             |                                                |
+| `dlcStart`       | 222 | 52, 1594, 1595, 1253, 1470 | `ITEM_23_0000` Crewmate Card, 2       |                                                                    |             | 5815 counts, see below                         |
 
 ## Checks and writes
 
@@ -37,17 +39,21 @@
 - `ITEM_70_0001` Life Link takes its new mark at key 80, and `ITEM_70_0003` Sky Map Piece at key 200. A new save holds both with bit 3 set. A later fill brings the mark back on an item viewed since.
 - 5815 at 2 takes the row's chapter key count and only rises: 4, 6, 9, 13, 18, 22, 26, 30, 36, 38, 41.
 
-## Story end
+## Chapter Ø end
 
 Key 222 holds `0010A031` underway with all eight notes and the journal quests behind it. The save takes what the quests behind the notes would have left.
 
 - Notes 02 and 03 take bits 0 and 1, the other five bit 0. Opening the notes menu sets bit 1 on those five.
 - 2581 goes to 1 on `00705001`-`00705007`, `00703000`, `00703001`, `00720000`-`00720004`, `00704000` and `00704001`. The game clears `00725100` itself after a load.
-- 7303 rises to 6, and trophies 22-25, 19 and 1398 are set. The game awards trophy 12 after a load, and trophy 13 on Hard with it.
+- Trophies 22-25, 19 and 1398 are set. The game awards trophy 12 after a load, and trophy 13 on Hard with it.
 
 The 25 counter quests that open those short stories are marked cleared: `00403201`, `202`, `301`, `302`, `307`-`309`, `312`, `00404101`, `309`-`311`, `313`, `316`, and `00405101`, `201`-`203`, `206`-`208`, `302`-`305`. Each takes 2571 to 1, 2574 to 0, 2575 and 2576 to true, and adds 1 to 4901 at 10600, 5815 at 20, and 5815 at 13 plus the difficulty digit. 2577 and 2579 stay. First clear rewards are not given.
 
 The row also takes 2575 to true on the 19 uncleared quests the traced run holds open that a load leaves false: `00401301`, `303`, `305`, `306`, `310`, `311`, `315`, `316`, `00402301`, `302`, `308`, `313`-`316`, `00403303`, `311`, `00404204` and `317`.
+
+## DLC start
+
+The `dlcStart` row adds what `00220101`, `00220102` and Conflux Cycles 1-3 leave, once its trophies are new: 5815 at 27 up by 2, at 1139, 1140 and 917 up by 1, and one Crewmate Card (`ITEM_23_0000`) per side quest. 1470 moves no 5815 entry.
 
 | Trophy | Rupies, also on 5815 at 224 | `ITEM_10_0001` | `ITEM_10_0002` | `ITEM_10_0003` |
 | ------ | --------------------------- | -------------- | -------------- | -------------- |
@@ -72,10 +78,10 @@ Each added weapon takes the first free entry, counting ones the fill cleared: 28
 
 The stand-in weapons stay in the list after their quests, flags 128. A row due later raises a weapon already held below its XP, which keeps its entry and id.
 
-| Weapon          | Chapter 8 | Chapter 9 | Chapter 10 |
-| --------------- | --------- | --------- | ---------- |
-| `WEP_PL1900_A0` | 790, 2    |           | 1740, 3    |
-| `WEP_NP0300_01` | 1140, 2   | 1740, 2   | 2740, 3    |
+| Weapon          | Chapter 8 | Chapter 9 | Final Chapter |
+| --------------- | --------- | --------- | ------------- |
+| `WEP_PL1900_A0` | 790, 2    |           | 1740, 3       |
+| `WEP_NP0300_01` | 1140, 2   | 1740, 2   | 2740, 3       |
 
 XP and uncap per row. The game adds `WEP_PL1900_A0` itself after the Chapter 7 start loads, so neither is due earlier.
 

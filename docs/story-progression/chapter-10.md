@@ -1,6 +1,6 @@
-# Chapter 10
+# Final Chapter
 
-The patch that takes a save at the start of Chapter 10, the Final Chapter, through the chapter to the start of Chapter Ø. It lists every value written. The method for writing the chapter lists is in [`chapter-01.md`](chapter-01.md). Unit meanings are in [`quests.md`](../quests.md) and [`trophies.md`](../trophies.md).
+The patch that takes a save at the start of the Final Chapter through the chapter, the end of the story, to the start of Chapter Ø. It lists every value written. The method for writing the chapter lists is in [`chapter-01.md`](chapter-01.md). Unit meanings are in [`quests.md`](../quests.md) and [`trophies.md`](../trophies.md).
 
 ## Start of Chapter Ø
 
@@ -8,30 +8,30 @@ Chapter key 220 "New Mr. Fix It", quest `00109002`, the quest holding the chapte
 
 ### Patched
 
-| Unit | Name                           | Index                  | Chapter 10 start | Patched            |
-| ---- | ------------------------------ | ---------------------- | ---------------- | ------------------ |
-| 2502 | `CURRENT_TOWN`                 | 0                      | 3330             | 3072               |
-| 2503 | `CURRENT_TOWN_CHECKPOINT`      | 0                      | 528045455        | 939223336          |
-| 2506 | `CURRENT_CHAPTER`              | 0                      | 200              | 220                |
-| 2511 | `STORY_QUEST_CLEARED`          | 11, 12, 13, 14, 15, 16 | 0                | 1                  |
-| 2512 | `STORY_QUEST_LIVE_CLEARED`     | 11, 12, 13, 14, 15, 16 | 0                | 1                  |
-| 2522 | `STORY_QUEST_THIRD_CLEARED`    | 11, 12, 13, 14, 15, 16 | 0                | 1                  |
-| 2513 | `STORY_QUEST_CHECKPOINTS`      | 2000                   | 0                | 274192714          |
-| 2514 | `STORY_QUEST_CHECKPOINTS_LIVE` | 2000                   | 0                | 274192714          |
-| 2513 | `STORY_QUEST_CHECKPOINTS`      | 2600                   | 1349186703       | 0                  |
-| 2514 | `STORY_QUEST_CHECKPOINTS_LIVE` | 2600                   | 1349186703       | 0                  |
-| 2590 | `CHAPTER_KEYS`                 | List, adds             |                  | `200`              |
-| 2591 | `CHAPTER_BEST_DIFFICULTY`      | List, adds             |                  | System 817, 1 time |
-| 2592 | `CHAPTER_ULTIMATE_CLEARED`     | List, adds             |                  | `0`                |
-| 2594 | `CHAPTER_ULTIMATE_CLEARS`      | List, adds             |                  | `0`                |
-| 2595 | `CHAPTER_GROUPS`               | List, adds             |                  | `10`               |
-| 2596 | `CHAPTER_GROUP_FLAGS`          | List, adds             |                  | `0`                |
+| Unit | Name                           | Index                  | Final Chapter start | Patched            |
+| ---- | ------------------------------ | ---------------------- | ------------------- | ------------------ |
+| 2502 | `CURRENT_TOWN`                 | 0                      | 3330                | 3072               |
+| 2503 | `CURRENT_TOWN_CHECKPOINT`      | 0                      | 528045455           | 939223336          |
+| 2506 | `CURRENT_CHAPTER`              | 0                      | 200                 | 220                |
+| 2511 | `STORY_QUEST_CLEARED`          | 11, 12, 13, 14, 15, 16 | 0                   | 1                  |
+| 2512 | `STORY_QUEST_LIVE_CLEARED`     | 11, 12, 13, 14, 15, 16 | 0                   | 1                  |
+| 2522 | `STORY_QUEST_THIRD_CLEARED`    | 11, 12, 13, 14, 15, 16 | 0                   | 1                  |
+| 2513 | `STORY_QUEST_CHECKPOINTS`      | 2000                   | 0                   | 274192714          |
+| 2514 | `STORY_QUEST_CHECKPOINTS_LIVE` | 2000                   | 0                   | 274192714          |
+| 2513 | `STORY_QUEST_CHECKPOINTS`      | 2600                   | 1349186703          | 0                  |
+| 2514 | `STORY_QUEST_CHECKPOINTS_LIVE` | 2600                   | 1349186703          | 0                  |
+| 2590 | `CHAPTER_KEYS`                 | List, adds             |                     | `200`              |
+| 2591 | `CHAPTER_BEST_DIFFICULTY`      | List, adds             |                     | System 817, 1 time |
+| 2592 | `CHAPTER_ULTIMATE_CLEARED`     | List, adds             |                     | `0`                |
+| 2594 | `CHAPTER_ULTIMATE_CLEARS`      | List, adds             |                     | `0`                |
+| 2595 | `CHAPTER_GROUPS`               | List, adds             |                     | `10`               |
+| 2596 | `CHAPTER_GROUP_FLAGS`          | List, adds             |                     | `0`                |
 
 Island rows, by entity:
 
-| Unit | Name              | Entity | Row          | Chapter 10 start | Patched |
-| ---- | ----------------- | ------ | ------------ | ---------------- | ------- |
-| 6102 | `ISLAND_UNLOCKED` | 9      | `ISLAND_8ST` | False            | True    |
+| Unit | Name              | Entity | Row          | Final Chapter start | Patched |
+| ---- | ----------------- | ------ | ------------ | ------------------- | ------- |
+| 6102 | `ISLAND_UNLOCKED` | 9      | `ISLAND_8ST` | False               | True    |
 
 Quest records cleared by indexes 11-16:
 

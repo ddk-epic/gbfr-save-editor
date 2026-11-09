@@ -3,6 +3,9 @@ import { Attribute } from "@gbfr/core";
 export const SIDE_QUEST_IDS = Attribute.uintList(2550);
 export const SIDE_QUEST_STATE = Attribute.uintList(2551);
 export const SIDE_QUEST_ACCEPTED = Attribute.boolList(2555);
+export const SIDE_QUEST_CHECKPOINTS = Attribute.uintList(2552);
+export const SIDE_QUEST_PROGRESS = Attribute.uintList(2553);
+export const SIDE_QUESTS_TAKEN = Attribute.uintList(2505);
 
 export const COUNTER_QUEST_IDS = Attribute.uintList(2570);
 export const COUNTER_QUEST_CLEARS = Attribute.uintList(2571);

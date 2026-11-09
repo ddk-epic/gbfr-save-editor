@@ -8,6 +8,11 @@
     "./edit": "./edit.ts"
   },
   "dependencies": {
-    "@gbfr/core": "workspace:*"
+    "@gbfr/conflux": "workspace:*",
+    "@gbfr/core": "workspace:*",
+    "@gbfr/profile": "workspace:*",
+    "@gbfr/quest": "workspace:*",
+    "@gbfr/trophy": "workspace:*",
+    "@gbfr/user": "workspace:*"
   }
 }

@@ -81,11 +81,13 @@ const ITEMS = [
   "ITEM_70_0008",
   "ITEM_70_0001",
   "ITEM_70_0003",
+  "ITEM_23_0000",
 ] as const;
 const ITEM_ENTITY = 300;
 const STONE_ENTITY = ITEM_ENTITY + 7;
 const LIFE_LINK_ENTITY = ITEM_ENTITY + 8;
 const SKY_MAP_ENTITY = ITEM_ENTITY + 9;
+const CREWMATE_CARD_ENTITY = ITEM_ENTITY + 10;
 const HELD_SEEN_ITEMS: readonly string[] = ["ITEM_70_0001", "ITEM_70_0003"];
 const ARCHIVES = [
   "ARC_OTHER_011",
@@ -467,7 +469,7 @@ describe("fillSkippedStory", () => {
     expect(units.of(PROFILE_FIRST).get(PROFILE_QUESTS_CLEARED)).toBe(25);
   });
 
-  it("adds what the end of the story should have left", () => {
+  it("adds what the end of Chapter Ø should have left", () => {
     const session = save({ chapter: 222 });
     fillSkippedStory(session);
     const units = reread(session);
@@ -491,7 +493,7 @@ describe("fillSkippedStory", () => {
     expect(at.get(SHORT_STORY_CHECKPOINTS)[0]).toBe(0);
     expect(at.get(SHORT_STORY_CHECKPOINTS)[1]).toBe(5);
 
-    expect(at.get(QUEST_DIFFICULTY_UNLOCKED)).toBe(6);
+    expect(at.get(QUEST_DIFFICULTY_UNLOCKED)).toBe(2);
     for (const trophy of [0, 10, 22, 23, 24, 25, 19, 1398])
       expect(at.get(TROPHY_EARNED)[trophy]).toBe(true);
     expect(at.get(TROPHY_EARNED)[12]).toBe(false);
@@ -502,21 +504,35 @@ describe("fillSkippedStory", () => {
     expect(units.values(ITEM_COUNT, ITEM_ENTITY + 6)).toEqual([10]);
   });
 
-  it("changes nothing on a second run at the end of the story", () => {
-    const session = save({ chapter: 222 });
+  it("adds what the side quests and Conflux cycles before the Epilogue leave", () => {
+    const session = save({ chapter: 240 });
     fillSkippedStory(session);
+    const units = reread(session);
+    const at = units.of(0);
+
+    for (const trophy of [52, 1594, 1595, 1253, 1470])
+      expect(at.get(TROPHY_EARNED)[trophy]).toBe(true);
+    const progress = at.get(TROPHY_PROGRESS);
+    expect([
+      progress[27],
+      progress[1139],
+      progress[1140],
+      progress[917],
+    ]).toEqual([2n, 1n, 1n, 1n]);
+    expect(progress[2]).toBe(41n);
+    expect(units.values(ITEM_COUNT, CREWMATE_CARD_ENTITY)).toEqual([2]);
+
     const first = session.export();
     expect(fillSkippedStory(session)).toEqual([]);
     expect(session.export()).toEqual(first);
   });
 
-  it("keeps a quest difficulty already past the story", () => {
+  it("changes nothing on a second run at the end of Chapter Ø", () => {
     const session = save({ chapter: 222 });
-    session.patch([
-      { attribute: QUEST_DIFFICULTY_UNLOCKED, entity: 0, values: [7] },
-    ]);
     fillSkippedStory(session);
-    expect(reread(session).of(0).get(QUEST_DIFFICULTY_UNLOCKED)).toBe(7);
+    const first = session.export();
+    expect(fillSkippedStory(session)).toEqual([]);
+    expect(session.export()).toEqual(first);
   });
 
   it("changes nothing on a second run", () => {

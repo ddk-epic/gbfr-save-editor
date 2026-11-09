@@ -11,6 +11,7 @@ import {
   CURRENT_TOWN,
   CURRENT_TOWN_CHECKPOINT,
   ISLAND_KEY,
+  LAST_TOWN,
   ISLAND_UNLOCKED,
   NO_CHAPTER,
   STORY_QUEST_CHECKPOINT_COUNT,
@@ -22,7 +23,53 @@ import {
   STORY_QUEST_THIRD_CLEARED,
   SYSTEM_STORY_DIFFICULTY,
 } from "./attributes";
-import { STORY_CHECKPOINTS, type StoryCheckpoint } from "./checkpoints";
+import {
+  type ChapterCheckpoint,
+  isChapterCheckpoint,
+  type ProgressCheckpoint,
+  STORY_CHECKPOINTS,
+  CHAPTER_ZERO_END_KEY,
+  type StoryCheckpoint,
+} from "./checkpoints";
+import {
+  CONFLUX_CYCLE_CLEARED,
+  CONFLUX_RETURNED,
+  CONFLUX_RETURNED_AT,
+} from "@gbfr/conflux";
+import { PROFILE_FIRST, PROFILE_QUESTS_CLEARED } from "@gbfr/profile";
+import {
+  PROUD_QUEST_CLEARS,
+  QUEST_CLEARS_BEFORE_DIFFICULTY,
+  QUESTS_CLEARED,
+  TROPHY_PROGRESS,
+} from "@gbfr/trophy";
+import {
+  COUNTER_QUEST_CLEARED,
+  COUNTER_QUEST_CLEARS,
+  COUNTER_QUEST_FLAGS,
+  COUNTER_QUEST_IDS,
+  COUNTER_QUEST_OPENED,
+  QUEST_DIFFICULTY_UNLOCKED,
+  SHORT_STORY_CHECKPOINTS,
+  SHORT_STORY_CLEARS,
+  SHORT_STORY_IDS,
+  SIDE_QUEST_ACCEPTED,
+  SIDE_QUEST_CHECKPOINTS,
+  SIDE_QUEST_IDS,
+  SIDE_QUEST_PROGRESS,
+  SIDE_QUEST_STATE,
+  SIDE_QUESTS_TAKEN,
+  difficultyDigit,
+} from "@gbfr/quest";
+import { LOCATION_SPOT, LOCATION_STAGE } from "@gbfr/user";
+
+type SlotUnit = ReturnType<Save["slotData"]["units"]["of"]>;
+
+const CHAPTER_ZERO_END_ID = "chapterZeroEnd";
+const SIDE_QUEST_CHECKPOINT_VALUES = 64;
+const SIDE_QUEST_PROGRESS_VALUES = 32;
+const SHORT_STORY_CHECKPOINT_VALUES = 64;
+const SIDE_QUEST_COMPLETED = 1;
 
 /** The checkpoints a save can advance to, in story order. */
 export function storyTargets(save: Save): readonly StoryCheckpoint[] {
@@ -33,26 +80,37 @@ export function storyTargets(save: Save): readonly StoryCheckpoint[] {
 /** Each checkpoint, completed once the save reaches the next one. */
 export function storyProgress(
   save: Save,
-): readonly { key: number; completed: boolean }[] {
-  const chapter = save.slotData.units.of(SAVE_ENTITY).get(CURRENT_CHAPTER)[0]!;
-  return STORY_CHECKPOINTS.map(({ key }, index) => {
-    const next = STORY_CHECKPOINTS[index + 1];
-    return { key, completed: next !== undefined && next.key <= chapter };
-  });
+): readonly { checkpoint: StoryCheckpoint; completed: boolean }[] {
+  const position = storyPosition(save) ?? chapterFloor(save);
+  return STORY_CHECKPOINTS.map((checkpoint, index) => ({
+    checkpoint,
+    completed: index < position,
+  }));
 }
 
-/** Index of the checkpoint the save is at, -1 on a new save, undefined anywhere else. */
-function storyPosition(save: Save): number | undefined {
+/** Index of the last checkpoint the save has reached, -1 on a new save, undefined anywhere else. */
+export function storyPosition(save: Save): number | undefined {
   const at = save.slotData.units.of(SAVE_ENTITY);
-  const chapter = at.get(CURRENT_CHAPTER)[0];
+  const chapter = at.get(CURRENT_CHAPTER)[0]!;
   if (chapter === NO_CHAPTER && at.get(CHAPTER_KEYS).length === 0) return -1;
 
-  const position = STORY_CHECKPOINTS.findIndex(({ key }) => key === chapter);
+  let position = pastChapterZeroEnd(at, chapter)
+    ? STORY_CHECKPOINTS.findIndex(({ id }) => id === CHAPTER_ZERO_END_ID)
+    : chapterPosition(at, chapter);
+  if (position === undefined) return undefined;
+  while (isReached(at, position + 1)) position++;
+  return position;
+}
+
+function chapterPosition(at: SlotUnit, chapter: number): number | undefined {
+  const position = STORY_CHECKPOINTS.findIndex(
+    (checkpoint) =>
+      isChapterCheckpoint(checkpoint) && checkpoint.key === chapter,
+  );
   const checkpoint = STORY_CHECKPOINTS[position];
-  if (!checkpoint) return undefined;
-  const record = at.get(STORY_QUEST_IDS).indexOf(checkpoint.quest);
+  if (!checkpoint || !isChapterCheckpoint(checkpoint)) return undefined;
   const section = at.get(STORY_QUEST_CHECKPOINTS)[
-    record * STORY_QUEST_CHECKPOINT_COUNT
+    storyRecord(at, checkpoint) * STORY_QUEST_CHECKPOINT_COUNT
   ];
   return section === checkpoint.entrySection ||
     (section !== undefined && checkpoint.laterSections.includes(section))
@@ -60,19 +118,124 @@ function storyPosition(save: Save): number | undefined {
     : undefined;
 }
 
-/** Moves a new save, or one at a checkpoint, forward to the start of chapter `key`. */
-export function advanceStory(session: SaveSession, key: number) {
+const storyRecord = (at: SlotUnit, checkpoint: ChapterCheckpoint) =>
+  at.get(STORY_QUEST_IDS).indexOf(checkpoint.quest);
+
+/** A chapter after Chapter Ø, or its last quest cleared. */
+function pastChapterZeroEnd(at: SlotUnit, chapter: number): boolean {
+  if (chapter > CHAPTER_ZERO_END_KEY) return true;
+  if (chapter !== CHAPTER_ZERO_END_KEY) return false;
+  const end = STORY_CHECKPOINTS.find(({ id }) => id === CHAPTER_ZERO_END_ID)!;
+  return (
+    isChapterCheckpoint(end) &&
+    at.get(STORY_QUEST_CLEARED)[storyRecord(at, end)] === 1
+  );
+}
+
+/** Index of the last chapter start at or before the save's chapter. */
+function chapterFloor(save: Save): number {
+  const chapter = save.slotData.units.of(SAVE_ENTITY).get(CURRENT_CHAPTER)[0]!;
+  let floor = -1;
+  STORY_CHECKPOINTS.forEach((checkpoint, index) => {
+    if (isChapterCheckpoint(checkpoint) && checkpoint.key <= chapter)
+      floor = index;
+  });
+  return floor;
+}
+
+/** True once the save's chapter reaches the key of this or a later checkpoint, or everything it writes is there. */
+function isReached(at: SlotUnit, index: number): boolean {
+  const checkpoint = STORY_CHECKPOINTS[index];
+  if (!checkpoint || isChapterCheckpoint(checkpoint)) return false;
+  const chapter = at.get(CURRENT_CHAPTER)[0]!;
+  const passed = STORY_CHECKPOINTS.slice(index).some(
+    ({ key }) => key !== undefined && chapter >= key,
+  );
+  if (passed) return true;
+
+  const cleared = (
+    ids: Attribute<number[]>,
+    states: Attribute<number[]>,
+    quests: readonly number[] = [],
+  ) => {
+    if (quests.length === 0) return true;
+    const rows = at.get(ids);
+    const values = at.get(states);
+    return quests.every((quest) => {
+      const row = rows.indexOf(quest);
+      return row === -1 || values[row] !== 0;
+    });
+  };
+  const listed = () => {
+    if (!checkpoint.listedQuests) return true;
+    const ids = at.get(COUNTER_QUEST_IDS);
+    const opened = at.get(COUNTER_QUEST_OPENED);
+    return listedQuests(ids, checkpoint).every(
+      (quest) => opened[ids.indexOf(quest)],
+    );
+  };
+  const cycles = checkpoint.confluxCycles ?? 0;
+  return (
+    (checkpoint.questDifficulty === undefined ||
+      at.get(QUEST_DIFFICULTY_UNLOCKED) >= checkpoint.questDifficulty) &&
+    cleared(
+      COUNTER_QUEST_IDS,
+      COUNTER_QUEST_CLEARS,
+      checkpoint.counterQuests,
+    ) &&
+    listed() &&
+    cleared(SHORT_STORY_IDS, SHORT_STORY_CLEARS, checkpoint.shortStories) &&
+    cleared(SIDE_QUEST_IDS, SIDE_QUEST_STATE, checkpoint.sideQuests) &&
+    (cycles === 0 ||
+      at
+        .get(CONFLUX_CYCLE_CLEARED)
+        .slice(0, cycles)
+        .every((cycle) => cycle !== 0))
+  );
+}
+
+const listedQuests = (
+  ids: readonly number[],
+  { listedQuests: listed }: ProgressCheckpoint,
+) =>
+  listed
+    ? ids.filter(
+        (id) => id >>> 12 === listed.prefix && !listed.except?.includes(id),
+      )
+    : [];
+
+/** Moves a new save, or one at a checkpoint, forward to checkpoint `id`. */
+export function advanceStory(
+  session: SaveSession,
+  id: string,
+  now = Date.now(),
+) {
   const position = storyPosition(session.save);
   if (position === undefined)
     throw new Error("the save is not new or at a story checkpoint");
   const target = STORY_CHECKPOINTS.findIndex(
-    (checkpoint) => checkpoint.key === key,
+    (checkpoint) => checkpoint.id === id,
   );
-  if (target === -1) throw new Error(`no story checkpoint at chapter ${key}`);
+  if (target === -1) throw new Error(`no story checkpoint ${id}`);
   if (target <= position)
-    throw new Error(`the save is already at or past chapter ${key}`);
+    throw new Error(`the save is already at or past ${id}`);
 
-  const steps = STORY_CHECKPOINTS.slice(position + 1, target + 1);
+  const chapters = STORY_CHECKPOINTS.slice(position + 1, target + 1).filter(
+    isChapterCheckpoint,
+  );
+  if (chapters.length > 0) advanceChapters(session, chapters);
+  const at = session.save.slotData.units.of(SAVE_ENTITY);
+  for (let index = position + 1; index <= target; index++) {
+    const checkpoint = STORY_CHECKPOINTS[index]!;
+    if (!isChapterCheckpoint(checkpoint) && !isReached(at, index))
+      advanceProgress(session, checkpoint, now);
+  }
+}
+
+function advanceChapters(
+  session: SaveSession,
+  steps: readonly ChapterCheckpoint[],
+) {
   const destination = steps[steps.length - 1]!;
   const patches: Patch[] = [];
   const units = session.save.slotData.units;
@@ -114,6 +277,12 @@ export function advanceStory(session: SaveSession, key: number) {
     set(attribute, sections);
   }
 
+  const difficulty = Math.max(
+    ...steps.map((step) => step.questDifficulty ?? 0),
+  );
+  if (difficulty > at.get(QUEST_DIFFICULTY_UNLOCKED))
+    set(QUEST_DIFFICULTY_UNLOCKED, difficulty);
+
   set(CURRENT_TOWN, destination.town);
   set(CURRENT_TOWN_CHECKPOINT, destination.townCheckpoint);
   set(CURRENT_CHAPTER, [destination.key, at.get(CURRENT_CHAPTER)[1]!]);
@@ -128,7 +297,7 @@ export function advanceStory(session: SaveSession, key: number) {
   }
   session.patch(patches);
 
-  const difficulty = session.save.systemData.units
+  const storyDifficulty = session.save.systemData.units
     .of(SAVE_ENTITY)
     .get(SYSTEM_STORY_DIFFICULTY);
   const extend = (attribute: Attribute<number[]>, added: readonly number[]) =>
@@ -138,7 +307,7 @@ export function advanceStory(session: SaveSession, key: number) {
   extend(CHAPTER_KEYS, chapterKeys);
   extend(
     CHAPTER_BEST_DIFFICULTY,
-    chapterKeys.map(() => difficulty),
+    chapterKeys.map(() => storyDifficulty),
   );
   for (const attribute of [CHAPTER_ULTIMATE_CLEARED, CHAPTER_ULTIMATE_CLEARS])
     extend(
@@ -150,4 +319,200 @@ export function advanceStory(session: SaveSession, key: number) {
     CHAPTER_GROUP_FLAGS,
     chapterGroups.map(() => 0),
   );
+}
+
+function advanceProgress(
+  session: SaveSession,
+  checkpoint: ProgressCheckpoint,
+  now: number,
+) {
+  const at = session.save.slotData.units.of(SAVE_ENTITY);
+  if (
+    checkpoint.questDifficulty !== undefined &&
+    checkpoint.questDifficulty > at.get(QUEST_DIFFICULTY_UNLOCKED)
+  )
+    session.patch([
+      at.patch(QUEST_DIFFICULTY_UNLOCKED, checkpoint.questDifficulty),
+    ]);
+  clearShortStories(session, checkpoint.shortStories ?? []);
+  clearCounterQuests(session, checkpoint.counterQuests ?? []);
+  openCounterQuests(
+    session,
+    listedQuests(at.get(COUNTER_QUEST_IDS), checkpoint),
+  );
+
+  const patches: Patch[] = [];
+  let sideQuestsTaken: number[] | undefined;
+  if (checkpoint.shortStorySections) {
+    const ids = at.get(SHORT_STORY_IDS);
+    const clears = at.get(SHORT_STORY_CLEARS);
+    const sections = [...at.get(SHORT_STORY_CHECKPOINTS)];
+    for (const [quest, hash] of checkpoint.shortStorySections) {
+      const row = ids.indexOf(quest);
+      const first = row * SHORT_STORY_CHECKPOINT_VALUES;
+      if (row === -1 || clears[row] !== 0 || sections[first] !== 0) continue;
+      sections[first] = hash;
+    }
+    patches.push(at.patch(SHORT_STORY_CHECKPOINTS, sections));
+  }
+
+  if (checkpoint.sideQuests || checkpoint.sideQuestSections) {
+    const taken = [...at.get(SIDE_QUESTS_TAKEN)];
+    const takenBefore = taken.length;
+    const ids = at.get(SIDE_QUEST_IDS);
+    const states = [...at.get(SIDE_QUEST_STATE)];
+    const accepted = [...at.get(SIDE_QUEST_ACCEPTED)];
+    const sections = [...at.get(SIDE_QUEST_CHECKPOINTS)];
+    const progress = [...at.get(SIDE_QUEST_PROGRESS)];
+    for (const quest of checkpoint.sideQuests ?? []) {
+      const row = ids.indexOf(quest);
+      if (row === -1 || states[row] !== 0) continue;
+      states[row] = SIDE_QUEST_COMPLETED;
+      accepted[row] = true;
+      sections[row * SIDE_QUEST_CHECKPOINT_VALUES] = 0;
+      progress[row * SIDE_QUEST_PROGRESS_VALUES] = 0;
+      if (!taken.includes(quest)) taken.push(quest);
+    }
+    for (const [quest, hash] of checkpoint.sideQuestSections ?? []) {
+      const row = ids.indexOf(quest);
+      const first = row * SIDE_QUEST_CHECKPOINT_VALUES;
+      if (row === -1 || states[row] !== 0 || sections[first] !== 0) continue;
+      sections[first] = hash;
+    }
+    patches.push(
+      at.patch(SIDE_QUEST_STATE, states),
+      at.patch(SIDE_QUEST_ACCEPTED, accepted),
+      at.patch(SIDE_QUEST_CHECKPOINTS, sections),
+      at.patch(SIDE_QUEST_PROGRESS, progress),
+    );
+    if (taken.length !== takenBefore) sideQuestsTaken = taken;
+  }
+
+  if (checkpoint.confluxCycles !== undefined) {
+    const cleared = [...at.get(CONFLUX_CYCLE_CLEARED)];
+    const returned = [...at.get(CONFLUX_RETURNED)];
+    const returnedAt = [...at.get(CONFLUX_RETURNED_AT)];
+    for (let run = 0; run < checkpoint.confluxCycles; run++) {
+      if (cleared[run] !== 0) continue;
+      cleared[run] = 1;
+      returned[run] = true;
+      returnedAt[run] = Math.floor(now / 1000);
+    }
+    patches.push(
+      at.patch(CONFLUX_CYCLE_CLEARED, cleared),
+      at.patch(CONFLUX_RETURNED, returned),
+      at.patch(CONFLUX_RETURNED_AT, returnedAt),
+    );
+  }
+
+  if (checkpoint.location) {
+    const { town, townCheckpoint, spot } = checkpoint.location;
+    patches.push(
+      at.patch(CURRENT_TOWN, town),
+      at.patch(CURRENT_TOWN_CHECKPOINT, townCheckpoint),
+      at.patch(LAST_TOWN, town),
+      at.patch(LOCATION_STAGE, town),
+      at.patch(LOCATION_SPOT, spot),
+    );
+  }
+
+  if (patches.length > 0) session.patch(patches);
+  if (sideQuestsTaken)
+    session.setList(SIDE_QUESTS_TAKEN, SAVE_ENTITY, sideQuestsTaken);
+}
+
+const LOWEST_GRADE = 0;
+
+/** Marks quest counter quests with no clears as cleared once, with no rewards, and returns those it changed. */
+export function clearCounterQuests(
+  session: SaveSession,
+  quests: readonly number[],
+): string[] {
+  const units = session.save.slotData.units;
+  const at = units.of(SAVE_ENTITY);
+  const ids = at.get(COUNTER_QUEST_IDS);
+  const clears = [...at.get(COUNTER_QUEST_CLEARS)];
+  const grades = [...at.get(COUNTER_QUEST_FLAGS)];
+  const opened = [...at.get(COUNTER_QUEST_OPENED)];
+  const cleared = [...at.get(COUNTER_QUEST_CLEARED)];
+  const progress = [...at.get(TROPHY_PROGRESS)];
+  let questsCleared = units.of(PROFILE_FIRST).get(PROFILE_QUESTS_CLEARED);
+  const added: string[] = [];
+
+  for (const quest of quests) {
+    const row = ids.indexOf(quest);
+    if (row === -1 || clears[row] !== 0) continue;
+    clears[row] = 1;
+    grades[row] = LOWEST_GRADE;
+    opened[row] = true;
+    cleared[row] = true;
+    questsCleared++;
+    const digit = (quest >> 12) & 0xf;
+    const difficulty =
+      digit === difficultyDigit("proud")
+        ? PROUD_QUEST_CLEARS
+        : QUEST_CLEARS_BEFORE_DIFFICULTY + digit;
+    progress[difficulty] = progress[difficulty]! + 1n;
+    progress[QUESTS_CLEARED] = progress[QUESTS_CLEARED]! + 1n;
+    added.push(`counter quest ${quest.toString(16)}`);
+  }
+
+  if (added.length === 0) return added;
+  session.patch([
+    at.patch(COUNTER_QUEST_CLEARS, clears),
+    at.patch(COUNTER_QUEST_FLAGS, grades),
+    at.patch(COUNTER_QUEST_OPENED, opened),
+    at.patch(COUNTER_QUEST_CLEARED, cleared),
+    at.patch(TROPHY_PROGRESS, progress),
+    units.of(PROFILE_FIRST).patch(PROFILE_QUESTS_CLEARED, questsCleared),
+  ]);
+  return added;
+}
+
+/** Lists quest counter quests, and returns those it changed. */
+export function openCounterQuests(
+  session: SaveSession,
+  quests: readonly number[],
+): string[] {
+  const at = session.save.slotData.units.of(SAVE_ENTITY);
+  const ids = at.get(COUNTER_QUEST_IDS);
+  const opened = [...at.get(COUNTER_QUEST_OPENED)];
+  const added: string[] = [];
+
+  for (const quest of quests) {
+    const row = ids.indexOf(quest);
+    if (row === -1 || opened[row]) continue;
+    opened[row] = true;
+    added.push(`listed counter quest ${quest.toString(16)}`);
+  }
+
+  if (added.length > 0) session.patch([at.patch(COUNTER_QUEST_OPENED, opened)]);
+  return added;
+}
+
+/** Marks short stories with no clears as played, and returns those it changed. */
+export function clearShortStories(
+  session: SaveSession,
+  quests: readonly number[],
+): string[] {
+  const at = session.save.slotData.units.of(SAVE_ENTITY);
+  const ids = at.get(SHORT_STORY_IDS);
+  const clears = [...at.get(SHORT_STORY_CLEARS)];
+  const checkpoints = [...at.get(SHORT_STORY_CHECKPOINTS)];
+  const added: string[] = [];
+
+  for (const quest of quests) {
+    const row = ids.indexOf(quest);
+    if (row === -1 || clears[row] !== 0) continue;
+    clears[row] = 1;
+    checkpoints[row * SHORT_STORY_CHECKPOINT_VALUES] = 0;
+    added.push(`short story ${quest.toString(16)}`);
+  }
+
+  if (added.length === 0) return added;
+  session.patch([
+    at.patch(SHORT_STORY_CLEARS, clears),
+    at.patch(SHORT_STORY_CHECKPOINTS, checkpoints),
+  ]);
+  return added;
 }

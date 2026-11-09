@@ -1,8 +1,16 @@
 import { hashId } from "@gbfr/core";
+import { difficultyDigit } from "@gbfr/quest";
+
+interface CheckpointBase {
+  /** Names the checkpoint for `advanceStory` and the fill. */
+  id: string;
+  /** 7303 digit. */
+  questDifficulty?: number;
+}
 
 /** What one chapter start adds to the checkpoint before it. */
-export interface StoryCheckpoint {
-  /** `chapter_select.Key`. */
+export interface ChapterCheckpoint extends CheckpointBase {
+  /** `chapter_select.Key` the save is at. */
   key: number;
   quest: number;
   /** `BeginSection` guid of `quest` the patch writes. */
@@ -18,13 +26,42 @@ export interface StoryCheckpoint {
   islands: readonly number[];
 }
 
+/** A step after Chapter Ø that leaves the chapter to the game. */
+export interface ProgressCheckpoint extends CheckpointBase {
+  /** `chapter_select.Key` the game moves to after the step. */
+  key?: number;
+  /** Counter quests cleared. */
+  counterQuests?: readonly number[];
+  /** Counter quests listed: every id under `prefix` apart from `except`. */
+  listedQuests?: { prefix: number; except?: readonly number[] };
+  shortStories?: readonly number[];
+  /** Section hashes the game leaves on short stories not yet begun. */
+  shortStorySections?: readonly (readonly [quest: number, hash: number])[];
+  /** Side quests completed. */
+  sideQuests?: readonly number[];
+  /** Section hashes the game leaves on side quests not yet begun. */
+  sideQuestSections?: readonly (readonly [quest: number, hash: number])[];
+  /** Conflux runs cleared, from the first. */
+  confluxCycles?: number;
+  /** Where the save loads: 2502, 2503, 2606, 1201 and 1202. */
+  location?: { town: number; townCheckpoint: number; spot: string };
+}
+
+export type StoryCheckpoint = ChapterCheckpoint | ProgressCheckpoint;
+
+export const isChapterCheckpoint = (
+  checkpoint: StoryCheckpoint,
+): checkpoint is ChapterCheckpoint => "quest" in checkpoint;
+
 /** `chapter_select.Key`. */
-export const STORY_END_KEY = 222;
+export const CHAPTER_ZERO_END_KEY = 222;
+export const EPILOGUE_KEY = 240;
 
 /** In story order. */
 export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
   // Start of Chapter 2
   {
+    id: "chapter2",
     key: 40,
     quest: 0x101f00,
     entrySection: 1299620138,
@@ -40,6 +77,7 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
   },
   // Start of Chapter 3
   {
+    id: "chapter3",
     key: 60,
     quest: 0x101003,
     entrySection: 2130360527,
@@ -53,6 +91,7 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
   },
   // Start of Chapter 4
   {
+    id: "chapter4",
     key: 80,
     quest: 0x102000,
     entrySection: 240333228,
@@ -66,6 +105,7 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
   },
   // Start of Chapter 5
   {
+    id: "chapter5",
     key: 100,
     quest: 0x103001,
     entrySection: 528160042,
@@ -79,6 +119,7 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
   },
   // Start of Chapter 6
   {
+    id: "chapter6",
     key: 120,
     quest: 0x104000,
     entrySection: 1222948280,
@@ -92,6 +133,7 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
   },
   // Start of Chapter 7
   {
+    id: "chapter7",
     key: 140,
     quest: 0x105001,
     entrySection: 72948621,
@@ -105,6 +147,7 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
   },
   // Start of Chapter 8
   {
+    id: "chapter8",
     key: 160,
     quest: 0x106000,
     entrySection: 488331365,
@@ -118,6 +161,7 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
   },
   // Start of Chapter 9
   {
+    id: "chapter9",
     key: 180,
     quest: 0x107000,
     entrySection: 111915467,
@@ -129,8 +173,9 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     chapterGroups: [8],
     islands: [],
   },
-  // Start of Chapter 10
+  // Start of the Final Chapter
   {
+    id: "finalChapter",
     key: 200,
     quest: 0x108f00,
     entrySection: 1349186703,
@@ -144,6 +189,7 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
   },
   // Start of Chapter Ø
   {
+    id: "chapterZero",
     key: 220,
     quest: 0x109002,
     entrySection: 274192714,
@@ -155,9 +201,10 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     chapterGroups: [10],
     islands: [hashId("ISLAND_8ST")],
   },
-  // End of the story
+  // End of Chapter Ø
   {
-    key: STORY_END_KEY,
+    id: "chapterZeroEnd",
+    key: CHAPTER_ZERO_END_KEY,
     quest: 0x10a031,
     entrySection: 1589922075,
     laterSections: [1845682248],
@@ -170,5 +217,57 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     chapterKeys: [220, 221],
     chapterGroups: [],
     islands: [],
+    questDifficulty: difficultyDigit("maniac"),
+  },
+  // The Maniac quests other quests open on, then `00407101`, the first Proud quest.
+  {
+    id: "promoteToProud",
+    questDifficulty: difficultyDigit("proud"),
+    counterQuests: [
+      0x406325, 0x406330, 0x406331, 0x406332, 0x406333, 0x406334, 0x406335,
+      0x406337, 0x406338, 0x406355, 0x406356, 0x406357, 0x406358, 0x406359,
+      0x406360, 0x406364, 0x406365, 0x406366, 0x407101,
+    ],
+    listedQuests: { prefix: 0x406, except: [0x406367] },
+  },
+  // `00220101` to `00730021`.
+  {
+    id: "dlcStart",
+    shortStories: [
+      0x725000, 0x730053, 0x730100, 0x730060, 0x730055, 0x730061, 0x730065,
+      0x730030, 0x730014, 0x730011, 0x730010, 0x730040, 0x730021,
+    ],
+    shortStorySections: [
+      [0x730090, 1786949660],
+      [0x730020, 1174902544],
+      [0x730012, 1171285270],
+    ],
+    sideQuests: [0x220101, 0x220102],
+    sideQuestSections: [
+      [0x240121, 1133973849],
+      [0x220111, 1297300194],
+    ],
+    confluxCycles: 3,
+  },
+  // The Proud quests that open others, and the cutscenes `00407320` opens on.
+  {
+    id: "unlockProudQuests",
+    shortStories: [0x710000, 0x710001],
+    counterQuests: [
+      0x407301, 0x407302, 0x407303, 0x407304, 0x407310, 0x407311, 0x407312,
+      0x407313, 0x407314, 0x407315, 0x407316, 0x407317, 0x407318, 0x407319,
+      0x407320,
+    ],
+    listedQuests: { prefix: 0x407 },
+  },
+  // What leads to `00730201`.
+  {
+    id: "advanceToEpilogue",
+    key: EPILOGUE_KEY,
+    // The short stories `00407318` opens.
+    shortStories: [0x725110, 0x730420, 0x730046],
+    shortStorySections: [[0x730430, 1825705739]],
+    // `00730201`'s start section: `phaseNo` Folca, `subPhaseHash`.
+    location: { town: 0xc00, townCheckpoint: 939223336, spot: "START" },
   },
 ];

@@ -1,8 +1,8 @@
 # Chapter 9
 
-The patch that takes a save at the start of Chapter 9 through the chapter to the start of Chapter 10. It lists every value written. The method for writing the chapter lists is in [`chapter-01.md`](chapter-01.md). Unit meanings are in [`quests.md`](../quests.md) and [`trophies.md`](../trophies.md).
+The patch that takes a save at the start of Chapter 9 through the chapter to the start of the Final Chapter. It lists every value written. The method for writing the chapter lists is in [`chapter-01.md`](chapter-01.md). Unit meanings are in [`quests.md`](../quests.md) and [`trophies.md`](../trophies.md).
 
-## Start of Chapter 10
+## Start of the Final Chapter
 
 Chapter key 200, quest `00108F00`, the quest holding the chapter title `TELOP_CHAPTER_MAIN_100` and the first quest of the key. Units are at entity 0 unless listed by entity.
 

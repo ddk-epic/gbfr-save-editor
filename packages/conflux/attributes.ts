@@ -14,3 +14,8 @@ export const CONFLUX_AURA_FLAGS = Attribute.flags(9602, {
   obtained: 1,
   seen: 2,
 });
+
+export const CONFLUX_CYCLE_CLEARED = Attribute.uintList(2610);
+export const CONFLUX_RETURNED = Attribute.boolList(2649);
+/** Unix time in seconds, beside `CONFLUX_RETURNED`. */
+export const CONFLUX_RETURNED_AT = Attribute.uintList(2650);

@@ -1,6 +1,6 @@
 import {
   type SaveSession,
-  STORY_END_KEY,
+  CHAPTER_ZERO_END_KEY,
   addSigil,
   addWrightstone,
   advanceStory,
@@ -14,8 +14,6 @@ import {
   maxMasteryPoints,
   maxRupies,
   maxTreasures,
-  promoteToProud,
-  unlockProudQuests,
   wrightstoneRoll,
   wrightstoneSubs,
   WRIGHTSTONE_MAINS,
@@ -42,7 +40,7 @@ import {
 import { EditMenu } from "../../ui/EditMenu";
 import { PageTop } from "../../ui/PageTop";
 import { RowPanel } from "../../ui/RowPanel";
-import type { KeyCell, Row, SaveView, Table } from "../../view";
+import type { KeyCell, Row, SaveView, Table, TableLabelId } from "../../view";
 import { OPTIONS_TABLE, STORY_TABLE } from "../../view/shared";
 import { SigilForm } from "./SigilForm";
 import { WrightstoneForm } from "./WrightstoneForm";
@@ -140,8 +138,6 @@ export function SavePage({
   );
   const canMaxItems = useSave((save) => save?.view.canMaxTreasures);
   const storyTargets = useSave((save) => save?.view.storyTargets);
-  const canPromote = useSave((save) => save?.view.canPromoteToProud);
-  const canUnlock = useSave((save) => save?.view.canUnlockProudQuests);
   const canDisable = useSave((save) => save?.view.canDisableHints);
   const canUnlockAll = useSave((save) => save?.view.canUnlockAllCharacters);
   const canUnlockWeapons = useSave(
@@ -267,16 +263,18 @@ export function SavePage({
             />
           ) : table.id === STORY_TABLE ? (
             <EditMenu
-              actions={(storyTargets ?? []).map((key) => ({
-                label: t("edit.advanceStory", {
-                  chapter:
-                    key === STORY_END_KEY
-                      ? t("tables.mainStoryEnd")
-                      : gt("chapterStartChapter", String(key)),
-                }),
+              actions={(storyTargets ?? []).map(({ id, key, chapter }) => ({
+                label: chapter
+                  ? t("edit.advanceStory", {
+                      chapter:
+                        key === CHAPTER_ZERO_END_KEY
+                          ? t("tables.chapterZeroEnd")
+                          : gt("chapterStartChapter", String(key)),
+                    })
+                  : t(`tables.${id as TableLabelId}`),
                 run: () =>
                   edit((session) => {
-                    advanceStory(session, key);
+                    advanceStory(session, id);
                     fillSkippedStory(session);
                   }),
               }))}
@@ -284,22 +282,6 @@ export function SavePage({
           ) : table.id === OPTIONS_TABLE ? (
             <EditMenu
               actions={[
-                ...(canPromote
-                  ? [
-                      {
-                        label: t("tables.promoteToProud"),
-                        run: () => edit(promoteToProud),
-                      },
-                    ]
-                  : []),
-                ...(canUnlock
-                  ? [
-                      {
-                        label: t("tables.unlockProudQuests"),
-                        run: () => edit(unlockProudQuests),
-                      },
-                    ]
-                  : []),
                 ...(canDisable
                   ? [
                       {

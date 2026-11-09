@@ -92,12 +92,14 @@ Three arrays of 200.
 | 2551      | `SIDE_QUEST_STATE`    | `uint[200]` | 0 until completed, 1 or 2 once completed |
 | 2555      | `SIDE_QUEST_ACCEPTED` | `bool[200]` | Accepted                                 |
 
+2552 is `SIDE_QUEST_CHECKPOINTS`, 2553 `SIDE_QUEST_PROGRESS` and 2505 `SIDE_QUESTS_TAKEN`, all at entity 0.
+
 - 2550 holds every side quest from a new game on, accepted or not.
 - An accepted quest at 0 in 2551 is underway.
 - 2552, a `uint[12800]`, holds 64 values per side quest. Its first value takes a hash on quests not yet accepted, as a story chapter ends or at a quest counter quest's record write. These are likely `BeginSection` guids, by the shape shared with 2582; the hashes match no table text or message key.
 - 2553 `SIDE_QUEST_PROGRESS`, a `uint[6400]`, holds 32 values per side quest. The first counts the quest's objective and goes back to 0 as 2551 marks the quest completed. `00220001` "Complete the 3 quests given" counts 1 to 3 at the records of its quests. `00220002` takes 1 once one run of `00409320` collects 40 Sephira lusters (`ITEM_33_0002`, emptied at the quest's end). A side quest started from a Conflux run takes 1 at the run's end; see [Runs](conflux.md#runs). A quest turned in with items, such as `00220003`, completes with no 2553 move.
 - 2505 adds a side quest at a record write, which can be the write that completes it. A side quest added with 2553 at 1 in the same write, such as `00220005` or `00230004`, completes at the next record write.
-- Side quests started from Conflux runs are requirements of the post-story short stories, by the `00730*` clears on the return to town.
+- Side quests started from Conflux runs are requirements of the `00730*` short stories, cleared on the return to town.
 - A completed repeat quest stays accepted in 2555. The game lists it only once it is accepted again.
 
 ## Quest counter
@@ -145,7 +147,9 @@ Four arrays of 512.
 
 `FUN_14061f4b0` tests `occurrenceList_` in `baseinfo.msg`, the same list as the short stories. A type 1 entry passes when the named quest's clear count is above 0.
 
-`promoteToProud` works on a save with 7303 at 6 or more. It marks the 18 quests that open another Maniac quest or `00407101` as cleared, and `00407101` itself, written as in the [story fill](story-progression/fill.md): 2571 to 1, 2574 to 0, 2575 and 2576 to true, 4901 at 10600 and 5815 at 20 up by 1, and 5815 at 19 up by 1, or at 238 for `00407101`. First clear rewards are not given. It sets trophy 542 and 7303 to 7. Eight other Maniac quests take 2575 to true, with no clears. `canPromoteToProud` holds at 7303 6, and above it while one of those has 2575 false. `00406367` keeps 2575 false: it has no title and is unlisted on played saves, and badge 31 "Sent from the Heavens" needs the other 26.
+The Chapter Ø end checkpoint (`chapterZeroEnd`, key 222, the second part of Chapter Ø) takes 7303 to 6, as the game does with `0010A031` underway. The checkpoints after it are `promoteToProud`, `dlcStart`, `unlockProudQuests` and `advanceToEpilogue`. `advanceStory` passes through each one the save has not reached.
+
+`promoteToProud` marks the 18 quests that open another Maniac quest or `00407101` as cleared, and `00407101` itself, written as in the [story fill](story-progression/fill.md): 2571 to 1, 2574 to 0, 2575 and 2576 to true, 4901 at 10600 and 5815 at 20 up by 1, and 5815 at 19 up by 1, or at 238 for `00407101`. First clear rewards are not given. It sets 7303 to 7, and the fill sets trophy 542. Eight other Maniac quests take 2575 to true, with no clears. A save is past it at 7303 7 with those quests cleared and every listed Maniac quest at 2575 true. `00406367` keeps 2575 false: it has no title and is unlisted on played saves, and badge 31 "Sent from the Heavens" needs the other 26.
 
 The game pays the trophy 25 and 542 rewards by itself after a load.
 
@@ -169,7 +173,7 @@ The game pays the trophy 25 and 542 rewards by itself after a load.
 
 The other `00406` rows in 2570 have no `baseinfo.msg`.
 
-`unlockProudQuests` works on a save with 7303 at 7. It marks the 15 quests that open another Proud quest as cleared, written the same way with 5815 at 238: `00407301`-`00407304`, `00407310`-`00407320`. The other 10 take 2575 to true, with no clears. `canUnlockProudQuests` stays true until every prerequisite has a clear and every `00407` row has 2575 true.
+`unlockProudQuests` marks the 15 quests that open another Proud quest as cleared, written the same way with 5815 at 238: `00407301`-`00407304`, `00407310`-`00407320`. The other 10 take 2575 to true, with no clears. A save is past it once every prerequisite has a clear and every `00407` row has 2575 true.
 
 The game does not take 2575 at a load with a row's conditions met. 7352 takes the row at the load, and 2575 follows at the next record write.
 
@@ -188,6 +192,33 @@ It also takes 2581 to 1 and the first 2582 value to 0 on `00710000` and `0071000
 | `00407322`                                     | `00407318`                         |
 | `00407320`                                     | `00407318`, `00710001`, `00710010` |
 | `00407321`, `00407323`, `00407324`, `00407325` | `00407320`                         |
+
+### DLC start
+
+The DLC starts at side quests `00220101` and `00220102`, which the first two Conflux runs start from. Their `occurrenceList_` (`quest/ex/<id>/baseinfo.msg`) needs no Proud quest:
+
+- `00220101` needs `00104F00` cleared and town `0xD04`.
+- `00220102` needs `00220101`, `00109002`, `00730055` and `00730060` cleared, town `0xD04` and a type 7 entry with id 0.
+- `00730010`, `00730011` and `00730014` need `0010A031`, `00220102` and type 7 id 1; `00730011` and `00730014` also one Maniac clear. `00730021` needs `00730030`, `00730011` and `00730040`, town `0x310` and type 7 id 2.
+
+`dlcStart` comes after `promoteToProud` and writes what the game writes from `00220101` to `00730021`. A save is past it at 2506 240 or later, or with the short stories, side quests and cycles below done:
+
+- 2581 to 1 and the first 2582 value to 0 on `00725000`, `00730053`, `00730100`, `00730060`, `00730055`, `00730061`, `00730065`, `00730030`, `00730014`, `00730011`, `00730010`, `00730040` and `00730021`.
+- `00220101` and `00220102` completed: 2551 to 1, 2555 to true, the first 2552 and 2553 values to 0, and each added to 2505. The fill adds trophy 52, 5815 at 27 and one Crewmate Card (`ITEM_23_0000`) per quest.
+- Conflux Cycles 1-3 cleared: 2610, 2649 and 2650 at indexes 0-2. The fill adds trophies 1594, 1595, 1253 and 1470 and 5815 at 1139, 1140 and 917. Scores (2611), packages (2639, 2642) and Resonance points are not written.
+- Section hashes the game leaves at that point: 2582 on `00730090`, `00730020` and `00730012`, and 2552 on side quests `00240121` and `00220111`.
+
+The other side quest rewards and the Conflux runs' battle trophies are left out.
+
+### Reaching the Epilogue
+
+`00730201` moves 2506 from 222 to 240 and plays the Epilogue's chapter fade-in. Its `occurrenceList_` (`quest/ex/730201/baseinfo.msg`) needs `00407318`, `00710000`, `00730021` and `0010A031` cleared, town `0xC00` and a type 7 entry with id 2. Its one section is a start and return section at `phaseNo` `0xC00`, `subPhaseHash` 939223336. `00730046` and `00730420` also need `00407318`, and `00710000` needs `00407315`-`00407317`.
+
+`advanceToEpilogue` comes after `unlockProudQuests` and leaves `00730201` to the game. A save is past it at 2506 240 or later, or with the short stories below cleared:
+
+- 2581 to 1 and the first 2582 value to 0 on `00725110`, `00730420` and `00730046`.
+- 2582 on `00730430`, the section hash the game leaves at that point.
+- The save put in Folca: 1201, 2502 and 2606 to `0xC00`, 1202 to `START`, 2503 to 939223336. A save with 2502 at `0xC00` and 1201 at another stage loads in Folca over the void.
 
 ## Fate quests
 
@@ -212,7 +243,7 @@ Family 7, script quests with no story or quest counter entry, cleared by `ClearQ
 | 2582      | `SHORT_STORY_CHECKPOINTS` | `uint[9600]` | 64 values per quest            |
 
 - The first 2582 value holds the current `BeginSection` guid of a quest underway, and goes to 0 as 2581 rises.
-- `occurrenceList_` in `baseinfo.msg` opens each one: type 1 entries name quests that must be cleared, type 2 entries a town, type 3 entries quests that must not be cleared, and type 4 entries count clears of quest counter quests at the difficulty digit in `id_`, `count_` of them. First clears only have been seen, so clears and distinct quests are not told apart. Several can run and clear beside a story or quest counter quest.
+- `occurrenceList_` in `baseinfo.msg` opens each one: type 1 entries name quests that must be cleared, type 2 entries a town, type 3 entries quests that must not be cleared, and type 4 entries count clears of quest counter quests at the difficulty digit in `id_`, `count_` of them. Type 7 entries pass when entry `id_` (0-4) of a 5-entry array at `DAT_147c23338+0x2c` is non-zero (`FUN_14061f4b0`); the shape fits 2610, with ids 0-2 matching Conflux Cycles 1-3, but the array is not mapped. First clears only have been seen, so clears and distinct quests are not told apart. Several can run and clear beside a story or quest counter quest.
 - `00705001`-`00705007` run `UnlockArchive` for `ARC_ROLANNOTE_*` notes.
 - `00703000` and `00703001` open on `00705004`, and `0010A000` opens on those two, so the story moves on with notes still missing. `0010A010` needs `00704000`, `00704001`, `0010A002`, `00705006` and `00705007`. `00705006` and `00705007` count 11 Extreme clears, `00705005` 8.
 - `00725100` needs `0010A025`, `00725101` needs `0010A031` and 10 Maniac clears, and `00710010` needs `00407101` and `0010A031`. Each also has a type 5 entry. `00710010` clears 3 s after its section. `00710000` needs `00407315`-`00407317` and has a type 5 entry. `00710001` needs `00407318`, `00710000` and town `0xD00`, and writes its section as 2502 returns to `0xD00`. Side quest `00230391` has the same `0010A031` and 10 Maniac conditions and writes with `00725101`.

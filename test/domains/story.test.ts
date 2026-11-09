@@ -22,6 +22,7 @@ import {
   SYSTEM_STORY_DIFFICULTY,
 } from "../../packages/story/attributes";
 import { advanceStory, storyTargets } from "../../packages/story/edit";
+import { QUEST_DIFFICULTY_UNLOCKED } from "../../packages/quest/attributes";
 import { SAVE_HASHSEED } from "../../packages/core/save-entity";
 import { SaveSession } from "../../packages/core/session";
 import { fixtureFile } from "../../packages/gbfr-save-editor/testing";
@@ -59,8 +60,8 @@ const CHAPTER_10_SECTION = 1349186703;
 const CHAPTER_ZERO_RECORD = 43;
 const CHAPTER_ZERO_SECTION = 274192714;
 const NOTES_RECORD = 47;
-const STORY_END_RECORD = 51;
-const STORY_END_SECTION = 1589922075;
+const CHAPTER_ZERO_END_RECORD = 51;
+const CHAPTER_ZERO_END_SECTION = 1589922075;
 
 const newSave = (overrides: { chapter?: number[]; section?: number } = {}) => {
   const sections = Array<number>(QUESTS.length * PART).fill(0);
@@ -85,6 +86,7 @@ const newSave = (overrides: { chapter?: number[]; section?: number } = {}) => {
         [CHAPTER_ULTIMATE_CLEARS, []],
         [CHAPTER_GROUPS, []],
         [CHAPTER_GROUP_FLAGS, []],
+        [QUEST_DIFFICULTY_UNLOCKED, 2],
       ],
       2: [
         [ISLAND_KEY, hashId("ISLAND_1ST")],
@@ -129,7 +131,7 @@ const newSave = (overrides: { chapter?: number[]; section?: number } = {}) => {
 describe("advanceStory", () => {
   it("moves a new save to the start of Chapter 2", () => {
     const session = newSave();
-    advanceStory(session, 40);
+    advanceStory(session, "chapter2");
     const units = readSave(session.export()).slotData.units;
     const at = units.of(0);
 
@@ -167,11 +169,11 @@ describe("advanceStory", () => {
 
   it.each([
     ["a new save", []],
-    ["the start of Chapter 2", [40]],
+    ["the start of Chapter 2", ["chapter2"]],
   ])("moves %s to the start of Chapter 3", (_, before) => {
     const session = newSave();
     for (const key of before) advanceStory(session, key);
-    advanceStory(session, 60);
+    advanceStory(session, "chapter3");
     const units = readSave(session.export()).slotData.units;
     const at = units.of(0);
 
@@ -205,11 +207,11 @@ describe("advanceStory", () => {
 
   it.each([
     ["a new save", []],
-    ["the start of Chapter 3", [60]],
+    ["the start of Chapter 3", ["chapter3"]],
   ])("moves %s to the start of Chapter 4", (_, before) => {
     const session = newSave();
     for (const key of before) advanceStory(session, key);
-    advanceStory(session, 80);
+    advanceStory(session, "chapter4");
     const units = readSave(session.export()).slotData.units;
     const at = units.of(0);
 
@@ -245,11 +247,11 @@ describe("advanceStory", () => {
 
   it.each([
     ["a new save", []],
-    ["the start of Chapter 4", [80]],
+    ["the start of Chapter 4", ["chapter4"]],
   ])("moves %s to the start of Chapter 5", (_, before) => {
     const session = newSave();
     for (const key of before) advanceStory(session, key);
-    advanceStory(session, 100);
+    advanceStory(session, "chapter5");
     const units = readSave(session.export()).slotData.units;
     const at = units.of(0);
 
@@ -286,11 +288,11 @@ describe("advanceStory", () => {
 
   it.each([
     ["a new save", []],
-    ["the start of Chapter 5", [100]],
+    ["the start of Chapter 5", ["chapter5"]],
   ])("moves %s to the start of Chapter 6", (_, before) => {
     const session = newSave();
     for (const key of before) advanceStory(session, key);
-    advanceStory(session, 120);
+    advanceStory(session, "chapter6");
     const at = readSave(session.export()).slotData.units.of(0);
 
     expect(at.get(CURRENT_CHAPTER)).toEqual([120, -1]);
@@ -324,11 +326,11 @@ describe("advanceStory", () => {
 
   it.each([
     ["a new save", []],
-    ["the start of Chapter 6", [120]],
+    ["the start of Chapter 6", ["chapter6"]],
   ])("moves %s to the start of Chapter 7", (_, before) => {
     const session = newSave();
     for (const key of before) advanceStory(session, key);
-    advanceStory(session, 140);
+    advanceStory(session, "chapter7");
     const units = readSave(session.export()).slotData.units;
     const at = units.of(0);
 
@@ -367,11 +369,11 @@ describe("advanceStory", () => {
 
   it.each([
     ["a new save", []],
-    ["the start of Chapter 7", [140]],
+    ["the start of Chapter 7", ["chapter7"]],
   ])("moves %s to the start of Chapter 8", (_, before) => {
     const session = newSave();
     for (const key of before) advanceStory(session, key);
-    advanceStory(session, 160);
+    advanceStory(session, "chapter8");
     const units = readSave(session.export()).slotData.units;
     const at = units.of(0);
 
@@ -409,11 +411,11 @@ describe("advanceStory", () => {
 
   it.each([
     ["a new save", []],
-    ["the start of Chapter 8", [160]],
+    ["the start of Chapter 8", ["chapter8"]],
   ])("moves %s to the start of Chapter 9", (_, before) => {
     const session = newSave();
     for (const key of before) advanceStory(session, key);
-    advanceStory(session, 180);
+    advanceStory(session, "chapter9");
     const at = readSave(session.export()).slotData.units.of(0);
 
     expect(at.get(CURRENT_CHAPTER)).toEqual([180, -1]);
@@ -448,11 +450,11 @@ describe("advanceStory", () => {
 
   it.each([
     ["a new save", []],
-    ["the start of Chapter 9", [180]],
-  ])("moves %s to the start of Chapter 10", (_, before) => {
+    ["the start of Chapter 9", ["chapter9"]],
+  ])("moves %s to the start of the Final Chapter", (_, before) => {
     const session = newSave();
     for (const key of before) advanceStory(session, key);
-    advanceStory(session, 200);
+    advanceStory(session, "finalChapter");
     const units = readSave(session.export()).slotData.units;
     const at = units.of(0);
 
@@ -493,11 +495,11 @@ describe("advanceStory", () => {
 
   it.each([
     ["a new save", []],
-    ["the start of Chapter 10", [200]],
+    ["the start of the Final Chapter", ["finalChapter"]],
   ])("moves %s to the start of Chapter Ø", (_, before) => {
     const session = newSave();
     for (const key of before) advanceStory(session, key);
-    advanceStory(session, 220);
+    advanceStory(session, "chapterZero");
     const units = readSave(session.export()).slotData.units;
     const at = units.of(0);
 
@@ -538,18 +540,32 @@ describe("advanceStory", () => {
 
   it("accepts the section the game moves a chapter start to", () => {
     const session = newSave({ chapter: [40, -1], section: 18604228 });
-    expect(storyTargets(session.save).map(({ key }) => key)).toEqual([
-      60, 80, 100, 120, 140, 160, 180, 200, 220, 222,
+    expect(storyTargets(session.save).map(({ id }) => id)).toEqual([
+      "chapter3",
+      "chapter4",
+      "chapter5",
+      "chapter6",
+      "chapter7",
+      "chapter8",
+      "chapter9",
+      "finalChapter",
+      "chapterZero",
+      "chapterZeroEnd",
+      "promoteToProud",
+      "dlcStart",
+      "unlockProudQuests",
+      "advanceToEpilogue",
     ]);
   });
 
-  it("moves the start of Chapter Ø to the end of the story", () => {
+  it("moves the start of Chapter Ø to its end", () => {
     const session = newSave();
-    advanceStory(session, 220);
-    advanceStory(session, 222);
+    advanceStory(session, "chapterZero");
+    advanceStory(session, "chapterZeroEnd");
     const at = readSave(session.export()).slotData.units.of(0);
 
     expect(at.get(CURRENT_CHAPTER)).toEqual([222, -1]);
+    expect(at.get(QUEST_DIFFICULTY_UNLOCKED)).toBe(6);
     expect(at.get(CHAPTER_KEYS).at(-1)).toBe(221);
     expect(at.get(CHAPTER_KEYS)).toHaveLength(40);
     expect(at.get(CHAPTER_GROUPS)).toHaveLength(11);
@@ -565,34 +581,59 @@ describe("advanceStory", () => {
     ]) {
       expect(at.get(sections)[CHAPTER_ZERO_RECORD * PART]).toBe(0);
       expect(at.get(sections)[NOTES_RECORD * PART]).toBe(0);
-      expect(at.get(sections)[STORY_END_RECORD * PART]).toBe(STORY_END_SECTION);
+      expect(at.get(sections)[CHAPTER_ZERO_END_RECORD * PART]).toBe(
+        CHAPTER_ZERO_END_SECTION,
+      );
     }
   });
 
   it("refuses staying in place and offers nothing behind the save", () => {
     const session = newSave();
     expect(storyTargets(session.save).map(({ key }) => key)).toEqual([
-      40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 222,
+      40,
+      60,
+      80,
+      100,
+      120,
+      140,
+      160,
+      180,
+      200,
+      220,
+      222,
+      undefined,
+      undefined,
+      undefined,
+      240,
     ]);
-    advanceStory(session, 222);
-    expect(() => advanceStory(session, 200)).toThrow("already at or past");
-    expect(() => advanceStory(session, 222)).toThrow("already at or past");
-    expect(storyTargets(session.save)).toEqual([]);
+    advanceStory(session, "chapterZeroEnd");
+    expect(() => advanceStory(session, "finalChapter")).toThrow(
+      "already at or past",
+    );
+    expect(() => advanceStory(session, "chapterZeroEnd")).toThrow(
+      "already at or past",
+    );
+    expect(storyTargets(session.save).map(({ id }) => id)).toEqual([
+      "promoteToProud",
+      "dlcStart",
+      "unlockProudQuests",
+      "advanceToEpilogue",
+    ]);
   });
 
   it("refuses a chapter that is no checkpoint", () => {
-    expect(() => advanceStory(newSave(), 41)).toThrow(
-      "no story checkpoint at chapter 41",
+    expect(() => advanceStory(newSave(), "chapter41")).toThrow(
+      "no story checkpoint chapter41",
     );
   });
 
   it("refuses a save in the middle of the story", () => {
     const midChapter = newSave({ chapter: [41, -1] });
-    expect(() => advanceStory(midChapter, 40)).toThrow("not new or at");
+    expect(() => advanceStory(midChapter, "chapter2")).toThrow("not new or at");
     expect(storyTargets(midChapter.save)).toEqual([]);
 
     const midQuest = newSave({ chapter: [40, -1], section: 12345 });
-    expect(() => advanceStory(midQuest, 40)).toThrow("not new or at");
+    expect(() => advanceStory(midQuest, "chapter2")).toThrow("not new or at");
     expect(storyTargets(midQuest.save)).toEqual([]);
   });
 });

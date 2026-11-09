@@ -90,6 +90,8 @@ A run's state sits in 2601-2650. Most of it fills during a run and goes back to 
 | 2620      | not named               | `bool`      | 0-63     | True where the aura in 2619 was enhanced               |
 | 2639      | `CONFLUX_PACKAGE_TAKEN` | `uint[128]` | 0        | 1 at each `endlessmode_package` row taken              |
 | 2642      | not named               | `uint[128]` | 0        | 1 at `endlessmode_package` rows turned on at run setup |
+| 2649      | `CONFLUX_RETURNED`      | `bool[5]`   | 0        | True at the run index after the run's return to town   |
+| 2650      | `CONFLUX_RETURNED_AT`   | `uint[5]`   | 0        | Unix time in seconds of that return                    |
 
 - 2602 is set before a run starts and goes back to 0 at its end. Each cycle has been played once so far, Cycle 5 at index 4, so the run index and the cycle are not told apart.
 - At a run's end 2607 goes into 2611 at the run's index, and 2610 at that index goes to 1. Whether 2611 keeps the best score or the last one is not settled.
@@ -100,7 +102,6 @@ A run's state sits in 2601-2650. Most of it fills during a run and goes back to 
 - A run can start from a side quest: 2505 takes the side quest at the run's start, and the side quest's 2553 progress goes to 1 at the run's end. See [Side quests](quests.md#side-quests).
 - 2603 counts the areas. 2604 counts the stages, 1 to 3. 2613, 2614 and 2632 grow by one entry per area, 2613 with the 2601 values. 8975-8983 hold the area ids and the foes fought per area.
 - 2636 is 1 from the run's setup to its end. 2638 counts up during a run and goes back to 0 at its end. Neither has a meaning assigned.
-- 2649 and 2650 are five-slot arrays that fill one slot after each run's return to town. They have no meaning assigned.
 
 ## Other units
 

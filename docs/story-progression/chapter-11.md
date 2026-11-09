@@ -1,8 +1,8 @@
 # Chapter Ø
 
-The patch that takes a save at the start of Chapter Ø to the end of the story. It lists every value written. The method for writing the chapter lists is in [`chapter-01.md`](chapter-01.md).
+The patch that takes a save at the start of Chapter Ø to the end of the chapter. It lists every value written. The method for writing the chapter lists is in [`chapter-01.md`](chapter-01.md).
 
-## End of the story
+## End of Chapter Ø
 
 Chapter key 222, quest `0010A031`, the quest underway after the last story cutscene. All of Rolan's notes are held, with the journal quests behind them cleared.
 

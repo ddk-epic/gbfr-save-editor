@@ -12,6 +12,7 @@ export const ARCHIVES_UNLOCKED_COUNTERS = [46, 47];
 /** Clears of a difficulty sit at this plus the quest id's difficulty digit. */
 export const QUEST_CLEARS_BEFORE_DIFFICULTY = 13;
 export const QUESTS_CLEARED = 20;
+export const SIDE_QUESTS_COMPLETED = 27;
 export const PROUD_QUEST_CLEARS = 238;
 export const RUPIES_EARNED = 224;
 export const STORY_MASTERY_FILLED = 714;

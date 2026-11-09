@@ -30,16 +30,18 @@ export { maxMasteryPoints, maxRupies } from "@gbfr/user/edit";
 export { canMaxTreasures, maxTreasures } from "@gbfr/item/edit";
 export { USER_MAX_MASTERY_POINTS, USER_MAX_RUPIES } from "@gbfr/user";
 export { completeFateEpisodes } from "@gbfr/workflows";
-export { advanceStory, storyProgress, storyTargets } from "@gbfr/story/edit";
 export {
-  canPromoteToProud,
-  canUnlockProudQuests,
-  fillSkippedStory,
-  isPromotedToProud,
-  promoteToProud,
-  unlockProudQuests,
-} from "@gbfr/workflows";
-export { STORY_END_KEY, type StoryCheckpoint } from "@gbfr/story";
+  advanceStory,
+  storyPosition,
+  storyProgress,
+  storyTargets,
+} from "@gbfr/story/edit";
+export { fillSkippedStory } from "@gbfr/workflows";
+export {
+  isChapterCheckpoint,
+  CHAPTER_ZERO_END_KEY,
+  type StoryCheckpoint,
+} from "@gbfr/story";
 export { canDisableHints, disableHints } from "@gbfr/workflows";
 export { addWrightstone, editWrightstone } from "@gbfr/workflows";
 export {

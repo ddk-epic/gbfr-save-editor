@@ -404,9 +404,24 @@ importers:
 
   packages/story:
     dependencies:
+      '@gbfr/conflux':
+        specifier: workspace:*
+        version: link:../conflux
       '@gbfr/core':
         specifier: workspace:*
         version: link:../core
+      '@gbfr/profile':
+        specifier: workspace:*
+        version: link:../profile
+      '@gbfr/quest':
+        specifier: workspace:*
+        version: link:../quest
+      '@gbfr/trophy':
+        specifier: workspace:*
+        version: link:../trophy
+      '@gbfr/user':
+        specifier: workspace:*
+        version: link:../user
 
   packages/summon:
     dependencies:

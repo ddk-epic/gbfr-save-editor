@@ -108,15 +108,13 @@ export interface SaveView {
   shared: Table[];
   belowMaxRupies: boolean;
   belowMaxMasteryPoints: boolean;
-  /** `chapter_select.Key` of the chapter starts the save can advance to. */
-  storyTargets: number[];
+  /** The story checkpoints the save can advance to. */
+  storyTargets: { id: string; key?: number; chapter: boolean }[];
   canDisableHints: boolean;
   canUnlockAllCharacters: boolean;
   canUnlockAllWeaponSeries: boolean;
   canMaxAllWeaponSeries: boolean;
   canMaxTreasures: boolean;
-  canPromoteToProud: boolean;
-  canUnlockProudQuests: boolean;
   /** The characters landing page. */
   party: Table[];
   characters: CharacterView[];

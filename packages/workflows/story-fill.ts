@@ -1,4 +1,4 @@
-import { type Attribute, type Save, hashId, SAVE_ENTITY } from "@gbfr/core";
+import { type Attribute, hashId, SAVE_ENTITY } from "@gbfr/core";
 import type { Patch, SaveSession } from "@gbfr/core/session";
 import {
   CAPTAIN,
@@ -23,25 +23,13 @@ import {
   FIELD_NOTE_WEAPON_KEY,
 } from "@gbfr/journal";
 import { MASTERY_NODE_BITS } from "@gbfr/mastery";
-import {
-  difficultyDigit,
-  COUNTER_QUEST_CLEARS,
-  COUNTER_QUEST_IDS,
-  COUNTER_QUEST_OPENED,
-  QUEST_DIFFICULTY_UNLOCKED,
-  SHORT_STORY_CLEARS,
-  SHORT_STORY_IDS,
-} from "@gbfr/quest";
-import {
-  clearCounterQuests,
-  clearShortStories,
-  openCounterQuests,
-} from "./quest-clears";
+import { COUNTER_QUEST_IDS, COUNTER_QUEST_OPENED } from "@gbfr/quest";
 import { EQUIP_SKILLS, SKILL_FLAGS, SKILL_KEY } from "@gbfr/skill";
 import {
   ARCHIVES_UNLOCKED_COUNTERS,
   CHAPTER_KEYS_CLEARED,
   RUPIES_EARNED,
+  SIDE_QUESTS_COMPLETED,
   STORY_MASTERY_FILLED,
   TROPHY_EARNED,
   TROPHY_PROGRESS,
@@ -57,7 +45,17 @@ import {
   WEAPON_UNCAP,
   WEAPON_XP,
 } from "@gbfr/weapon";
-import { CURRENT_CHAPTER, UI_FEATURE_UNLOCKED } from "@gbfr/story";
+import {
+  CURRENT_CHAPTER,
+  isChapterCheckpoint,
+  STORY_CHECKPOINTS,
+  UI_FEATURE_UNLOCKED,
+} from "@gbfr/story";
+import {
+  clearCounterQuests,
+  clearShortStories,
+  storyPosition,
+} from "@gbfr/story/edit";
 
 type ItemFlags = Parameters<typeof ITEM_FLAGS.write>[0];
 type ArchiveFlags = Parameters<typeof ARCHIVE_FLAGS.write>[0];
@@ -73,8 +71,8 @@ const OUTFIT_MAIN = 0;
 const OUTFIT_STARTING = 1;
 
 interface StoryFillEntry {
-  /** `chapter_select.Key` of the chapter start the entry is due by. */
-  key: number;
+  /** `StoryCheckpoint.id` the entry is due by. */
+  checkpoint: string;
   /** `badge.Key`. */
   trophies: readonly number[];
   chapterKeysCleared: bigint;
@@ -88,7 +86,6 @@ interface StoryFillEntry {
   shortStories?: readonly number[];
   counterQuests?: readonly number[];
   openedQuests?: readonly number[];
-  questDifficulty?: number;
   startWeapons?: readonly { key: string; captain: number; replaces: string }[];
   standInWeapons?: readonly { key: string; xp: number; uncap: number }[];
   fightWeapons?: readonly {
@@ -97,24 +94,28 @@ interface StoryFillEntry {
     startWeapon: string;
   }[];
   joinsId?: boolean;
+  /** `TROPHY_PROGRESS` indexes and the amount each rises by, once the entry earns a trophy. */
+  counts?: readonly (readonly [index: number, amount: number])[];
+  /** Items given as rewards, by key and count, once the entry earns a trophy. */
+  rewards?: readonly (readonly [item: string, count: number])[];
 }
 
 /** In story order. */
 const STORY_FILL: readonly StoryFillEntry[] = [
   {
-    key: 40,
+    checkpoint: "chapter2",
     trophies: [0, 10, 1, 1405],
     chapterKeysCleared: 4n,
     uiFeatures: [7],
   },
   {
-    key: 60,
+    checkpoint: "chapter3",
     trophies: [2, 1406],
     chapterKeysCleared: 6n,
     items: [{ item: "ITEM_70_0004", flags: { fieldNote: true } }],
   },
   {
-    key: 80,
+    checkpoint: "chapter4",
     trophies: [3, 1407],
     chapterKeysCleared: 9n,
     items: [{ item: "ITEM_70_0005", flags: { fieldNote: true } }],
@@ -126,24 +127,24 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     ],
   },
   {
-    key: 100,
+    checkpoint: "chapter5",
     trophies: [4, 1408],
     chapterKeysCleared: 13n,
   },
   {
-    key: 120,
+    checkpoint: "chapter6",
     trophies: [5, 1409],
     chapterKeysCleared: 18n,
   },
   {
-    key: 140,
+    checkpoint: "chapter7",
     trophies: [6, 1410],
     chapterKeysCleared: 22n,
     items: [{ item: "ITEM_70_0008", flags: { fieldNote: true } }],
     shortStories: [0x730050],
   },
   {
-    key: 160,
+    checkpoint: "chapter8",
     trophies: [7, 1411],
     chapterKeysCleared: 26n,
     items: [{ item: "ITEM_70_0006", flags: { fieldNote: true } }],
@@ -160,7 +161,7 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     ],
   },
   {
-    key: 180,
+    checkpoint: "chapter9",
     trophies: [8, 1412],
     chapterKeysCleared: 30n,
     standInWeapons: [{ key: "WEP_NP0300_01", xp: 1740, uncap: 2 }],
@@ -170,7 +171,7 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     ],
   },
   {
-    key: 200,
+    checkpoint: "finalChapter",
     trophies: [9, 1413],
     chapterKeysCleared: 36n,
     items: [
@@ -186,14 +187,14 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     ],
   },
   {
-    key: 220,
+    checkpoint: "chapterZero",
     trophies: [11, 1397],
     chapterKeysCleared: 38n,
     uiFeatures: [0, 1, 2, 3, 4, 5, 6],
     joinsId: true,
   },
   {
-    key: 222,
+    checkpoint: "chapterZeroEnd",
     trophies: [22, 23, 24, 25, 19, 1398],
     chapterKeysCleared: 41n,
     archives: [
@@ -221,7 +222,24 @@ const STORY_FILL: readonly StoryFillEntry[] = [
       0x402313, 0x402308, 0x402302, 0x402301, 0x401316, 0x401315, 0x401311,
       0x401310, 0x401306, 0x401305, 0x401303, 0x401301,
     ],
-    questDifficulty: 6,
+  },
+  {
+    checkpoint: "promoteToProud",
+    trophies: [542],
+    chapterKeysCleared: 41n,
+  },
+  {
+    checkpoint: "dlcStart",
+    // The side quests' first clear, and Conflux Cycles 1-3.
+    trophies: [52, 1594, 1595, 1253, 1470],
+    chapterKeysCleared: 41n,
+    counts: [
+      [SIDE_QUESTS_COMPLETED, 2],
+      [1139, 1],
+      [1140, 1],
+      [917, 1],
+    ],
+    rewards: [["ITEM_23_0000", 2]], // Crewmate Card
   },
 ];
 
@@ -251,35 +269,6 @@ const TROPHY_REWARDS: Readonly<
     ],
   },
 };
-
-const MANIAC = difficultyDigit("maniac");
-const PROUD = difficultyDigit("proud");
-
-/** The Maniac quests other quests open on, then `00407101`, the first Proud quest. */
-const PROUD_PROMOTION: StoryFillEntry = {
-  key: 222,
-  trophies: [542],
-  chapterKeysCleared: 41n,
-  counterQuests: [
-    0x406325, 0x406330, 0x406331, 0x406332, 0x406333, 0x406334, 0x406335,
-    0x406337, 0x406338, 0x406355, 0x406356, 0x406357, 0x406358, 0x406359,
-    0x406360, 0x406364, 0x406365, 0x406366, 0x407101,
-  ],
-  questDifficulty: PROUD,
-};
-
-const PROUD_PREREQUISITES = [
-  0x407301, 0x407302, 0x407303, 0x407304, 0x407310, 0x407311, 0x407312,
-  0x407313, 0x407314, 0x407315, 0x407316, 0x407317, 0x407318, 0x407319,
-  0x407320,
-];
-
-const MANIAC_QUEST_PREFIX = 0x406;
-const UNLISTED_MANIAC_QUEST = 0x406367;
-const PROUD_QUEST_PREFIX = 0x407;
-
-/** The cutscenes `00407320` opens on. */
-const PROUD_SHORT_STORIES = [0x710000, 0x710001];
 
 const ID_MAX_JOIN_LEVEL = 42;
 /** XP, base HP and base attack per level. */
@@ -368,88 +357,38 @@ const ID_MASTERY_BITS: Readonly<Record<number, number>> = {
   134: 257,
 };
 
-/** Adds what the chapters up to the save's current one should have left, and returns what it added. */
+/** Adds what the checkpoints up to the save's current one should have left, and returns what it added. */
 export function fillSkippedStory(session: SaveSession): string[] {
-  const at = session.save.slotData.units.of(SAVE_ENTITY);
-  const reached = at.get(CURRENT_CHAPTER)[0]!;
+  const reached = storyPosition(session.save);
+  if (reached === undefined) {
+    const chapter = session.save.slotData.units
+      .of(SAVE_ENTITY)
+      .get(CURRENT_CHAPTER)[0]!;
+    return applyFill(
+      session,
+      STORY_FILL.filter(({ checkpoint }) => {
+        const due = checkpointAt(checkpoint);
+        return isChapterCheckpoint(due) && due.key <= chapter;
+      }),
+    );
+  }
   return applyFill(
     session,
-    STORY_FILL.filter(({ key }) => key <= reached),
-  );
-}
-
-/** True at Maniac quests, or above them with a Maniac quest not listed. */
-export function canPromoteToProud(save: Save): boolean {
-  const at = save.slotData.units.of(SAVE_ENTITY);
-  const difficulty = at.get(QUEST_DIFFICULTY_UNLOCKED);
-  if (difficulty < MANIAC) return false;
-  const opened = at.get(COUNTER_QUEST_OPENED);
-  return (
-    difficulty === MANIAC ||
-    at
-      .get(COUNTER_QUEST_IDS)
-      .some((id, row) => isListedManiacQuest(id) && !opened[row])
-  );
-}
-
-/** True on a save with Proud quests. */
-export function isPromotedToProud(save: Save): boolean {
-  const at = save.slotData.units.of(SAVE_ENTITY);
-  return at.get(QUEST_DIFFICULTY_UNLOCKED) >= PROUD;
-}
-
-/** True on a save with Proud quests and a quest left that `unlockProudQuests` clears or lists. */
-export function canUnlockProudQuests(save: Save): boolean {
-  const at = save.slotData.units.of(SAVE_ENTITY);
-  if (at.get(QUEST_DIFFICULTY_UNLOCKED) < PROUD) return false;
-  const unclearedIn = (ids: readonly number[], clears: readonly number[]) =>
-    ids.some((id, row) => clears[row] === 0 && isProudPrerequisite(id));
-  const opened = at.get(COUNTER_QUEST_OPENED);
-  return (
-    unclearedIn(at.get(COUNTER_QUEST_IDS), at.get(COUNTER_QUEST_CLEARS)) ||
-    unclearedIn(at.get(SHORT_STORY_IDS), at.get(SHORT_STORY_CLEARS)) ||
-    at
-      .get(COUNTER_QUEST_IDS)
-      .some((id, row) => isProudQuest(id) && !opened[row])
-  );
-}
-
-const isProudPrerequisite = (id: number) =>
-  PROUD_PREREQUISITES.includes(id) || PROUD_SHORT_STORIES.includes(id);
-
-const isProudQuest = (id: number) => id >>> 12 === PROUD_QUEST_PREFIX;
-
-const isListedManiacQuest = (id: number) =>
-  id >>> 12 === MANIAC_QUEST_PREFIX && id !== UNLISTED_MANIAC_QUEST;
-
-/** Clears the quests up to the first Proud quest, lists the other Maniac quests, and returns what it added. */
-export function promoteToProud(session: SaveSession): string[] {
-  const at = session.save.slotData.units.of(SAVE_ENTITY);
-  if (at.get(QUEST_DIFFICULTY_UNLOCKED) < MANIAC)
-    throw new Error("the save has not unlocked Maniac quests");
-  return [
-    ...applyFill(session, [PROUD_PROMOTION]),
-    ...openCounterQuests(
-      session,
-      at.get(COUNTER_QUEST_IDS).filter(isListedManiacQuest),
+    STORY_FILL.filter(
+      ({ checkpoint }) => checkpointIndex(checkpoint) <= reached,
     ),
-  ];
+  );
 }
 
-/** Clears the Proud quests that open others, lists the rest, and returns what it added. */
-export function unlockProudQuests(session: SaveSession): string[] {
-  const at = session.save.slotData.units.of(SAVE_ENTITY);
-  if (at.get(QUEST_DIFFICULTY_UNLOCKED) < PROUD)
-    throw new Error("the save has not unlocked Proud quests");
-  return [
-    ...clearShortStories(session, PROUD_SHORT_STORIES),
-    ...clearCounterQuests(session, PROUD_PREREQUISITES),
-    ...openCounterQuests(
-      session,
-      at.get(COUNTER_QUEST_IDS).filter(isProudQuest),
-    ),
-  ];
-}
+const checkpointIndex = (id: string) => {
+  const index = STORY_CHECKPOINTS.findIndex(
+    (checkpoint) => checkpoint.id === id,
+  );
+  if (index === -1) throw new Error(`no story checkpoint ${id}`);
+  return index;
+};
+
+const checkpointAt = (id: string) => STORY_CHECKPOINTS[checkpointIndex(id)]!;
 
 function applyFill(
   session: SaveSession,
@@ -522,8 +461,10 @@ function applyFill(
   };
 
   for (const entry of due) {
+    let earnedHere = false;
     for (const trophy of entry.trophies) {
       if (earned[trophy]) continue;
+      earnedHere = true;
       earned[trophy] = true;
       const counter = earnedCounter(trophy);
       if (counter !== undefined) progress[counter] = progress[counter]! + 1n;
@@ -536,6 +477,12 @@ function applyFill(
         progress[RUPIES_EARNED]! + BigInt(reward.rupies);
       for (const [item, count] of reward.items ?? [])
         rewardItems.set(item, (rewardItems.get(item) ?? 0) + count);
+    }
+    for (const [index, amount] of earnedHere ? (entry.counts ?? []) : [])
+      progress[index] = progress[index]! + BigInt(amount);
+    for (const [item, count] of earnedHere ? (entry.rewards ?? []) : []) {
+      rewardItems.set(item, (rewardItems.get(item) ?? 0) + count);
+      added.push(item);
     }
     if (entry.chapterKeysCleared > progress[CHAPTER_KEYS_CLEARED]!)
       progress[CHAPTER_KEYS_CLEARED] = entry.chapterKeysCleared;
@@ -588,14 +535,6 @@ function applyFill(
       if (row === -1 || counterQuestOpened[row]) continue;
       counterQuestOpened[row] = true;
       added.push(`counter quest ${quest.toString(16)} opened`);
-    }
-
-    if (
-      entry.questDifficulty !== undefined &&
-      entry.questDifficulty > at.get(QUEST_DIFFICULTY_UNLOCKED)
-    ) {
-      patches.push(at.patch(QUEST_DIFFICULTY_UNLOCKED, entry.questDifficulty));
-      added.push(`quest difficulty ${entry.questDifficulty}`);
     }
 
     const replaced: number[] = [];
