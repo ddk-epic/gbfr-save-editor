@@ -34,7 +34,7 @@ import {
 } from "gbfr-save-editor";
 import {
   CHAPTER_ZERO_END_KEY,
-  canDisableHints,
+  canClearHints,
   isChapterCheckpoint,
   storyProgress,
 } from "gbfr-save-editor/edit";
@@ -332,7 +332,7 @@ export function buildShared(
         ["option", 36],
         ["done", 9],
       ],
-      [[{ message: "disableHints" }, !canDisableHints(save)]],
+      [[{ message: "clearHints" }, !canClearHints(save)]],
       { stretch: "option", tab: "profile", label: "options", wide: true },
     ),
     ...itemTables(inventory.items, wished, unseen),

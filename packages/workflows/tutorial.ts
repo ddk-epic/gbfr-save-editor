@@ -74,15 +74,14 @@ const HINT_TIPS = [
   0x1400d7a6,
 ];
 
-const disablingPatches = (save: Save): Patch[] => {
+const clearingPatches = (save: Save): Patch[] => {
   const units = save.slotData.units;
   return [...hintPatches(units), ...unlockTips(units, HINT_TIPS)];
 };
 
 /** True on a save with a found hint not marked as shown. */
-export const canDisableHints = (save: Save) =>
-  disablingPatches(save).length > 0;
+export const canClearHints = (save: Save) => clearingPatches(save).length > 0;
 
 /** Marks every found hint as shown, at any point in the story. */
-export const disableHints = (session: SaveSession) =>
-  session.patch(disablingPatches(session.save));
+export const clearHints = (session: SaveSession) =>
+  session.patch(clearingPatches(session.save));

@@ -9,10 +9,7 @@ import {
   TUTORIAL_WINDOW_FLAGS,
   TUTORIAL_WINDOW_KEY,
 } from "../../packages/tutorial/attributes";
-import {
-  canDisableHints,
-  disableHints,
-} from "../../packages/workflows/tutorial";
+import { canClearHints, clearHints } from "../../packages/workflows/tutorial";
 import { SAVE_HASHSEED } from "../../packages/core/save-entity";
 import { SaveSession } from "../../packages/core/session";
 import { fixtureFile } from "../../packages/gbfr-save-editor/testing";
@@ -52,10 +49,10 @@ const save = () =>
     }),
   );
 
-describe("disableHints", () => {
+describe("clearHints", () => {
   it("marks found hints as shown and leaves other rows and bits alone", () => {
     const session = save();
-    disableHints(session);
+    clearHints(session);
     const units = session.save.slotData.units;
 
     expect(units.values(TUTORIAL_WINDOW_FLAGS, 1)).toEqual([1]);
@@ -69,8 +66,8 @@ describe("disableHints", () => {
 
   it("is offered until every found hint is marked", () => {
     const session = save();
-    expect(canDisableHints(session.save)).toBe(true);
-    disableHints(session);
-    expect(canDisableHints(session.save)).toBe(false);
+    expect(canClearHints(session.save)).toBe(true);
+    clearHints(session);
+    expect(canClearHints(session.save)).toBe(false);
   });
 });

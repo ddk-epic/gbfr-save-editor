@@ -42,7 +42,7 @@ export {
   CHAPTER_ZERO_END_KEY,
   type StoryCheckpoint,
 } from "@gbfr/story";
-export { canDisableHints, disableHints } from "@gbfr/workflows";
+export { canClearHints, clearHints } from "@gbfr/workflows";
 export { addWrightstone, editWrightstone } from "@gbfr/workflows";
 export {
   WRIGHTSTONE_MAINS,

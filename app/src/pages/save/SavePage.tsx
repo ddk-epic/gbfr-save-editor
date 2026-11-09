@@ -4,7 +4,7 @@ import {
   addSigil,
   addWrightstone,
   advanceStory,
-  disableHints,
+  clearHints,
   maxAllWeaponSeries,
   unlockAllWeaponSeries,
   unlockAllCharacters,
@@ -138,7 +138,7 @@ export function SavePage({
   );
   const canMaxItems = useSave((save) => save?.view.canMaxTreasures);
   const storyTargets = useSave((save) => save?.view.storyTargets);
-  const canDisable = useSave((save) => save?.view.canDisableHints);
+  const canClear = useSave((save) => save?.view.canClearHints);
   const canUnlockAll = useSave((save) => save?.view.canUnlockAllCharacters);
   const canUnlockWeapons = useSave(
     (save) => save?.view.canUnlockAllWeaponSeries,
@@ -282,11 +282,11 @@ export function SavePage({
           ) : table.id === OPTIONS_TABLE ? (
             <EditMenu
               actions={[
-                ...(canDisable
+                ...(canClear
                   ? [
                       {
-                        label: t("tables.disableHints"),
-                        run: () => edit(disableHints),
+                        label: t("tables.clearHints"),
+                        run: () => edit(clearHints),
                       },
                     ]
                   : []),

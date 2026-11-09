@@ -2,7 +2,7 @@ import { readCharacterData, readInventory, type Save } from "gbfr-save-editor";
 import {
   USER_MAX_MASTERY_POINTS,
   USER_MAX_RUPIES,
-  canDisableHints,
+  canClearHints,
   canMaxAllWeaponSeries,
   canUnlockAllWeaponSeries,
   canUnlockAllCharacters,
@@ -50,7 +50,7 @@ export function buildView(save: Save): SaveView {
       key: checkpoint.key,
       chapter: isChapterCheckpoint(checkpoint),
     })),
-    canDisableHints: canDisableHints(save),
+    canClearHints: canClearHints(save),
     canUnlockAllCharacters: canUnlockAllCharacters(save),
     canUnlockAllWeaponSeries: canUnlockAllWeaponSeries(save),
     canMaxAllWeaponSeries: canMaxAllWeaponSeries(save),

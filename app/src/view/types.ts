@@ -110,7 +110,7 @@ export interface SaveView {
   belowMaxMasteryPoints: boolean;
   /** The story checkpoints the save can advance to. */
   storyTargets: { id: string; key?: number; chapter: boolean }[];
-  canDisableHints: boolean;
+  canClearHints: boolean;
   canUnlockAllCharacters: boolean;
   canUnlockAllWeaponSeries: boolean;
   canMaxAllWeaponSeries: boolean;

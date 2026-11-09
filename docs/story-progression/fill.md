@@ -1,6 +1,6 @@
 # Story fill
 
-`fillSkippedStory` adds what the story checkpoints up to the save's own should have left, for a save moved forward by `advanceStory`. It runs after `advanceStory`, like `disableHints`. It takes every row due by the checkpoint `storyPosition` finds. A save between chapter starts takes the rows of the chapter starts at or below its `CURRENT_CHAPTER` (2506). Each row checks the save first, so a played save, or a second run, changes nothing it already holds.
+`fillSkippedStory` adds what the story checkpoints up to the save's own should have left, for a save moved forward by `advanceStory`. It runs after `advanceStory`, like `clearHints`. It takes every row due by the checkpoint `storyPosition` finds. A save between chapter starts takes the rows of the chapter starts at or below its `CURRENT_CHAPTER` (2506). Each row checks the save first, so a played save, or a second run, changes nothing it already holds.
 
 | Due by           | Key | Trophies                   | Items                                 | Archives                                                           | UI features | Other                                          |
 | ---------------- | --- | -------------------------- | ------------------------------------- | ------------------------------------------------------------------ | ----------- | ---------------------------------------------- |
@@ -85,7 +85,7 @@ The stand-in weapons stay in the list after their quests, flags 128. A row due l
 
 XP and uncap per row. The game adds `WEP_PL1900_A0` itself after the Chapter 7 start loads, so neither is due earlier.
 
-The game sets 2815 bit 0 on the in-play `_03` as `TUTORIAL_EQUIP` opens. `disableHints` marks that hint shown, so the fill writes the bit itself.
+The game sets 2815 bit 0 on the in-play `_03` as `TUTORIAL_EQUIP` opens. `clearHints` marks that hint shown, so the fill writes the bit itself.
 
 ### Outfits
 
@@ -122,4 +122,4 @@ When 1305 bit 3 was unset, meaning the save never played the character, the fill
 
 ## Status
 
-Applied to a new save with `advanceStory` to key 220 and `disableHints`, the fill loads in game. The weapons, 2600, the archives and 5815 at 46 and 47 hold after a save, and 46 and 47 reach 7 at note 02, as in the traced run. A save with the outfit writes also loads in game. At key 222 the game pays the trophy 25 reward, and the objective moves to "Progress through Maniac quests".
+Applied to a new save with `advanceStory` to key 220 and `clearHints`, the fill loads in game. The weapons, 2600, the archives and 5815 at 46 and 47 hold after a save, and 46 and 47 reach 7 at note 02, as in the traced run. A save with the outfit writes also loads in game. At key 222 the game pays the trophy 25 reward, and the objective moves to "Progress through Maniac quests".

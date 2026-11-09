@@ -54,4 +54,4 @@ Quest records cleared:
 
 ### Status
 
-The patch, applied to a new save with `disableHints` and `fillSkippedStory`, loads in game. `0010A031` moves to its second section and clears 18 s later, the game clears `00725100`, `00730000` and `00730001`, and the objective moves to "Progress through Maniac quests".
+The patch, applied to a new save with `clearHints` and `fillSkippedStory`, loads in game. `0010A031` moves to its second section and clears 18 s later, the game clears `00725100`, `00730000` and `00730001`, and the objective moves to "Progress through Maniac quests".
