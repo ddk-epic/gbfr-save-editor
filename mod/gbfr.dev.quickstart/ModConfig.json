@@ -3,7 +3,7 @@
   "ModName": "Quick Start",
   "ModAuthor": "ddk",
   "ModVersion": "0.1.0",
-  "ModDescription": "Dev tool for tracing saves: the controlled character deals far more damage and runs faster. Offline only.",
+  "ModDescription": "Dev tool for tracing saves: the controlled character deals far more damage and every action runs faster. Offline only.",
   "ModDll": "gbfr.dev.quickstart.dll",
   "ModIcon": "",
   "ModR2RManagedDll32": "",

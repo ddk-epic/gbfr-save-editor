@@ -19,9 +19,13 @@ public class Startup : IMod
     private const string CalculateStunSignature =
         "55 41 57 41 56 41 54 56 57 53 48 81 EC 20 01 00 00 48 8D AC 24 ?? ?? ?? ?? C5 78 29 AD ?? ?? ?? ??";
 
-    // ExActRun's update, vtable slot 3 (FUN_14278c1f0)
+    // ExActRun's update, vtable slot 3 (FUN_14278c1f0); read for the session global
     private const string RunUpdateSignature =
         "41 56 56 57 53 48 83 EC 68 48 89 CE 48 8B 79 F8 48 8B 87 18 32 00 00 C5 FA 10 80 54 04 00 00";
+
+    // BehaviorPlayerBase's update, vtable slot 24 (FUN_1409ddc40)
+    private const string PlayerUpdateSignature =
+        "56 57 48 81 EC A8 00 00 00 C5 F8 29 BC 24 ?? ?? ?? ?? C5 F8 29 B4 24 ?? ?? ?? ?? 48 89 CE E8 ?? ?? ?? ?? 48 8B 46 28";
 
     // ReceptionQuestFlow's update (FUN_141fca260)
     private const string FlowUpdateSignature =
@@ -76,10 +80,11 @@ public class Startup : IMod
         var hit = scanner.FindPattern(CalculateHitSignature);
         var stun = scanner.FindPattern(CalculateStunSignature);
         var run = scanner.FindPattern(RunUpdateSignature);
+        var update = scanner.FindPattern(PlayerUpdateSignature);
         var flow = scanner.FindPattern(FlowUpdateSignature);
         var guide = scanner.FindPattern(GuideUpdateSignature);
         var load = scanner.FindPattern(LoadDataFileSignature);
-        if (!hit.Found || !stun.Found || !run.Found || !flow.Found || !guide.Found || !load.Found)
+        if (!hit.Found || !stun.Found || !run.Found || !update.Found || !flow.Found || !guide.Found || !load.Found)
         {
             _logger.WriteLine("[gbfr.dev.quickstart] signatures not found; nothing hooked; is this game version 2.0.6?");
             return;
@@ -92,7 +97,7 @@ public class Startup : IMod
             return;
         }
         nint session = runUpdate + SessionNext + *(int*)(runUpdate + SessionDisp);
-        _boosts = new Boosts(_hooks!, _settings, _logger, module.BaseAddress + hit.Offset, module.BaseAddress + stun.Offset, runUpdate, session);
+        _boosts = new Boosts(_hooks!, _settings, _logger, module.BaseAddress + hit.Offset, module.BaseAddress + stun.Offset, module.BaseAddress + update.Offset, session);
         if (_settings.SkipChestTimer)
             _chestTimer = new ChestTimer(_hooks!, _logger, module.BaseAddress + flow.Offset, session);
         if (_settings.SkipResultTimer)
@@ -100,7 +105,7 @@ public class Startup : IMod
         if (_settings.SkipStartupLogos)
             _startupLogos = new StartupLogos(_hooks!, _logger, module.BaseAddress + load.Offset);
         _logger.WriteLine(
-            $"[gbfr.dev.quickstart] hooked: damage x{_settings.DamageMultiplier}, stun x{_settings.StunMultiplier}, run x{_settings.RunSpeedMultiplier}, " +
+            $"[gbfr.dev.quickstart] hooked: damage x{_settings.DamageMultiplier}, stun x{_settings.StunMultiplier}, speed x{_settings.SpeedMultiplier}, " +
             $"skip chest timer {_settings.SkipChestTimer}, skip result timer {_settings.SkipResultTimer}, " +
             $"skip startup logos {_settings.SkipStartupLogos}");
     }

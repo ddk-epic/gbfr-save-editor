@@ -45,27 +45,27 @@ public sealed unsafe class Boosts
 
     private delegate void CalculateHit(nint component, nint hit, nint victim);
     private delegate void CalculateStun(nint component, nint hit);
-    private delegate void RunUpdate(nint self);
+    private delegate void PlayerUpdate(nint player);
 
     private readonly Settings _settings;
     private readonly ILogger _logger;
     private readonly nint _session;
     private readonly IHook<CalculateHit> _hitHook;
     private readonly IHook<CalculateStun> _stunHook;
-    private readonly IHook<RunUpdate> _runHook;
+    private readonly IHook<PlayerUpdate> _updateHook;
     private bool _loggedHit;
     private bool _loggedStun;
-    private bool _loggedRun;
+    private bool _loggedSpeed;
     private bool _loggedNoTime;
 
-    public Boosts(IReloadedHooks hooks, Settings settings, ILogger logger, nint calculateHit, nint calculateStun, nint runUpdate, nint session)
+    public Boosts(IReloadedHooks hooks, Settings settings, ILogger logger, nint calculateHit, nint calculateStun, nint playerUpdate, nint session)
     {
         _settings = settings;
         _logger = logger;
         _session = session;
         _hitHook = hooks.CreateHook<CalculateHit>(CalculateHitImpl, calculateHit).Activate();
         _stunHook = hooks.CreateHook<CalculateStun>(CalculateStunImpl, calculateStun).Activate();
-        _runHook = hooks.CreateHook<RunUpdate>(RunUpdateImpl, runUpdate).Activate();
+        _updateHook = hooks.CreateHook<PlayerUpdate>(PlayerUpdateImpl, playerUpdate).Activate();
     }
 
     private void CalculateHitImpl(nint component, nint hit, nint victim)
@@ -105,12 +105,11 @@ public sealed unsafe class Boosts
         }
     }
 
-    private void RunUpdateImpl(nint self)
+    private void PlayerUpdateImpl(nint player)
     {
-        nint player = *(nint*)(self - 8);
-        if (player != 0 && IsBoosted(player))
+        if (IsBoosted(player))
             BoostTime(player);
-        _runHook.OriginalFunction(self);
+        _updateHook.OriginalFunction(player);
     }
 
     private void BoostTime(nint player)
@@ -122,20 +121,20 @@ public sealed unsafe class Boosts
             if (!_loggedNoTime)
             {
                 _loggedNoTime = true;
-                _logger.WriteLine("[gbfr.dev.quickstart] the character has no time object; run speed unchanged");
+                _logger.WriteLine("[gbfr.dev.quickstart] the character has no time object; speed unchanged");
             }
             return;
         }
-        float rate = _settings.RunSpeedMultiplier;
+        float rate = _settings.SpeedMultiplier;
         *(byte*)(time + TimeTimed) = 1;
         *(float*)(time + TimeTargetRate) = rate;
         *(float*)(time + TimeRate) = rate;
         *(float*)(time + TimeFramesLeft) = BoostFrames;
         *(float*)(time + TimeDelay) = 0f;
-        if (!_loggedRun)
+        if (!_loggedSpeed)
         {
-            _loggedRun = true;
-            _logger.WriteLine($"[gbfr.dev.quickstart] first boosted run: rate {rate}");
+            _loggedSpeed = true;
+            _logger.WriteLine($"[gbfr.dev.quickstart] first boosted update: rate {rate}");
         }
     }
 

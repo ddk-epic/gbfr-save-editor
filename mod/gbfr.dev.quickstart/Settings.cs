@@ -6,7 +6,7 @@ namespace gbfr.dev.quickstart;
 public sealed class Settings
 {
     public int DamageMultiplier { get; set; } = 1000000;
-    public float RunSpeedMultiplier { get; set; } = 3f;
+    public float SpeedMultiplier { get; set; } = 3f;
     public float StunMultiplier { get; set; } = 100000f;
     public bool SkipChestTimer { get; set; } = true;
     public bool SkipResultTimer { get; set; } = true;
