@@ -45,7 +45,7 @@ Quest records cleared:
 
 ### Not patched
 
-- The notes, short stories, counter quests, trophies and rewards, see [`fill.md`](fill.md).
+- The notes, story cutscenes, counter quests, trophies and rewards, see [`fill.md`](fill.md).
 - 2501, which reads 0 at the start of `0010A031` in the traced run and on a new save.
 - 2517 and 2519, which return to their start values as `0010AF02` clears. 2518 keeps 515372814 in the traced run and 0 here.
 - The party writes of `0010AF02`, which end before it clears.

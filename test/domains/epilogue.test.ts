@@ -28,9 +28,9 @@ import {
   COUNTER_QUEST_IDS,
   COUNTER_QUEST_OPENED,
   QUEST_DIFFICULTY_UNLOCKED,
-  SHORT_STORY_CHECKPOINTS,
-  SHORT_STORY_CLEARS,
-  SHORT_STORY_IDS,
+  STORY_CUTSCENE_CHECKPOINTS,
+  STORY_CUTSCENE_CLEARS,
+  STORY_CUTSCENE_IDS,
   SIDE_QUEST_ACCEPTED,
   SIDE_QUEST_CHECKPOINTS,
   SIDE_QUEST_IDS,
@@ -61,7 +61,7 @@ import { advanceStory, storyTargets } from "../../packages/story/edit";
 
 const NOW = 1794162545000;
 const SIDE_QUESTS = [0x220101, 0x220102, 0x220111];
-const SHORT_STORIES = [
+const STORY_CUTSCENES = [
   0x730201, 0x730021, 0x730020, 0x725110, 0x730420, 0x730046, 0x730430,
 ];
 
@@ -80,11 +80,11 @@ const save = (difficulty: number, chapter: number) => {
       [LOCATION_SPOT, [49, 95, 83, 84, 65, 82, 84, 0]],
       [TROPHY_EARNED, Array<boolean>(1700).fill(false)],
       [TROPHY_PROGRESS, Array<bigint>(1200).fill(0n)],
-      [SHORT_STORY_IDS, SHORT_STORIES],
-      [SHORT_STORY_CLEARS, Array<number>(SHORT_STORIES.length).fill(0)],
+      [STORY_CUTSCENE_IDS, STORY_CUTSCENES],
+      [STORY_CUTSCENE_CLEARS, Array<number>(STORY_CUTSCENES.length).fill(0)],
       [
-        SHORT_STORY_CHECKPOINTS,
-        Array<number>(SHORT_STORIES.length * 64).fill(0),
+        STORY_CUTSCENE_CHECKPOINTS,
+        Array<number>(STORY_CUTSCENES.length * 64).fill(0),
       ],
       [SIDE_QUEST_IDS, SIDE_QUESTS],
       [SIDE_QUEST_STATE, [0, 0, 0]],
@@ -130,8 +130,8 @@ describe("dlcStart", () => {
 
     expect(at.get(CURRENT_CHAPTER)).toEqual([222, -1]);
     expect(at.get(CURRENT_TOWN)).toBe(0xd00);
-    expect(at.get(SHORT_STORY_CLEARS)).toEqual([0, 1, 0, 0, 0, 0, 0]);
-    expect(at.get(SHORT_STORY_CHECKPOINTS)[128]).toBe(1174902544);
+    expect(at.get(STORY_CUTSCENE_CLEARS)).toEqual([0, 1, 0, 0, 0, 0, 0]);
+    expect(at.get(STORY_CUTSCENE_CHECKPOINTS)[128]).toBe(1174902544);
     expect(at.get(SIDE_QUEST_STATE)).toEqual([1, 1, 0]);
     expect(at.get(CONFLUX_CYCLE_CLEARED)).toEqual([1, 1, 1, 0, 0]);
     expect(targets(session)).toEqual(["advanceToEpilogue"]);
@@ -150,9 +150,9 @@ describe("advanceToEpilogue", () => {
     expect(at.get(LAST_TOWN)).toBe(0xc00);
     expect(at.get(LOCATION_STAGE)).toBe(0xc00);
     expect(at.get(LOCATION_SPOT)).toBe("START");
-    expect(at.get(SHORT_STORY_CLEARS)).toEqual([0, 1, 0, 1, 1, 1, 0]);
-    expect(at.get(SHORT_STORY_CHECKPOINTS)[128]).toBe(1174902544);
-    expect(at.get(SHORT_STORY_CHECKPOINTS)[6 * 64]).toBe(1825705739);
+    expect(at.get(STORY_CUTSCENE_CLEARS)).toEqual([0, 1, 0, 1, 1, 1, 0]);
+    expect(at.get(STORY_CUTSCENE_CHECKPOINTS)[128]).toBe(1174902544);
+    expect(at.get(STORY_CUTSCENE_CHECKPOINTS)[6 * 64]).toBe(1825705739);
     expect(at.get(SIDE_QUEST_STATE)).toEqual([1, 1, 0]);
     expect(at.get(SIDE_QUEST_ACCEPTED)).toEqual([true, true, false]);
     expect(at.get(SIDE_QUEST_CHECKPOINTS)[128]).toBe(1297300194);

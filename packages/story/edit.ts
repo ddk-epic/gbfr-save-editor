@@ -50,9 +50,9 @@ import {
   COUNTER_QUEST_IDS,
   COUNTER_QUEST_OPENED,
   QUEST_DIFFICULTY_UNLOCKED,
-  SHORT_STORY_CHECKPOINTS,
-  SHORT_STORY_CLEARS,
-  SHORT_STORY_IDS,
+  STORY_CUTSCENE_CHECKPOINTS,
+  STORY_CUTSCENE_CLEARS,
+  STORY_CUTSCENE_IDS,
   SIDE_QUEST_ACCEPTED,
   SIDE_QUEST_CHECKPOINTS,
   SIDE_QUEST_IDS,
@@ -68,7 +68,7 @@ type SlotUnit = ReturnType<Save["slotData"]["units"]["of"]>;
 const CHAPTER_ZERO_END_ID = "chapterZeroEnd";
 const SIDE_QUEST_CHECKPOINT_VALUES = 64;
 const SIDE_QUEST_PROGRESS_VALUES = 32;
-const SHORT_STORY_CHECKPOINT_VALUES = 64;
+const STORY_CUTSCENE_CHECKPOINT_VALUES = 64;
 const SIDE_QUEST_COMPLETED = 1;
 
 /** The checkpoints a save can advance to, in story order. */
@@ -184,7 +184,11 @@ function isReached(at: SlotUnit, index: number): boolean {
       checkpoint.counterQuests,
     ) &&
     listed() &&
-    cleared(SHORT_STORY_IDS, SHORT_STORY_CLEARS, checkpoint.shortStories) &&
+    cleared(
+      STORY_CUTSCENE_IDS,
+      STORY_CUTSCENE_CLEARS,
+      checkpoint.storyCutscenes,
+    ) &&
     cleared(SIDE_QUEST_IDS, SIDE_QUEST_STATE, checkpoint.sideQuests) &&
     (cycles === 0 ||
       at
@@ -334,7 +338,7 @@ function advanceProgress(
     session.patch([
       at.patch(QUEST_DIFFICULTY_UNLOCKED, checkpoint.questDifficulty),
     ]);
-  clearShortStories(session, checkpoint.shortStories ?? []);
+  clearStoryCutscenes(session, checkpoint.storyCutscenes ?? []);
   clearCounterQuests(session, checkpoint.counterQuests ?? []);
   openCounterQuests(
     session,
@@ -343,17 +347,17 @@ function advanceProgress(
 
   const patches: Patch[] = [];
   let sideQuestsTaken: number[] | undefined;
-  if (checkpoint.shortStorySections) {
-    const ids = at.get(SHORT_STORY_IDS);
-    const clears = at.get(SHORT_STORY_CLEARS);
-    const sections = [...at.get(SHORT_STORY_CHECKPOINTS)];
-    for (const [quest, hash] of checkpoint.shortStorySections) {
+  if (checkpoint.storyCutsceneSections) {
+    const ids = at.get(STORY_CUTSCENE_IDS);
+    const clears = at.get(STORY_CUTSCENE_CLEARS);
+    const sections = [...at.get(STORY_CUTSCENE_CHECKPOINTS)];
+    for (const [quest, hash] of checkpoint.storyCutsceneSections) {
       const row = ids.indexOf(quest);
-      const first = row * SHORT_STORY_CHECKPOINT_VALUES;
+      const first = row * STORY_CUTSCENE_CHECKPOINT_VALUES;
       if (row === -1 || clears[row] !== 0 || sections[first] !== 0) continue;
       sections[first] = hash;
     }
-    patches.push(at.patch(SHORT_STORY_CHECKPOINTS, sections));
+    patches.push(at.patch(STORY_CUTSCENE_CHECKPOINTS, sections));
   }
 
   if (checkpoint.sideQuests || checkpoint.sideQuestSections) {
@@ -490,29 +494,29 @@ export function openCounterQuests(
   return added;
 }
 
-/** Marks short stories with no clears as played, and returns those it changed. */
-export function clearShortStories(
+/** Marks story cutscenes with no clears as played, and returns those it changed. */
+export function clearStoryCutscenes(
   session: SaveSession,
   quests: readonly number[],
 ): string[] {
   const at = session.save.slotData.units.of(SAVE_ENTITY);
-  const ids = at.get(SHORT_STORY_IDS);
-  const clears = [...at.get(SHORT_STORY_CLEARS)];
-  const checkpoints = [...at.get(SHORT_STORY_CHECKPOINTS)];
+  const ids = at.get(STORY_CUTSCENE_IDS);
+  const clears = [...at.get(STORY_CUTSCENE_CLEARS)];
+  const checkpoints = [...at.get(STORY_CUTSCENE_CHECKPOINTS)];
   const added: string[] = [];
 
   for (const quest of quests) {
     const row = ids.indexOf(quest);
     if (row === -1 || clears[row] !== 0) continue;
     clears[row] = 1;
-    checkpoints[row * SHORT_STORY_CHECKPOINT_VALUES] = 0;
-    added.push(`short story ${quest.toString(16)}`);
+    checkpoints[row * STORY_CUTSCENE_CHECKPOINT_VALUES] = 0;
+    added.push(`story cutscene ${quest.toString(16)}`);
   }
 
   if (added.length === 0) return added;
   session.patch([
-    at.patch(SHORT_STORY_CLEARS, clears),
-    at.patch(SHORT_STORY_CHECKPOINTS, checkpoints),
+    at.patch(STORY_CUTSCENE_CLEARS, clears),
+    at.patch(STORY_CUTSCENE_CHECKPOINTS, checkpoints),
   ]);
   return added;
 }

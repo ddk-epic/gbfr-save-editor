@@ -34,9 +34,9 @@ export interface ProgressCheckpoint extends CheckpointBase {
   counterQuests?: readonly number[];
   /** Counter quests listed: every id under `prefix` apart from `except`. */
   listedQuests?: { prefix: number; except?: readonly number[] };
-  shortStories?: readonly number[];
-  /** Section hashes the game leaves on short stories not yet begun. */
-  shortStorySections?: readonly (readonly [quest: number, hash: number])[];
+  storyCutscenes?: readonly number[];
+  /** Section hashes the game leaves on story cutscenes not yet begun. */
+  storyCutsceneSections?: readonly (readonly [quest: number, hash: number])[];
   /** Side quests completed. */
   sideQuests?: readonly number[];
   /** Section hashes the game leaves on side quests not yet begun. */
@@ -233,11 +233,11 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
   // `00220101` to `00730021`.
   {
     id: "dlcStart",
-    shortStories: [
+    storyCutscenes: [
       0x725000, 0x730053, 0x730100, 0x730060, 0x730055, 0x730061, 0x730065,
       0x730030, 0x730014, 0x730011, 0x730010, 0x730040, 0x730021,
     ],
-    shortStorySections: [
+    storyCutsceneSections: [
       [0x730090, 1786949660],
       [0x730020, 1174902544],
       [0x730012, 1171285270],
@@ -252,7 +252,7 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
   // The Proud quests that open others, and the cutscenes `00407320` opens on.
   {
     id: "unlockProudQuests",
-    shortStories: [0x710000, 0x710001],
+    storyCutscenes: [0x710000, 0x710001],
     counterQuests: [
       0x407301, 0x407302, 0x407303, 0x407304, 0x407310, 0x407311, 0x407312,
       0x407313, 0x407314, 0x407315, 0x407316, 0x407317, 0x407318, 0x407319,
@@ -264,9 +264,9 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
   {
     id: "advanceToEpilogue",
     key: EPILOGUE_KEY,
-    // The short stories `00407318` opens.
-    shortStories: [0x725110, 0x730420, 0x730046],
-    shortStorySections: [[0x730430, 1825705739]],
+    // The story cutscenes `00407318` opens.
+    storyCutscenes: [0x725110, 0x730420, 0x730046],
+    storyCutsceneSections: [[0x730430, 1825705739]],
     // `00730201`'s start section: `phaseNo` Folca, `subPhaseHash`.
     location: { town: 0xc00, townCheckpoint: 939223336, spot: "START" },
   },

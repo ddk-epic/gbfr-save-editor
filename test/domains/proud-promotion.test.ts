@@ -14,9 +14,9 @@ import {
   COUNTER_QUEST_IDS,
   COUNTER_QUEST_OPENED,
   QUEST_DIFFICULTY_UNLOCKED,
-  SHORT_STORY_CHECKPOINTS,
-  SHORT_STORY_CLEARS,
-  SHORT_STORY_IDS,
+  STORY_CUTSCENE_CHECKPOINTS,
+  STORY_CUTSCENE_CLEARS,
+  STORY_CUTSCENE_IDS,
 } from "../../packages/quest/attributes";
 import {
   CURRENT_CHAPTER,
@@ -63,9 +63,9 @@ const save = (difficulty: number) =>
         [TROPHY_EARNED, Array<boolean>(1700).fill(false)],
         [TROPHY_PROGRESS, Array<bigint>(1200).fill(0n)],
         [UI_FEATURE_UNLOCKED, Array<boolean>(128).fill(false)],
-        [SHORT_STORY_IDS, [0]],
-        [SHORT_STORY_CLEARS, [0]],
-        [SHORT_STORY_CHECKPOINTS, Array<number>(64).fill(0)],
+        [STORY_CUTSCENE_IDS, [0]],
+        [STORY_CUTSCENE_CLEARS, [0]],
+        [STORY_CUTSCENE_CHECKPOINTS, Array<number>(64).fill(0)],
         [
           COUNTER_QUEST_IDS,
           [LISTED_ONLY, ...MANIAC_QUESTS, PROMOTION, NEVER_LISTED],
@@ -155,10 +155,10 @@ describe("unlockProudQuests", () => {
           ...CHAPTER_ZERO_END,
           [QUEST_DIFFICULTY_UNLOCKED, 7],
           [TROPHY_PROGRESS, Array<bigint>(1200).fill(0n)],
-          [SHORT_STORY_IDS, [0x705001, 0x710000, 0x710001]],
-          [SHORT_STORY_CLEARS, [0, 0, 0]],
+          [STORY_CUTSCENE_IDS, [0x705001, 0x710000, 0x710001]],
+          [STORY_CUTSCENE_CLEARS, [0, 0, 0]],
           [
-            SHORT_STORY_CHECKPOINTS,
+            STORY_CUTSCENE_CHECKPOINTS,
             Array.from({ length: 192 }, (_, index) =>
               index === 128 || index === 0 ? 77 : 0,
             ),
@@ -184,9 +184,9 @@ describe("unlockProudQuests", () => {
     ]);
     expect(at.get(COUNTER_QUEST_OPENED)).toEqual(Array(16).fill(true));
     expect(at.get(COUNTER_QUEST_CLEARED)[0]).toBe(false);
-    expect(at.get(SHORT_STORY_CLEARS)).toEqual([0, 1, 1]);
-    expect(at.get(SHORT_STORY_CHECKPOINTS)[0]).toBe(77);
-    expect(at.get(SHORT_STORY_CHECKPOINTS)[128]).toBe(0);
+    expect(at.get(STORY_CUTSCENE_CLEARS)).toEqual([0, 1, 1]);
+    expect(at.get(STORY_CUTSCENE_CHECKPOINTS)[0]).toBe(77);
+    expect(at.get(STORY_CUTSCENE_CHECKPOINTS)[128]).toBe(0);
     expect(at.get(TROPHY_PROGRESS)[238]).toBe(15n);
     expect(at.get(TROPHY_PROGRESS)[20]).toBe(15n);
 

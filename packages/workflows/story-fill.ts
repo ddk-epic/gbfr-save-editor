@@ -53,7 +53,7 @@ import {
 } from "@gbfr/story";
 import {
   clearCounterQuests,
-  clearShortStories,
+  clearStoryCutscenes,
   storyPosition,
 } from "@gbfr/story/edit";
 
@@ -83,7 +83,7 @@ interface StoryFillEntry {
   newMarks?: readonly string[];
   archives?: readonly { archive: string; flags: ArchiveFlags }[];
   uiFeatures?: readonly number[];
-  shortStories?: readonly number[];
+  storyCutscenes?: readonly number[];
   counterQuests?: readonly number[];
   openedQuests?: readonly number[];
   startWeapons?: readonly { key: string; captain: number; replaces: string }[];
@@ -141,7 +141,7 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     trophies: [6, 1410],
     chapterKeysCleared: 22n,
     items: [{ item: "ITEM_70_0008", flags: { fieldNote: true } }],
-    shortStories: [0x730050],
+    storyCutscenes: [0x730050],
   },
   {
     checkpoint: "chapter8",
@@ -206,7 +206,7 @@ const STORY_FILL: readonly StoryFillEntry[] = [
       { archive: "ARC_ROLANNOTE_05", flags: { unlocked: true } },
       { archive: "ARC_ROLANNOTE_07", flags: { unlocked: true } },
     ],
-    shortStories: [
+    storyCutscenes: [
       0x705001, 0x705002, 0x705003, 0x705004, 0x705005, 0x705006, 0x705007,
       0x703000, 0x703001, 0x720000, 0x720001, 0x720002, 0x720003, 0x720004,
       0x704000, 0x704001,
@@ -398,9 +398,9 @@ function applyFill(
   const at = units.of(SAVE_ENTITY);
   const patches: Patch[] = [];
   const added = [
-    ...clearShortStories(
+    ...clearStoryCutscenes(
       session,
-      due.flatMap(({ shortStories }) => shortStories ?? []),
+      due.flatMap(({ storyCutscenes }) => storyCutscenes ?? []),
     ),
     ...clearCounterQuests(
       session,

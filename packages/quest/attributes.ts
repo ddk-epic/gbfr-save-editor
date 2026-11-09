@@ -14,9 +14,9 @@ export const COUNTER_QUEST_OPENED = Attribute.boolList(2575);
 export const COUNTER_QUEST_CLEARED = Attribute.boolList(2576);
 export const COUNTER_QUEST_LAST_CLEARED = Attribute.uintList(2579);
 
-export const SHORT_STORY_IDS = Attribute.uintList(2580);
-export const SHORT_STORY_CLEARS = Attribute.uintList(2581);
-export const SHORT_STORY_CHECKPOINTS = Attribute.uintList(2582);
+export const STORY_CUTSCENE_IDS = Attribute.uintList(2580);
+export const STORY_CUTSCENE_CLEARS = Attribute.uintList(2581);
+export const STORY_CUTSCENE_CHECKPOINTS = Attribute.uintList(2582);
 
 export const QUEST_DIFFICULTY_UNLOCKED = Attribute.int(7303);
 

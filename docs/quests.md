@@ -12,10 +12,10 @@ A quest id is a `quest_baseinfo_ex_data.Key`, 8 hex digits, stored as the uint t
 | `002`  | Side quests          |
 | `0030` | Fate quests          |
 | `0040` | Quest counter quests |
-| `007`  | Short stories        |
+| `007`  | Story cutscenes      |
 
 - A quest's title is `TXT_QR_<id without the leading 00>` in `text_stage.msg`.
-- The sixth digit is the quest's family: `FUN_14061d110`, which copies the game's quest records into the save, sorts them by it. 1 is story, 2 side, 3 fate, 4 quest counter and 7 the short stories of 2580.
+- The sixth digit is the quest's family: `FUN_14061d110`, which copies the game's quest records into the save, sorts them by it. 1 is story, 2 side, 3 fate, 4 quest counter and 7 the story cutscenes of 2580.
 
 ## Story quests
 
@@ -74,7 +74,7 @@ Chapter select lists the chapters reached, by `chapter_select.Key`: chapter grou
 - A key joins 2590 as 2506 moves past it, together with any keys skipped. This can fall at a quest's clear or at a checkpoint with no clear. A key's own quest can clear with the key still current, when a quest with no `chapter_select` row follows it: key 143 names `00105f01` and joins at the clear of `00105002`, and key 160 names `00106f00` and joins at the clear of `00106000`. Key 220 names `00109001` and joins as `0010A000` begins, well after that clear.
 - `chapter_select.QuestId` can give several keys one quest, as 101-104 share `00103001`. That quest's record clears once, and keys never current in 2506 still join 2590 at the clear.
 - 2502 follows `chapter_select.TownStageMaybe`, moving at the clear ahead of the key that changes it. It holds 3072 (`0xC00`) from a new game, 3328 (`0xD00`, Seedhollow) as `00104f00` clears, ahead of key 121, 3329 (`0xD01`) as `00106f00` clears and 3330 (`0xD02`) as `00106002` clears. Key 200 is the one miss so far: it names `0xD00`, and 2502 stays `0xD02` through it, going to 3072 (`0xC00`) as `00108001` clears, ahead of key 220. 2503, a `uint`, takes a new checkpoint hash in the same write, and again at a checkpoint with 2502 unchanged.
-- Key 240 is the Epilogue: `TELOP_CHAPTER_MAIN_120`, text `TXT_CHAPTER_MAIN_0120`, `QuestId` `00730201`, town `0xC00`. 2506 moves to it in the write where short story `00730201` clears, with no 2590, 2595 or 5815 at 2 move.
+- Key 240 is the Epilogue: `TELOP_CHAPTER_MAIN_120`, text `TXT_CHAPTER_MAIN_0120`, `QuestId` `00730201`, town `0xC00`. 2506 moves to it in the write where story cutscene `00730201` clears, with no 2590, 2595 or 5815 at 2 move.
 - Keys 241-243 also use `TELOP_CHAPTER_MAIN_120` and town `0xC00`, with `QuestId` `0010B000`, `0010C001` and `0010D001`. 2506 moves to 242 in the record write of `00408315`, as `0010C001`, a story quest played as `PL2800` alone, clears, and to 243 in that of `00409315`, as `0010D001`, played as `PL2900` alone, clears. Key 243 also names `00730237` in `UnkQuestId`; its objective, `TXT_QT_10D001`, is "Reach the end of Conflux Cycle 4: Illusion".
 - Chapter select (`FUN_1403f4140`) offers the chapter groups in order. It stops at the first chapter missing from 2590, or with bit 0 of 2592 clear and a negative 2591.
 
@@ -99,7 +99,7 @@ Three arrays of 200.
 - 2552, a `uint[12800]`, holds 64 values per side quest. Its first value takes a hash on quests not yet accepted, as a story chapter ends or at a quest counter quest's record write. These are likely `BeginSection` guids, by the shape shared with 2582; the hashes match no table text or message key.
 - 2553 `SIDE_QUEST_PROGRESS`, a `uint[6400]`, holds 32 values per side quest. The first counts the quest's objective and goes back to 0 as 2551 marks the quest completed. `00220001` "Complete the 3 quests given" counts 1 to 3 at the records of its quests. `00220002` takes 1 once one run of `00409320` collects 40 Sephira lusters (`ITEM_33_0002`, emptied at the quest's end). A side quest started from a Conflux run takes 1 at the run's end; see [Runs](conflux.md#runs). A quest turned in with items, such as `00220003`, completes with no 2553 move.
 - 2505 adds a side quest at a record write, which can be the write that completes it. A side quest added with 2553 at 1 in the same write, such as `00220005` or `00230004`, completes at the next record write.
-- Side quests started from Conflux runs are requirements of the `00730*` short stories, cleared on the return to town.
+- Side quests started from Conflux runs are requirements of the `00730*` story cutscenes, cleared on the return to town.
 - A completed repeat quest stays accepted in 2555. The game lists it only once it is accepted again.
 
 ## Quest counter
@@ -145,7 +145,7 @@ Four arrays of 512.
 
 ### Opening a quest
 
-`FUN_14061f4b0` tests `occurrenceList_` in `baseinfo.msg`, the same list as the short stories. A type 1 entry passes when the named quest's clear count is above 0.
+`FUN_14061f4b0` tests `occurrenceList_` in `baseinfo.msg`, the same list as the story cutscenes. A type 1 entry passes when the named quest's clear count is above 0.
 
 The Chapter Ø end checkpoint (`chapterZeroEnd`, key 222, the second part of Chapter Ø) takes 7303 to 6, as the game does with `0010A031` underway. The checkpoints after it are `promoteToProud`, `dlcStart`, `unlockProudQuests` and `advanceToEpilogue`. `advanceStory` passes through each one the save has not reached.
 
@@ -201,7 +201,7 @@ The DLC starts at side quests `00220101` and `00220102`, which the first two Con
 - `00220102` needs `00220101`, `00109002`, `00730055` and `00730060` cleared, town `0xD04` and a type 7 entry with id 0.
 - `00730010`, `00730011` and `00730014` need `0010A031`, `00220102` and type 7 id 1; `00730011` and `00730014` also one Maniac clear. `00730021` needs `00730030`, `00730011` and `00730040`, town `0x310` and type 7 id 2.
 
-`dlcStart` comes after `promoteToProud` and writes what the game writes from `00220101` to `00730021`. A save is past it at 2506 240 or later, or with the short stories, side quests and cycles below done:
+`dlcStart` comes after `promoteToProud` and writes what the game writes from `00220101` to `00730021`. A save is past it at 2506 240 or later, or with the story cutscenes, side quests and cycles below done:
 
 - 2581 to 1 and the first 2582 value to 0 on `00725000`, `00730053`, `00730100`, `00730060`, `00730055`, `00730061`, `00730065`, `00730030`, `00730014`, `00730011`, `00730010`, `00730040` and `00730021`.
 - `00220101` and `00220102` completed: 2551 to 1, 2555 to true, the first 2552 and 2553 values to 0, and each added to 2505. The fill adds trophy 52, 5815 at 27 and one Crewmate Card (`ITEM_23_0000`) per quest.
@@ -214,7 +214,7 @@ The other side quest rewards and the Conflux runs' battle trophies are left out.
 
 `00730201` moves 2506 from 222 to 240 and plays the Epilogue's chapter fade-in. Its `occurrenceList_` (`quest/ex/730201/baseinfo.msg`) needs `00407318`, `00710000`, `00730021` and `0010A031` cleared, town `0xC00` and a type 7 entry with id 2. Its one section is a start and return section at `phaseNo` `0xC00`, `subPhaseHash` 939223336. `00730046` and `00730420` also need `00407318`, and `00710000` needs `00407315`-`00407317`.
 
-`advanceToEpilogue` comes after `unlockProudQuests` and leaves `00730201` to the game. A save is past it at 2506 240 or later, or with the short stories below cleared:
+`advanceToEpilogue` comes after `unlockProudQuests` and leaves `00730201` to the game. A save is past it at 2506 240 or later, or with the story cutscenes below cleared:
 
 - 2581 to 1 and the first 2582 value to 0 on `00725110`, `00730420` and `00730046`.
 - 2582 on `00730430`, the section hash the game leaves at that point.
@@ -232,15 +232,15 @@ Two arrays of 100, for the episodes that are a quest (`fate_episode.MissionQuest
 - 2560 holds every fate quest from a new game on, 56 ids for the 58 quest episodes: the captain's two characters share theirs.
 - 2561 is set on returning from the quest, after the episode's completion.
 
-## Short stories
+## Story cutscenes
 
 Family 7, script quests with no story or quest counter entry, cleared by `ClearQuest` and `ClearShortStory` in scripts. 133 ids with the prefixes `0070`-`0073` and `007f`. Parallel arrays at entity 0, in the same order.
 
-| Attribute | Name                      | Type         | Holds                          |
-| --------- | ------------------------- | ------------ | ------------------------------ |
-| 2580      | `SHORT_STORY_IDS`         | `uint[150]`  | Quest id, 0 on an unused entry |
-| 2581      | `SHORT_STORY_CLEARS`      | `uint[150]`  | Clear count                    |
-| 2582      | `SHORT_STORY_CHECKPOINTS` | `uint[9600]` | 64 values per quest            |
+| Attribute | Name                         | Type         | Holds                          |
+| --------- | ---------------------------- | ------------ | ------------------------------ |
+| 2580      | `STORY_CUTSCENE_IDS`         | `uint[150]`  | Quest id, 0 on an unused entry |
+| 2581      | `STORY_CUTSCENE_CLEARS`      | `uint[150]`  | Clear count                    |
+| 2582      | `STORY_CUTSCENE_CHECKPOINTS` | `uint[9600]` | 64 values per quest            |
 
 - The first 2582 value holds the current `BeginSection` guid of a quest underway, and goes to 0 as 2581 rises.
 - `occurrenceList_` in `baseinfo.msg` opens each one: type 1 entries name quests that must be cleared, type 2 entries a town, type 3 entries quests that must not be cleared, and type 4 entries count clears of quest counter quests at the difficulty digit in `id_`, `count_` of them. Type 7 entries pass when entry `id_` (0-4) of a 5-entry array at `DAT_147c23338+0x2c` is non-zero (`FUN_14061f4b0`); the shape fits 2610, with ids 0-2 matching Conflux Cycles 1-3, but the array is not mapped. First clears only have been seen, so clears and distinct quests are not told apart. Several can run and clear beside a story or quest counter quest.

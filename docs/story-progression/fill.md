@@ -14,24 +14,24 @@
 | Chapter 9        | 180 | 8, 1412                    |                                       |                                                                    |             | `WEP_PL0000_99`, `WEP_PL0100_99`               |
 | Final Chapter    | 200 | 9, 1413                    | `ITEM_70_0010` Rolan's Notes          | `ARC_ROLANNOTE_08`                                                 |             | Stand-in weapons raised                        |
 | Chapter Ø        | 220 | 11, 1397                   |                                       |                                                                    | 0-6         | `PL1900` joins                                 |
-| Chapter Ø end    | 222 | 22-25, 19, 1398            |                                       | `ARC_ROLANNOTE_01`-`07`                                            |             | Short stories, counter quests, see below       |
+| Chapter Ø end    | 222 | 22-25, 19, 1398            |                                       | `ARC_ROLANNOTE_01`-`07`                                            |             | Story cutscenes, counter quests, see below     |
 | `promoteToProud` | 222 | 542                        |                                       |                                                                    |             |                                                |
 | `dlcStart`       | 222 | 52, 1594, 1595, 1253, 1470 | `ITEM_23_0000` Crewmate Card, 2       |                                                                    |             | 5815 counts, see below                         |
 
 ## Checks and writes
 
-| Kind          | Holds it when             | Writes                                                                                |
-| ------------- | ------------------------- | ------------------------------------------------------------------------------------- |
-| Trophy        | 5801 at the key is true   | 5801, and adds 1 to 5815 at 1018 for Keys 1395-1453; the game recounts 501 at a load  |
-| Item          | 1804 is not 0             | 1802 to 1, 1803 to 4, or 36 on `ITEM_70_0010`, 1804 to the next 1805, and 1805        |
-| Item taken    | 1802 is 0                 | 1802 to 0. 1803 and 1804 stay                                                         |
-| New mark      | 1803 bit 3 is unset       | 1803 clears bit 3                                                                     |
-| Archive       | 7902 bit 0 is set         | 7902 to bit 0, or bits 0 and 1 on `ARC_ROLANNOTE_08`, and adds 1 to 5815 at 46 and 47 |
-| UI feature    | 2600 at the index is true | 2600 at the index to true                                                             |
-| Weapon        | 7403 at its row is not 0  | The first free weapon entry, see below                                                |
-| `PL1900`      | 1305 bit 0 is set         | See below                                                                             |
-| Short story   | 2581 is not 0             | 2581 to 1                                                                             |
-| Counter quest | 2571 is not 0             | See below                                                                             |
+| Kind           | Holds it when             | Writes                                                                                |
+| -------------- | ------------------------- | ------------------------------------------------------------------------------------- |
+| Trophy         | 5801 at the key is true   | 5801, and adds 1 to 5815 at 1018 for Keys 1395-1453; the game recounts 501 at a load  |
+| Item           | 1804 is not 0             | 1802 to 1, 1803 to 4, or 36 on `ITEM_70_0010`, 1804 to the next 1805, and 1805        |
+| Item taken     | 1802 is 0                 | 1802 to 0. 1803 and 1804 stay                                                         |
+| New mark       | 1803 bit 3 is unset       | 1803 clears bit 3                                                                     |
+| Archive        | 7902 bit 0 is set         | 7902 to bit 0, or bits 0 and 1 on `ARC_ROLANNOTE_08`, and adds 1 to 5815 at 46 and 47 |
+| UI feature     | 2600 at the index is true | 2600 at the index to true                                                             |
+| Weapon         | 7403 at its row is not 0  | The first free weapon entry, see below                                                |
+| `PL1900`       | 1305 bit 0 is set         | See below                                                                             |
+| Story cutscene | 2581 is not 0             | 2581 to 1                                                                             |
+| Counter quest  | 2571 is not 0             | See below                                                                             |
 
 - 2600 holds one bool per `UnlockUIAction.feature_`, see [`quests.md`](../quests.md).
 - 1804 stays set once an item is spent, so a story item used up later is not added again.
@@ -47,7 +47,7 @@ Key 222 holds `0010A031` underway with all eight notes and the journal quests be
 - 2581 goes to 1 on `00705001`-`00705007`, `00703000`, `00703001`, `00720000`-`00720004`, `00704000` and `00704001`. The game clears `00725100` itself after a load.
 - Trophies 22-25, 19 and 1398 are set. The game awards trophy 12 after a load, and trophy 13 on Hard with it.
 
-The 25 counter quests that open those short stories are marked cleared: `00403201`, `202`, `301`, `302`, `307`-`309`, `312`, `00404101`, `309`-`311`, `313`, `316`, and `00405101`, `201`-`203`, `206`-`208`, `302`-`305`. Each takes 2571 to 1, 2574 to 0, 2575 and 2576 to true, and adds 1 to 4901 at 10600, 5815 at 20, and 5815 at 13 plus the difficulty digit. 2577 and 2579 stay. First clear rewards are not given.
+The 25 counter quests that open those story cutscenes are marked cleared: `00403201`, `202`, `301`, `302`, `307`-`309`, `312`, `00404101`, `309`-`311`, `313`, `316`, and `00405101`, `201`-`203`, `206`-`208`, `302`-`305`. Each takes 2571 to 1, 2574 to 0, 2575 and 2576 to true, and adds 1 to 4901 at 10600, 5815 at 20, and 5815 at 13 plus the difficulty digit. 2577 and 2579 stay. First clear rewards are not given.
 
 The row also takes 2575 to true on the 19 uncleared quests the traced run holds open that a load leaves false: `00401301`, `303`, `305`, `306`, `310`, `311`, `315`, `316`, `00402301`, `302`, `308`, `313`-`316`, `00403303`, `311`, `00404204` and `317`.
 
@@ -115,7 +115,7 @@ When 1305 bit 3 was unset, meaning the save never played the character, the fill
 - `ITEM_23_0000` Crewmate Cards. The traced run gains three, and a loaded save gains one with the quest rank reward, so the count the game adds by itself is not settled.
 - 5815 at 184, 185 and 998, the weapon counts behind badges 360-368 and 1360-1362. They rise with no weapon unit moving when `PL1900` joins, and 998 can fall, so the game takes them again from the weapons held. A load does not.
 - The story party, 2201 at 103000-103003.
-- Short stories `00720005`-`00720017`. They play voice lines at the quest counter, and their type 3 conditions close them on a save past `0010A025`.
+- Story cutscenes `00720005`-`00720017`. They play voice lines at the quest counter, and their type 3 conditions close them on a save past `0010A025`.
 - `00730045`. The game clears it at a record write after a load.
 - `BlacksmithPendulumGrant`, 7103 and 6801. The first wrightstone a save receives unlocks the option, and the flipped quests give none.
 - MSP for levels `PL1900` gains at the join, side trophies, XP, rupies, consumables, sigils and journal rows.
