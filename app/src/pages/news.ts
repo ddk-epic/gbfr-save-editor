@@ -1,6 +1,11 @@
 /** Newest first. */
 export const NEWS = [
   {
+    date: "2026-11-10",
+    title: "Progression unlocks completed",
+    body: "Advance a save past the story to Defy Infinity.",
+  },
+  {
     date: "2026-11-05",
     title: "Story completion",
     body: "Advance a new save, or at the start of a chapter, to any later point of the main story.",
