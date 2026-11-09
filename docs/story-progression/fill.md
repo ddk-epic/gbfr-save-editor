@@ -21,6 +21,7 @@
 | `unlockChaos`         | 241 | 746, 1468                  |                                       |                                                                    |             |                                                |
 | `unlockChaosPlus`     | 242 | 747, 1467, 1254, 1469      | Six key items, see below              |                                                                    |             | `WEP_PL2800_A0`, 5815 at 918, fate episodes    |
 | `unlockChaosPlusPlus` | 243 | 748, 1457, 750             | Four key items, see below             |                                                                    |             | `WEP_PL2900_A0`, 5815 at 27, fate episodes     |
+| `unlockDefyInfinity`  | 243 | 17, see below              | One key item, see below               |                                                                    |             | 5815 counts, fate episode                      |
 
 ## Checks and writes
 
@@ -70,7 +71,17 @@ The `unlockProudQuests` row takes 4202 to 1 on `WD_MS170_010_0000`, the town eve
 
 ## Chaos
 
-The `unlockChaosPlus` row adds key items `CF24B2F6`, `C93E2FDD` and `8BF58697`, which `0010B002` gives with `AddImportantItem`, and what `00730331`-`00730333` give after the records of `00408314`, `00408308` and `00409302`: `FATE_PL2900_01`-`03` move 3502 from 5 to 15, and key items `84292D6A`, `54AE4C95` and `75A25FB1` take 1803 4. The `unlockChaosPlusPlus` row does the same for `00730334`-`00730337`, after the records of `00409317`, `00409314`, `00409311` and `00409312`: `FATE_PL2900_04`-`07`, and key items `7BCDAA54`, `946B78EE`, `5030BEBA` and `6DD50A91`. `FATE_PL2900_08` follows `0040A303`, after the checkpoint.
+The `unlockChaosPlus` row adds key items `CF24B2F6`, `C93E2FDD` and `8BF58697`, which `0010B002` gives with `AddImportantItem`, and what `00730331`-`00730333` give after the records of `00408314`, `00408308` and `00409302`: `FATE_PL2900_01`-`03` move 3502 from 5 to 15, and key items `84292D6A`, `54AE4C95` and `75A25FB1` take 1803 4. The `unlockChaosPlusPlus` row does the same for `00730334`-`00730337`, after the records of `00409317`, `00409314`, `00409311` and `00409312`: `FATE_PL2900_04`-`07`, and key items `7BCDAA54`, `946B78EE`, `5030BEBA` and `6DD50A91`. `FATE_PL2900_08` and key item `29748BF8` follow `0040A303`, with `00730338`, and the `unlockDefyInfinity` row adds them.
+
+The side quests the Chaos rows complete give one Crewmate Card each, with weight 10000: `ITEM_23_0006` Crewmate Card: Fraux from `00220003` (`RW_CHA_220003`) in the `unlockChaosPlusPlus` row, and `ITEM_23_0007` Crewmate Card: Fediel from `00230003` (`RW_CHA_230003`) in the `unlockDefyInfinity` row. The rows also add 5815 at 27 for each side quest, at 26 for Fraux's requests (`00220001`-`00220005`) and at 25 for Fediel's (`00230001`-`00230004`): 3 at 26 in the `unlockChaosPlusPlus` row, 2 at 26 and 4 at 25 in the `unlockDefyInfinity` row.
+
+The `unlockDefyInfinity` row sets the trophies whose conditions the checkpoint's clears meet:
+
+- Conflux Cycle 5: 1255 "I Sit on the Chaos Throne", 1256 "Apex Conqueror" and 1449 "Wings that Subjugated Chaos", with 5815 at 919 and 920 up by 1.
+- Quest clears: 754, 757, 759, 1450-1455, 1525, 1526 and 1529.
+- Requests: 1532 "Wise One" and 1533 "Defier of Logic".
+
+Time, score and rating trophies are left out: 1257, 1293, 1528, 1531, and the S++ ones.
 
 ## DLC start
 

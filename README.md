@@ -34,6 +34,7 @@ A save editor for Granblue Fantasy: Relink. Still work in progress and planned w
 - [x] Advance to the DLC start
 - [x] Advance to the Epilogue
 - [x] Unlock Chaos, Chaos+ and Chaos++ quests
+- [x] Unlock Defy Infinity quests
 
 #### Party
 
@@ -133,6 +134,7 @@ A save editor for Granblue Fantasy: Relink. Still work in progress and planned w
 - [x] Advance to the DLC start
 - [x] Advance to the Epilogue
 - [x] Unlock Chaos, Chaos+ and Chaos++ quests
+- [x] Unlock Defy Infinity quests
 - [x] Clear hints
 
 #### Characters

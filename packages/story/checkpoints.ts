@@ -58,6 +58,8 @@ export interface ProgressCheckpoint extends CheckpointBase {
   chapter?: number;
   /** Conflux runs cleared, from the first. */
   confluxCycles?: number;
+  /** 2508 set with no 7303 move. */
+  questRank?: number;
   /** Where the save loads: 2502, 2503, 2606, 1201 and 1202. */
   location?: { town: number; townCheckpoint: number; spot: string };
 }
@@ -375,6 +377,30 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     storyQuests: [0x10d001],
     chapterKeys: [242],
     chapter: 243,
+    location: { town: 0xc00, townCheckpoint: 939223336, spot: "1_START" },
+  },
+  // Chaos++ quests and Conflux Cycle 5, up to the clear of `00730237`.
+  {
+    id: "unlockDefyInfinity",
+    counterQuests: [
+      0x40a303, 0x40a307, 0x40a310, 0x40a302, 0x40a304, 0x40a306, 0x40a321,
+      0x40a320, 0x40a311, 0x40a301, 0x40a308, 0x40a309, 0x40a314, 0x40a313,
+      0x40a312, 0x40a316,
+    ],
+    openedQuests: [
+      0x40a322, 0x40a323, 0x40a324, 0x40a325, 0x40a326, 0x40a327, 0x40a328,
+      0x40a329, 0x40a330,
+    ],
+    storyCutscenes: [
+      0x730338, 0x730216, 0x730211, 0x730210, 0x730227, 0x730430, 0x730226,
+      0x730007, 0x730047, 0x730032, 0x730206, 0x730230, 0x730228, 0x730229,
+      0x730209, 0x730231, 0x730232, 0x730233, 0x730212, 0x73020f, 0x730214,
+      0x730213, 0x730237, 0x730236, 0x730008, 0x730215,
+    ],
+    storyCutsceneSections: [[0x730020, 1174902544]],
+    sideQuests: [0x230001, 0x230002, 0x230003, 0x220004, 0x220005, 0x230004],
+    confluxCycles: 5,
+    questRank: difficultyDigit("infinity") - 1,
     location: { town: 0xc00, townCheckpoint: 939223336, spot: "1_START" },
   },
 ];

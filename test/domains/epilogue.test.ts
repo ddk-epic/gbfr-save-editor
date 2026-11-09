@@ -196,7 +196,12 @@ const save = (difficulty: number, chapter: number) => {
   return SaveSession.open(roomy);
 };
 
-const CHAOS = ["unlockChaos", "unlockChaosPlus", "unlockChaosPlusPlus"];
+const CHAOS = [
+  "unlockChaos",
+  "unlockChaosPlus",
+  "unlockChaosPlusPlus",
+  "unlockDefyInfinity",
+];
 
 const targets = (session: SaveSession) =>
   storyTargets(session.save).map(({ id }) => id);
@@ -310,6 +315,7 @@ describe("unlockChaos", () => {
     expect(targets(session)).toEqual([
       "unlockChaosPlus",
       "unlockChaosPlusPlus",
+      "unlockDefyInfinity",
     ]);
   });
 
@@ -340,7 +346,7 @@ describe("unlockChaos", () => {
     expect(at.get(LOCATION_SPOT)).toBe("1_START");
     expect(at.get(STORY_CUTSCENE_CLEARS).slice(-2)).toEqual([1, 1]);
     expect(at.get(STORY_CUTSCENE_CHECKPOINTS)[2 * 64]).toBe(0);
-    expect(targets(session)).toEqual([]);
+    expect(targets(session)).toEqual(["unlockDefyInfinity"]);
 
     const summons = readSave(session.export()).slotData.units;
     expect(
@@ -353,5 +359,30 @@ describe("unlockChaos", () => {
     expect(summons.of(2).get(SUMMON_LEVELS)).toEqual([5, 1]);
     expect(at.get(SUMMONS_EQUIPPED)).toEqual([1, 3, 0, 0]);
     expect(at.get(SUMMON_LAST_ID)).toBe(3);
+  });
+});
+
+describe("unlockDefyInfinity", () => {
+  it("sets 2508 to 10 with 7303 at 10 and clears Conflux Cycle 5", () => {
+    const session = save(7, 240);
+    advanceStory(session, "unlockDefyInfinity", NOW);
+    const at = readSave(session.export()).slotData.units.of(0);
+
+    expect(at.get(QUEST_DIFFICULTY_UNLOCKED)).toBe(10);
+    expect(at.get(QUEST_RANK_REWARDED)).toBe(10);
+    expect(at.get(CURRENT_CHAPTER)).toEqual([243, -1]);
+    expect(at.get(CONFLUX_CYCLE_CLEARED)).toEqual([1, 1, 1, 1, 1]);
+    expect(at.get(STORY_CUTSCENE_CHECKPOINTS)[2 * 64]).toBe(1174902544);
+    expect(targets(session)).toEqual([]);
+  });
+
+  it("is offered at 7303 10 until 2508 reaches 10", () => {
+    const session = save(7, 240);
+    advanceStory(session, "unlockChaosPlusPlus", NOW);
+    expect(targets(session)).toEqual(["unlockDefyInfinity"]);
+    advanceStory(session, "unlockDefyInfinity", NOW);
+    expect(() => advanceStory(session, "unlockDefyInfinity", NOW)).toThrow(
+      "already at or past",
+    );
   });
 });

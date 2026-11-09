@@ -292,7 +292,11 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     checkpoint: "unlockChaosPlusPlus",
     trophies: [748, 1457, 750],
     chapterKeysCleared: 41n,
-    counts: [[SIDE_QUESTS_COMPLETED, 3]],
+    counts: [
+      [SIDE_QUESTS_COMPLETED, 3],
+      [26, 3],
+    ],
+    rewards: [["ITEM_23_0006", 1]], // Crewmate Card: Fraux, from `00220003`
     // From `00730334`-`00730337`.
     items: [
       { item: "7BCDAA54", flags: { fieldNote: true } },
@@ -309,6 +313,26 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     standInWeapons: [
       { key: "WEP_PL2900_A0", xp: FIGHT_WEAPON_XP, uncap: FIGHT_WEAPON_UNCAP },
     ],
+  },
+  {
+    checkpoint: "unlockDefyInfinity",
+    // Conflux Cycle 5, quest clears and requests.
+    trophies: [
+      1255, 1256, 1449, 759, 1454, 1455, 1525, 757, 1453, 1529, 1452, 754, 1451,
+      1450, 1526, 1532, 1533,
+    ],
+    chapterKeysCleared: 41n,
+    counts: [
+      [SIDE_QUESTS_COMPLETED, 6],
+      [25, 4],
+      [26, 2],
+      [919, 1],
+      [920, 1],
+    ],
+    rewards: [["ITEM_23_0007", 1]], // Crewmate Card: Fediel, from `00230003`
+    // From `00730338`.
+    items: [{ item: "29748BF8", flags: { fieldNote: true } }],
+    fateEpisodes: ["FATE_PL2900_08"],
   },
 ];
 

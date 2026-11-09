@@ -182,6 +182,8 @@ function isReached(at: SlotUnit, index: number): boolean {
   return (
     (checkpoint.questDifficulty === undefined ||
       at.get(QUEST_DIFFICULTY_UNLOCKED) >= checkpoint.questDifficulty) &&
+    (checkpoint.questRank === undefined ||
+      at.get(QUEST_RANK_REWARDED) >= checkpoint.questRank) &&
     cleared(
       COUNTER_QUEST_IDS,
       COUNTER_QUEST_CLEARS,
@@ -341,8 +343,9 @@ function advanceProgress(
   const difficulty = checkpoint.questDifficulty ?? 0;
   if (difficulty > at.get(QUEST_DIFFICULTY_UNLOCKED))
     session.patch([at.patch(QUEST_DIFFICULTY_UNLOCKED, difficulty)]);
-  if (difficulty - 1 > at.get(QUEST_RANK_REWARDED))
-    session.patch([at.patch(QUEST_RANK_REWARDED, difficulty - 1)]);
+  const rank = checkpoint.questRank ?? difficulty - 1;
+  if (rank > at.get(QUEST_RANK_REWARDED))
+    session.patch([at.patch(QUEST_RANK_REWARDED, rank)]);
   clearStoryCutscenes(session, checkpoint.storyCutscenes ?? []);
   clearCounterQuests(session, checkpoint.counterQuests ?? []);
   openCounterQuests(session, [
