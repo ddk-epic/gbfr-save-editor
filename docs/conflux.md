@@ -1,6 +1,6 @@
 # Conflux
 
-Conflux is the endless mode added in the Endless Ragnarok DLC. The save holds its Resonance tree, its aura collection and a few unnamed state values. The tables behind it are the `endlessmode_*` tables of the archive.
+Conflux is the endless mode added in the Endless Ragnarok DLC. The save holds its Resonance tree, its aura collection, the state of a run and a few unnamed state values. The tables behind it are the `endlessmode_*` tables of the archive.
 
 ## Resonance points
 
@@ -71,6 +71,36 @@ The collection shows the obtained auras over all auras, rounded down, for each c
 | 1   | 2     | `CONFLUX_AURA_SEEN`     | Auras whose new mark is cleared |
 
 Every aura with bit 1 has bit 0.
+
+## Runs
+
+A run's state sits in 2601-2650. Most of it fills during a run and goes back to 0 or empty at the run's end; the per-run arrays keep their values.
+
+| Attribute | Name                    | Type        | Entities | Holds                                                  |
+| --------- | ----------------------- | ----------- | -------- | ------------------------------------------------------ |
+| 2601      | `CONFLUX_AREA`          | `uint`      | 0        | Current area, a new value at each area                 |
+| 2602      | `CONFLUX_RUN_INDEX`     | `int`       | 0        | Index of the run, from 0                               |
+| 2607      | `CONFLUX_RUN_SCORE`     | `uint`      | 0        | Score of the current run                               |
+| 2608      | `CONFLUX_RUN_STAGES`    | `uint`      | 0        | Stages cleared in the current run                      |
+| 2610      | `CONFLUX_CYCLE_CLEARED` | `uint[5]`   | 0        | 1 at the run index once that run is cleared            |
+| 2611      | `CONFLUX_CYCLE_SCORE`   | `uint[5]`   | 0        | Score at the run index                                 |
+| 2612      | `CONFLUX_RUN_RESONANCE` | `uint[2]`   | 0        | Resonance points earned in the run                     |
+| 2615-2618 | `CONFLUX_RUN_REWARDS`   | `uint`      | 0-127    | Reward slots: item key, count and two more values      |
+| 2619      | `CONFLUX_RUN_AURAS`     | `uint`      | 0-63     | Aura taken, an `endlessmode_lot.Unk1` key per slot     |
+| 2620      | not named               | `bool`      | 0-63     | True where the aura in 2619 was enhanced               |
+| 2639      | `CONFLUX_PACKAGE_TAKEN` | `uint[128]` | 0        | 1 at each `endlessmode_package` row taken              |
+| 2642      | not named               | `uint[128]` | 0        | 1 at `endlessmode_package` rows turned on at run setup |
+
+- 2602 is set before a run starts and goes back to 0 at its end. Each cycle has been played once so far, Cycle 5 at index 4, so the run index and the cycle are not told apart.
+- At a run's end 2607 goes into 2611 at the run's index, and 2610 at that index goes to 1. Whether 2611 keeps the best score or the last one is not settled.
+- 2612 index 1 rises with 2609 through the run, and index 0 takes index 1 at each stage end. `RESONANCE_POINTS` (1116) rises by the last 2612 value at the run's end.
+- 2615-2618 fill at the reward pack menu after a stage.
+- 2639 is set at the end of every run, for generic and one-time packages alike.
+- 2642 turns on as a run is set up, on rows with a quest in `Unk22` and rows without one.
+- A run can start from a side quest: 2505 takes the side quest at the run's start, and the side quest's 2553 progress goes to 1 at the run's end. See [Side quests](quests.md#side-quests).
+- 2603 counts the areas. 2604 counts the stages, 1 to 3. 2613, 2614 and 2632 grow by one entry per area, 2613 with the 2601 values. 8975-8983 hold the area ids and the foes fought per area.
+- 2636 is 1 from the run's setup to its end. 2638 counts up during a run and goes back to 0 at its end. Neither has a meaning assigned.
+- 2649 and 2650 are five-slot arrays that fill one slot after each run's return to town. They have no meaning assigned.
 
 ## Other units
 

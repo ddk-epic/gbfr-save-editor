@@ -116,7 +116,7 @@ The save holds no slot count. The game works out a character's open slots (`FUN_
 
 ### Flags
 
-1305 uses bits 0, 1, 3, 4, 13 and 14.
+1305 uses bits 0, 1, 3, 4, 7, 11, 13 and 14.
 
 | Bit | Value    | Name             | Set on                                                                                               |
 | --- | -------- | ---------------- | ---------------------------------------------------------------------------------------------------- |
@@ -124,6 +124,8 @@ The save holds no slot count. The game works out a character's open slots (`FUN_
 | 1   | `0x2`    | `storyPlaying`   | `PL1900` while the story plays it, see below                                                         |
 | 3   | `0x8`    | `storyPlayed`    | `PL1900`, in place of bit 4, from its story stretch on                                               |
 | 4   | `0x10`   | not named        | Listed in the Crewmate menu, set as the menu opens, see [Character unlocks](#character-unlocks)      |
+| 7   | `0x80`   | not named        | For 4 s as a Conflux run is set up, on every joined character apart from `PL0100`                    |
+| 11  | `0x800`  | not named        | A character while a `SLOT` stand-in plays it, on the character's own row, joined or not              |
 | 13  | `0x2000` | `masterBreakNew` | New mark of a master level cap break                                                                 |
 | 14  | `0x4000` | not named        | Only on recruited characters, and not in every save                                                  |
 
@@ -227,6 +229,8 @@ Not every unit is a playable character.
 `CAPTAIN` (1103) holds the captain picked at the start. The `SLOT` rows have no name, element -1 and UI order 1000-1003. They stand in for a character during the story: A `SLOT` row plays as the character in `CHARACTER_STAND_IN` (1315), at a level and with a weapon and sigils of its own, such as `PL1900` with `WEP_PL1900_A0` or `NP0300` with `WEP_NP0300_01`. `SLOT01` and `SLOT02` can run at once. They can also sit at level 1 with a starter weapon and no sigils.
 
 A stand-in lasts part of a quest or a whole one, and can end with no checkpoint. As it ends, 1315 and the sigils clear, including the sigil entries' keys and wearer. XP, level, HP, attack, the equipped weapon id and the skills stay until the next stand-in overwrites them, and the weapon stays in the weapon list. A row can take a different character next, as `SLOT02` goes from `PL1900` to `NP0300`. A load puts level back to 1 and HP and attack to 0, and keeps XP, the weapon id and the skills.
+
+Story quests after the main story run stand-ins as well. In `0010C001`, `SLOT01` plays `PL2800` alone in the party, at level 100 with outfit 1, its own skills, a new `WEP_PL2800_A0` at uncap 6 and Over Mastery cleared, while 1305 bit 11 is on `PL2800`'s row. `0010D001` does the same with `PL2900` and a new `WEP_PL2900_A0`; bit 11 turns on `PL2900`'s row 30 s in, with `PL2900` not joined. The party returns, and bit 11 clears, as the stand-in ends.
 
 A character returning as a stand-in reuses its weapon entry, with new XP and uncap. A stand-in can run with no weapon, such as `NP0000` with `EQUIP_WEAPON` 0. A checkpoint can reissue a stand-in's sigil ids, moving `SIGIL_LAST_ID` on. Sigil entries a stand-in frees can go to a later sigil drop.
 

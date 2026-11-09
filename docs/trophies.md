@@ -21,6 +21,7 @@ Trophies are two bool arrays at entity 0, indexed by `badge.Key`, and a progress
 - 2, for badge 12, counts the chapter keys cleared. A quest named by `chapter_select.QuestId` adds to it, one per key it holds, at its end. `00108001`, named by no key, also adds 1, which brings it level with the length of 2590 at the end of the main story: 38, the `ReqQuantity` of badge 11. Badge 12 needs 41, which fits keys 220-222 being added.
 - 377 and 378 hold `PL1900`'s Offense and Defense Mastery percentages. 380 counts mastery upgrades across characters, and 5803 per character. A character's upgrades are the set bits of the low byte of its 1602 masks.
 - `PL1900`'s mastery fill counts only when 1305 bit 0 returns on it early in `00109001`. 184, 185 and 998 rise in the same poll with no weapon unit moving, which fits counts that take in the weapons of joined characters. One case.
+- 557, 558 and 559 count Chaos, Chaos+ and Chaos++ quest clears, one at each quest end. 558 reaches 14 for badge 750 "Vanquisher of Fiends"; 559 needs 26 for badge 751 "Chaos Dunker". 1078 counts summons gained and 1080 unique ones, for badge 1499 at 10.
 - A trophy's name and description are `TXT_BADGE_NAME_<Key>` and `TXT_BADGE_EXPL_<Key>` in `text_badge.msg`. A `{0}` in the description is `badge.ReqQuantity`.
 
 ## Tabs

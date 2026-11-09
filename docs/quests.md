@@ -74,6 +74,8 @@ Chapter select lists the chapters reached, by `chapter_select.Key`: chapter grou
 - A key joins 2590 as 2506 moves past it, together with any keys skipped. This can fall at a quest's clear or at a checkpoint with no clear. A key's own quest can clear with the key still current, when a quest with no `chapter_select` row follows it: key 143 names `00105f01` and joins at the clear of `00105002`, and key 160 names `00106f00` and joins at the clear of `00106000`. Key 220 names `00109001` and joins as `0010A000` begins, well after that clear.
 - `chapter_select.QuestId` can give several keys one quest, as 101-104 share `00103001`. That quest's record clears once, and keys never current in 2506 still join 2590 at the clear.
 - 2502 follows `chapter_select.TownStageMaybe`, moving at the clear ahead of the key that changes it. It holds 3072 (`0xC00`) from a new game, 3328 (`0xD00`, Seedhollow) as `00104f00` clears, ahead of key 121, 3329 (`0xD01`) as `00106f00` clears and 3330 (`0xD02`) as `00106002` clears. Key 200 is the one miss so far: it names `0xD00`, and 2502 stays `0xD02` through it, going to 3072 (`0xC00`) as `00108001` clears, ahead of key 220. 2503, a `uint`, takes a new checkpoint hash in the same write, and again at a checkpoint with 2502 unchanged.
+- Key 240 is the Epilogue: `TELOP_CHAPTER_MAIN_120`, text `TXT_CHAPTER_MAIN_0120`, `QuestId` `00730201`, town `0xC00`. 2506 moves to it in the write where short story `00730201` clears, with no 2590, 2595 or 5815 at 2 move.
+- Keys 241-243 also use `TELOP_CHAPTER_MAIN_120` and town `0xC00`, with `QuestId` `0010B000`, `0010C001` and `0010D001`. 2506 moves to 242 in the record write of `00408315`, as `0010C001`, a story quest played as `PL2800` alone, clears, and to 243 in that of `00409315`, as `0010D001`, played as `PL2900` alone, clears. Key 243 also names `00730237` in `UnkQuestId`; its objective, `TXT_QT_10D001`, is "Reach the end of Conflux Cycle 4: Illusion".
 - Chapter select (`FUN_1403f4140`) offers the chapter groups in order. It stops at the first chapter missing from 2590, or with bit 0 of 2592 clear and a negative 2591.
 
 ## Quest seed
@@ -93,6 +95,9 @@ Three arrays of 200.
 - 2550 holds every side quest from a new game on, accepted or not.
 - An accepted quest at 0 in 2551 is underway.
 - 2552, a `uint[12800]`, holds 64 values per side quest. Its first value takes a hash on quests not yet accepted, as a story chapter ends or at a quest counter quest's record write. These are likely `BeginSection` guids, by the shape shared with 2582; the hashes match no table text or message key.
+- 2553 `SIDE_QUEST_PROGRESS`, a `uint[6400]`, holds 32 values per side quest. The first counts the quest's objective and goes back to 0 as 2551 marks the quest completed. `00220001` "Complete the 3 quests given" counts 1 to 3 at the records of its quests. `00220002` takes 1 once one run of `00409320` collects 40 Sephira lusters (`ITEM_33_0002`, emptied at the quest's end). A side quest started from a Conflux run takes 1 at the run's end; see [Runs](conflux.md#runs). A quest turned in with items, such as `00220003`, completes with no 2553 move.
+- 2505 adds a side quest at a record write, which can be the write that completes it. A side quest added with 2553 at 1 in the same write, such as `00220005` or `00230004`, completes at the next record write.
+- Side quests started from Conflux runs are requirements of the post-story short stories, by the `00730*` clears on the return to town.
 - A completed repeat quest stays accepted in 2555. The game lists it only once it is accepted again.
 
 ## Quest counter
@@ -211,6 +216,7 @@ Family 7, script quests with no story or quest counter entry, cleared by `ClearQ
 - `00705001`-`00705007` run `UnlockArchive` for `ARC_ROLANNOTE_*` notes.
 - `00703000` and `00703001` open on `00705004`, and `0010A000` opens on those two, so the story moves on with notes still missing. `0010A010` needs `00704000`, `00704001`, `0010A002`, `00705006` and `00705007`. `00705006` and `00705007` count 11 Extreme clears, `00705005` 8.
 - `00725100` needs `0010A025`, `00725101` needs `0010A031` and 10 Maniac clears, and `00710010` needs `00407101` and `0010A031`. Each also has a type 5 entry. `00710010` clears 3 s after its section. `00710000` needs `00407315`-`00407317` and has a type 5 entry. `00710001` needs `00407318`, `00710000` and town `0xD00`, and writes its section as 2502 returns to `0xD00`. Side quest `00230391` has the same `0010A031` and 10 Maniac conditions and writes with `00725101`.
+- `00730207` clears at the record of the third Chaos quest cleared, as 5815 at 557 reaches 3: once after `00408301`, `00408311` and `00408312`, once after `00408301`, `00408311` and `00408302`. Its `baseinfo.msg` is not in the archive's known files, so its `occurrenceList_` has not been read.
 - `00704000` and `00704001`, and `00705006` and `00705007`, are pairs with one quest per town, `0xC00` and `0xD00`. Each runs `ClearShortStory` on its partner, so one town is enough and all four clear in one write.
 - `00704000` and `00704001` test `IsArchiveWatched` eight times, which fits every `ARC_ROLANNOTE_*` note read.
 
@@ -243,7 +249,7 @@ Family 7, script quests with no story or quest counter entry, cleared by `ClearQ
 - 2511, 2512 and 2522 all turn 1 at a story quest's clear. Which one marks the clear is not settled. `00109002`, `0010A002` and `0010A031` are the exceptions, see 2501.
 - The objective moves on with no story quest begun: `TXT_QT_TRYMANIAC_00` "Progress through Maniac quests" after `0010A031`, `TXT_QT_TRYPROUD_00` "Progress through Proud quests" after `00407101`. What sets them has not been found.
 - 2583, 4800 values beside 2580-2582, has no meaning assigned.
-- 2508, an `int`, goes from 0 to 1 at a checkpoint early in `00104000`. It goes 1 to 2, 2 to 3, 3 to 4 and 4 to 5 at the next checkpoint or record write after 7303 reaches 3, 4, 5 and 6, and 5 to 6 in the record write that takes 7303 to 7. On a load of a save at 0 it goes to 5 with the trophy 25 reward, and 5 to 6 with the trophy 542 reward once 7303 is 7. No meaning is assigned.
+- 2508, an `int`, goes from 0 to 1 at a checkpoint early in `00104000`. It goes 1 to 2, 2 to 3, 3 to 4 and 4 to 5 at the next checkpoint or record write after 7303 reaches 3, 4, 5 and 6, and 5 to 6 in the record write that takes 7303 to 7. On a load of a save at 0 it goes to 5 with the trophy 25 reward, and 5 to 6 with the trophy 542 reward once 7303 is 7. It goes 8 to 9 in the write after 7303 reaches 10, and 9 to 10 with no 7303 move, in the write that clears `00730237`, key 243's `UnkQuestId`. No meaning is assigned.
 - 2501-2651 apart from the attributes above have no meaning assigned.
 - 2592 and 2594 gain an entry of 0 when a chapter joins 2590. 2593 is registered as a `SaveDataUnitVariable`, but a save can hold no unit for it, and it has no meaning assigned.
 - 2595 and 2596 gain an entry when a chapter group's last chapter joins 2590, not on every chapter. 2596 takes 0, and 1 on group 11, which closes with key 222, though a save can also hold 0 there. No code reading it has been found. 2506 stays 222 as key 222 joins 2590.
