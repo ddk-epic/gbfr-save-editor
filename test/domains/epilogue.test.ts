@@ -27,7 +27,7 @@ import {
   COUNTER_QUEST_FLAGS,
   COUNTER_QUEST_IDS,
   COUNTER_QUEST_OPENED,
-  QUEST_DIFFICULTY_STAGE,
+  QUEST_RANK_REWARDED,
   QUEST_DIFFICULTY_UNLOCKED,
   STORY_CUTSCENE_CHECKPOINTS,
   STORY_CUTSCENE_CLEARS,
@@ -119,7 +119,7 @@ const save = (difficulty: number, chapter: number) => {
           STORY_QUEST_THIRD_CLEARED,
           STORY_QUESTS.map((_, i) => (i === 0 ? 1 : 0)),
         ],
-        [QUEST_DIFFICULTY_STAGE, difficulty - 1],
+        [QUEST_RANK_REWARDED, difficulty - 1],
         [STORY_QUEST_LIVE_CLEARED, STORY_QUESTS.map(() => 1)],
         [
           STORY_QUEST_CHECKPOINTS,
@@ -283,7 +283,7 @@ describe("unlockChaos", () => {
     const at = units.of(0);
 
     expect(at.get(QUEST_DIFFICULTY_UNLOCKED)).toBe(8);
-    expect(at.get(QUEST_DIFFICULTY_STAGE)).toBe(7);
+    expect(at.get(QUEST_RANK_REWARDED)).toBe(7);
     expect(at.get(CURRENT_CHAPTER)).toEqual([241, -1]);
     expect(at.get(STORY_QUEST_CLEARED)).toEqual([1, 1, 1, 0, 0, 0]);
     expect(at.get(STORY_QUEST_LIVE_CLEARED)).toEqual([1, 1, 1, 0, 0, 0]);
@@ -319,7 +319,7 @@ describe("unlockChaos", () => {
     const at = readSave(session.export()).slotData.units.of(0);
 
     expect(at.get(QUEST_DIFFICULTY_UNLOCKED)).toBe(10);
-    expect(at.get(QUEST_DIFFICULTY_STAGE)).toBe(9);
+    expect(at.get(QUEST_RANK_REWARDED)).toBe(9);
     expect(at.get(CURRENT_CHAPTER)).toEqual([243, -1]);
     expect(at.get(STORY_QUEST_CLEARED)).toEqual([1, 1, 1, 1, 1, 1]);
     expect(at.get(STORY_QUEST_THIRD_CLEARED)).toEqual([1, 1, 1, 1, 1, 1]);

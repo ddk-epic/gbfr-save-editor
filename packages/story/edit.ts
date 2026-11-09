@@ -51,7 +51,7 @@ import {
   COUNTER_QUEST_FLAGS,
   COUNTER_QUEST_IDS,
   COUNTER_QUEST_OPENED,
-  QUEST_DIFFICULTY_STAGE,
+  QUEST_RANK_REWARDED,
   QUEST_DIFFICULTY_UNLOCKED,
   STORY_CUTSCENE_CHECKPOINTS,
   STORY_CUTSCENE_CLEARS,
@@ -291,8 +291,8 @@ function advanceChapters(
   );
   if (difficulty > at.get(QUEST_DIFFICULTY_UNLOCKED))
     set(QUEST_DIFFICULTY_UNLOCKED, difficulty);
-  if (difficulty - 1 > at.get(QUEST_DIFFICULTY_STAGE))
-    set(QUEST_DIFFICULTY_STAGE, difficulty - 1);
+  if (difficulty - 1 > at.get(QUEST_RANK_REWARDED))
+    set(QUEST_RANK_REWARDED, difficulty - 1);
 
   set(CURRENT_TOWN, destination.town);
   set(CURRENT_TOWN_CHECKPOINT, destination.townCheckpoint);
@@ -341,8 +341,8 @@ function advanceProgress(
   const difficulty = checkpoint.questDifficulty ?? 0;
   if (difficulty > at.get(QUEST_DIFFICULTY_UNLOCKED))
     session.patch([at.patch(QUEST_DIFFICULTY_UNLOCKED, difficulty)]);
-  if (difficulty - 1 > at.get(QUEST_DIFFICULTY_STAGE))
-    session.patch([at.patch(QUEST_DIFFICULTY_STAGE, difficulty - 1)]);
+  if (difficulty - 1 > at.get(QUEST_RANK_REWARDED))
+    session.patch([at.patch(QUEST_RANK_REWARDED, difficulty - 1)]);
   clearStoryCutscenes(session, checkpoint.storyCutscenes ?? []);
   clearCounterQuests(session, checkpoint.counterQuests ?? []);
   openCounterQuests(session, [

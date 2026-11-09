@@ -23,7 +23,7 @@ import {
 } from "../../packages/story/attributes";
 import { advanceStory, storyTargets } from "../../packages/story/edit";
 import {
-  QUEST_DIFFICULTY_STAGE,
+  QUEST_RANK_REWARDED,
   QUEST_DIFFICULTY_UNLOCKED,
 } from "../../packages/quest/attributes";
 import { SAVE_HASHSEED } from "../../packages/core/save-entity";
@@ -90,7 +90,7 @@ const newSave = (overrides: { chapter?: number[]; section?: number } = {}) => {
         [CHAPTER_GROUPS, []],
         [CHAPTER_GROUP_FLAGS, []],
         [QUEST_DIFFICULTY_UNLOCKED, 2],
-        [QUEST_DIFFICULTY_STAGE, 0],
+        [QUEST_RANK_REWARDED, 0],
       ],
       2: [
         [ISLAND_KEY, hashId("ISLAND_1ST")],

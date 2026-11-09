@@ -118,6 +118,7 @@ Units that move during story play, with no meaning assigned and no domain of the
 
 | Attribute | Name                        | Type      | Entities | Holds                                                             |
 | --------- | --------------------------- | --------- | -------- | ----------------------------------------------------------------- |
+| 2508      | `QUEST_RANK_REWARDED`       | `int`     | 0        | Last `reward_quest_rank` row paid, see `quests.md`                |
 | 4103      | not named                   | `uint[3]` | 0        | Three 4001 keys, see below                                        |
 | 4201      | `TOWN_EVENT_KEY`            | `uint`    | 0-63     | Hash of a town event id, or the empty hash on an unused entity    |
 | 4202      | `TOWN_EVENT_PLAYED`         | `uint`    | 0-63     | 1 once the 4201 event has played                                  |
