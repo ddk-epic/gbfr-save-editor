@@ -14,6 +14,7 @@ export const QUEST_CLEARS_BEFORE_DIFFICULTY = 13;
 export const QUESTS_CLEARED = 20;
 export const SIDE_QUESTS_COMPLETED = 27;
 export const PROUD_QUEST_CLEARS = 238;
+export const CHAOS_QUEST_CLEARS = 557;
 export const RUPIES_EARNED = 224;
 export const STORY_MASTERY_FILLED = 714;
 export const WEAPONS_HELD = 184;

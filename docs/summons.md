@@ -30,11 +30,11 @@ The summon list shares its attribute range with these units:
 | 1452      | 0-299    | `SUMMONS_KEY`      | `uint`    | `summon.Key` of every `summon` row in table order at units 0-188, the empty hash at 189-299         |
 | 1453      | 0-299    | `SUMMONS_OBTAINED` | `uint`    | Probably whether the 1452 summon was ever obtained: 0 or 1, 1 only where 1452 is not the empty hash |
 | 1454      | 0        | `SUMMON_LAST_ID`   | `uint`    | The highest summon id in use, 0 when none                                                           |
-| 1455      | 0        | not named          | `uint`    | Probably summon access, 0 or 1                                                                      |
+| 1455      | 0        | `SUMMONS_UNLOCKED` | `uint`    | Probably summon access, 0 or 1                                                                      |
 
 Every non-zero id in 1451 belongs to a held summon. The slots are shared by the party.
 
-1455 is 1 in a save with access to summons and 0 otherwise.
+1455 is 1 in a save with access to summons and 0 otherwise. The first summon, `su_So4900_TU` from `0010B001`, takes it 0 to 1 with 1453 at its row and 1454 to 1.
 
 - `summon` has 189 rows, one per summon. 1452 lists all of them in every save, a new game included.
 - Every held summon key has a 1 in 1453, and so do keys never held. 1453 does not mark held summons.

@@ -91,3 +91,15 @@ export function readEquippedSummons(units: UnitStore): (Summon | undefined)[] {
     return entity === undefined ? undefined : readSummon(units, entity);
   });
 }
+
+/** A summon a story quest gives. */
+export interface GivenSummon {
+  /** `summon.Key`. */
+  key: string;
+  /** `skill.Key`. */
+  trait: string;
+  /** `summon_base_param.Key` hash. */
+  bonus: number;
+  levels: readonly [trait: number, bonus: number];
+  equip: boolean;
+}

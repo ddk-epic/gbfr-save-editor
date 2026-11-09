@@ -1,5 +1,6 @@
 import { hashId } from "@gbfr/core";
 import { difficultyDigit } from "@gbfr/quest";
+import type { GivenSummon } from "@gbfr/summon";
 
 interface CheckpointBase {
   /** Names the checkpoint for `advanceStory` and the fill. */
@@ -26,21 +27,36 @@ export interface ChapterCheckpoint extends CheckpointBase {
   islands: readonly number[];
 }
 
-/** A step after Chapter Ø that leaves the chapter to the game. */
+/** A step after Chapter Ø. */
 export interface ProgressCheckpoint extends CheckpointBase {
   /** `chapter_select.Key` the game moves to after the step. */
   key?: number;
   /** Counter quests cleared. */
   counterQuests?: readonly number[];
+  /** Counter quests opened with no clear. */
+  openedQuests?: readonly number[];
   /** Counter quests listed: every id under `prefix` apart from `except`. */
   listedQuests?: { prefix: number; except?: readonly number[] };
   storyCutscenes?: readonly number[];
-  /** Section hashes the game leaves on story cutscenes not yet begun. */
+  /** Section hashes the game leaves on story cutscenes not yet begun, 0 to clear one. */
   storyCutsceneSections?: readonly (readonly [quest: number, hash: number])[];
   /** Side quests completed. */
   sideQuests?: readonly number[];
   /** Section hashes the game leaves on side quests not yet begun. */
   sideQuestSections?: readonly (readonly [quest: number, hash: number])[];
+  /** Story quests cleared after Chapter Ø. */
+  storyQuests?: readonly number[];
+  /** Story quest left underway at a `BeginSection` guid, 2501 to 0. */
+  begunQuest?: { quest: number; section: number };
+  /** Summons the skipped story quests give. */
+  summons?: readonly GivenSummon[];
+  /** `chapter_select.Key` values added to 2590. */
+  chapterKeys?: readonly number[];
+  /** Groups added to 2595, with their 2596 value. */
+  chapterGroups?: readonly (readonly [group: number, flag: number])[];
+  /** 2506 after the step. */
+  chapter?: number;
+  difficultyStage?: number;
   /** Conflux runs cleared, from the first. */
   confluxCycles?: number;
   /** Where the save loads: 2502, 2503, 2606, 1201 and 1202. */
@@ -223,6 +239,9 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
   {
     id: "promoteToProud",
     questDifficulty: difficultyDigit("proud"),
+    storyQuests: [0x10a031],
+    chapterKeys: [CHAPTER_ZERO_END_KEY],
+    chapterGroups: [[11, 1]],
     counterQuests: [
       0x406325, 0x406330, 0x406331, 0x406332, 0x406333, 0x406334, 0x406335,
       0x406337, 0x406338, 0x406355, 0x406356, 0x406357, 0x406358, 0x406359,
@@ -249,7 +268,7 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     ],
     confluxCycles: 3,
   },
-  // The Proud quests that open others, and the cutscenes `00407320` opens on.
+  // Minimum Proud quest clears that open others.
   {
     id: "unlockProudQuests",
     storyCutscenes: [0x710000, 0x710001],
@@ -260,14 +279,39 @@ export const STORY_CHECKPOINTS: readonly StoryCheckpoint[] = [
     ],
     listedQuests: { prefix: 0x407 },
   },
-  // What leads to `00730201`.
+  // Leads to `00730201`.
   {
     id: "advanceToEpilogue",
     key: EPILOGUE_KEY,
-    // The story cutscenes `00407318` opens.
     storyCutscenes: [0x725110, 0x730420, 0x730046],
     storyCutsceneSections: [[0x730430, 1825705739]],
-    // `00730201`'s start section: `phaseNo` Folca, `subPhaseHash`.
+    location: { town: 0xc00, townCheckpoint: 939223336, spot: "START" },
+  },
+  // `00408301`, `0010B000` and `0010B001`, leaving `0010B002` at its start.
+  {
+    id: "unlockChaos",
+    questDifficulty: difficultyDigit("chaos"),
+    counterQuests: [0x408301],
+    storyCutscenes: [0x730201, 0x730005, 0x730102, 0x730103],
+    storyCutsceneSections: [
+      [0x730090, 0],
+      [0x730020, 0],
+      [0x730006, 739676793],
+    ],
+    storyQuests: [0x10b000, 0x10b001],
+    begunQuest: { quest: 0x10b002, section: 1597052236 },
+    summons: [
+      {
+        key: "su_So4900_TU",
+        trait: "SKILL_013_00",
+        bonus: 0x00d171e0,
+        levels: [4, 1],
+        equip: true,
+      },
+    ],
+    chapterKeys: [240],
+    chapter: 241,
+    difficultyStage: 7,
     location: { town: 0xc00, townCheckpoint: 939223336, spot: "START" },
   },
 ];

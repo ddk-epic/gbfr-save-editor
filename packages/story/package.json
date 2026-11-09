@@ -13,6 +13,7 @@
     "@gbfr/profile": "workspace:*",
     "@gbfr/quest": "workspace:*",
     "@gbfr/trophy": "workspace:*",
-    "@gbfr/user": "workspace:*"
+    "@gbfr/user": "workspace:*",
+    "@gbfr/summon": "workspace:*"
   }
 }

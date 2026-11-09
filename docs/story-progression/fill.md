@@ -17,6 +17,7 @@
 | Chapter Ø end    | 222 | 22-25, 19, 1398            |                                       | `ARC_ROLANNOTE_01`-`07`                                            |             | Story cutscenes, counter quests, see below     |
 | `promoteToProud` | 222 | 542                        |                                       |                                                                    |             |                                                |
 | `dlcStart`       | 222 | 52, 1594, 1595, 1253, 1470 | `ITEM_23_0000` Crewmate Card, 2       |                                                                    |             | 5815 counts, see below                         |
+| `unlockChaos`    | 241 | 746, 1468                  |                                       |                                                                    |             |                                                |
 
 ## Checks and writes
 
@@ -44,12 +45,19 @@
 Key 222 holds `0010A031` underway with all eight notes and the journal quests behind it. The save takes what the quests behind the notes would have left.
 
 - Notes 02 and 03 take bits 0 and 1, the other five bit 0. Opening the notes menu sets bit 1 on those five.
-- 2581 goes to 1 on `00705001`-`00705007`, `00703000`, `00703001`, `00720000`-`00720004`, `00704000` and `00704001`. The game clears `00725100` itself after a load.
+- 2581 goes to 1 on `00705001`-`00705007`, `00703000`, `00703001`, `00720000`-`00720004`, `00704000`, `00704001` and `00730045`, which opens on `00109002`.
 - Trophies 22-25, 19 and 1398 are set. The game awards trophy 12 after a load, and trophy 13 on Hard with it.
 
 The 25 counter quests that open those story cutscenes are marked cleared: `00403201`, `202`, `301`, `302`, `307`-`309`, `312`, `00404101`, `309`-`311`, `313`, `316`, and `00405101`, `201`-`203`, `206`-`208`, `302`-`305`. Each takes 2571 to 1, 2574 to 0, 2575 and 2576 to true, and adds 1 to 4901 at 10600, 5815 at 20, and 5815 at 13 plus the difficulty digit. 2577 and 2579 stay. First clear rewards are not given.
 
 The row also takes 2575 to true on the 19 uncleared quests the traced run holds open that a load leaves false: `00401301`, `303`, `305`, `306`, `310`, `311`, `315`, `316`, `00402301`, `302`, `308`, `313`-`316`, `00403303`, `311`, `00404204` and `317`.
+
+## Story cutscenes after Chapter Ø
+
+A story cutscene is cleared by the fill row of the checkpoint after the one where its conditions first hold:
+
+- The `promoteToProud` row clears `00725100` and `00730311`, which open on `0010A025`, and `00730000` and `00730001`, which open on two Hard clears.
+- The `dlcStart` row clears `00725101`, which opens on `0010A031` and 10 Maniac clears, and `00710010`, which opens on `00407101` and `0010A031`.
 
 ## DLC start
 
@@ -116,7 +124,6 @@ When 1305 bit 3 was unset, meaning the save never played the character, the fill
 - 5815 at 184, 185 and 998, the weapon counts behind badges 360-368 and 1360-1362. They rise with no weapon unit moving when `PL1900` joins, and 998 can fall, so the game takes them again from the weapons held. A load does not.
 - The story party, 2201 at 103000-103003.
 - Story cutscenes `00720005`-`00720017`. They play voice lines at the quest counter, and their type 3 conditions close them on a save past `0010A025`.
-- `00730045`. The game clears it at a record write after a load.
 - `BlacksmithPendulumGrant`, 7103 and 6801. The first wrightstone a save receives unlocks the option, and the flipped quests give none.
 - MSP for levels `PL1900` gains at the join, side trophies, XP, rupies, consumables, sigils and journal rows.
 

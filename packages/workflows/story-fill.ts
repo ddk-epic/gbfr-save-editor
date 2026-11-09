@@ -209,7 +209,7 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     storyCutscenes: [
       0x705001, 0x705002, 0x705003, 0x705004, 0x705005, 0x705006, 0x705007,
       0x703000, 0x703001, 0x720000, 0x720001, 0x720002, 0x720003, 0x720004,
-      0x704000, 0x704001,
+      0x704000, 0x704001, 0x730045,
     ],
     counterQuests: [
       0x403301, 0x403302, 0x403201, 0x403202, 0x403307, 0x403308, 0x403309,
@@ -227,6 +227,7 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     checkpoint: "promoteToProud",
     trophies: [542],
     chapterKeysCleared: 41n,
+    storyCutscenes: [0x725100, 0x730311, 0x730000, 0x730001],
   },
   {
     checkpoint: "dlcStart",
@@ -240,7 +241,9 @@ const STORY_FILL: readonly StoryFillEntry[] = [
       [917, 1],
     ],
     rewards: [["ITEM_23_0000", 2]], // Crewmate Card
+    storyCutscenes: [0x725101, 0x710010],
   },
+  { checkpoint: "unlockChaos", trophies: [746, 1468], chapterKeysCleared: 41n },
 ];
 
 /** Rupies and items the game does not give for a trophy written here, by `badge.Key`. */

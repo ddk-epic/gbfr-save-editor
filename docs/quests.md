@@ -145,11 +145,11 @@ Four arrays of 512.
 
 ### Opening a quest
 
-`FUN_14061f4b0` tests `occurrenceList_` in `baseinfo.msg`, the same list as the story cutscenes. A type 1 entry passes when the named quest's clear count is above 0.
+`FUN_14061f4b0` tests `occurrenceList_` in `baseinfo.msg`, the same list as the story cutscenes. A type 1 entry passes when the named quest's clear count is above 0. A type 8 entry names a side quest and passes when `FUN_140c25f00` gives its state as 2 or more, or when the quest is in a set of quests underway; in the traces, the quests behind one open once that side quest is offered.
 
-The Chapter Ø end checkpoint (`chapterZeroEnd`, key 222, the second part of Chapter Ø) takes 7303 to 6, as the game does with `0010A031` underway. The checkpoints after it are `promoteToProud`, `dlcStart`, `unlockProudQuests` and `advanceToEpilogue`. `advanceStory` passes through each one the save has not reached.
+The Chapter Ø end checkpoint (`chapterZeroEnd`, key 222, the second part of Chapter Ø) takes 7303 to 6, as the game does with `0010A031` underway. The checkpoints after it are `promoteToProud`, `dlcStart`, `unlockProudQuests`, `advanceToEpilogue` and `unlockChaos`. `advanceStory` passes through each one the save has not reached.
 
-`promoteToProud` marks the 18 quests that open another Maniac quest or `00407101` as cleared, and `00407101` itself, written as in the [story fill](story-progression/fill.md): 2571 to 1, 2574 to 0, 2575 and 2576 to true, 4901 at 10600 and 5815 at 20 up by 1, and 5815 at 19 up by 1, or at 238 for `00407101`. First clear rewards are not given. It sets 7303 to 7, and the fill sets trophy 542. Eight other Maniac quests take 2575 to true, with no clears. A save is past it at 7303 7 with those quests cleared and every listed Maniac quest at 2575 true. `00406367` keeps 2575 false: it has no title and is unlisted on played saves, and badge 31 "Sent from the Heavens" needs the other 26.
+`promoteToProud` marks the 18 quests that open another Maniac quest or `00407101` as cleared, and `00407101` itself, written as in the [story fill](story-progression/fill.md): 2571 to 1, 2574 to 0, 2575 and 2576 to true, 4901 at 10600 and 5815 at 20 up by 1, and 5815 at 19 up by 1, or at 238 for `00407101`. First clear rewards are not given. It sets 7303 to 7, and the fill sets trophy 542. It also writes the clear of `0010A031` as the first Maniac clear does: 2511 and 2522 to 1, its 2513 and 2514 sections to 0, every 2512 part to 0, 2501 to 1, key 222 into 2590-2592 and 2594, and group 11 into 2595 with 1 in 2596. With 2501 at 0 and `0010A031` underway, a save the later checkpoints move to key 241 starts `0010B000` on load. Eight other Maniac quests take 2575 to true, with no clears. A save is past it at 7303 7 with those quests cleared and every listed Maniac quest at 2575 true. `00406367` keeps 2575 false: it has no title and is unlisted on played saves, and badge 31 "Sent from the Heavens" needs the other 26.
 
 The game pays the trophy 25 and 542 rewards by itself after a load.
 
@@ -219,6 +219,31 @@ The other side quest rewards and the Conflux runs' battle trophies are left out.
 - 2581 to 1 and the first 2582 value to 0 on `00725110`, `00730420` and `00730046`.
 - 2582 on `00730430`, the section hash the game leaves at that point.
 - The save put in Folca: 1201, 2502 and 2606 to `0xC00`, 1202 to `START`, 2503 to 939223336. A save with 2502 at `0xC00` and 1201 at another stage loads in Folca over the void.
+
+### Unlocking Chaos
+
+7303 rises at the record of the first quest of each difficulty: 8 at `00408301`, 9 at `00409302`, 10 at `0040A305`. Each first quest opens on the last quest of the difficulty before and a story quest the game plays as `SLOT01` stand-ins:
+
+| Quest                                        | Opens on                                       |
+| -------------------------------------------- | ---------------------------------------------- |
+| `00408301`                                   | `00407318`, `00730201`                         |
+| `0010B000`                                   | `00730103`                                     |
+| `0010B001`, `0010B002`                       | the one before, `00730102`                     |
+| `00408302`, `00408311`, `00408312`           | `00408301`, `0010B001`                         |
+| `0010C001`                                   | `00408315`, `00730311`, `0010B002`             |
+| `00409302`                                   | `00408315`, `0010C001`                         |
+| `0010D001`                                   | `00409315`, `00730225`, `0010C001`, `00220003` |
+| `0040A305`                                   | `00409315`, `0010D001`                         |
+| `0040A322`-`0040A330`, `0040B301`-`0040B314` | `0040A316`                                     |
+
+- Inside each difficulty, quests open on the ones before, on `00730*` story cutscenes and on side quests: `00220001`-`00220003` among the Chaos+ quests, `00220004`, `00220005` and `00230001`-`00230004` among the Chaos++ ones. `00408305`, `00408314`, `00409303`, `00409307` and `00409312` need type 7 id 3, `0040A309`, `0040A313` and `0040A314` type 7 id 4.
+- `00730331`-`00730338` each follow a Chaos or Chaos+ record and take one `FATE_PL2900_*` episode (3502) from 5 to 15, with an item.
+
+`unlockChaos` comes after `advanceToEpilogue`. Counter quests are cleared as in `promoteToProud`, with 5815 at 557, 558 or 559 for a Chaos, Chaos+ or Chaos++ clear. Story quests are cleared as `0010A031` is in `promoteToProud`, and each chapter key joins 2590-2592 and 2594. A save is past it at 7303 8 with its quests and story cutscenes done.
+
+- `unlockChaos`, to the start of `0010B002`: 7303 to 8, 2508 to 7, 2506 to 241 and key 240. `00408301` cleared, and story cutscenes `00730201`, `00730005`, `00730102` and `00730103`. 2582 on `00730006`, the 2582 values of `00730090` and `00730020` to 0. `0010B000` and `0010B001` cleared, and `0010B002` begun at section 1597052236 (`quest/ex/10b002/sectionlist.msg`), with 2512 set to 2511 and 2501 to 0. The summon `0010B001` gives, `su_So4900_TU`, written as at +3:35: summon id 1, trait `SKILL_013_00`, bonus `00D171E0`, levels 4 and 1, equipped in the first slot, 1453 at its row, 1454 and 1455 to 1. The save in Folca at `START`. On load the game resumes `0010B002`, which gives `su_So3300_TU`, the items 389, 391 and 393 and the guided summon equip tutorial (`CallTutorialAction` type 10), and clears it. The game writes the key 241 move, `00730103`'s clear and the `00730006` hash only as the run returns from `0xF21`, so the checkpoint writes them. `00730102` moves 2502 to `0xF21`, a stage a save does not load in: a save there loads at 1201, and `00730103`, which needs `0xF21` and starts `0010B000`, does not play.
+
+Left out: the fight and its tutorials in `0010B001`, the story party sets it releases, quest seeds (2504), and quest rewards.
 
 ## Fate quests
 

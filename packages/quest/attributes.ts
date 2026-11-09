@@ -19,6 +19,7 @@ export const STORY_CUTSCENE_CLEARS = Attribute.uintList(2581);
 export const STORY_CUTSCENE_CHECKPOINTS = Attribute.uintList(2582);
 
 export const QUEST_DIFFICULTY_UNLOCKED = Attribute.int(7303);
+export const QUEST_DIFFICULTY_STAGE = Attribute.int(2508);
 
 export const FATE_QUEST_IDS = Attribute.uintList(2560);
 export const FATE_QUEST_CLEARED = Attribute.uintList(2561);

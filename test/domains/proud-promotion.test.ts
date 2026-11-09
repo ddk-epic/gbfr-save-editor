@@ -19,9 +19,21 @@ import {
   STORY_CUTSCENE_IDS,
 } from "../../packages/quest/attributes";
 import {
+  BETWEEN_STORY_QUESTS,
+  CHAPTER_BEST_DIFFICULTY,
+  CHAPTER_GROUP_FLAGS,
+  CHAPTER_GROUPS,
+  CHAPTER_KEYS,
+  CHAPTER_ULTIMATE_CLEARED,
+  CHAPTER_ULTIMATE_CLEARS,
   CURRENT_CHAPTER,
+  STORY_QUEST_CHECKPOINTS,
+  STORY_QUEST_CHECKPOINTS_LIVE,
   STORY_QUEST_CLEARED,
   STORY_QUEST_IDS,
+  STORY_QUEST_LIVE_CLEARED,
+  STORY_QUEST_THIRD_CLEARED,
+  SYSTEM_STORY_DIFFICULTY,
   UI_FEATURE_UNLOCKED,
 } from "../../packages/story/attributes";
 import { advanceStory, storyTargets } from "../../packages/story/edit";
@@ -44,43 +56,73 @@ const LISTED_ONLY = 0x406361;
 const PROMOTION = 0x407101;
 const NEVER_LISTED = 0x406367;
 const ROWS = MANIAC_QUESTS.length + 3;
-const CHAPTER_ZERO_END: [Attribute<number[]>, number[]][] = [
+const CHAPTER_ZERO_END_SECTION = 1845682248;
+/** Key 222 with `0010A031` underway, or cleared. */
+const chapterZeroEnd = (cleared = 0): [Attribute<number[]>, number[]][] => [
   [CURRENT_CHAPTER, [222, -1]],
   [STORY_QUEST_IDS, [0x10a031]],
-  [STORY_QUEST_CLEARED, [1]],
+  [STORY_QUEST_CLEARED, [cleared]],
+  [STORY_QUEST_LIVE_CLEARED, [1 - cleared]],
+  [STORY_QUEST_THIRD_CLEARED, [cleared]],
+  [
+    STORY_QUEST_CHECKPOINTS,
+    [cleared ? 0 : CHAPTER_ZERO_END_SECTION, ...Array<number>(199).fill(0)],
+  ],
+  [
+    STORY_QUEST_CHECKPOINTS_LIVE,
+    [cleared ? 0 : CHAPTER_ZERO_END_SECTION, ...Array<number>(199).fill(0)],
+  ],
+  [CHAPTER_KEYS, [221]],
+  [CHAPTER_BEST_DIFFICULTY, [1]],
+  [CHAPTER_ULTIMATE_CLEARED, [0]],
+  [CHAPTER_ULTIMATE_CLEARS, [0]],
+  [CHAPTER_GROUPS, [10]],
+  [CHAPTER_GROUP_FLAGS, [0]],
 ];
+
+const roomy = (bytes: Uint8Array) => {
+  const copy = new Uint8Array(bytes.length + 4096);
+  copy.set(bytes);
+  return copy;
+};
 
 const targets = (session: SaveSession) =>
   storyTargets(session.save).map(({ id }) => id);
 
 const save = (difficulty: number) =>
   SaveSession.open(
-    fixtureFile({
-      0: [
-        [SAVE_HASHSEED, 23],
-        ...CHAPTER_ZERO_END,
-        [QUEST_DIFFICULTY_UNLOCKED, difficulty],
-        [TROPHY_EARNED, Array<boolean>(1700).fill(false)],
-        [TROPHY_PROGRESS, Array<bigint>(1200).fill(0n)],
-        [UI_FEATURE_UNLOCKED, Array<boolean>(128).fill(false)],
-        [STORY_CUTSCENE_IDS, [0]],
-        [STORY_CUTSCENE_CLEARS, [0]],
-        [STORY_CUTSCENE_CHECKPOINTS, Array<number>(64).fill(0)],
-        [
-          COUNTER_QUEST_IDS,
-          [LISTED_ONLY, ...MANIAC_QUESTS, PROMOTION, NEVER_LISTED],
-        ],
-        [COUNTER_QUEST_CLEARS, Array<number>(ROWS).fill(0)],
-        [COUNTER_QUEST_FLAGS, Array<number>(ROWS).fill(7)],
-        [COUNTER_QUEST_OPENED, Array<boolean>(ROWS).fill(false)],
-        [COUNTER_QUEST_CLEARED, Array<boolean>(ROWS).fill(false)],
-        [ITEM_ACQUIRED_LAST, 7],
-        [WEAPON_LAST_ID, 3],
-        [CAPTAIN, 1],
-        [USER_RUPIES, 1000],
-      ],
-      [PROFILE_FIRST]: [[PROFILE_QUESTS_CLEARED, 3]],
-    }),
+    roomy(
+      fixtureFile(
+        {
+          0: [
+            [SAVE_HASHSEED, 23],
+            ...chapterZeroEnd(),
+            [BETWEEN_STORY_QUESTS, 0],
+            [QUEST_DIFFICULTY_UNLOCKED, difficulty],
+            [TROPHY_EARNED, Array<boolean>(1700).fill(false)],
+            [TROPHY_PROGRESS, Array<bigint>(1200).fill(0n)],
+            [UI_FEATURE_UNLOCKED, Array<boolean>(128).fill(false)],
+            [STORY_CUTSCENE_IDS, [0]],
+            [STORY_CUTSCENE_CLEARS, [0]],
+            [STORY_CUTSCENE_CHECKPOINTS, Array<number>(64).fill(0)],
+            [
+              COUNTER_QUEST_IDS,
+              [LISTED_ONLY, ...MANIAC_QUESTS, PROMOTION, NEVER_LISTED],
+            ],
+            [COUNTER_QUEST_CLEARS, Array<number>(ROWS).fill(0)],
+            [COUNTER_QUEST_FLAGS, Array<number>(ROWS).fill(7)],
+            [COUNTER_QUEST_OPENED, Array<boolean>(ROWS).fill(false)],
+            [COUNTER_QUEST_CLEARED, Array<boolean>(ROWS).fill(false)],
+            [ITEM_ACQUIRED_LAST, 7],
+            [WEAPON_LAST_ID, 3],
+            [CAPTAIN, 1],
+            [USER_RUPIES, 1000],
+          ],
+          [PROFILE_FIRST]: [[PROFILE_QUESTS_CLEARED, 3]],
+        },
+        { 0: [[SYSTEM_STORY_DIFFICULTY, 1]] },
+      ),
+    ),
   );
 
 describe("promoteToProud", () => {
@@ -105,6 +147,23 @@ describe("promoteToProud", () => {
     expect(at.get(TROPHY_PROGRESS)[238]).toBe(1n);
     expect(at.get(TROPHY_PROGRESS)[20]).toBe(19n);
     expect(units.of(PROFILE_FIRST).get(PROFILE_QUESTS_CLEARED)).toBe(22);
+  });
+
+  it("clears 0010A031 as the first Maniac clear does", () => {
+    const session = save(6);
+    advanceStory(session, "promoteToProud");
+    const at = readSave(session.export()).slotData.units.of(0);
+
+    expect(at.get(STORY_QUEST_CLEARED)).toEqual([1]);
+    expect(at.get(STORY_QUEST_THIRD_CLEARED)).toEqual([1]);
+    expect(at.get(STORY_QUEST_LIVE_CLEARED)).toEqual([0]);
+    expect(at.get(STORY_QUEST_CHECKPOINTS)[0]).toBe(0);
+    expect(at.get(STORY_QUEST_CHECKPOINTS_LIVE)[0]).toBe(0);
+    expect(at.get(BETWEEN_STORY_QUESTS)).toBe(1);
+    expect(at.get(CURRENT_CHAPTER)).toEqual([222, -1]);
+    expect(at.get(CHAPTER_KEYS)).toEqual([221, 222]);
+    expect(at.get(CHAPTER_GROUPS)).toEqual([10, 11]);
+    expect(at.get(CHAPTER_GROUP_FLAGS)).toEqual([0, 1]);
   });
 
   it("leaves the rewards and trophies to the fill", () => {
@@ -149,28 +208,31 @@ describe("unlockProudQuests", () => {
   ];
   const proudSave = () =>
     SaveSession.open(
-      fixtureFile({
-        0: [
-          [SAVE_HASHSEED, 23],
-          ...CHAPTER_ZERO_END,
-          [QUEST_DIFFICULTY_UNLOCKED, 7],
-          [TROPHY_PROGRESS, Array<bigint>(1200).fill(0n)],
-          [STORY_CUTSCENE_IDS, [0x705001, 0x710000, 0x710001]],
-          [STORY_CUTSCENE_CLEARS, [0, 0, 0]],
-          [
-            STORY_CUTSCENE_CHECKPOINTS,
-            Array.from({ length: 192 }, (_, index) =>
-              index === 128 || index === 0 ? 77 : 0,
-            ),
+      roomy(
+        fixtureFile({
+          0: [
+            [SAVE_HASHSEED, 23],
+            ...chapterZeroEnd(1),
+            [BETWEEN_STORY_QUESTS, 1],
+            [QUEST_DIFFICULTY_UNLOCKED, 7],
+            [TROPHY_PROGRESS, Array<bigint>(1200).fill(0n)],
+            [STORY_CUTSCENE_IDS, [0x705001, 0x710000, 0x710001]],
+            [STORY_CUTSCENE_CLEARS, [0, 0, 0]],
+            [
+              STORY_CUTSCENE_CHECKPOINTS,
+              Array.from({ length: 192 }, (_, index) =>
+                index === 128 || index === 0 ? 77 : 0,
+              ),
+            ],
+            [COUNTER_QUEST_IDS, [0x407321, ...PREREQUISITES]],
+            [COUNTER_QUEST_CLEARS, Array<number>(16).fill(0)],
+            [COUNTER_QUEST_FLAGS, Array<number>(16).fill(7)],
+            [COUNTER_QUEST_OPENED, Array<boolean>(16).fill(false)],
+            [COUNTER_QUEST_CLEARED, Array<boolean>(16).fill(false)],
           ],
-          [COUNTER_QUEST_IDS, [0x407321, ...PREREQUISITES]],
-          [COUNTER_QUEST_CLEARS, Array<number>(16).fill(0)],
-          [COUNTER_QUEST_FLAGS, Array<number>(16).fill(7)],
-          [COUNTER_QUEST_OPENED, Array<boolean>(16).fill(false)],
-          [COUNTER_QUEST_CLEARED, Array<boolean>(16).fill(false)],
-        ],
-        [PROFILE_FIRST]: [[PROFILE_QUESTS_CLEARED, 3]],
-      }),
+          [PROFILE_FIRST]: [[PROFILE_QUESTS_CLEARED, 3]],
+        }),
+      ),
     );
 
   it("clears the quests that open others, and only once", () => {

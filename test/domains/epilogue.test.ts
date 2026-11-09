@@ -27,6 +27,7 @@ import {
   COUNTER_QUEST_FLAGS,
   COUNTER_QUEST_IDS,
   COUNTER_QUEST_OPENED,
+  QUEST_DIFFICULTY_STAGE,
   QUEST_DIFFICULTY_UNLOCKED,
   STORY_CUTSCENE_CHECKPOINTS,
   STORY_CUTSCENE_CLEARS,
@@ -43,8 +44,20 @@ import {
   CURRENT_TOWN,
   CURRENT_TOWN_CHECKPOINT,
   LAST_TOWN,
+  BETWEEN_STORY_QUESTS,
+  CHAPTER_BEST_DIFFICULTY,
+  CHAPTER_GROUP_FLAGS,
+  CHAPTER_GROUPS,
+  CHAPTER_KEYS,
+  CHAPTER_ULTIMATE_CLEARED,
+  CHAPTER_ULTIMATE_CLEARS,
+  STORY_QUEST_CHECKPOINTS,
+  STORY_QUEST_CHECKPOINTS_LIVE,
   STORY_QUEST_CLEARED,
   STORY_QUEST_IDS,
+  STORY_QUEST_LIVE_CLEARED,
+  STORY_QUEST_THIRD_CLEARED,
+  SYSTEM_STORY_DIFFICULTY,
   UI_FEATURE_UNLOCKED,
 } from "../../packages/story/attributes";
 import {
@@ -54,6 +67,20 @@ import {
 } from "../../packages/user/attributes";
 import { WEAPON_LAST_ID } from "../../packages/weapon/attributes";
 import {
+  SUMMON_ID,
+  SUMMON_LAST_ID,
+  SUMMON_LEVELS,
+  SUMMON_TRAIT_AND_BONUS,
+  SUMMONS_EQUIPPED,
+  SUMMONS_KEY,
+  SUMMONS_OBTAINED,
+  SUMMONS_UNLOCKED,
+} from "../../packages/summon/attributes";
+import { Attribute } from "../../packages/core";
+
+const SUMMON_KEY_HASH = Attribute.uint(1457);
+const SUMMON_FLAGS_RAW = Attribute.uint(1460);
+import {
   TROPHY_EARNED,
   TROPHY_PROGRESS,
 } from "../../packages/trophy/attributes";
@@ -61,63 +88,109 @@ import { advanceStory, storyTargets } from "../../packages/story/edit";
 
 const NOW = 1794162545000;
 const SIDE_QUESTS = [0x220101, 0x220102, 0x220111];
+const COUNTER_QUESTS = [0x408301, 0x408302, 0x408310, 0x409302, 0x40a305];
+const STORY_QUESTS = [
+  0x10a031, 0x10b000, 0x10b001, 0x10b002, 0x10c001, 0x10d001,
+];
 const STORY_CUTSCENES = [
   0x730201, 0x730021, 0x730020, 0x725110, 0x730420, 0x730046, 0x730430,
+  0x730102, 0x730005,
 ];
 
 const save = (difficulty: number, chapter: number) => {
-  const bytes = fixtureFile({
-    0: [
-      [SAVE_HASHSEED, 23],
-      [QUEST_DIFFICULTY_UNLOCKED, difficulty],
-      [CURRENT_CHAPTER, [chapter, -1]],
-      [STORY_QUEST_IDS, [0x10a031]],
-      [STORY_QUEST_CLEARED, [1]],
-      [CURRENT_TOWN, 0xd00],
-      [CURRENT_TOWN_CHECKPOINT, 259724609],
-      [LAST_TOWN, 0xd00],
-      [LOCATION_STAGE, 0xd00],
-      [LOCATION_SPOT, [49, 95, 83, 84, 65, 82, 84, 0]],
-      [TROPHY_EARNED, Array<boolean>(1700).fill(false)],
-      [TROPHY_PROGRESS, Array<bigint>(1200).fill(0n)],
-      [STORY_CUTSCENE_IDS, STORY_CUTSCENES],
-      [STORY_CUTSCENE_CLEARS, Array<number>(STORY_CUTSCENES.length).fill(0)],
-      [
-        STORY_CUTSCENE_CHECKPOINTS,
-        Array<number>(STORY_CUTSCENES.length * 64).fill(0),
+  const bytes = fixtureFile(
+    {
+      0: [
+        [SAVE_HASHSEED, 23],
+        [QUEST_DIFFICULTY_UNLOCKED, difficulty],
+        [CURRENT_CHAPTER, [chapter, -1]],
+        [STORY_QUEST_IDS, STORY_QUESTS],
+        [STORY_QUEST_CLEARED, STORY_QUESTS.map((_, i) => (i === 0 ? 1 : 0))],
+        [
+          STORY_QUEST_THIRD_CLEARED,
+          STORY_QUESTS.map((_, i) => (i === 0 ? 1 : 0)),
+        ],
+        [QUEST_DIFFICULTY_STAGE, difficulty - 1],
+        [STORY_QUEST_LIVE_CLEARED, STORY_QUESTS.map(() => 1)],
+        [
+          STORY_QUEST_CHECKPOINTS,
+          Array<number>(STORY_QUESTS.length * 200).fill(0),
+        ],
+        [
+          STORY_QUEST_CHECKPOINTS_LIVE,
+          Array<number>(STORY_QUESTS.length * 200).fill(0),
+        ],
+        [BETWEEN_STORY_QUESTS, 1],
+        [CHAPTER_GROUPS, [11]],
+        [CHAPTER_GROUP_FLAGS, [1]],
+        [CHAPTER_KEYS, [222]],
+        [CHAPTER_BEST_DIFFICULTY, [1]],
+        [CHAPTER_ULTIMATE_CLEARED, [0]],
+        [CHAPTER_ULTIMATE_CLEARS, [0]],
+        [CURRENT_TOWN, 0xd00],
+        [CURRENT_TOWN_CHECKPOINT, 259724609],
+        [LAST_TOWN, 0xd00],
+        [LOCATION_STAGE, 0xd00],
+        [LOCATION_SPOT, [49, 95, 83, 84, 65, 82, 84, 0]],
+        [TROPHY_EARNED, Array<boolean>(1700).fill(false)],
+        [TROPHY_PROGRESS, Array<bigint>(1200).fill(0n)],
+        [STORY_CUTSCENE_IDS, STORY_CUTSCENES],
+        [STORY_CUTSCENE_CLEARS, Array<number>(STORY_CUTSCENES.length).fill(0)],
+        [
+          STORY_CUTSCENE_CHECKPOINTS,
+          Array<number>(STORY_CUTSCENES.length * 64).fill(0),
+        ],
+        [SIDE_QUEST_IDS, SIDE_QUESTS],
+        [SIDE_QUEST_STATE, [0, 0, 0]],
+        [SIDE_QUEST_ACCEPTED, [false, false, false]],
+        [SIDE_QUEST_CHECKPOINTS, Array<number>(192).fill(0)],
+        [SIDE_QUEST_PROGRESS, Array<number>(96).fill(0)],
+        [SIDE_QUESTS_TAKEN, [0x220001]],
+        [CONFLUX_CYCLE_CLEARED, [0, 0, 0, 0, 0]],
+        [CONFLUX_RETURNED, [false, false, false, false, false]],
+        [CONFLUX_RETURNED_AT, [0, 0, 0, 0, 0]],
+        [COUNTER_QUEST_IDS, COUNTER_QUESTS],
+        [COUNTER_QUEST_CLEARS, COUNTER_QUESTS.map(() => 0)],
+        [COUNTER_QUEST_FLAGS, COUNTER_QUESTS.map(() => 7)],
+        [COUNTER_QUEST_OPENED, COUNTER_QUESTS.map(() => false)],
+        [COUNTER_QUEST_CLEARED, COUNTER_QUESTS.map(() => false)],
+        [ITEM_ACQUIRED_LAST, 7],
+        [UI_FEATURE_UNLOCKED, Array<boolean>(128).fill(false)],
+        [WEAPON_LAST_ID, 3],
+        [CAPTAIN, 1],
+        [USER_RUPIES, 1000],
+        [SUMMONS_EQUIPPED, [0, 0, 0, 0]],
+        [SUMMON_LAST_ID, 0],
+        [SUMMONS_UNLOCKED, 0],
+        [SUMMON_ID, 0],
+        [SUMMON_KEY_HASH, 0x887ae0b0],
+        [SUMMON_TRAIT_AND_BONUS, [0x887ae0b0, 0x887ae0b0]],
+        [SUMMON_LEVELS, [-1, -1]],
+        [SUMMON_FLAGS_RAW, 0],
+        [SUMMONS_KEY, hashId("su_So0001")],
+        [SUMMONS_OBTAINED, 0],
       ],
-      [SIDE_QUEST_IDS, SIDE_QUESTS],
-      [SIDE_QUEST_STATE, [0, 0, 0]],
-      [SIDE_QUEST_ACCEPTED, [false, false, false]],
-      [SIDE_QUEST_CHECKPOINTS, Array<number>(192).fill(0)],
-      [SIDE_QUEST_PROGRESS, Array<number>(96).fill(0)],
-      [SIDE_QUESTS_TAKEN, [0x220001]],
-      [CONFLUX_CYCLE_CLEARED, [0, 0, 0, 0, 0]],
-      [CONFLUX_RETURNED, [false, false, false, false, false]],
-      [CONFLUX_RETURNED_AT, [0, 0, 0, 0, 0]],
-      [COUNTER_QUEST_IDS, [0x408301, 0x408302]],
-      [COUNTER_QUEST_CLEARS, [0, 0]],
-      [COUNTER_QUEST_FLAGS, [7, 7]],
-      [COUNTER_QUEST_OPENED, [false, false]],
-      [COUNTER_QUEST_CLEARED, [false, false]],
-      [ITEM_ACQUIRED_LAST, 7],
-      [UI_FEATURE_UNLOCKED, Array<boolean>(128).fill(false)],
-      [WEAPON_LAST_ID, 3],
-      [CAPTAIN, 1],
-      [USER_RUPIES, 1000],
-    ],
-    360: [
-      [ITEM_KEY, hashId("ITEM_23_0000")],
-      [ITEM_COUNT, 3],
-      [ITEM_FLAGS, 0],
-      [ITEM_ACQUIRED, 0],
-    ],
-    [PROFILE_FIRST]: [[PROFILE_QUESTS_CLEARED, 3]],
-  });
+      1: [
+        [SUMMON_ID, 0],
+        [SUMMONS_KEY, hashId("su_So4900_TU")],
+        [SUMMONS_OBTAINED, 0],
+      ],
+      360: [
+        [ITEM_KEY, hashId("ITEM_23_0000")],
+        [ITEM_COUNT, 3],
+        [ITEM_FLAGS, 0],
+        [ITEM_ACQUIRED, 0],
+      ],
+      [PROFILE_FIRST]: [[PROFILE_QUESTS_CLEARED, 3]],
+    },
+    { 0: [[SYSTEM_STORY_DIFFICULTY, 1]] },
+  );
   const roomy = new Uint8Array(bytes.length + 4096);
   roomy.set(bytes);
   return SaveSession.open(roomy);
 };
+
+const CHAOS = ["unlockChaos"];
 
 const targets = (session: SaveSession) =>
   storyTargets(session.save).map(({ id }) => id);
@@ -130,11 +203,11 @@ describe("dlcStart", () => {
 
     expect(at.get(CURRENT_CHAPTER)).toEqual([222, -1]);
     expect(at.get(CURRENT_TOWN)).toBe(0xd00);
-    expect(at.get(STORY_CUTSCENE_CLEARS)).toEqual([0, 1, 0, 0, 0, 0, 0]);
+    expect(at.get(STORY_CUTSCENE_CLEARS)).toEqual([0, 1, 0, 0, 0, 0, 0, 0, 0]);
     expect(at.get(STORY_CUTSCENE_CHECKPOINTS)[128]).toBe(1174902544);
     expect(at.get(SIDE_QUEST_STATE)).toEqual([1, 1, 0]);
     expect(at.get(CONFLUX_CYCLE_CLEARED)).toEqual([1, 1, 1, 0, 0]);
-    expect(targets(session)).toEqual(["advanceToEpilogue"]);
+    expect(targets(session)).toEqual(["advanceToEpilogue", ...CHAOS]);
   });
 });
 
@@ -150,7 +223,7 @@ describe("advanceToEpilogue", () => {
     expect(at.get(LAST_TOWN)).toBe(0xc00);
     expect(at.get(LOCATION_STAGE)).toBe(0xc00);
     expect(at.get(LOCATION_SPOT)).toBe("START");
-    expect(at.get(STORY_CUTSCENE_CLEARS)).toEqual([0, 1, 0, 1, 1, 1, 0]);
+    expect(at.get(STORY_CUTSCENE_CLEARS)).toEqual([0, 1, 0, 1, 1, 1, 0, 0, 0]);
     expect(at.get(STORY_CUTSCENE_CHECKPOINTS)[128]).toBe(1174902544);
     expect(at.get(STORY_CUTSCENE_CHECKPOINTS)[6 * 64]).toBe(1825705739);
     expect(at.get(SIDE_QUEST_STATE)).toEqual([1, 1, 0]);
@@ -162,7 +235,9 @@ describe("advanceToEpilogue", () => {
     expect(at.get(CONFLUX_RETURNED_AT)).toEqual([
       1794162545, 1794162545, 1794162545, 0, 0,
     ]);
-    expect(at.get(COUNTER_QUEST_OPENED)).toEqual([false, false]);
+    expect(at.get(COUNTER_QUEST_OPENED)).toEqual(
+      COUNTER_QUESTS.map(() => false),
+    );
 
     const earned = at.get(TROPHY_EARNED);
     expect(earned[52]).toBe(false);
@@ -175,11 +250,13 @@ describe("advanceToEpilogue", () => {
       "dlcStart",
       "unlockProudQuests",
       "advanceToEpilogue",
+      ...CHAOS,
     ]);
     expect(targets(save(7, 222))).toEqual([
       "dlcStart",
       "unlockProudQuests",
       "advanceToEpilogue",
+      ...CHAOS,
     ]);
     expect(targets(save(7, 200))).toEqual([]);
   });
@@ -187,7 +264,43 @@ describe("advanceToEpilogue", () => {
   it("is not offered once done, nor once the game moves the chapter", () => {
     const session = save(7, 222);
     advanceStory(session, "advanceToEpilogue", NOW);
+    expect(targets(session)).toEqual(CHAOS);
+    expect(targets(save(7, 240))).toEqual(CHAOS);
+  });
+});
+
+describe("unlockChaos", () => {
+  it("leaves 0010B002 at its start with the first summon given", () => {
+    const session = save(7, 222);
+    advanceStory(session, "unlockChaos", NOW);
+    const units = readSave(session.export()).slotData.units;
+    const at = units.of(0);
+
+    expect(at.get(QUEST_DIFFICULTY_UNLOCKED)).toBe(8);
+    expect(at.get(QUEST_DIFFICULTY_STAGE)).toBe(7);
+    expect(at.get(CURRENT_CHAPTER)).toEqual([241, -1]);
+    expect(at.get(STORY_QUEST_CLEARED)).toEqual([1, 1, 1, 0, 0, 0]);
+    expect(at.get(STORY_QUEST_LIVE_CLEARED)).toEqual([1, 1, 1, 0, 0, 0]);
+    expect(at.get(STORY_QUEST_CHECKPOINTS)[3 * 200]).toBe(1597052236);
+    expect(at.get(STORY_QUEST_CHECKPOINTS_LIVE)[3 * 200]).toBe(1597052236);
+    expect(at.get(BETWEEN_STORY_QUESTS)).toBe(0);
+    expect(at.get(CHAPTER_KEYS)).toEqual([222, 240]);
+    expect(at.get(CURRENT_TOWN)).toBe(0xc00);
+    expect(at.get(LOCATION_SPOT)).toBe("START");
+    expect(at.get(COUNTER_QUEST_CLEARS)).toEqual([1, 0, 0, 0, 0]);
+    expect(at.get(STORY_CUTSCENE_CLEARS)).toEqual([1, 1, 0, 1, 1, 1, 0, 1, 1]);
+
+    expect(at.get(SUMMON_ID)).toBe(1);
+    expect(at.get(SUMMON_KEY_HASH)).toBe(hashId("su_So4900_TU"));
+    expect(at.get(SUMMON_TRAIT_AND_BONUS)).toEqual([
+      hashId("SKILL_013_00"),
+      0x00d171e0,
+    ]);
+    expect(at.get(SUMMON_LEVELS)).toEqual([4, 1]);
+    expect(at.get(SUMMONS_EQUIPPED)).toEqual([1, 0, 0, 0]);
+    expect(at.get(SUMMON_LAST_ID)).toBe(1);
+    expect(at.get(SUMMONS_UNLOCKED)).toBe(1);
+    expect(units.of(1).get(SUMMONS_OBTAINED)).toBe(1);
     expect(targets(session)).toEqual([]);
-    expect(targets(save(7, 240))).toEqual([]);
   });
 });

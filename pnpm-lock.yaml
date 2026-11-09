@@ -416,6 +416,9 @@ importers:
       '@gbfr/quest':
         specifier: workspace:*
         version: link:../quest
+      '@gbfr/summon':
+        specifier: workspace:*
+        version: link:../summon
       '@gbfr/trophy':
         specifier: workspace:*
         version: link:../trophy

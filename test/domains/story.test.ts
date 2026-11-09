@@ -555,6 +555,7 @@ describe("advanceStory", () => {
       "dlcStart",
       "unlockProudQuests",
       "advanceToEpilogue",
+      "unlockChaos",
     ]);
   });
 
@@ -605,6 +606,7 @@ describe("advanceStory", () => {
       undefined,
       undefined,
       240,
+      undefined,
     ]);
     advanceStory(session, "chapterZeroEnd");
     expect(() => advanceStory(session, "finalChapter")).toThrow(
@@ -618,6 +620,7 @@ describe("advanceStory", () => {
       "dlcStart",
       "unlockProudQuests",
       "advanceToEpilogue",
+      "unlockChaos",
     ]);
   });
 
