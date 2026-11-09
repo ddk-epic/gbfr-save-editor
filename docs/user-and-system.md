@@ -119,8 +119,8 @@ Units that move during story play, with no meaning assigned and no domain of the
 | Attribute | Name                        | Type      | Entities | Holds                                                             |
 | --------- | --------------------------- | --------- | -------- | ----------------------------------------------------------------- |
 | 4103      | not named                   | `uint[3]` | 0        | Three 4001 keys, see below                                        |
-| 4201      | not named                   | `uint`    | 0-63     | A hash, or the empty hash on an unused entity                     |
-| 4202      | not named                   | `uint`    | 0-63     | 0 or 1, beside 4201                                               |
+| 4201      | `TOWN_EVENT_KEY`            | `uint`    | 0-63     | Hash of a town event id, or the empty hash on an unused entity    |
+| 4202      | `TOWN_EVENT_PLAYED`         | `uint`    | 0-63     | 1 once the 4201 event has played                                  |
 | 4318      | not named                   | `bool`    | 0        | Goes from false to true in `00107001`                             |
 | 4331      | not named                   | `bool`    | 0        | Goes from false to true in a story quest                          |
 | 7303      | `QUEST_DIFFICULTY_UNLOCKED` | `int`     | 0        | Highest quest difficulty unlocked, by the id digit in `quests.md` |
@@ -131,6 +131,7 @@ Units that move during story play, with no meaning assigned and no domain of the
 - 7303 goes 2 to 3 with trophy 22 "Unlock Hard quests", 3 to 4 with trophy 23 "Unlock Very Hard quests", 4 to 5 with trophy 24 "Unlock Extreme quests", 5 to 6 with trophy 25 "Unlock Maniac quests" and 6 to 7 with trophy 542 "Unlock Proud quests". 22 and 23 arrive just after a Rolan note moves, well after their `badge.QuestId` clears; 24 just after `0010A001` clears; 25 with its `QuestId`, `0010A031`, underway; 542 in the record write of its `QuestId`, `00407101`, the first Proud quest.
 - 7313, a `uint`, goes 0 to 1 8 s after the record write of `00407318`, in the poll where 7103 takes `ShopWeaponLimitBreak`. It has no meaning assigned.
 - 7301 and 7302 are the information dialogs, see [`tutorials.md`](tutorials.md).
-- The 4201 hashes match no table text or message key.
+- 4201 at 13 holds `WD_MS170_010_0000`, the `short_story_return.QuestId4` played on the return to town after `00407318`, before `00725110`. 4202 there goes 0 to 1 in the record write of `00407318`. `ShopWeaponLimitBreak` (Limit Break) and `ShopRebuild` (Weapon Transcendence) at Siero's Knickknack Shack check it (`FUN_140441510`); `ShopRebuild` also needs `00408311`, `00408312` or `00408302` cleared (`FUN_140442240`). A load does not set 4202 by itself, so a save that skips the event never opens either shop.
+- The other 4201 hashes match no table text or message key.
 - 4331 sits among 4328-4334, a run of `bool` and `byte` units at entity 0.
 - 8901 sits beside 8902 and 8904, the counters that climb by one per save.

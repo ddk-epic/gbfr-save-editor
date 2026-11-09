@@ -17,6 +17,7 @@
 | Chapter Ø end         | 222 | 22-25, 19, 1398            |                                       | `ARC_ROLANNOTE_01`-`07`                                            |             | Story cutscenes, counter quests, see below     |
 | `promoteToProud`      | 222 | 542                        |                                       |                                                                    |             |                                                |
 | `dlcStart`            | 222 | 52, 1594, 1595, 1253, 1470 | `ITEM_23_0000` Crewmate Card, 2       |                                                                    |             | 5815 counts, see below                         |
+| `unlockProudQuests`   | 222 |                            |                                       |                                                                    |             | Town event, see below                          |
 | `unlockChaos`         | 241 | 746, 1468                  |                                       |                                                                    |             |                                                |
 | `unlockChaosPlus`     | 242 | 747, 1467, 1254, 1469      | Six key items, see below              |                                                                    |             | `WEP_PL2800_A0`, 5815 at 918, fate episodes    |
 | `unlockChaosPlusPlus` | 243 | 748, 1457, 750             | Four key items, see below             |                                                                    |             | `WEP_PL2900_A0`, 5815 at 27, fate episodes     |
@@ -34,6 +35,7 @@
 | Weapon         | 7403 at its row is not 0  | The first free weapon entry, see below                                                |
 | `PL1900`       | 1305 bit 0 is set         | See below                                                                             |
 | Story cutscene | 2581 is not 0             | 2581 to 1                                                                             |
+| Town event     | 4202 at its 4201 is not 0 | 4202 to 1                                                                             |
 | Fate episode   | 3502 bit 3 is set         | 3502 sets bits 1 and 3, the other bits stay                                           |
 | Counter quest  | 2571 is not 0             | See below                                                                             |
 
@@ -61,6 +63,10 @@ A story cutscene is cleared by the fill row of the checkpoint after the one wher
 
 - The `promoteToProud` row clears `00725100` and `00730311`, which open on `0010A025`, and `00730000` and `00730001`, which open on two Hard clears.
 - The `dlcStart` row clears `00725101`, which opens on `0010A031` and 10 Maniac clears, and `00710010`, which opens on `00407101` and `0010A031`.
+
+## Town events
+
+The `unlockProudQuests` row takes 4202 to 1 on `WD_MS170_010_0000`, the town event after `00407318`. It opens Limit Break and Weapon Transcendence at Siero's Knickknack Shack, see [`user-and-system.md`](../user-and-system.md).
 
 ## Chaos
 

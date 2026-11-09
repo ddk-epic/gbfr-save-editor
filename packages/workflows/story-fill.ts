@@ -54,6 +54,8 @@ import {
 } from "@gbfr/weapon";
 import {
   CURRENT_CHAPTER,
+  TOWN_EVENT_KEY,
+  TOWN_EVENT_PLAYED,
   isChapterCheckpoint,
   STORY_CHECKPOINTS,
   UI_FEATURE_UNLOCKED,
@@ -101,6 +103,8 @@ interface StoryFillEntry {
     startWeapon: string;
   }[];
   joinsId?: boolean;
+  /** Town events marked played. */
+  townEvents?: readonly string[];
   /** `fate_episode.Key`, marked started and completed. */
   fateEpisodes?: readonly string[];
   /** `TROPHY_PROGRESS` indexes and the amount each rises by, once the entry earns a trophy. */
@@ -251,6 +255,13 @@ const STORY_FILL: readonly StoryFillEntry[] = [
     ],
     rewards: [["ITEM_23_0000", 2]], // Crewmate Card
     storyCutscenes: [0x725101, 0x710010],
+  },
+  {
+    checkpoint: "unlockProudQuests",
+    trophies: [],
+    chapterKeysCleared: 41n,
+    // Played after `00407318`.
+    townEvents: ["WD_MS170_010_0000"],
   },
   { checkpoint: "unlockChaos", trophies: [746, 1468], chapterKeysCleared: 41n },
   {
@@ -552,6 +563,15 @@ function applyFill(
       );
       givenItems.add(item);
       added.push(item);
+    }
+
+    for (const key of entry.townEvents ?? []) {
+      const event = units.of(
+        units.onlyEntityWhere(TOWN_EVENT_KEY, hashId(key)),
+      );
+      if (event.get(TOWN_EVENT_PLAYED) !== 0) continue;
+      patches.push(event.patch(TOWN_EVENT_PLAYED, 1));
+      added.push(key);
     }
 
     for (const key of entry.fateEpisodes ?? []) {

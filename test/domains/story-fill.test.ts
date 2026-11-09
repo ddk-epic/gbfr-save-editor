@@ -35,6 +35,8 @@ import {
 } from "../../packages/skill/attributes";
 import {
   CURRENT_CHAPTER,
+  TOWN_EVENT_KEY,
+  TOWN_EVENT_PLAYED,
   UI_FEATURE_UNLOCKED,
 } from "../../packages/story/attributes";
 import { fillSkippedStory } from "../../packages/workflows/story-fill";
@@ -210,6 +212,10 @@ const save = (
         ],
       ]),
     ),
+    13: [
+      [TOWN_EVENT_KEY, hashId("WD_MS170_010_0000")],
+      [TOWN_EVENT_PLAYED, 0],
+    ],
     6: [
       [FIELD_NOTE_WEAPON_KEY, hashId("WEP_PL0000_03")],
       [FIELD_NOTE_WEAPON_FLAGS, 0],
@@ -524,6 +530,7 @@ describe("fillSkippedStory", () => {
     ]).toEqual([2n, 1n, 1n, 1n]);
     expect(progress[2]).toBe(41n);
     expect(units.values(ITEM_COUNT, CREWMATE_CARD_ENTITY)).toEqual([2]);
+    expect(units.of(13).get(TOWN_EVENT_PLAYED)).toBe(1);
 
     const first = session.export();
     expect(fillSkippedStory(session)).toEqual([]);
