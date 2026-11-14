@@ -15,6 +15,7 @@
     "mod:log": "tsx tools/mod-log.ts",
     "mod:check": "tsx tools/mod-check.ts",
     "dev": "pnpm --filter gbfr-save-editor-app dev",
+    "build": "pnpm --filter gbfr-save-editor-app build",
     "prepare": "husky"
   },
   "lint-staged": {
