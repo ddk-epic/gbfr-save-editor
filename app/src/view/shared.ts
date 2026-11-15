@@ -100,14 +100,6 @@ const sigilEdit = (slot: number, s: Sigil): RowEdit => ({
   } satisfies SigilRoll,
 });
 
-/** profile 4706, from 1. */
-const SKYFARER_GRADES = [
-  "Veteran Skyfarer",
-  "Zegagrande Legend",
-  "Fatebreaker",
-  "Fatebreaker (Infinity)",
-];
-
 /** A curio's reward when it is a sigil. */
 const sigilReward = (c: Curio) =>
   c.reward?.type === "sigil" ? c.reward : undefined;
@@ -696,7 +688,7 @@ export function buildShared(
       ],
       readRecentPlayers(units).map((p): Cell[] => [
         p.name,
-        SKYFARER_GRADES[p.grade - 1] ?? p.grade,
+        keyCell("skyfarerGrade", String(p.grade)),
         p.questsCleared,
         keyCell("quest", p.quest),
         p.lastPlayed &&

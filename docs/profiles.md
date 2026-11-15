@@ -44,13 +44,14 @@ Every card, own or recent, uses the same attributes.
 | 11   | Chapter Ø Skybound Heart  |
 | 12   | Epilogue Endless Ragnarok |
 
-| 4706 | Skyfarer grade                                        |
-| ---- | ----------------------------------------------------- |
-| 1    | Veteran Skyfarer                                      |
-| 2    | Zegagrande Legend                                     |
-| 3    | Fatebreaker                                           |
-| 4    | Fatebreaker (Infinity), `TXT_ROOM_SET_GRADE_INFINITY` |
+| 4706 | Skyfarer grade         | Text id                       |
+| ---- | ---------------------- | ----------------------------- |
+| 1    | Veteran Skyfarer       | `TXT_QUEST_GRADE_SILVER`      |
+| 2    | Zegagrande Legend      | `TXT_QUEST_GRADE_GOLD`        |
+| 3    | Fatebreaker            | `TXT_QUEST_GRADE_PLATINUM`    |
+| 4    | Fatebreaker (Infinity) | `TXT_ROOM_SET_GRADE_INFINITY` |
 
+- `option_submenu` row `5AEE361C` lists the four text ids in `Item2` to `Item5`; `Item1` is the no-limit entry.
 - The profile screen shows grades 3 and 4 both as Fatebreaker. No other card attribute tells them apart.
 
 ## Card characters

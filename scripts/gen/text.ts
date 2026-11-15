@@ -61,6 +61,11 @@ const GAME_TEXT = {
     union all select '6', 'TXT_KKTN_BFCHIC_TYPE_DISASTER'
     union all select '7', 'TXT_KKTN_BFCHIC_TYPE_RESCUE'
     union all select '8', 'TXT_KKTN_BFCHIC_TYPE_CHAOS'`,
+  // Grades 1-4 are Item2-5 of the grade menu's row.
+  skyfarerGrade: `select '1' key, Item2 text_id from option_submenu where Key = '5AEE361C'
+    union all select '2', Item3 from option_submenu where Key = '5AEE361C'
+    union all select '3', Item4 from option_submenu where Key = '5AEE361C'
+    union all select '4', Item5 from option_submenu where Key = '5AEE361C'`,
   // Game UI labels, keyed by app name.
   ui: `select 'close' key, 'TXT_DLG_BUTTON_CLOSE' text_id
     union all select 'apply', 'TXT_DLG_BUTTON_EXECUTE'
