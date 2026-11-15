@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { apply } from "../helpers";
 import { hashId } from "../../packages/core/xxhash32-custom";
-import { canMaxTreasures, maxTreasures } from "../../packages/item/edit";
+import { maxTreasures } from "../../packages/item/edit";
+import { canMaxTreasures } from "../../packages/item/read";
 import {
   INVENTORY_TABS,
   ITEM_ACQUIRED,

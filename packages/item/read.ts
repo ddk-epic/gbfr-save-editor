@@ -1,5 +1,5 @@
 import { ITEM_SORT_ORDER } from "./data.gen";
-import { hashOfKey, type Units } from "@gbfr/core";
+import { hashOfKey, type Save, type Units } from "@gbfr/core";
 import { ITEMS } from "@gbfr/tables";
 import { ITEM_COUNT, ITEM_FLAGS, ITEM_KEY } from "./attributes";
 
@@ -51,3 +51,36 @@ export function readItemsFlagged(
   }
   return keys;
 }
+
+export const TREASURE_CAP = 999;
+const KNICKKNACK_VOUCHER_CAP = 99999;
+const KNICKKNACK_VOUCHER = "ITEM_21_0000";
+const CURIO_PREFIX = "ITEM_19_";
+const CARD_PREFIX = "ITEM_23_";
+const PLAIN_CARD = "ITEM_23_0000";
+const PLAIN_CARD_COUNT = 99;
+const CHARACTER_CARD_COUNT = 1;
+
+function treasureTarget(key: string): number | undefined {
+  if (itemTab(key) !== "treasures" || key.startsWith(CURIO_PREFIX))
+    return undefined;
+  if (key === KNICKKNACK_VOUCHER) return KNICKKNACK_VOUCHER_CAP;
+  if (key === PLAIN_CARD) return PLAIN_CARD_COUNT;
+  if (key.startsWith(CARD_PREFIX)) return CHARACTER_CARD_COUNT;
+  return TREASURE_CAP;
+}
+
+export function treasuresBelowTarget(units: Units) {
+  return units.entitiesWith(ITEM_KEY).flatMap((entity) => {
+    const at = units.of(entity);
+    const key = at.get(ITEM_KEY);
+    const target = key === undefined ? undefined : treasureTarget(key);
+    return target !== undefined && at.get(ITEM_COUNT) < target
+      ? [{ entity, target }]
+      : [];
+  });
+}
+
+/** True on a save with a treasure below its target count. */
+export const canMaxTreasures = (save: Save) =>
+  treasuresBelowTarget(save.slotData.units).length > 0;

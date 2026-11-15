@@ -1,4 +1,4 @@
-import { SAVE_ENTITY, type UnitEntity, type Units } from "@gbfr/core";
+import { SAVE_ENTITY } from "@gbfr/core";
 import type { Draft } from "@gbfr/core/draft";
 import {
   ACCOUNT_MASTER_LEVEL_BADGES,
@@ -8,28 +8,10 @@ import {
   MASTER_LEVEL_BADGE_QUANTITIES,
   MASTER_LEVEL_BADGES,
   WEAPON_COLLECTIONS,
-  WEAPON_LEVELS_TOTAL_BADGES,
   WEAPON_TROVES,
-  WEAPON_UNCAPS_BADGES,
-  WEAPONS_HELD_ALL_BADGES,
-  WEAPONS_HELD_BADGES,
 } from "./data.gen";
-import {
-  WEAPON_ROWS,
-  readOwnedWeapons,
-  readWeapons,
-  weaponLevelOf,
-  type Weapon,
-  WEAPON_LAST_LEVEL,
-  WEAPON_LAST_UNCAP,
-} from "@gbfr/weapon";
-import {
-  CHARACTER_KEY,
-  CHARACTER_MAX_LEVEL,
-  CAPTAINS,
-  crewLevelTotal,
-  isCrewMember,
-} from "@gbfr/character";
+import { readOwnedWeapons, WEAPON_LAST_UNCAP } from "@gbfr/weapon";
+import { CHARACTER_MAX_LEVEL, crewLevelTotal } from "@gbfr/character";
 import {
   CHAOS_QUEST_CLEARS,
   CREW_LEVEL_TOTAL,
@@ -40,67 +22,17 @@ import {
   TROPHY_CHARACTER_LEVEL,
   TROPHY_EARNED,
   TROPHY_PROGRESS,
-  WEAPON_LEVELS_TOTAL,
-  WEAPON_UNCAPS,
-  WEAPONS_HELD,
-  WEAPONS_HELD_ALL,
 } from "./attributes";
 import { difficultyDigit } from "@gbfr/quest";
-import { trophyLedger, type TrophyLedger } from "./ledger";
+import {
+  countsForTrophies,
+  recountHeldWeapons,
+  trophyLedger,
+  trophyOwner,
+  type TrophyLedger,
+} from "./ledger";
 
-const BONUS_SERIES = 7;
 const TERMINUS_SERIES = 0;
-const [GRAN, DJEETA] = CAPTAINS;
-/** Characters whose trophies leave out weapons from `LATE_WEAPON_VERSION`. */
-const LATE_WEAPON_CHARACTERS = new Set(["PL2100", "PL2200", "PL2300"]);
-const LATE_WEAPON_VERSION = 5;
-
-const countsForTrophies = (owner: string, { key }: Weapon) =>
-  !LATE_WEAPON_CHARACTERS.has(owner) ||
-  (WEAPON_ROWS[key]?.unlockVersion ?? 0) < LATE_WEAPON_VERSION;
-
-const trophyOwner = (owner: string) => (owner === DJEETA ? GRAN : owner);
-
-const joinedKeys = (units: Units) =>
-  new Set(
-    units
-      .entitiesWith(CHARACTER_KEY)
-      .filter((entity) => isCrewMember(units, entity))
-      .map((entity) => units.of(entity).get(CHARACTER_KEY)),
-  );
-
-/** Summed levels of joined characters' held weapons. */
-const levelsTotalOf = (units: Units, raised: ReadonlySet<UnitEntity>) => {
-  const joined = joinedKeys(units);
-  return [...readWeapons(units).values()]
-    .filter(
-      (weapon) =>
-        weapon.owned &&
-        weapon.series !== undefined &&
-        weapon.series !== BONUS_SERIES &&
-        joined.has(weapon.character),
-    )
-    .reduce(
-      (total, { entity, xp }) =>
-        total + (raised.has(entity) ? WEAPON_LAST_LEVEL : weaponLevelOf(xp)),
-      0,
-    );
-};
-
-/** Recounts 184, 998 and 185 over joined characters' held weapons. */
-export function recountHeldWeapons(units: Units, ledger: TrophyLedger) {
-  const joined = joinedKeys(units);
-  const heldTotal = [...readOwnedWeapons(units)]
-    .filter(([owner]) => joined.has(owner))
-    .reduce((total, [, series]) => total + series.size, 0);
-  ledger.setTiers(WEAPONS_HELD, heldTotal, WEAPONS_HELD_BADGES);
-  ledger.setTiers(WEAPONS_HELD_ALL, heldTotal, WEAPONS_HELD_ALL_BADGES);
-  ledger.setTiers(
-    WEAPON_LEVELS_TOTAL,
-    levelsTotalOf(units, new Set()),
-    WEAPON_LEVELS_TOTAL_BADGES,
-  );
-}
 
 /** Writes the ledger's counts and earned trophies. */
 export function writeLedger(draft: Draft, ledger: TrophyLedger) {
@@ -206,52 +138,6 @@ export function forgedWeaponTrophies(
       ).length,
     );
   writeLedger(draft, ledger);
-}
-
-/** The ledger with `raised` weapons at the last uncap and level, and whether it differs from the save. */
-export function raisedWeaponTrophies(
-  units: Units,
-  character: string,
-  held: readonly Weapon[],
-  raised: readonly Weapon[],
-) {
-  const raisedEntities = new Set(raised.map(({ entity }) => entity));
-
-  const ledger = trophyLedger(units);
-  const { progress, earned } = ledger;
-  ledger.setTiers(
-    WEAPON_LEVELS_TOTAL,
-    levelsTotalOf(units, raisedEntities),
-    WEAPON_LEVELS_TOTAL_BADGES,
-  );
-  ledger.setTiers(
-    WEAPON_UNCAPS,
-    Number(progress[WEAPON_UNCAPS]!) +
-      raised.reduce((total, { uncap }) => total + WEAPON_LAST_UNCAP - uncap, 0),
-    WEAPON_UNCAPS_BADGES,
-  );
-
-  const trove = WEAPON_TROVES[trophyOwner(character)];
-  if (trove)
-    ledger.setOwn(
-      trove,
-      held.filter(
-        (weapon) =>
-          countsForTrophies(character, weapon) &&
-          (raisedEntities.has(weapon.entity) ||
-            weapon.uncap >= WEAPON_LAST_UNCAP),
-      ).length,
-    );
-
-  const at = units.of(SAVE_ENTITY);
-  const before = at.get(TROPHY_PROGRESS);
-  const beforeEarned = at.get(TROPHY_EARNED);
-  return {
-    ledger,
-    changed:
-      progress.some((value, index) => value !== before[index]) ||
-      earned.some((value, index) => value !== beforeEarned[index]),
-  };
 }
 
 /** Raises the per-difficulty and total quest clear counters for each cleared quest. */

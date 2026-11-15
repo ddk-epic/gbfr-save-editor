@@ -20,7 +20,6 @@ import { SAVE_ENTITY } from "../../packages/core/save-entity";
 import {
   canMaxAllWeaponSeries,
   canMaxWeaponSeries,
-  canUnlockAllWeaponSeries,
   maxAllWeaponSeries,
   maxWeaponSeries,
   unlockAllWeaponSeries,
@@ -28,6 +27,7 @@ import {
   unlockWeaponSeries,
 } from "../../packages/workflows/weapon";
 import {
+  canUnlockAllWeaponSeries,
   unlockableWeapons,
   readOwnedWeapons,
   readWeapons,

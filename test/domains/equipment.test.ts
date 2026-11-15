@@ -12,8 +12,9 @@ import {
   EQUIP_WEAPON,
   LOADOUT_FIRST,
 } from "../../packages/equipment/attributes";
-import { equipWeapon, equippableWeapons } from "../../packages/equipment/edit";
+import { equipWeapon } from "../../packages/equipment/edit";
 import {
+  equippableWeapons,
   equipmentLookup,
   readCharacterEquipment,
   readEquipment,

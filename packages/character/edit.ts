@@ -1,8 +1,7 @@
-import type { Save, UnitEntity, Units } from "@gbfr/core";
+import type { UnitEntity } from "@gbfr/core";
 import type { Draft } from "@gbfr/core/draft";
 import {
   CHARACTER_MAX_STATS,
-  UNLOCKABLE_CHARACTERS,
   MASTER_LEVEL_CHARACTERS,
   MASTER_LEVEL_MSP,
 } from "./data.gen";
@@ -18,14 +17,9 @@ import {
   CHARACTER_MAX_XP,
   CHARACTER_XP,
 } from "./attributes";
-import { masterLevelOf } from "./read";
+import { MAX_MASTER_LEVEL, canUnlockCharacter, masterLevelOf } from "./read";
 
-export const MAX_MASTER_LEVEL = MASTER_LEVEL_MSP.length - 1;
 const MASTER_LEVEL_CAP = 50;
-
-/** False for NPCs and unused rows. */
-export const characterLevels = (character: string) =>
-  character in CHARACTER_MAX_STATS;
 
 /** Sets a character to level 100 with the level 100 base HP and ATK. */
 export function maxCharacterLevel(draft: Draft, character: UnitEntity) {
@@ -43,18 +37,6 @@ export function maxCharacterLevel(draft: Draft, character: UnitEntity) {
   at.set(CHARACTER_LEVEL, CHARACTER_MAX_LEVEL);
   at.set(CHARACTER_BASE_HP, stats.hp);
   at.set(CHARACTER_BASE_ATTACK, stats.attack);
-}
-
-/** True for a Crewmate menu character not in the crew. */
-export function canUnlockCharacter(units: Units, character: UnitEntity) {
-  const at = units.of(character);
-  const key = at.get(CHARACTER_KEY);
-  return (
-    key !== undefined &&
-    UNLOCKABLE_CHARACTERS.includes(key) &&
-    characterLevels(key) &&
-    !at.get(CHARACTER_FLAGS).joined
-  );
 }
 
 type CharacterFlags = Parameters<typeof CHARACTER_FLAGS.write>[0];
@@ -100,19 +82,6 @@ export function joinCharacter(draft: Draft, character: UnitEntity) {
     },
   );
 }
-
-/** Crewmate menu characters not in the crew. */
-export const lockedCharacters = (units: Units) =>
-  units
-    .entitiesWith(CHARACTER_KEY)
-    .filter((entity) => canUnlockCharacter(units, entity));
-
-export const canUnlockAllCharacters = (save: Save) =>
-  lockedCharacters(save.slotData.units).length > 0;
-
-/** False for characters with no master level badges. */
-export const characterMasterLevels = (character: string) =>
-  MASTER_LEVEL_CHARACTERS.includes(character);
 
 /** Sets a character to the last master level, no MSP spent. */
 export function raiseMasterLevel(draft: Draft, character: UnitEntity) {

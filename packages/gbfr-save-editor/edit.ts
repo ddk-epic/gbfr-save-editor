@@ -3,24 +3,24 @@ export { draft, type Draft } from "@gbfr/core/draft";
 export {
   canMaxAllWeaponSeries,
   canMaxWeaponSeries,
-  canUnlockAllWeaponSeries,
-  canUnlockWeaponSeries,
   maxAllWeaponSeries,
   maxWeaponSeries,
   unlockAllWeaponSeries,
   unlockWeaponSeries,
 } from "@gbfr/workflows";
+export { canUnlockAllWeaponSeries, canUnlockWeaponSeries } from "@gbfr/weapon";
 export { removeWrightstone } from "@gbfr/weapon/edit";
-export { equipWeapon, equippableWeapons } from "@gbfr/equipment/edit";
+export { equipWeapon } from "@gbfr/equipment/edit";
+export { equippableWeapons } from "@gbfr/equipment";
 export { removeOverMasteries } from "@gbfr/over-mastery/edit";
 export {
   MAX_MASTER_LEVEL,
   characterLevels,
   characterMasterLevels,
-  maxCharacterLevel,
   canUnlockAllCharacters,
   canUnlockCharacter,
-} from "@gbfr/character/edit";
+} from "@gbfr/character";
+export { maxCharacterLevel } from "@gbfr/character/edit";
 export {
   maxMasterLevel,
   unlockAllCharacters,
@@ -28,7 +28,8 @@ export {
 } from "@gbfr/workflows";
 export { CHARACTER_MAX_LEVEL } from "@gbfr/character";
 export { maxMasteryPoints, maxRupies } from "@gbfr/user/edit";
-export { canMaxTreasures, maxTreasures } from "@gbfr/item/edit";
+export { canMaxTreasures } from "@gbfr/item";
+export { maxTreasures } from "@gbfr/item/edit";
 export { USER_MAX_MASTERY_POINTS, USER_MAX_RUPIES } from "@gbfr/user";
 export { completeFateEpisodes } from "@gbfr/workflows";
 export { advanceStory, fillSkippedStory } from "@gbfr/workflows";

@@ -1,6 +1,5 @@
 import {
   EMPTY_HASH,
-  type Save,
   type UnitEntity,
   type Units,
   SAVE_ENTITY,
@@ -14,17 +13,9 @@ import {
   ITEM_FLAGS,
   ITEM_KEY,
 } from "./attributes";
-import { itemTab } from "./read";
+import { treasuresBelowTarget } from "./read";
 
 const ITEM_ENTITIES = 500;
-export const TREASURE_CAP = 999;
-const KNICKKNACK_VOUCHER_CAP = 99999;
-const KNICKKNACK_VOUCHER = "ITEM_21_0000";
-const CURIO_PREFIX = "ITEM_19_";
-const CARD_PREFIX = "ITEM_23_";
-const PLAIN_CARD = "ITEM_23_0000";
-const PLAIN_CARD_COUNT = 99;
-const CHARACTER_CARD_COUNT = 1;
 
 /** Hands out ITEM_ACQUIRED stamps after ITEM_ACQUIRED_LAST. */
 export function acquisitions(draft: Draft) {
@@ -39,30 +30,6 @@ export function acquisitions(draft: Draft) {
     },
   };
 }
-
-function treasureTarget(key: string): number | undefined {
-  if (itemTab(key) !== "treasures" || key.startsWith(CURIO_PREFIX))
-    return undefined;
-  if (key === KNICKKNACK_VOUCHER) return KNICKKNACK_VOUCHER_CAP;
-  if (key === PLAIN_CARD) return PLAIN_CARD_COUNT;
-  if (key.startsWith(CARD_PREFIX)) return CHARACTER_CARD_COUNT;
-  return TREASURE_CAP;
-}
-
-function treasuresBelowTarget(units: Units) {
-  return units.entitiesWith(ITEM_KEY).flatMap((entity) => {
-    const at = units.of(entity);
-    const key = at.get(ITEM_KEY);
-    const target = key === undefined ? undefined : treasureTarget(key);
-    return target !== undefined && at.get(ITEM_COUNT) < target
-      ? [{ entity, target }]
-      : [];
-  });
-}
-
-/** True on a save with a treasure below its target count. */
-export const canMaxTreasures = (save: Save) =>
-  treasuresBelowTarget(save.slotData.units).length > 0;
 
 /** Raises every treasure except curios to its target count. */
 export function maxTreasures(draft: Draft) {

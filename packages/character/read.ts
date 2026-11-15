@@ -1,7 +1,14 @@
-import { CHARACTER_UI_ORDER, MASTER_LEVEL_MSP } from "./data.gen";
+import {
+  CHARACTER_MAX_STATS,
+  CHARACTER_UI_ORDER,
+  MASTER_LEVEL_CHARACTERS,
+  MASTER_LEVEL_MSP,
+  UNLOCKABLE_CHARACTERS,
+} from "./data.gen";
 import {
   hashId,
   type EntityRange,
+  type Save,
   type Units,
   type UnitEntity,
   SAVE_ENTITY,
@@ -139,3 +146,33 @@ export const crewLevelTotal = (units: Units) => {
       0,
     );
 };
+
+export const MAX_MASTER_LEVEL = MASTER_LEVEL_MSP.length - 1;
+/** False for NPCs and unused rows. */
+export const characterLevels = (character: string) =>
+  character in CHARACTER_MAX_STATS;
+
+/** True for a Crewmate menu character not in the crew. */
+export function canUnlockCharacter(units: Units, character: UnitEntity) {
+  const at = units.of(character);
+  const key = at.get(CHARACTER_KEY);
+  return (
+    key !== undefined &&
+    UNLOCKABLE_CHARACTERS.includes(key) &&
+    characterLevels(key) &&
+    !at.get(CHARACTER_FLAGS).joined
+  );
+}
+
+/** Crewmate menu characters not in the crew. */
+export const lockedCharacters = (units: Units) =>
+  units
+    .entitiesWith(CHARACTER_KEY)
+    .filter((entity) => canUnlockCharacter(units, entity));
+
+export const canUnlockAllCharacters = (save: Save) =>
+  lockedCharacters(save.slotData.units).length > 0;
+
+/** False for characters with no master level badges. */
+export const characterMasterLevels = (character: string) =>
+  MASTER_LEVEL_CHARACTERS.includes(character);

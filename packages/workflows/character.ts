@@ -1,11 +1,7 @@
 import type { UnitEntity } from "@gbfr/core";
 import type { Draft } from "@gbfr/core/draft";
-import { CHARACTER_KEY } from "@gbfr/character";
-import {
-  joinCharacter,
-  lockedCharacters,
-  raiseMasterLevel,
-} from "@gbfr/character/edit";
+import { CHARACTER_KEY, lockedCharacters } from "@gbfr/character";
+import { joinCharacter, raiseMasterLevel } from "@gbfr/character/edit";
 import { characterLevelTrophies, masterLevelTrophies } from "@gbfr/trophy/edit";
 
 /** Joins a Crewmate menu character at level 100 and writes its level trophies. */

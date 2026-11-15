@@ -11,7 +11,7 @@ import {
   joinedCharacters,
 } from "@gbfr/character";
 import { joinCharacterAt } from "@gbfr/character/edit";
-import { acquisitions, TREASURE_CAP } from "@gbfr/item/edit";
+import { acquisitions } from "@gbfr/item/edit";
 import { FATE_EPISODE_KEY, FATE_EPISODE_STATE } from "@gbfr/fate-episode";
 import { EQUIP_WEAPON } from "@gbfr/equipment";
 import {
@@ -19,6 +19,7 @@ import {
   ITEM_COUNT,
   ITEM_FLAGS,
   ITEM_KEY,
+  TREASURE_CAP,
   itemHash,
 } from "@gbfr/item";
 import { ARCHIVE_FLAGS, fieldNoteWeaponMarked } from "@gbfr/journal";

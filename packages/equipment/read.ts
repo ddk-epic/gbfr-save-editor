@@ -2,6 +2,7 @@ import type { UnitEntity, Attribute, Units } from "@gbfr/core";
 import { CHARACTER_KEY } from "@gbfr/character";
 import { findSigilById, readSigil, readSigils, type Sigil } from "@gbfr/sigil";
 import {
+  WEAPON_SERIES_ORDER,
   findWeaponById,
   readWeapon,
   readWeapons,
@@ -78,3 +79,19 @@ export const readCharacterEquipment = (
   gear: UnitEntity,
 ): Equipment | undefined =>
   readEquipment(units, gear, CHARACTER_KEY, findingLookup(units));
+
+const rank = ({ series }: Weapon) => {
+  const at = series === undefined ? -1 : WEAPON_SERIES_ORDER.indexOf(series);
+  return at === -1 ? WEAPON_SERIES_ORDER.length : at;
+};
+
+export function equippableWeapons(
+  units: Units,
+  character: UnitEntity,
+): Weapon[] {
+  const characterKey = units.of(character).get(CHARACTER_KEY);
+  if (characterKey === undefined) return [];
+  return [...readWeapons(units).values()]
+    .filter((weapon) => weapon.owned && weapon.character === characterKey)
+    .sort((a, b) => rank(a) - rank(b));
+}

@@ -1,17 +1,16 @@
 import type { Save, UnitEntity, Units } from "@gbfr/core";
 import type { Draft } from "@gbfr/core/draft";
-import { WEAPON_ROWS, raisableWeapons, unlockableWeapons } from "@gbfr/weapon";
+import {
+  WEAPON_ROWS,
+  canUnlockWeaponSeries,
+  raisableWeapons,
+  unlockableWeapons,
+} from "@gbfr/weapon";
 import { CHARACTER_KEY } from "@gbfr/character";
 import { registerFieldNoteWeapon } from "@gbfr/journal/edit";
-import {
-  forgedWeaponTrophies,
-  raisedWeaponTrophies,
-  writeLedger,
-} from "@gbfr/trophy/edit";
+import { raisedWeaponTrophies } from "@gbfr/trophy";
+import { forgedWeaponTrophies, writeLedger } from "@gbfr/trophy/edit";
 import { forgeWeapon, raiseWeapons } from "@gbfr/weapon/edit";
-
-export const canUnlockWeaponSeries = (units: Units, character: UnitEntity) =>
-  unlockableWeapons(units, character).length > 0;
 
 /** Adds one weapon as a forge does, at no cost. */
 export function unlockWeapon(draft: Draft, character: UnitEntity, key: string) {
@@ -61,11 +60,6 @@ export function maxWeaponSeries(draft: Draft, character: UnitEntity) {
 }
 
 const characters = (units: Units) => units.entitiesWith(CHARACTER_KEY);
-
-export const canUnlockAllWeaponSeries = (save: Save) =>
-  characters(save.slotData.units).some((entity) =>
-    canUnlockWeaponSeries(save.slotData.units, entity),
-  );
 
 /** `unlockWeaponSeries` on every character. */
 export function unlockAllWeaponSeries(draft: Draft) {

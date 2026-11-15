@@ -1,6 +1,6 @@
 import { WEAPON_LEVEL_XP, WEAPON_ROWS } from "./data.gen";
 import { CHARACTER_KEY, offPlayCaptain } from "@gbfr/character";
-import { keyOf, type UnitEntity, type Units } from "@gbfr/core";
+import { keyOf, type Save, type UnitEntity, type Units } from "@gbfr/core";
 import { SKILLS } from "@gbfr/tables";
 import { TRAIT_WEAPON, readFilledTraits } from "@gbfr/trait";
 import type { Wrightstone } from "@gbfr/wrightstone";
@@ -155,3 +155,11 @@ export function raisableWeapons(units: Units, character: string) {
   );
   return { held, raised };
 }
+
+export const canUnlockWeaponSeries = (units: Units, character: UnitEntity) =>
+  unlockableWeapons(units, character).length > 0;
+
+export const canUnlockAllWeaponSeries = (save: Save) =>
+  save.slotData.units
+    .entitiesWith(CHARACTER_KEY)
+    .some((entity) => canUnlockWeaponSeries(save.slotData.units, entity));

@@ -15,8 +15,6 @@ import {
   CAPTAIN,
 } from "../../packages/character/attributes";
 import {
-  canUnlockAllCharacters,
-  canUnlockCharacter,
   joinCharacterAt,
   maxCharacterLevel,
 } from "../../packages/character/edit";
@@ -26,6 +24,8 @@ import {
   unlockCharacter,
 } from "../../packages/workflows/character";
 import {
+  canUnlockAllCharacters,
+  canUnlockCharacter,
   characterEntities,
   joinedCharacters,
   playableCharacters,
