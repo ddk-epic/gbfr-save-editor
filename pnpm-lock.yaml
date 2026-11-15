@@ -374,6 +374,9 @@ importers:
       '@gbfr/trophy':
         specifier: workspace:*
         version: link:../trophy
+      '@gbfr/tutorial':
+        specifier: workspace:*
+        version: link:../tutorial
       '@gbfr/user':
         specifier: workspace:*
         version: link:../user
@@ -521,6 +524,9 @@ importers:
       '@gbfr/quest':
         specifier: workspace:*
         version: link:../quest
+      '@gbfr/save':
+        specifier: workspace:*
+        version: link:../save
       '@gbfr/skill':
         specifier: workspace:*
         version: link:../skill

@@ -17,6 +17,7 @@
     "@gbfr/mastery": "workspace:*",
     "@gbfr/profile": "workspace:*",
     "@gbfr/quest": "workspace:*",
+    "@gbfr/save": "workspace:*",
     "@gbfr/skill": "workspace:*",
     "@gbfr/story": "workspace:*",
     "@gbfr/summon": "workspace:*",

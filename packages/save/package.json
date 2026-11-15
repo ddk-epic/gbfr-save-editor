@@ -26,6 +26,7 @@
     "@gbfr/summon": "workspace:*",
     "@gbfr/tables": "workspace:*",
     "@gbfr/trophy": "workspace:*",
+    "@gbfr/tutorial": "workspace:*",
     "@gbfr/user": "workspace:*",
     "@gbfr/weapon": "workspace:*",
     "@gbfr/wrightstone": "workspace:*"

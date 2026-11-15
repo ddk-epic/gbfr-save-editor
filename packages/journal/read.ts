@@ -3,7 +3,7 @@ import {
   FIELD_NOTE_WEAPONS,
   STORY_ORDER,
 } from "./data.gen";
-import { hashId, type Attribute, type Units } from "@gbfr/core";
+import { hasUnsetFlag, hashId, type Attribute, type Units } from "@gbfr/core";
 import { ITEM_FLAGS, ITEM_KEY } from "@gbfr/item";
 import {
   ARCHIVE_FLAGS,
@@ -170,3 +170,7 @@ export const fieldNoteWeaponMarked = (units: Units, key: string) =>
       units.onlyEntityWhere(FIELD_NOTE_WEAPON_KEY, hashId(key)),
     )![0],
   ) !== 0;
+
+/** True while `unlockTips` would change one of the tips `hashes` name. */
+export const hasLockedTips = (units: Units, hashes: readonly number[]) =>
+  hasUnsetFlag(units, TIP_KEY, hashes, TIP_FLAGS, "unlocked");

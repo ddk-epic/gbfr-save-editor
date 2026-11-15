@@ -20,6 +20,8 @@ import { SAVE_ENTITY } from "../../packages/core/save-entity";
 import {
   canMaxAllWeaponSeries,
   canMaxWeaponSeries,
+} from "../../packages/save/weapon-series";
+import {
   maxAllWeaponSeries,
   maxWeaponSeries,
   unlockAllWeaponSeries,

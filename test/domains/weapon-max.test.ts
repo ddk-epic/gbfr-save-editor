@@ -7,10 +7,8 @@ import {
   CHARACTER_KEY,
   CAPTAIN,
 } from "../../packages/character/attributes";
-import {
-  canMaxWeaponSeries,
-  maxWeaponSeries,
-} from "../../packages/workflows/weapon";
+import { canMaxWeaponSeries } from "../../packages/save/weapon-series";
+import { maxWeaponSeries } from "../../packages/workflows/weapon";
 import { readWeapon, weaponLevelOf } from "../../packages/weapon/read";
 import {
   WEAPON_FIRST,

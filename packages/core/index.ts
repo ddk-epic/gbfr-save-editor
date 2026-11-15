@@ -3,6 +3,7 @@ export * from "./bytes";
 export * from "./checksum";
 export * from "./container";
 export * from "./errors";
+export * from "./flag-query";
 export * from "./keys";
 export * from "./module";
 export * from "./read-save";

@@ -1,8 +1,6 @@
 export { SaveSession } from "@gbfr/core/session";
 export { draft, type Draft } from "@gbfr/core/draft";
 export {
-  canMaxAllWeaponSeries,
-  canMaxWeaponSeries,
   maxAllWeaponSeries,
   maxWeaponSeries,
   unlockAllWeaponSeries,
@@ -39,7 +37,12 @@ export {
   CHAPTER_ZERO_END_KEY,
   type StoryCheckpoint,
 } from "@gbfr/story";
-export { canClearHints, clearHints } from "@gbfr/workflows";
+export { clearHints } from "@gbfr/workflows";
+export {
+  canClearHints,
+  canMaxAllWeaponSeries,
+  canMaxWeaponSeries,
+} from "@gbfr/save";
 export { addWrightstone, editWrightstone } from "@gbfr/workflows";
 export {
   WRIGHTSTONE_MAINS,

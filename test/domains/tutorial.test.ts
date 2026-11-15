@@ -10,7 +10,9 @@ import {
   TUTORIAL_WINDOW_FLAGS,
   TUTORIAL_WINDOW_KEY,
 } from "../../packages/tutorial/attributes";
-import { canClearHints, clearHints } from "../../packages/workflows/tutorial";
+import { canClearHints } from "../../packages/save/hints";
+import { clearHints } from "../../packages/workflows/tutorial";
+import { draft } from "../../packages/core/draft";
 import { SAVE_HASHSEED } from "../../packages/core/save-entity";
 import { SaveSession } from "../../packages/core/session";
 import { fixtureFile } from "../../packages/gbfr-save-editor/testing";
@@ -69,6 +71,25 @@ describe("clearHints", () => {
     const session = save();
     expect(canClearHints(session.save)).toBe(true);
     apply(session, (draft) => clearHints(draft));
+    expect(canClearHints(session.save)).toBe(false);
+  });
+
+  it("is offered exactly when clearing hints would change the save", () => {
+    const session = save();
+    const changes = () => {
+      const pending = draft(session.save.slotData.units);
+      clearHints(pending);
+      return session.commit(pending);
+    };
+    const before = canClearHints(session.save);
+    expect(before).toBe(true);
+    expect(changes()).toBe(before);
+    expect(canClearHints(session.save)).toBe(false);
+    expect(changes()).toBe(false);
+  });
+
+  it("is not offered on a save with no hint rows", () => {
+    const session = SaveSession.open(fixtureFile({ 0: [[SAVE_HASHSEED, 23]] }));
     expect(canClearHints(session.save)).toBe(false);
   });
 });
