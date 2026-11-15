@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { apply } from "../helpers";
 import { hashId } from "../../packages/core/xxhash32-custom";
 import { canMaxTreasures, maxTreasures } from "../../packages/item/edit";
 import {
@@ -56,7 +57,7 @@ const open = (rows = ROWS) =>
 describe("maxTreasures", () => {
   it("raises each treasure to its count", () => {
     const session = open();
-    maxTreasures(session);
+    apply(session, (draft) => maxTreasures(draft));
     const units = session.save.slotData.units;
     const count = (row: number) => units.of(row + 1).get(ITEM_COUNT);
 
@@ -67,7 +68,7 @@ describe("maxTreasures", () => {
 
   it("marks raised rows and numbers the newly gained", () => {
     const session = open();
-    maxTreasures(session);
+    apply(session, (draft) => maxTreasures(draft));
     const units = session.save.slotData.units;
     const flags = (row: number) => units.values(ITEM_FLAGS, row + 1);
     const got = (row: number) => units.values(ITEM_ACQUIRED, row + 1);
@@ -88,8 +89,10 @@ describe("maxTreasures", () => {
   it("is offered until nothing is left to raise", () => {
     const session = open();
     expect(canMaxTreasures(session.save)).toBe(true);
-    maxTreasures(session);
+    apply(session, (draft) => maxTreasures(draft));
     expect(canMaxTreasures(session.save)).toBe(false);
-    expect(() => maxTreasures(session)).toThrow("already");
+    expect(() => apply(session, (draft) => maxTreasures(draft))).toThrow(
+      "already",
+    );
   });
 });

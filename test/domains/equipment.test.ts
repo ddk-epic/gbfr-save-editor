@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { apply } from "../helpers";
 import { hashId } from "../../packages/core/xxhash32-custom";
 import {
   CHARACTER_FIRST,
@@ -148,7 +149,7 @@ describe("equipWeapon", () => {
 
   it("equips one of them", () => {
     const session = SaveSession.open(fixtureFile(inventory));
-    equipWeapon(session, CHARACTER, 71);
+    apply(session, (draft) => equipWeapon(draft, CHARACTER, 71));
     expect(session.save.slotData.units.values(EQUIP_WEAPON, CHARACTER)).toEqual(
       [71],
     );
@@ -157,9 +158,11 @@ describe("equipWeapon", () => {
   it("refuses a weapon the character cannot hold", () => {
     const session = SaveSession.open(fixtureFile(inventory));
     for (const id of [40, 9, 999])
-      expect(() => equipWeapon(session, CHARACTER, id)).toThrow("cannot equip");
-    expect(() => equipWeapon(session, CHARACTER + 1, 71)).toThrow(
-      "no character at",
-    );
+      expect(() =>
+        apply(session, (draft) => equipWeapon(draft, CHARACTER, id)),
+      ).toThrow("cannot equip");
+    expect(() =>
+      apply(session, (draft) => equipWeapon(draft, CHARACTER + 1, 71)),
+    ).toThrow("no character at");
   });
 });

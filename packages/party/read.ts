@@ -1,4 +1,4 @@
-import type { UnitStore } from "@gbfr/core";
+import type { Units } from "@gbfr/core";
 import {
   EQUIP_CHARACTER,
   readEquipment,
@@ -19,13 +19,13 @@ export interface PartyMember extends Equipment {
   skills: (string | undefined)[];
 }
 
-export const readParty = (units: UnitStore): (string | undefined)[] =>
+export const readParty = (units: Units): (string | undefined)[] =>
   Array.from({ length: PARTY_POSITIONS }, (_, i) =>
     units.of(PARTY_FIRST + i).get(PARTY_CHARACTER),
   );
 
 export function readPartySets(
-  units: UnitStore,
+  units: Units,
   lookup: EquipmentLookup,
 ): ((PartyMember | undefined)[] | undefined)[] {
   return Array.from({ length: PARTY_SET_COUNT }, (_, set) => {

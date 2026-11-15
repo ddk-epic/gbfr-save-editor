@@ -64,8 +64,8 @@ export function CharacterPage({
                       {
                         label: t("edit.removeOverMasteries"),
                         run: () =>
-                          edit((session) =>
-                            removeOverMasteries(session, character.entity),
+                          edit((draft) =>
+                            removeOverMasteries(draft, character.entity),
                           ),
                       },
                     ]
@@ -94,11 +94,8 @@ export function CharacterPage({
                                 {
                                   label: gt("ui", "unlockCharacter")!,
                                   run: () =>
-                                    edit((session) =>
-                                      unlockCharacter(
-                                        session,
-                                        character.entity,
-                                      ),
+                                    edit((draft) =>
+                                      unlockCharacter(draft, character.entity),
                                     ),
                                 },
                               ]
@@ -108,9 +105,9 @@ export function CharacterPage({
                                 {
                                   label: t("edit.maxCharacterLevel"),
                                   run: () =>
-                                    edit((session) =>
+                                    edit((draft) =>
                                       maxCharacterLevel(
-                                        session,
+                                        draft,
                                         character.entity,
                                       ),
                                     ),
@@ -122,8 +119,8 @@ export function CharacterPage({
                                 {
                                   label: t("edit.maxMasterLevel"),
                                   run: () =>
-                                    edit((session) =>
-                                      maxMasterLevel(session, character.entity),
+                                    edit((draft) =>
+                                      maxMasterLevel(draft, character.entity),
                                     ),
                                 },
                               ]
@@ -146,9 +143,9 @@ export function CharacterPage({
                                 {
                                   label: t("edit.completeFateEpisodes"),
                                   run: () =>
-                                    edit((session) =>
+                                    edit((draft) =>
                                       completeFateEpisodes(
-                                        session,
+                                        draft,
                                         character.key,
                                       ),
                                     ),

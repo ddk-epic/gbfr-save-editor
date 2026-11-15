@@ -7,7 +7,7 @@ import {
   keyOf,
   type UnitEntity,
   type EntityRange,
-  type UnitStore,
+  type Units,
 } from "@gbfr/core";
 import {
   MASTER_TRAIT_CHOSEN,
@@ -40,7 +40,7 @@ const MASTER_TRAIT_RANKS = ["r1", "r2", "r3", "ex"];
 
 /** Every board cell, by style, rank, perks first, then board order. */
 export function readMasterTraits(
-  units: UnitStore,
+  units: Units,
   mastery: EntityRange,
 ): MasterTrait[] {
   const cells: MasterTrait[] = [];

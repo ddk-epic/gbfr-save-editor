@@ -1,5 +1,5 @@
-import type { Patch } from "@gbfr/core/session";
-import { SAVE_ENTITY, type UnitEntity, type UnitStore } from "@gbfr/core";
+import { SAVE_ENTITY, type UnitEntity, type Units } from "@gbfr/core";
+import type { Draft } from "@gbfr/core/draft";
 import {
   ACCOUNT_MASTER_LEVEL_BADGES,
   CHARACTER_LEVEL_BADGES,
@@ -56,7 +56,7 @@ const countsForTrophies = (owner: string, { key }: Weapon) =>
 
 const trophyOwner = (owner: string) => (owner === DJEETA ? GRAN : owner);
 
-const joinedKeys = (units: UnitStore) =>
+const joinedKeys = (units: Units) =>
   new Set(
     units
       .entitiesWith(CHARACTER_KEY)
@@ -65,7 +65,7 @@ const joinedKeys = (units: UnitStore) =>
   );
 
 /** Summed levels of joined characters' held weapons. */
-const levelsTotalOf = (units: UnitStore, raised: ReadonlySet<UnitEntity>) => {
+const levelsTotalOf = (units: Units, raised: ReadonlySet<UnitEntity>) => {
   const joined = joinedKeys(units);
   return [...readWeapons(units).values()]
     .filter(
@@ -83,7 +83,7 @@ const levelsTotalOf = (units: UnitStore, raised: ReadonlySet<UnitEntity>) => {
 };
 
 /** Recounts 184, 998 and 185 over joined characters' held weapons. */
-export function recountHeldWeapons(units: UnitStore, ledger: TrophyLedger) {
+export function recountHeldWeapons(units: Units, ledger: TrophyLedger) {
   const joined = joinedKeys(units);
   const heldTotal = [...readOwnedWeapons(units)]
     .filter(([owner]) => joined.has(owner))
@@ -97,26 +97,22 @@ export function recountHeldWeapons(units: UnitStore, ledger: TrophyLedger) {
   );
 }
 
-const ledgerPatches = (units: UnitStore, ledger: TrophyLedger): Patch[] => {
-  const save = units.of(SAVE_ENTITY);
-  return [
-    save.patch(TROPHY_PROGRESS, ledger.progress),
-    save.patch(TROPHY_EARNED, ledger.earned),
-  ];
-};
+/** Writes the ledger's counts and earned trophies. */
+export function writeLedger(draft: Draft, ledger: TrophyLedger) {
+  const save = draft.of(SAVE_ENTITY);
+  save.set(TROPHY_PROGRESS, ledger.progress);
+  save.set(TROPHY_EARNED, ledger.earned);
+}
 
-/** Patches for a character joined at the last level, read after the join is applied. */
-export function characterLevelTrophies(
-  units: UnitStore,
-  character: string,
-): Patch[] {
+/** Earns the trophies of a character joined at the last level. */
+export function characterLevelTrophies(draft: Draft, character: string) {
   const { index, progress, badges } = CHARACTER_LEVEL_BADGES[character]!;
   const crewCap = CREW_LEVEL_BADGES.at(-1)![1];
-  const ledger = trophyLedger(units);
+  const ledger = trophyLedger(draft);
   ledger.setTiers(progress, CHARACTER_MAX_LEVEL, badges);
   ledger.setTiers(
     CREW_LEVEL_TOTAL,
-    Math.min(crewLevelTotal(units), crewCap),
+    Math.min(crewLevelTotal(draft), crewCap),
     CREW_LEVEL_BADGES,
   );
   ledger.setTiers(
@@ -124,23 +120,18 @@ export function characterLevelTrophies(
     CHARACTER_MAX_LEVEL,
     LAST_RAISED_LEVEL_BADGES,
   );
-  recountHeldWeapons(units, ledger);
-  const levels = [...units.of(SAVE_ENTITY).get(TROPHY_CHARACTER_LEVEL)];
+  recountHeldWeapons(draft, ledger);
+  const levels = [...draft.of(SAVE_ENTITY).get(TROPHY_CHARACTER_LEVEL)];
   levels[index] = CHARACTER_MAX_LEVEL;
-  return [
-    ...ledgerPatches(units, ledger),
-    units.of(SAVE_ENTITY).patch(TROPHY_CHARACTER_LEVEL, levels),
-  ];
+  writeLedger(draft, ledger);
+  draft.of(SAVE_ENTITY).set(TROPHY_CHARACTER_LEVEL, levels);
 }
 
-/** Patches earning a character's master level badges and the account's. */
-export function masterLevelTrophies(
-  units: UnitStore,
-  character: string,
-): Patch[] {
+/** Earns a character's master level badges and the account's. */
+export function masterLevelTrophies(draft: Draft, character: string) {
   const badges = MASTER_LEVEL_BADGES[character]!;
-  const earned = [...units.of(SAVE_ENTITY).get(TROPHY_EARNED)];
-  const progress = [...units.of(SAVE_ENTITY).get(TROPHY_PROGRESS)];
+  const earned = [...draft.of(SAVE_ENTITY).get(TROPHY_EARNED)];
+  const progress = [...draft.of(SAVE_ENTITY).get(TROPHY_PROGRESS)];
   // ReqQuantity 1 badges write no progress.
   for (const [badge, behavior, quantity] of [
     ...badges.map(
@@ -153,24 +144,22 @@ export function masterLevelTrophies(
     if (quantity > 1 && progress[behavior]! < BigInt(quantity))
       progress[behavior] = BigInt(quantity);
   }
-  const save = units.of(SAVE_ENTITY);
-  return [
-    save.patch(TROPHY_EARNED, earned),
-    save.patch(TROPHY_PROGRESS, progress),
-  ];
+  const save = draft.of(SAVE_ENTITY);
+  save.set(TROPHY_EARNED, earned);
+  save.set(TROPHY_PROGRESS, progress);
 }
 
-/** Patches for a weapon of `character` just forged in `series`, read after the forge is applied. */
+/** Earns the trophies of a weapon of `character` just forged in `series`. */
 export function forgedWeaponTrophies(
-  units: UnitStore,
+  draft: Draft,
   character: string,
   series: number,
-): Patch[] {
-  const counted = [...readOwnedWeapons(units).get(character)!.values()].filter(
+) {
+  const counted = [...readOwnedWeapons(draft).get(character)!.values()].filter(
     (weapon) => countsForTrophies(character, weapon),
   );
-  const ledger = trophyLedger(units);
-  recountHeldWeapons(units, ledger);
+  const ledger = trophyLedger(draft);
+  recountHeldWeapons(draft, ledger);
   const owner = trophyOwner(character);
   const collection = WEAPON_COLLECTIONS[owner];
   if (collection) ledger.setOwn(collection, counted.length);
@@ -184,12 +173,12 @@ export function forgedWeaponTrophies(
           weapon.uncap >= WEAPON_LAST_UNCAP,
       ).length,
     );
-  return ledgerPatches(units, ledger);
+  writeLedger(draft, ledger);
 }
 
-/** Patches for `raised` weapons of a character taken to the last uncap and level, and whether they differ from the save. */
+/** The ledger with `raised` weapons at the last uncap and level, and whether it differs from the save. */
 export function raisedWeaponTrophies(
-  units: UnitStore,
+  units: Units,
   character: string,
   held: readonly Weapon[],
   raised: readonly Weapon[],
@@ -226,7 +215,7 @@ export function raisedWeaponTrophies(
   const before = at.get(TROPHY_PROGRESS);
   const beforeEarned = at.get(TROPHY_EARNED);
   return {
-    patches: ledgerPatches(units, ledger),
+    ledger,
     changed:
       progress.some((value, index) => value !== before[index]) ||
       earned.some((value, index) => value !== beforeEarned[index]),

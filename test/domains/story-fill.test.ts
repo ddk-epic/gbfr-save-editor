@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { apply } from "../helpers";
 import type { Attribute } from "../../packages/core/attribute";
 import { readSave } from "../../packages/core/read-save";
 import { hashId } from "../../packages/core/xxhash32-custom";
@@ -324,7 +325,7 @@ const reread = (session: SaveSession) =>
 describe("fillSkippedStory", () => {
   it("fills everything due at the start of Chapter Ø", () => {
     const session = save();
-    const added = fillSkippedStory(session);
+    const added = apply(session, (draft) => fillSkippedStory(draft));
     const units = reread(session);
     const at = units.of(0);
 
@@ -392,14 +393,16 @@ describe("fillSkippedStory", () => {
 
   it("holds Dehg's Catalyst Stone only through Chapter 7", () => {
     const session = save({ chapter: 140 });
-    fillSkippedStory(session);
+    apply(session, (draft) => fillSkippedStory(draft));
     expect(reread(session).values(ITEM_COUNT, STONE_ENTITY)).toEqual([1]);
     expect(reread(session).values(ITEM_FLAGS, STONE_ENTITY)).toEqual([4]);
 
-    session.patch([
-      { attribute: CURRENT_CHAPTER, entity: 0, values: [160, -1] },
-    ]);
-    expect(fillSkippedStory(session)).toContain("ITEM_70_0008 taken");
+    apply(session, (draft) => {
+      draft.put(CURRENT_CHAPTER, 0, [160, -1]);
+    });
+    expect(apply(session, (draft) => fillSkippedStory(draft))).toContain(
+      "ITEM_70_0008 taken",
+    );
     const units = reread(session);
     expect(units.values(ITEM_COUNT, STONE_ENTITY)).toEqual([0]);
     expect(units.values(ITEM_FLAGS, STONE_ENTITY)).toEqual([4]);
@@ -407,26 +410,26 @@ describe("fillSkippedStory", () => {
 
   it("brings back each held item's new mark at its chapter", () => {
     const session = save({ chapter: 60 });
-    fillSkippedStory(session);
+    apply(session, (draft) => fillSkippedStory(draft));
     expect(reread(session).values(ITEM_FLAGS, LIFE_LINK_ENTITY)).toEqual([12]);
 
-    session.patch([
-      { attribute: CURRENT_CHAPTER, entity: 0, values: [180, -1] },
-    ]);
-    fillSkippedStory(session);
+    apply(session, (draft) => {
+      draft.put(CURRENT_CHAPTER, 0, [180, -1]);
+    });
+    apply(session, (draft) => fillSkippedStory(draft));
     expect(reread(session).values(ITEM_FLAGS, LIFE_LINK_ENTITY)).toEqual([4]);
     expect(reread(session).values(ITEM_FLAGS, SKY_MAP_ENTITY)).toEqual([12]);
 
-    session.patch([
-      { attribute: CURRENT_CHAPTER, entity: 0, values: [200, -1] },
-    ]);
-    fillSkippedStory(session);
+    apply(session, (draft) => {
+      draft.put(CURRENT_CHAPTER, 0, [200, -1]);
+    });
+    apply(session, (draft) => fillSkippedStory(draft));
     expect(reread(session).values(ITEM_FLAGS, SKY_MAP_ENTITY)).toEqual([4]);
   });
 
   it("adds no stand-in weapon before Chapter 8", () => {
     const session = save({ chapter: 140 });
-    fillSkippedStory(session);
+    apply(session, (draft) => fillSkippedStory(draft));
     const units = reread(session);
 
     expect(units.values(WEAPON_KEY, 40000)).toEqual([hashId("")]);
@@ -436,16 +439,16 @@ describe("fillSkippedStory", () => {
 
   it("raises the stand-in weapons a shorter fill added", () => {
     const session = save({ chapter: 160 });
-    fillSkippedStory(session);
+    apply(session, (draft) => fillSkippedStory(draft));
     const early = reread(session);
     expect(early.values(WEAPON_XP, 40000)).toEqual([790]);
     expect(early.values(WEAPON_UNCAP, 40000)).toEqual([2]);
     expect(early.values(WEAPON_XP, 40002)).toEqual([1140]);
 
-    session.patch([
-      { attribute: CURRENT_CHAPTER, entity: 0, values: [200, -1] },
-    ]);
-    fillSkippedStory(session);
+    apply(session, (draft) => {
+      draft.put(CURRENT_CHAPTER, 0, [200, -1]);
+    });
+    apply(session, (draft) => fillSkippedStory(draft));
     const units = reread(session);
 
     expect(units.values(WEAPON_ID, 40000)).toEqual([6]);
@@ -458,10 +461,10 @@ describe("fillSkippedStory", () => {
 
   it("does not add a stand-in weapon back once sold", () => {
     const session = save({ chapter: 200 });
-    session.patch([
-      { attribute: FIELD_NOTE_WEAPON_FLAGS, entity: 391, values: [4] },
-    ]);
-    const added = fillSkippedStory(session);
+    apply(session, (draft) => {
+      draft.put(FIELD_NOTE_WEAPON_FLAGS, 391, [4]);
+    });
+    const added = apply(session, (draft) => fillSkippedStory(draft));
 
     expect(added).not.toContain("WEP_PL1900_A0");
     expect(added).toContain("WEP_NP0300_01");
@@ -469,7 +472,7 @@ describe("fillSkippedStory", () => {
 
   it("marks the counter quests the story needs as cleared once", () => {
     const session = save({ chapter: 222 });
-    fillSkippedStory(session);
+    apply(session, (draft) => fillSkippedStory(draft));
     const units = reread(session);
     const at = units.of(0);
     const rows = COUNTER_QUESTS.map(() => 1);
@@ -495,7 +498,7 @@ describe("fillSkippedStory", () => {
 
   it("adds what the end of Chapter Ø should have left", () => {
     const session = save({ chapter: 222 });
-    fillSkippedStory(session);
+    apply(session, (draft) => fillSkippedStory(draft));
     const units = reread(session);
     const at = units.of(0);
 
@@ -535,7 +538,7 @@ describe("fillSkippedStory", () => {
 
   it("adds what the side quests and Conflux cycles before the Epilogue leave", () => {
     const session = save({ chapter: 240 });
-    fillSkippedStory(session);
+    apply(session, (draft) => fillSkippedStory(draft));
     const units = reread(session);
     const at = units.of(0);
 
@@ -553,23 +556,23 @@ describe("fillSkippedStory", () => {
     expect(units.of(13).get(TOWN_EVENT_PLAYED)).toBe(1);
 
     const first = session.export();
-    expect(fillSkippedStory(session)).toEqual([]);
+    expect(apply(session, (draft) => fillSkippedStory(draft))).toEqual([]);
     expect(session.export()).toEqual(first);
   });
 
   it("changes nothing on a second run at the end of Chapter Ø", () => {
     const session = save({ chapter: 222 });
-    fillSkippedStory(session);
+    apply(session, (draft) => fillSkippedStory(draft));
     const first = session.export();
-    expect(fillSkippedStory(session)).toEqual([]);
+    expect(apply(session, (draft) => fillSkippedStory(draft))).toEqual([]);
     expect(session.export()).toEqual(first);
   });
 
   it("changes nothing on a second run", () => {
     const session = save();
-    fillSkippedStory(session);
+    apply(session, (draft) => fillSkippedStory(draft));
     const first = session.export();
-    expect(fillSkippedStory(session)).toEqual([]);
+    expect(apply(session, (draft) => fillSkippedStory(draft))).toEqual([]);
     expect(session.export()).toEqual(first);
   });
 
@@ -580,7 +583,7 @@ describe("fillSkippedStory", () => {
       [140, 1],
     ] as const) {
       const session = save({ chapter });
-      fillSkippedStory(session);
+      apply(session, (draft) => fillSkippedStory(draft));
       expect(reread(session).of(0).get(STORY_CUTSCENE_CLEARS)[row]).toBe(
         clears,
       );
@@ -589,7 +592,7 @@ describe("fillSkippedStory", () => {
 
   it("stops at the save's current chapter", () => {
     const session = save({ chapter: 80 });
-    expect(fillSkippedStory(session)).toEqual([
+    expect(apply(session, (draft) => fillSkippedStory(draft))).toEqual([
       "trophy 0",
       "trophy 10",
       "trophy 1",
@@ -619,7 +622,7 @@ describe("fillSkippedStory", () => {
 
   it("swaps the start weapons by the captain in play", () => {
     const session = save({ chapter: 80, captain: 2 });
-    fillSkippedStory(session);
+    apply(session, (draft) => fillSkippedStory(draft));
     const units = reread(session);
 
     expect(units.values(WEAPON_FLAGS, 40003)).toEqual([128]);
@@ -633,7 +636,7 @@ describe("fillSkippedStory", () => {
 
   it("moves the captains off the starting outfit with the start weapons", () => {
     const session = save({ chapter: 80 });
-    fillSkippedStory(session);
+    apply(session, (draft) => fillSkippedStory(draft));
     const units = reread(session);
 
     for (const captain of [10000, 10001]) {
@@ -646,7 +649,7 @@ describe("fillSkippedStory", () => {
     const units = reread(
       (() => {
         const session = save({ chapter: 60 });
-        fillSkippedStory(session);
+        apply(session, (draft) => fillSkippedStory(draft));
         return session;
       })(),
     );
@@ -657,11 +660,11 @@ describe("fillSkippedStory", () => {
 
   it("keeps other outfits a captain owns and wears", () => {
     const session = save({ chapter: 80 });
-    session.patch([
-      { attribute: CHARACTER_OUTFIT, entity: 10000, values: [2] },
-      { attribute: CHARACTER_OUTFITS_OWNED, entity: 10000, values: [7] },
-    ]);
-    fillSkippedStory(session);
+    apply(session, (draft) => {
+      draft.put(CHARACTER_OUTFIT, 10000, [2]);
+      draft.put(CHARACTER_OUTFITS_OWNED, 10000, [7]);
+    });
+    apply(session, (draft) => fillSkippedStory(draft));
     const captain = reread(session).of(10000);
 
     expect(captain.get(CHARACTER_OUTFIT)).toBe(2);
@@ -670,10 +673,10 @@ describe("fillSkippedStory", () => {
 
   it("keeps the outfit of a captain already holding the start weapon", () => {
     const session = save({ chapter: 80 });
-    session.patch([
-      { attribute: FIELD_NOTE_WEAPON_FLAGS, entity: 6, values: [4] },
-    ]);
-    fillSkippedStory(session);
+    apply(session, (draft) => {
+      draft.put(FIELD_NOTE_WEAPON_FLAGS, 6, [4]);
+    });
+    apply(session, (draft) => fillSkippedStory(draft));
     const captain = reread(session).of(10000);
 
     expect(captain.get(CHARACTER_OUTFIT)).toBe(1);
@@ -682,11 +685,11 @@ describe("fillSkippedStory", () => {
 
   it("keeps a captain on another weapon and skips a start weapon once held", () => {
     const session = save({ chapter: 80 });
-    session.patch([
-      { attribute: EQUIP_WEAPON, entity: 10000, values: [2] },
-      { attribute: FIELD_NOTE_WEAPON_FLAGS, entity: 7, values: [4] },
-    ]);
-    const added = fillSkippedStory(session);
+    apply(session, (draft) => {
+      draft.put(EQUIP_WEAPON, 10000, [2]);
+      draft.put(FIELD_NOTE_WEAPON_FLAGS, 7, [4]);
+    });
+    const added = apply(session, (draft) => fillSkippedStory(draft));
     const units = reread(session);
 
     expect(added).toContain("WEP_PL0000_03");
@@ -697,7 +700,9 @@ describe("fillSkippedStory", () => {
   });
 
   it("does nothing on a new save", () => {
-    expect(fillSkippedStory(save({ chapter: -1 }))).toEqual([]);
+    expect(
+      apply(save({ chapter: -1 }), (draft) => fillSkippedStory(draft)),
+    ).toEqual([]);
   });
 
   it("keeps what the save already holds", () => {
@@ -708,15 +713,15 @@ describe("fillSkippedStory", () => {
     const progress = [...at.get(TROPHY_PROGRESS)];
     progress[2] = 50n;
     progress[501] = 7n;
-    session.patch([
-      { attribute: TROPHY_EARNED, entity: 0, values: earned },
-      { attribute: TROPHY_PROGRESS, entity: 0, values: progress },
-      { attribute: ITEM_COUNT, entity: ITEM_ENTITY, values: [0] },
-      { attribute: ITEM_ACQUIRED, entity: ITEM_ENTITY, values: [5] },
-      { attribute: ARCHIVE_FLAGS, entity: NOTE_08_ENTITY, values: [3] },
-    ]);
+    apply(session, (draft) => {
+      draft.put(TROPHY_EARNED, 0, earned);
+      draft.put(TROPHY_PROGRESS, 0, progress);
+      draft.put(ITEM_COUNT, ITEM_ENTITY, [0]);
+      draft.put(ITEM_ACQUIRED, ITEM_ENTITY, [5]);
+      draft.put(ARCHIVE_FLAGS, NOTE_08_ENTITY, [3]);
+    });
 
-    const added = fillSkippedStory(session);
+    const added = apply(session, (draft) => fillSkippedStory(draft));
     const units = reread(session);
 
     expect(added).not.toContain("trophy 9");
@@ -730,7 +735,7 @@ describe("fillSkippedStory", () => {
 
   it("joins Id at the save's own level under a low-level crew", () => {
     const session = save({ crewLevel: 12 });
-    fillSkippedStory(session);
+    apply(session, (draft) => fillSkippedStory(draft));
     const units = reread(session);
     const id = units.of(ID_ENTITY);
 
@@ -758,7 +763,7 @@ describe("fillSkippedStory", () => {
     "raises Id under a level %i crew to level %i",
     (crewLevel, level, xp, hp, attack) => {
       const session = save({ crewLevel });
-      fillSkippedStory(session);
+      apply(session, (draft) => fillSkippedStory(draft));
       const id = reread(session).of(ID_ENTITY);
 
       expect(id.get(CHARACTER_LEVEL)).toBe(level);
@@ -770,7 +775,7 @@ describe("fillSkippedStory", () => {
 
   it("only rejoins an Id the save already played", () => {
     const session = save({ idFlags: 8, idLevel: 39 });
-    fillSkippedStory(session);
+    apply(session, (draft) => fillSkippedStory(draft));
     const units = reread(session);
     const id = units.of(ID_ENTITY);
 
@@ -782,7 +787,9 @@ describe("fillSkippedStory", () => {
 
   it("leaves an Id already in the crew alone", () => {
     const session = save({ idFlags: 9, idLevel: 39, crewLevel: 100 });
-    expect(fillSkippedStory(session)).not.toContain("PL1900");
+    expect(apply(session, (draft) => fillSkippedStory(draft))).not.toContain(
+      "PL1900",
+    );
     expect(reread(session).of(ID_ENTITY).get(CHARACTER_LEVEL)).toBe(39);
   });
 });

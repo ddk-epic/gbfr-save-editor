@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { advance, apply } from "../helpers";
 import { CAPTAIN } from "../../packages/character/attributes";
 import type { Attribute } from "../../packages/core";
 import { readSave } from "../../packages/core/read-save";
@@ -37,7 +38,7 @@ import {
   SYSTEM_STORY_DIFFICULTY,
   UI_FEATURE_UNLOCKED,
 } from "../../packages/story/attributes";
-import { advanceStory, storyTargets } from "../../packages/story/edit";
+import { storyTargets } from "../../packages/story/edit";
 import {
   TROPHY_EARNED,
   TROPHY_PROGRESS,
@@ -130,7 +131,7 @@ const save = (difficulty: number) =>
 describe("promoteToProud", () => {
   it("clears the quests up to the promotion and unlocks Proud quests", () => {
     const session = save(6);
-    advanceStory(session, "promoteToProud");
+    advance(session, "promoteToProud");
     const units = readSave(session.export()).slotData.units;
     const at = units.of(0);
 
@@ -153,7 +154,7 @@ describe("promoteToProud", () => {
 
   it("clears 0010A031 as the first Maniac clear does", () => {
     const session = save(6);
-    advanceStory(session, "promoteToProud");
+    advance(session, "promoteToProud");
     const at = readSave(session.export()).slotData.units.of(0);
 
     expect(at.get(STORY_QUEST_CLEARED)).toEqual([1]);
@@ -170,7 +171,7 @@ describe("promoteToProud", () => {
 
   it("leaves the rewards and trophies to the fill", () => {
     const session = save(6);
-    advanceStory(session, "promoteToProud");
+    advance(session, "promoteToProud");
     const at = session.save.slotData.units.of(0);
     expect(at.get(USER_RUPIES)).toBe(1000);
     expect(at.get(TROPHY_PROGRESS)[224]).toBe(0n);
@@ -182,10 +183,10 @@ describe("promoteToProud", () => {
     const at = session.save.slotData.units.of(0);
     const clears = [...at.get(COUNTER_QUEST_CLEARS)];
     clears[1] = 4;
-    session.patch([
-      { attribute: COUNTER_QUEST_CLEARS, entity: 0, values: clears },
-    ]);
-    advanceStory(session, "promoteToProud");
+    apply(session, (draft) => {
+      draft.put(COUNTER_QUEST_CLEARS, 0, clears);
+    });
+    advance(session, "promoteToProud");
     expect(at.get(COUNTER_QUEST_CLEARS)[1]).toBe(4);
     expect(at.get(TROPHY_PROGRESS)[19]).toBe(17n);
   });
@@ -194,7 +195,7 @@ describe("promoteToProud", () => {
     expect(targets(save(6))[0]).toBe("promoteToProud");
     const session = save(7);
     expect(targets(session)[0]).toBe("promoteToProud");
-    advanceStory(session, "promoteToProud");
+    advance(session, "promoteToProud");
     const at = session.save.slotData.units.of(0);
     expect(at.get(COUNTER_QUEST_OPENED)[0]).toBe(true);
     expect(at.get(QUEST_DIFFICULTY_UNLOCKED)).toBe(7);
@@ -240,7 +241,7 @@ describe("unlockProudQuests", () => {
 
   it("clears the quests that open others, and only once", () => {
     const session = proudSave();
-    advanceStory(session, "unlockProudQuests");
+    advance(session, "unlockProudQuests");
     const at = readSave(session.export()).slotData.units.of(0);
 
     expect(at.get(COUNTER_QUEST_CLEARS)).toEqual([
@@ -255,7 +256,7 @@ describe("unlockProudQuests", () => {
     expect(at.get(TROPHY_PROGRESS)[238]).toBe(15n);
     expect(at.get(TROPHY_PROGRESS)[20]).toBe(15n);
 
-    expect(() => advanceStory(session, "unlockProudQuests")).toThrow(
+    expect(() => advance(session, "unlockProudQuests")).toThrow(
       "already at or past",
     );
   });
@@ -263,22 +264,22 @@ describe("unlockProudQuests", () => {
   it("is offered until nothing is left to clear", () => {
     const session = proudSave();
     expect(targets(session)[0]).toBe("unlockProudQuests");
-    advanceStory(session, "unlockProudQuests");
+    advance(session, "unlockProudQuests");
     expect(targets(session)).not.toContain("unlockProudQuests");
   });
 
   it("is offered on a save with every prerequisite cleared and a quest not listed", () => {
     const session = proudSave();
-    advanceStory(session, "unlockProudQuests");
+    advance(session, "unlockProudQuests");
     const at = session.save.slotData.units.of(0);
     const opened = [...at.get(COUNTER_QUEST_OPENED)];
     opened[0] = false;
-    session.patch([
-      { attribute: COUNTER_QUEST_OPENED, entity: 0, values: opened },
-    ]);
+    apply(session, (draft) => {
+      draft.put(COUNTER_QUEST_OPENED, 0, opened);
+    });
 
     expect(targets(session)[0]).toBe("unlockProudQuests");
-    advanceStory(session, "unlockProudQuests");
+    advance(session, "unlockProudQuests");
     expect(at.get(COUNTER_QUEST_OPENED)[0]).toBe(true);
     expect(targets(session)).not.toContain("unlockProudQuests");
   });

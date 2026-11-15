@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { apply } from "../helpers";
 import { EMPTY_HASH } from "../../packages/core/keys";
 import { hashId } from "../../packages/core/xxhash32-custom";
 import {
@@ -146,7 +147,7 @@ describe("addWrightstone and editWrightstone", () => {
 
   it("adds to the first empty entry, with the next id and item counters", () => {
     const session = open();
-    expect(addWrightstone(session, roll)).toBe(41);
+    expect(apply(session, (draft) => addWrightstone(draft, roll))).toBe(41);
     const units = session.save.slotData.units;
     expect(readWrightstones(units).get(41)).toEqual(
       expect.objectContaining({
@@ -170,7 +171,9 @@ describe("addWrightstone and editWrightstone", () => {
 
   it("rerolls in place, moving the item count when the key changes", () => {
     const session = open();
-    editWrightstone(session, 40, { ...roll, family: 26 });
+    apply(session, (draft) =>
+      editWrightstone(draft, 40, { ...roll, family: 26 }),
+    );
     const units = session.save.slotData.units;
     const edited = readWrightstones(units).get(40)!;
     expect(edited.entity).toBe(WRIGHTSTONE_FIRST);
@@ -188,13 +191,15 @@ describe("addWrightstone and editWrightstone", () => {
   it("refuses a sub the family cannot roll and an unknown id", () => {
     const session = open();
     expect(() =>
-      addWrightstone(session, {
-        ...roll,
-        subs: ["SKILL_014_00", "SKILL_000_00"],
-      }),
+      apply(session, (draft) =>
+        addWrightstone(draft, {
+          ...roll,
+          subs: ["SKILL_014_00", "SKILL_000_00"],
+        }),
+      ),
     ).toThrow("cannot roll sub trait SKILL_014_00");
-    expect(() => editWrightstone(session, 99, roll)).toThrow(
-      "no wrightstone with id 99",
-    );
+    expect(() =>
+      apply(session, (draft) => editWrightstone(draft, 99, roll)),
+    ).toThrow("no wrightstone with id 99");
   });
 });

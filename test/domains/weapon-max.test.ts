@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { apply } from "../helpers";
 import { hashId } from "../../packages/core/xxhash32-custom";
 import { WEAPON_TROVES } from "../../packages/trophy/data.gen";
 import {
@@ -108,7 +109,7 @@ describe("maxWeaponSeries", () => {
       ],
       { 186: 3n, 185: 6n, 151: 1n },
     );
-    maxWeaponSeries(session, CHARACTER);
+    apply(session, (draft) => maxWeaponSeries(draft, CHARACTER));
     expect(held(session).uncap).toBe(6);
     expect(held(session).xp).toBe(LAST_XP);
     expect(held(session, 1).xp).toBe(LAST_XP);
@@ -120,7 +121,7 @@ describe("maxWeaponSeries", () => {
 
   it("earns the tiers the counts meet and leaves 501 to the game", () => {
     const session = open(SERIES.map((key) => [key, 0, 0] as const));
-    maxWeaponSeries(session, CHARACTER);
+    apply(session, (draft) => maxWeaponSeries(draft, CHARACTER));
     expect(progress(session)[185]).toBe(900n);
     expect(progress(session)[186]).toBe(36n);
     expect(progress(session)[151]).toBe(6n);
@@ -141,7 +142,7 @@ describe("maxWeaponSeries", () => {
       {},
       "PL2200",
     );
-    maxWeaponSeries(session, CHARACTER);
+    apply(session, (draft) => maxWeaponSeries(draft, CHARACTER));
     expect(progress(session)[index]).toBe(2n);
     expect(earned(session)[badge]).toBe(true);
   });
@@ -158,7 +159,7 @@ describe("maxWeaponSeries", () => {
       ["WEP_PL0000_05", 0, 0, 128],
       ["WEP_PL0000_A0", 0, 0],
     ]);
-    maxWeaponSeries(session, CHARACTER);
+    apply(session, (draft) => maxWeaponSeries(draft, CHARACTER));
     expect(held(session, 1).uncap).toBe(2);
     expect(held(session, 2).xp).toBe(LAST_XP);
     expect(held(session, 3).xp).toBe(0);
@@ -185,7 +186,7 @@ describe("maxWeaponSeries", () => {
       ["WEP_PL0000_02", 0, 0],
       ["WEP_PL0100_02", LAST_XP, 6],
     ]);
-    maxWeaponSeries(session, CHARACTER);
+    apply(session, (draft) => maxWeaponSeries(draft, CHARACTER));
     expect(progress(session)[185]).toBe(900n);
   });
 
@@ -196,7 +197,7 @@ describe("maxWeaponSeries", () => {
     );
     const units = session.save.slotData.units;
     expect(canMaxWeaponSeries(units, CHARACTER)).toBe(true);
-    maxWeaponSeries(session, CHARACTER);
+    apply(session, (draft) => maxWeaponSeries(draft, CHARACTER));
     expect(earned(session)[327]).toBe(true);
     expect(progress(session)[186]).toBe(36n);
     expect(canMaxWeaponSeries(units, CHARACTER)).toBe(false);
@@ -206,10 +207,10 @@ describe("maxWeaponSeries", () => {
     const session = open([["WEP_PL0000_02", 0, 0]]);
     const units = session.save.slotData.units;
     expect(canMaxWeaponSeries(units, CHARACTER)).toBe(true);
-    maxWeaponSeries(session, CHARACTER);
+    apply(session, (draft) => maxWeaponSeries(draft, CHARACTER));
     expect(canMaxWeaponSeries(units, CHARACTER)).toBe(false);
-    expect(() => maxWeaponSeries(session, CHARACTER)).toThrow(
-      "no weapon series",
-    );
+    expect(() =>
+      apply(session, (draft) => maxWeaponSeries(draft, CHARACTER)),
+    ).toThrow("no weapon series");
   });
 });

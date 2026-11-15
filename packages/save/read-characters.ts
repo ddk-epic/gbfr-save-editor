@@ -1,4 +1,4 @@
-import type { UnitEntity, UnitStore } from "@gbfr/core";
+import type { UnitEntity, Units } from "@gbfr/core";
 import {
   CHARACTER_BASE_ATTACK,
   CHARACTER_BASE_HP,
@@ -84,7 +84,7 @@ export interface CharacterData {
   loadouts: Loadout[];
 }
 
-export function readCharacterData(units: UnitStore): CharacterData {
+export function readCharacterData(units: Units): CharacterData {
   const lookup = equipmentLookup(units);
   const fateEpisodes = readFateEpisodes(units);
   const ownedWeapons = readOwnedWeapons(units);

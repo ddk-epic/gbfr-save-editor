@@ -2,7 +2,7 @@ import { CONFLUX_AURAS, CONFLUX_TREE } from "./data.gen";
 import {
   type Attribute,
   type EntityRange,
-  type UnitStore,
+  type Units,
   SAVE_ENTITY,
 } from "@gbfr/core";
 import {
@@ -51,7 +51,7 @@ export interface Conflux {
 
 /** Values of one attribute by the key hash another attribute holds at the same entity. */
 function byKey<T, W>(
-  units: UnitStore,
+  units: Units,
   key: Attribute<number | undefined>,
   value: Attribute<T, W>,
   range: EntityRange,
@@ -66,7 +66,7 @@ function byKey<T, W>(
   return values;
 }
 
-export function readConflux(units: UnitStore): Conflux {
+export function readConflux(units: Units): Conflux {
   const bits = byKey(units, RESONANCE_KEY, RESONANCE_BITS, CONFLUX_TREE_RANGE);
   const resonance = CONFLUX_TREE.map(
     ([hash, key, bit, cost, effects]): ResonanceNode => ({

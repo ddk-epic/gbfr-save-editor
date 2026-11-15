@@ -158,22 +158,6 @@ export class UnitStore implements Units {
       throw new Error(`${found.length} units of ${attribute.id} hold ${value}`);
     return found[0]!;
   }
-
-  /** Patches `attribute` on every entity whose `key` holds one of `values`, skipping no-op patches. */
-  patchWhere<T, W>(
-    key: Attribute<unknown>,
-    values: readonly number[],
-    attribute: Attribute<T, W>,
-    value: W,
-  ): Patch[] {
-    return values.flatMap((held) =>
-      this.entitiesWhere(key, held).flatMap((entity) => {
-        const patch = this.of(entity).patch(attribute, value);
-        const current = this.values(attribute, entity);
-        return patch.values.every((v, i) => v === current?.[i]) ? [] : [patch];
-      }),
-    );
-  }
 }
 
 /** The values one entity holds, read through typed attributes. */
@@ -186,24 +170,6 @@ export class EntityValues {
   /** The attribute's value, or its fallback when the save holds no unit. */
   get<T, W>(attribute: Attribute<T, W>): T {
     return attribute.read(this.store.values(attribute, this.entity));
-  }
-
-  /** A patch setting `value`; flags merge onto the unit's current bits. */
-  patch<T, W>(attribute: Attribute<T, W>, value: W): Patch {
-    return {
-      attribute: attribute as Attribute<unknown>,
-      entity: this.entity,
-      values: attribute.write(value, this.store.values(attribute, this.entity)),
-    };
-  }
-
-  /** A patch setting `value` with no current bits, so flags start from 0. */
-  replace<T, W>(attribute: Attribute<T, W>, value: W): Patch {
-    return {
-      attribute: attribute as Attribute<unknown>,
-      entity: this.entity,
-      values: attribute.write(value, undefined),
-    };
   }
 
   has(attribute: Attribute<unknown>): boolean {

@@ -1,6 +1,6 @@
-import { type UnitEntity, type UnitStore, SAVE_ENTITY } from "@gbfr/core";
+import { type UnitEntity, SAVE_ENTITY } from "@gbfr/core";
+import type { Draft } from "@gbfr/core/draft";
 import { WEAPON_LEVEL_XP, WEAPON_ROWS } from "./data.gen";
-import type { Patch, SaveSession } from "@gbfr/core/session";
 import { clearTraits } from "@gbfr/trait/edit";
 import { TRAIT_WEAPON } from "@gbfr/trait";
 import {
@@ -21,48 +21,37 @@ import {
   WEAPON_XP,
 } from "./attributes";
 
-/** Patches adding one weapon as a forge does, at no cost. */
-export function forgeWeapon(
-  units: UnitStore,
-  character: UnitEntity,
-  key: string,
-): Patch[] {
-  if (!unlockableWeapons(units, character).some((w) => w.key === key))
+/** Adds one weapon as a forge does, at no cost. */
+export function forgeWeapon(draft: Draft, character: UnitEntity, key: string) {
+  if (!unlockableWeapons(draft, character).some((w) => w.key === key))
     throw new Error(`character ${character} cannot unlock ${key}`);
   const [uncap, level] = WEAPON_ROWS[key]!.forged!;
-  const entity = units.entitiesWhere(WEAPON_ID, 0)[0];
+  const entity = draft.entitiesWhere(WEAPON_ID, 0)[0];
   if (entity === undefined) throw new Error("no free weapon entry");
-  const id = units.of(SAVE_ENTITY).get(WEAPON_LAST_ID) + 1;
-  const weapon = units.of(entity);
-  return [
-    units.of(SAVE_ENTITY).patch(WEAPON_LAST_ID, id),
-    weapon.patch(WEAPON_ID, id),
-    weapon.patch(WEAPON_KEY, key),
-    weapon.patch(WEAPON_XP, WEAPON_LEVEL_XP[level - 1]!),
-    weapon.patch(WEAPON_UNCAP, uncap),
-    weapon.replace(WEAPON_FLAGS, { forged: true }),
-  ];
+  const id = draft.of(SAVE_ENTITY).get(WEAPON_LAST_ID) + 1;
+  const weapon = draft.of(entity);
+  draft.of(SAVE_ENTITY).set(WEAPON_LAST_ID, id);
+  weapon.set(WEAPON_ID, id);
+  weapon.set(WEAPON_KEY, key);
+  weapon.set(WEAPON_XP, WEAPON_LEVEL_XP[level - 1]!);
+  weapon.set(WEAPON_UNCAP, uncap);
+  weapon.replace(WEAPON_FLAGS, { forged: true });
 }
 
-/** Patches raising weapons to the last uncap and level. */
-export const raiseWeapons = (
-  units: UnitStore,
-  weapons: readonly Weapon[],
-): Patch[] =>
-  weapons.flatMap(({ entity }) => [
-    units.of(entity).patch(WEAPON_UNCAP, WEAPON_LAST_UNCAP),
-    units.of(entity).patch(WEAPON_XP, WEAPON_LAST_XP),
-  ]);
+/** Raises weapons to the last uncap and level. */
+export function raiseWeapons(draft: Draft, weapons: readonly Weapon[]) {
+  for (const { entity } of weapons) {
+    draft.of(entity).set(WEAPON_UNCAP, WEAPON_LAST_UNCAP);
+    draft.of(entity).set(WEAPON_XP, WEAPON_LAST_XP);
+  }
+}
 
-export function removeWrightstone(session: SaveSession, weaponId: number) {
-  const units = session.save.slotData.units;
-  const entity = findWeaponById(units, weaponId);
+export function removeWrightstone(draft: Draft, weaponId: number) {
+  const entity = findWeaponById(draft, weaponId);
   if (entity === undefined) throw new Error(`no weapon with id ${weaponId}`);
-  if (units.of(entity).get(WEAPON_WRIGHTSTONE) === undefined)
+  if (draft.of(entity).get(WEAPON_WRIGHTSTONE) === undefined)
     throw new Error(`weapon ${weaponId} has no wrightstone`);
 
-  session.patch([
-    units.of(entity).patch(WEAPON_WRIGHTSTONE, undefined),
-    ...clearTraits(units, TRAIT_WEAPON + entity - WEAPON_FIRST),
-  ]);
+  draft.of(entity).set(WEAPON_WRIGHTSTONE, undefined);
+  clearTraits(draft, TRAIT_WEAPON + entity - WEAPON_FIRST);
 }

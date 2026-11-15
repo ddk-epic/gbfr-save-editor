@@ -1,6 +1,6 @@
 import { WEAPON_LEVEL_XP, WEAPON_ROWS } from "./data.gen";
 import { CHARACTER_KEY, offPlayCaptain } from "@gbfr/character";
-import { keyOf, type UnitEntity, type UnitStore } from "@gbfr/core";
+import { keyOf, type UnitEntity, type Units } from "@gbfr/core";
 import { SKILLS } from "@gbfr/tables";
 import { TRAIT_WEAPON, readFilledTraits } from "@gbfr/trait";
 import type { Wrightstone } from "@gbfr/wrightstone";
@@ -54,7 +54,7 @@ export interface Weapon {
 }
 
 export function readWeapon(
-  units: UnitStore,
+  units: Units,
   entity: UnitEntity,
 ): Weapon | undefined {
   const at = units.of(entity);
@@ -96,7 +96,7 @@ export const weaponLevelOf = (xp: number) =>
   WEAPON_LEVEL_XP.filter((needed) => needed <= xp).length;
 
 /** By weapon id. */
-export function readWeapons(units: UnitStore): Map<number, Weapon> {
+export function readWeapons(units: Units): Map<number, Weapon> {
   const weapons = new Map<number, Weapon>();
   for (const entity of units.entitiesWith(WEAPON_ID)) {
     const weapon = readWeapon(units, entity);
@@ -106,7 +106,7 @@ export function readWeapons(units: UnitStore): Map<number, Weapon> {
 }
 
 export function readOwnedWeapons(
-  units: UnitStore,
+  units: Units,
 ): Map<string, Map<number, Weapon>> {
   const owned = new Map<string, Map<number, Weapon>>();
   for (const weapon of readWeapons(units).values()) {
@@ -122,14 +122,14 @@ export function readOwnedWeapons(
 }
 
 export const findWeaponById = (
-  units: UnitStore,
+  units: Units,
   id: number,
 ): UnitEntity | undefined => units.entitiesWhere(WEAPON_ID, id)[0];
 
 export const WEAPON_LAST_XP = WEAPON_LEVEL_XP[WEAPON_LAST_LEVEL - 1]!;
 
 /** The weapons a character can still gain, one per missing series. */
-export function unlockableWeapons(units: UnitStore, character: UnitEntity) {
+export function unlockableWeapons(units: Units, character: UnitEntity) {
   const owner = units.of(character).get(CHARACTER_KEY);
   if (owner === undefined || owner === offPlayCaptain(units)) return [];
   const held = readOwnedWeapons(units).get(owner);
@@ -147,7 +147,7 @@ export function unlockableWeapons(units: UnitStore, character: UnitEntity) {
 }
 
 /** A character's held weapons and those short of the last uncap or level, undefined when none are held. */
-export function raisableWeapons(units: UnitStore, character: string) {
+export function raisableWeapons(units: Units, character: string) {
   const held = [...(readOwnedWeapons(units).get(character)?.values() ?? [])];
   if (held.length === 0) return undefined;
   const raised = held.filter(

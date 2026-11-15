@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { apply } from "../helpers";
 import { hashId } from "../../packages/core/xxhash32-custom";
 import {
   FATE_EPISODE_KEY,
@@ -104,7 +105,7 @@ describe("completeFateEpisodes", () => {
       // Another character's.
       82: episode("FATE_PL0700_00", 5),
     });
-    completeFateEpisodes(session, "PL0600");
+    apply(session, (draft) => completeFateEpisodes(draft, "PL0600"));
     const units = session.save.slotData.units;
     expect(
       [66, 67, 68, 69, 70, 71, 82].map(
@@ -119,7 +120,7 @@ describe("completeFateEpisodes", () => {
       75: episode("FATE_PL0600_09", 5),
       76: episode("FATE_PL0600_10", 5),
     });
-    completeFateEpisodes(session, "PL0600");
+    apply(session, (draft) => completeFateEpisodes(draft, "PL0600"));
     const units = session.save.slotData.units;
     expect(units.values(FATE_QUEST_CLEARED, 0)).toEqual([0, 1]);
     expect(
@@ -136,7 +137,7 @@ describe("completeFateEpisodes", () => {
       75: episode("FATE_PL0600_09", 30),
       76: episode("FATE_PL0600_10", 20),
     });
-    completeFateEpisodes(session, "PL0600");
+    apply(session, (draft) => completeFateEpisodes(draft, "PL0600"));
     const units = session.save.slotData.units;
     expect(units.values(ITEM_COUNT, ITEM)).toEqual([0]);
     expect(units.values(ITEM_ACQUIRED_LAST, 0)).toEqual([500]);
@@ -145,11 +146,11 @@ describe("completeFateEpisodes", () => {
 
   it("refuses a character with nothing left to complete", () => {
     const session = open({ 66: episode("FATE_PL0600_00", 30) });
-    expect(() => completeFateEpisodes(session, "PL0600")).toThrow(
-      "no fate episode left",
-    );
-    expect(() => completeFateEpisodes(session, "PL9999")).toThrow(
-      "no fate episode left",
-    );
+    expect(() =>
+      apply(session, (draft) => completeFateEpisodes(draft, "PL0600")),
+    ).toThrow("no fate episode left");
+    expect(() =>
+      apply(session, (draft) => completeFateEpisodes(draft, "PL9999")),
+    ).toThrow("no fate episode left");
   });
 });

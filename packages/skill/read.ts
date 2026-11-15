@@ -1,4 +1,4 @@
-import { keyOf, type UnitEntity, type UnitStore } from "@gbfr/core";
+import { keyOf, type UnitEntity, type Units } from "@gbfr/core";
 import {
   ABILITIES,
   EQUIP_SKILLS,
@@ -8,7 +8,7 @@ import {
 } from "./attributes";
 
 /** ability.Key of acquired skills not yet seen, guest characters included. */
-export function readUnseenSkills(units: UnitStore): string[] {
+export function readUnseenSkills(units: Units): string[] {
   const keys: string[] = [];
   for (const entity of units.entitiesWith(SKILL_KEY)) {
     const at = units.of(entity);
@@ -20,7 +20,7 @@ export function readUnseenSkills(units: UnitStore): string[] {
 }
 
 export function readEquippedSkills(
-  units: UnitStore,
+  units: Units,
   entity: UnitEntity,
 ): (string | undefined)[] {
   const skills = units.of(entity).get(EQUIP_SKILLS);

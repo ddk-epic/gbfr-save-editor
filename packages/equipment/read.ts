@@ -1,4 +1,4 @@
-import type { UnitEntity, Attribute, UnitStore } from "@gbfr/core";
+import type { UnitEntity, Attribute, Units } from "@gbfr/core";
 import { CHARACTER_KEY } from "@gbfr/character";
 import { findSigilById, readSigil, readSigils, type Sigil } from "@gbfr/sigil";
 import {
@@ -26,14 +26,14 @@ export interface EquipmentLookup {
 }
 
 /** Reads the whole inventory once, for resolving many entities. */
-export function equipmentLookup(units: UnitStore): EquipmentLookup {
+export function equipmentLookup(units: Units): EquipmentLookup {
   const sigils = readSigils(units);
   const weapons = readWeapons(units);
   return { sigil: (id) => sigils.get(id), weapon: (id) => weapons.get(id) };
 }
 
 /** Find by id. */
-const findingLookup = (units: UnitStore): EquipmentLookup => ({
+const findingLookup = (units: Units): EquipmentLookup => ({
   sigil: (id) => {
     const entity = findSigilById(units, id);
     return entity === undefined ? undefined : readSigil(units, entity);
@@ -49,7 +49,7 @@ const findingLookup = (units: UnitStore): EquipmentLookup => ({
  * loadout. An entity naming no character is unused.
  */
 export function readEquipment(
-  units: UnitStore,
+  units: Units,
   entity: UnitEntity,
   characterKey: Attribute<string | undefined>,
   lookup: EquipmentLookup,
@@ -74,7 +74,7 @@ export function readEquipment(
 
 /** For one character's live equipment. */
 export const readCharacterEquipment = (
-  units: UnitStore,
+  units: Units,
   gear: UnitEntity,
 ): Equipment | undefined =>
   readEquipment(units, gear, CHARACTER_KEY, findingLookup(units));

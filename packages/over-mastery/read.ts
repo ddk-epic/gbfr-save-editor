@@ -2,7 +2,7 @@ import {
   SaveFormatError,
   type UnitEntity,
   type EntityRange,
-  type UnitStore,
+  type Units,
 } from "@gbfr/core";
 import type { OverMasteryFormatIssue } from "./issues";
 import { OVER_MASTERY_VALUES } from "./data.gen";
@@ -23,7 +23,7 @@ export interface OverMastery {
 }
 
 export function readOverMasteries(
-  units: UnitStore,
+  units: Units,
   mastery: EntityRange,
 ): (OverMastery | undefined)[] {
   return Array.from({ length: OVER_MASTERY_LINES }, (_, i) => {

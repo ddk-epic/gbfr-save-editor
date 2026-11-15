@@ -1,5 +1,5 @@
 import {
-  type SaveSession,
+  type Draft,
   CHAPTER_ZERO_END_KEY,
   addSigil,
   addWrightstone,
@@ -21,6 +21,7 @@ import {
   type WrightstoneFamily,
   type WrightstoneRoll,
 } from "gbfr-save-editor/edit";
+import { storyDifficulty } from "gbfr-save-editor";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGameText } from "../../i18n/game-text";
@@ -98,21 +99,18 @@ const rowOf = (view: SaveView, table: Editable, id: number) => {
 };
 
 /** Runs an add returning the new id, then selects its row. */
-function add(table: Editable, run: (session: SaveSession) => number) {
+function add(table: Editable, run: (draft: Draft) => number) {
   let id = 0;
   edit(
-    (session) => {
-      id = run(session);
+    (draft) => {
+      id = run(draft);
     },
     (view) => rowOf(view, table, id),
   );
 }
 
-const editRow = (
-  table: Editable,
-  id: number,
-  run: (session: SaveSession) => void,
-) => edit(run, (view) => rowOf(view, table, id));
+const editRow = (table: Editable, id: number, run: (draft: Draft) => void) =>
+  edit(run, (view) => rowOf(view, table, id));
 
 /** A page of shared tables: the save, or the characters landing page. */
 export function SavePage({
@@ -160,7 +158,7 @@ export function SavePage({
         applyLabel={t("edit.addWrightstone")}
         onApply={(roll) => {
           setAdding(undefined);
-          add("wrightstones", (session) => addWrightstone(session, roll));
+          add("wrightstones", (draft) => addWrightstone(draft, roll));
         }}
       />
     ) : adding === "sigils" ? (
@@ -169,7 +167,7 @@ export function SavePage({
         applyLabel={t("edit.addSigil")}
         onApply={(roll) => {
           setAdding(undefined);
-          add("sigils", (session) => addSigil(session, roll));
+          add("sigils", (draft) => addSigil(draft, roll));
         }}
       />
     ) : row && selection?.table.id === "wrightstones" ? (
@@ -178,8 +176,8 @@ export function SavePage({
         initial={rollOf(row)}
         applyLabel={gt("ui", "apply")}
         onApply={(roll) =>
-          editRow("wrightstones", id, (session) =>
-            editWrightstone(session, id, roll),
+          editRow("wrightstones", id, (draft) =>
+            editWrightstone(draft, id, roll),
           )
         }
       />
@@ -189,7 +187,7 @@ export function SavePage({
         initial={sigilRollOf(row)}
         applyLabel={gt("ui", "apply")}
         onApply={(roll) =>
-          editRow("sigils", id, (session) => editSigil(session, id, roll))
+          editRow("sigils", id, (draft) => editSigil(draft, id, roll))
         }
       />
     ) : undefined;
@@ -273,9 +271,9 @@ export function SavePage({
                     })
                   : t(`tables.${id as TableLabelId}`),
                 run: () =>
-                  edit((session) => {
-                    advanceStory(session, id);
-                    fillSkippedStory(session);
+                  edit((draft, save) => {
+                    advanceStory(draft, id, storyDifficulty(save));
+                    fillSkippedStory(draft);
                   }),
               }))}
             />

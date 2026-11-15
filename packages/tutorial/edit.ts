@@ -1,5 +1,5 @@
-import { type UnitStore, hashId } from "@gbfr/core";
-import type { Patch } from "@gbfr/core/session";
+import { hashId } from "@gbfr/core";
+import type { Draft } from "@gbfr/core/draft";
 import {
   INFORMATION_DIALOG_KEY,
   INFORMATION_DIALOG_SHOWN,
@@ -107,21 +107,18 @@ const HINT_DIALOGS = [
   0x2b1905b3, 0x11453713,
 ];
 
-/** Patches marking the tutorial windows, menus and dialogs as shown. */
-export const hintPatches = (units: UnitStore): Patch[] => [
-  ...units.patchWhere(
-    TUTORIAL_WINDOW_KEY,
-    HINT_WINDOWS,
-    TUTORIAL_WINDOW_FLAGS,
-    { shown: true },
-  ),
-  ...units.patchWhere(TUTORIAL_MENU_KEY, HINT_MENUS, TUTORIAL_MENU_FLAGS, {
+/** Marks the tutorial windows, menus and dialogs as shown. */
+export function showHints(draft: Draft) {
+  draft.setWhere(TUTORIAL_WINDOW_KEY, HINT_WINDOWS, TUTORIAL_WINDOW_FLAGS, {
     shown: true,
-  }),
-  ...units.patchWhere(
+  });
+  draft.setWhere(TUTORIAL_MENU_KEY, HINT_MENUS, TUTORIAL_MENU_FLAGS, {
+    shown: true,
+  });
+  draft.setWhere(
     INFORMATION_DIALOG_KEY,
     HINT_DIALOGS,
     INFORMATION_DIALOG_SHOWN,
     { shown: true },
-  ),
-];
+  );
+}

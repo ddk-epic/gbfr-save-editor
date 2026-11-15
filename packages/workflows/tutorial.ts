@@ -1,7 +1,7 @@
 import { type Save, hashId } from "@gbfr/core";
-import type { Patch, SaveSession } from "@gbfr/core/session";
+import { draft, type Draft } from "@gbfr/core/draft";
 import { unlockTips } from "@gbfr/journal/edit";
-import { hintPatches } from "@gbfr/tutorial/edit";
+import { showHints } from "@gbfr/tutorial/edit";
 
 const HINT_TIPS = [
   594130054,
@@ -74,14 +74,20 @@ const HINT_TIPS = [
   0x1400d7a6,
 ];
 
-const clearingPatches = (save: Save): Patch[] => {
-  const units = save.slotData.units;
-  return [...hintPatches(units), ...unlockTips(units, HINT_TIPS)];
-};
+/** Marks every found hint as shown, at any point in the story. */
+export function clearHints(draft: Draft) {
+  showHints(draft);
+  unlockTips(draft, HINT_TIPS);
+}
 
 /** True on a save with a found hint not marked as shown. */
-export const canClearHints = (save: Save) => clearingPatches(save).length > 0;
-
-/** Marks every found hint as shown, at any point in the story. */
-export const clearHints = (session: SaveSession) =>
-  session.patch(clearingPatches(session.save));
+export function canClearHints(save: Save) {
+  const units = save.slotData.units;
+  const hints = draft(units);
+  clearHints(hints);
+  return hints
+    .pending()
+    .some(({ attribute, entity, values }) =>
+      values.some((value, i) => value !== units.values(attribute, entity)?.[i]),
+    );
+}

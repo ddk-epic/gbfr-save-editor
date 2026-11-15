@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { apply } from "../helpers";
 import { EMPTY_HASH } from "../../packages/core/keys";
 import { hashId } from "../../packages/core/xxhash32-custom";
 import {
@@ -165,7 +166,9 @@ describe("addSigil and editSigil", () => {
 
   it("adds to the first empty entry with the next id, both traits at its level", () => {
     const session = open();
-    expect(addSigil(session, roll(13, "SKILL_069_00"))).toBe(41);
+    expect(
+      apply(session, (draft) => addSigil(draft, roll(13, "SKILL_069_00"))),
+    ).toBe(41);
     const units = session.save.slotData.units;
     expect(readSigils(units).get(41)).toEqual({
       entity: SIGIL_FIRST + 1,
@@ -191,7 +194,7 @@ describe("addSigil and editSigil", () => {
 
   it("picks the one-trait gem without a second trait, its entry empty at the level", () => {
     const session = open();
-    addSigil(session, roll(15, "", "SKILL_044_00"));
+    apply(session, (draft) => addSigil(draft, roll(15, "", "SKILL_044_00")));
     const units = session.save.slotData.units;
     expect(units.values(SIGIL_KEY, SIGIL_FIRST + 1)).toEqual([
       hashId("GEEN_044_04"),
@@ -210,11 +213,11 @@ describe("addSigil and editSigil", () => {
 
   it("rerolls in place, keeping the gem while it fits", () => {
     const session = open();
-    editSigil(session, 40, roll(11, "SKILL_006_00"));
+    apply(session, (draft) => editSigil(draft, 40, roll(11, "SKILL_006_00")));
     expect(keyOf40(session)).toBe("GEEN_000_24");
-    editSigil(session, 40, roll(15, ""));
+    apply(session, (draft) => editSigil(draft, 40, roll(15, "")));
     expect(keyOf40(session)).toBe("GEEN_000_04");
-    editSigil(session, 40, roll(8, "SKILL_069_00"));
+    apply(session, (draft) => editSigil(draft, 40, roll(8, "SKILL_069_00")));
     expect(keyOf40(session)).toBe("GEEN_000_23");
     const sigil = readSigils(session.save.slotData.units).get(40)!;
     expect(sigil).toEqual(
@@ -233,17 +236,17 @@ describe("addSigil and editSigil", () => {
 
   it("refuses a roll no gem fits and an unknown id", () => {
     const session = open();
-    expect(() => addSigil(session, roll(16, ""))).toThrow(
-      "no level 16 sigil of SKILL_000_00",
-    );
-    expect(() => addSigil(session, roll(15, "SKILL_999_00"))).toThrow(
-      'second trait "SKILL_999_00"',
-    );
-    expect(() => addSigil(session, roll(1, "SKILL_069_00"))).toThrow(
-      "no level 1 sigil",
-    );
-    expect(() => editSigil(session, 99, roll(15, ""))).toThrow(
-      "no sigil with id 99",
-    );
+    expect(() =>
+      apply(session, (draft) => addSigil(draft, roll(16, ""))),
+    ).toThrow("no level 16 sigil of SKILL_000_00");
+    expect(() =>
+      apply(session, (draft) => addSigil(draft, roll(15, "SKILL_999_00"))),
+    ).toThrow('second trait "SKILL_999_00"');
+    expect(() =>
+      apply(session, (draft) => addSigil(draft, roll(1, "SKILL_069_00"))),
+    ).toThrow("no level 1 sigil");
+    expect(() =>
+      apply(session, (draft) => editSigil(draft, 99, roll(15, ""))),
+    ).toThrow("no sigil with id 99");
   });
 });

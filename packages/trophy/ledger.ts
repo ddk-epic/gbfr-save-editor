@@ -1,4 +1,4 @@
-import { type UnitStore, SAVE_ENTITY } from "@gbfr/core";
+import { type Units, SAVE_ENTITY } from "@gbfr/core";
 import {
   TROPHIES_EARNED_IN_RANGE,
   TROPHY_EARNED,
@@ -14,7 +14,7 @@ export const earnedCounter = (badge: number) =>
     : undefined;
 
 /** Copies of 5815 and 5801 that earn trophies as counts are set. */
-export function trophyLedger(units: UnitStore) {
+export function trophyLedger(units: Units) {
   const at = units.of(SAVE_ENTITY);
   const progress = [...at.get(TROPHY_PROGRESS)];
   const earned = [...at.get(TROPHY_EARNED)];

@@ -1,5 +1,5 @@
-import { type UnitStore, hashId, hashOfKey } from "@gbfr/core";
-import type { Patch } from "@gbfr/core/session";
+import { hashId, hashOfKey } from "@gbfr/core";
+import type { Draft } from "@gbfr/core/draft";
 import { WEAPONS } from "@gbfr/tables";
 import {
   ARCHIVE_FLAGS,
@@ -11,27 +11,20 @@ import {
 } from "./attributes";
 
 /** Unlocks one archive entry. */
-export const unlockArchive = (units: UnitStore, archive: string): Patch =>
-  units
-    .of(units.onlyEntityWhere(ARCHIVE_KEY, hashId(archive)))
-    .patch(ARCHIVE_FLAGS, { unlocked: true });
+export const unlockArchive = (draft: Draft, archive: string) =>
+  draft
+    .of(draft.onlyEntityWhere(ARCHIVE_KEY, hashId(archive)))
+    .set(ARCHIVE_FLAGS, { unlocked: true });
 
 /** Unlocks the weapon's field note, none when it has no entry. */
-export function registerFieldNoteWeapon(
-  units: UnitStore,
-  key: string,
-): Patch[] {
-  const note = units.entitiesWhere(
+export function registerFieldNoteWeapon(draft: Draft, key: string) {
+  const note = draft.entitiesWhere(
     FIELD_NOTE_WEAPON_KEY,
     hashOfKey(WEAPONS, key),
   )[0];
-  return note === undefined
-    ? []
-    : [units.of(note).patch(FIELD_NOTE_WEAPON_FLAGS, { unlocked: true })];
+  if (note !== undefined)
+    draft.of(note).set(FIELD_NOTE_WEAPON_FLAGS, { unlocked: true });
 }
 
-/** Unlocks the listed tips, leaving out those already unlocked. */
-export const unlockTips = (
-  units: UnitStore,
-  hashes: readonly number[],
-): Patch[] => units.patchWhere(TIP_KEY, hashes, TIP_FLAGS, { unlocked: true });
+export const unlockTips = (draft: Draft, hashes: readonly number[]) =>
+  draft.setWhere(TIP_KEY, hashes, TIP_FLAGS, { unlocked: true });

@@ -2,10 +2,10 @@ import {
   EMPTY_HASH,
   type Save,
   type UnitEntity,
-  type UnitStore,
+  type Units,
   SAVE_ENTITY,
 } from "@gbfr/core";
-import type { Patch, SaveSession } from "@gbfr/core/session";
+import type { Draft } from "@gbfr/core/draft";
 import {
   INVENTORY_TABS,
   ITEM_ACQUIRED,
@@ -27,18 +27,16 @@ const PLAIN_CARD_COUNT = 99;
 const CHARACTER_CARD_COUNT = 1;
 
 /** Hands out ITEM_ACQUIRED stamps after ITEM_ACQUIRED_LAST. */
-export function acquisitions(units: UnitStore) {
-  const last = units.of(SAVE_ENTITY).get(ITEM_ACQUIRED_LAST);
+export function acquisitions(draft: Draft) {
+  const last = draft.of(SAVE_ENTITY).get(ITEM_ACQUIRED_LAST);
   let next = last;
   return {
     /** Stamps the item at `entity` as the latest acquired. */
-    stamp: (entity: UnitEntity): Patch =>
-      units.of(entity).patch(ITEM_ACQUIRED, ++next),
-    /** The ITEM_ACQUIRED_LAST patch, none when nothing was stamped. */
-    done: (): Patch[] =>
-      next === last
-        ? []
-        : [units.of(SAVE_ENTITY).patch(ITEM_ACQUIRED_LAST, next)],
+    stamp: (entity: UnitEntity) => draft.of(entity).set(ITEM_ACQUIRED, ++next),
+    /** Writes ITEM_ACQUIRED_LAST, unless nothing was stamped. */
+    done: () => {
+      if (next !== last) draft.of(SAVE_ENTITY).set(ITEM_ACQUIRED_LAST, next);
+    },
   };
 }
 
@@ -51,7 +49,7 @@ function treasureTarget(key: string): number | undefined {
   return TREASURE_CAP;
 }
 
-function treasuresBelowTarget(units: UnitStore) {
+function treasuresBelowTarget(units: Units) {
   return units.entitiesWith(ITEM_KEY).flatMap((entity) => {
     const at = units.of(entity);
     const key = at.get(ITEM_KEY);
@@ -67,79 +65,69 @@ export const canMaxTreasures = (save: Save) =>
   treasuresBelowTarget(save.slotData.units).length > 0;
 
 /** Raises every treasure except curios to its target count. */
-export function maxTreasures(session: SaveSession) {
-  const units = session.save.slotData.units;
-  const below = treasuresBelowTarget(units);
+export function maxTreasures(draft: Draft) {
+  const below = treasuresBelowTarget(draft);
   if (below.length === 0)
     throw new Error("the treasures are already at their counts");
 
-  const at = units.of(SAVE_ENTITY);
-  const stamps = acquisitions(units);
-  const patches: Patch[] = [];
+  const stamps = acquisitions(draft);
   for (const { entity, target } of below) {
-    const item = units.of(entity);
-    patches.push(
-      item.patch(ITEM_COUNT, target),
-      item.patch(ITEM_FLAGS, { fieldNote: true, seen: true }),
-    );
-    if (item.get(ITEM_ACQUIRED) === 0) patches.push(stamps.stamp(entity));
+    const item = draft.of(entity);
+    item.set(ITEM_COUNT, target);
+    item.set(ITEM_FLAGS, { fieldNote: true, seen: true });
+    if (item.get(ITEM_ACQUIRED) === 0) stamps.stamp(entity);
   }
-  patches.push(...stamps.done(), at.patch(INVENTORY_TABS, { first: true }));
-  session.patch(patches);
+  stamps.done();
+  draft.of(SAVE_ENTITY).set(INVENTORY_TABS, { first: true });
 }
 
-const itemEntity = (units: UnitStore, key: string) => {
+const itemEntity = (units: Units, key: string) => {
   for (let entity = 0; entity < ITEM_ENTITIES; entity++)
     if (units.of(entity).get(ITEM_KEY) === key) return entity;
   return undefined;
 };
 
 /** One more of the item, stamped with the next acquisition counter. */
-export function gainItem(units: UnitStore, key: string): Patch[] {
-  let entity = itemEntity(units, key);
+export function gainItem(draft: Draft, key: string) {
+  let entity = itemEntity(draft, key);
   const added = entity === undefined;
   if (entity === undefined) {
     entity = 0;
     while (
       entity < ITEM_ENTITIES &&
-      units.get(ITEM_KEY, entity)?.values[0] !== EMPTY_HASH
+      draft.values(ITEM_KEY, entity)?.[0] !== EMPTY_HASH
     )
       entity++;
     if (entity === ITEM_ENTITIES) throw new Error("no empty item entry");
   }
-  const stamps = acquisitions(units);
-  const item = units.of(entity);
-  return [
-    ...(added ? [item.patch(ITEM_KEY, key)] : []),
-    item.patch(ITEM_COUNT, item.get(ITEM_COUNT) + 1),
-    stamps.stamp(entity),
-    ...stamps.done(),
-  ];
+  const stamps = acquisitions(draft);
+  const item = draft.of(entity);
+  if (added) item.set(ITEM_KEY, key);
+  item.set(ITEM_COUNT, item.get(ITEM_COUNT) + 1);
+  stamps.stamp(entity);
+  stamps.done();
 }
 
 /** One fewer of the item, none when it is not held. */
-export function loseItem(units: UnitStore, key: string): Patch[] {
-  const entity = itemEntity(units, key);
-  const count = entity === undefined ? 0 : units.of(entity).get(ITEM_COUNT);
-  return entity === undefined || count === 0
-    ? []
-    : [units.of(entity).patch(ITEM_COUNT, count - 1)];
+export function loseItem(draft: Draft, key: string) {
+  const entity = itemEntity(draft, key);
+  if (entity === undefined) return;
+  const count = draft.of(entity).get(ITEM_COUNT);
+  if (count > 0) draft.of(entity).set(ITEM_COUNT, count - 1);
 }
 
 /** One more of a held item as a reward, marked as a field note and stamped from `stamps`. */
 export function rewardItem(
-  units: UnitStore,
+  draft: Draft,
   stamps: ReturnType<typeof acquisitions>,
   item: UnitEntity,
   keyItem: boolean,
-): Patch[] {
-  const held = units.of(item);
-  return [
-    held.patch(ITEM_COUNT, held.get(ITEM_COUNT) + 1),
-    held.patch(ITEM_FLAGS, {
-      fieldNote: true,
-      ...(keyItem ? { keyItem: true } : {}),
-    }),
-    stamps.stamp(item),
-  ];
+) {
+  const held = draft.of(item);
+  held.set(ITEM_COUNT, held.get(ITEM_COUNT) + 1);
+  held.set(ITEM_FLAGS, {
+    fieldNote: true,
+    ...(keyItem ? { keyItem: true } : {}),
+  });
+  stamps.stamp(item);
 }

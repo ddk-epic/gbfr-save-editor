@@ -1,5 +1,5 @@
 import { FATE_EPISODE_CHARACTERS } from "./data.gen";
-import { keyOf, type UnitStore } from "@gbfr/core";
+import { keyOf, type Units } from "@gbfr/core";
 import {
   FATE_EPISODES,
   FATE_EPISODE_KEY,
@@ -13,7 +13,7 @@ export interface FateEpisode {
 }
 
 /** By chara.CharId, in save order. */
-export function readFateEpisodes(units: UnitStore): Map<string, FateEpisode[]> {
+export function readFateEpisodes(units: Units): Map<string, FateEpisode[]> {
   const byCharacter = new Map<string, FateEpisode[]>();
   for (const entity of units.entitiesWith(FATE_EPISODE_KEY)) {
     const at = units.of(entity);

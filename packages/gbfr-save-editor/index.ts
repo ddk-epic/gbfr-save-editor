@@ -156,3 +156,4 @@ export {
 } from "@gbfr/journal";
 export { readTrophies, type Trophy } from "@gbfr/trophy";
 export { TROPHY_TABS, type TrophyTab } from "@gbfr/trophy";
+export { storyDifficulty } from "@gbfr/story";

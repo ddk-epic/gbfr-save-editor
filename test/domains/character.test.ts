@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { apply } from "../helpers";
 import { hashId } from "../../packages/core/xxhash32-custom";
 import {
   CHARACTER_BASE_ATTACK,
@@ -139,7 +140,7 @@ describe("maxCharacterLevel", () => {
 
   it("sets XP, level and the chara_status HP and ATK of level 100", () => {
     const session = open("PL1500", 5);
-    maxCharacterLevel(session, CHARACTER_FIRST);
+    apply(session, (draft) => maxCharacterLevel(draft, CHARACTER_FIRST));
     const at = session.save.slotData.units.of(CHARACTER_FIRST);
     expect([
       at.get(CHARACTER_XP),
@@ -151,11 +152,15 @@ describe("maxCharacterLevel", () => {
 
   it("refuses a character at max level or with no level cap", () => {
     expect(() =>
-      maxCharacterLevel(open("PL1500", 100), CHARACTER_FIRST),
+      apply(open("PL1500", 100), (draft) =>
+        maxCharacterLevel(draft, CHARACTER_FIRST),
+      ),
     ).toThrow("already level 100");
-    expect(() => maxCharacterLevel(open("NP0100", 1), CHARACTER_FIRST)).toThrow(
-      "no max level",
-    );
+    expect(() =>
+      apply(open("NP0100", 1), (draft) =>
+        maxCharacterLevel(draft, CHARACTER_FIRST),
+      ),
+    ).toThrow("no max level");
   });
 });
 
@@ -178,7 +183,7 @@ describe("maxMasterLevel", () => {
 
   it("sets master level 55 with the cap break marks and badges, MSP untouched", () => {
     const session = open("PL0200", 0, [0, 2]);
-    maxMasterLevel(session, CHARACTER_FIRST);
+    apply(session, (draft) => maxMasterLevel(draft, CHARACTER_FIRST));
     const units = session.save.slotData.units;
     const at = units.of(CHARACTER_FIRST);
     expect(at.get(CHARACTER_MASTER_XP)).toBe(3309499);
@@ -201,10 +206,14 @@ describe("maxMasterLevel", () => {
 
   it("refuses a character at master level 55 or with no master level", () => {
     expect(() =>
-      maxMasterLevel(open("PL0200", 3309499, [0, 0]), CHARACTER_FIRST),
+      apply(open("PL0200", 3309499, [0, 0]), (draft) =>
+        maxMasterLevel(draft, CHARACTER_FIRST),
+      ),
     ).toThrow("already master level 55");
     expect(() =>
-      maxMasterLevel(open("NP0100", 0, [0, 0]), CHARACTER_FIRST),
+      apply(open("NP0100", 0, [0, 0]), (draft) =>
+        maxMasterLevel(draft, CHARACTER_FIRST),
+      ),
     ).toThrow("no master level");
   });
 });
@@ -247,7 +256,7 @@ describe("unlockCharacter", () => {
 
   it("joins at level 100 and writes the level, crew level and last raised trophies", () => {
     const session = open();
-    unlockCharacter(session, CHARACTER_FIRST + 2);
+    apply(session, (draft) => unlockCharacter(draft, CHARACTER_FIRST + 2));
     const units = session.save.slotData.units;
     const at = units.of(CHARACTER_FIRST + 2);
     expect([
@@ -274,7 +283,7 @@ describe("unlockCharacter", () => {
   it("unlocks every locked Crewmate menu character, once", () => {
     const session = open();
     expect(canUnlockAllCharacters(session.save)).toBe(true);
-    unlockAllCharacters(session);
+    apply(session, (draft) => unlockAllCharacters(draft));
     const units = session.save.slotData.units;
     expect(units.values(CHARACTER_FLAGS, CHARACTER_FIRST + 2)).toEqual([0x11]);
     expect(units.values(CHARACTER_FLAGS, CHARACTER_FIRST + 3)).toEqual([0]);
@@ -286,8 +295,8 @@ describe("unlockCharacter", () => {
     const units = session.save.slotData.units;
     expect(canUnlockCharacter(units, CHARACTER_FIRST + 1)).toBe(false);
     expect(canUnlockCharacter(units, CHARACTER_FIRST + 3)).toBe(false);
-    expect(() => unlockCharacter(session, CHARACTER_FIRST + 3)).toThrow(
-      "cannot be unlocked",
-    );
+    expect(() =>
+      apply(session, (draft) => unlockCharacter(draft, CHARACTER_FIRST + 3)),
+    ).toThrow("cannot be unlocked");
   });
 });

@@ -9,7 +9,7 @@ import {
   SaveFormatError,
   type UnitEntity,
   type EntityRange,
-  type UnitStore,
+  type Units,
 } from "@gbfr/core";
 import type { MasteryFormatIssue } from "./issues";
 import { MASTERY_NODE_BITS, MASTERY_NODE_KEY } from "./attributes";
@@ -57,7 +57,7 @@ export interface MasteryProgress extends MasteryCount {
 }
 
 export function readMasteries(
-  units: UnitStore,
+  units: Units,
   mastery: EntityRange,
   character: string,
 ): Record<MasterySection, MasteryProgress> {

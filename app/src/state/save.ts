@@ -1,10 +1,11 @@
 import {
   SaveFormatError,
   validateSave,
+  type Save,
   type SaveFormatIssue,
   type SaveIssue,
 } from "gbfr-save-editor";
-import { SaveSession } from "gbfr-save-editor/edit";
+import { draft, SaveSession, type Draft } from "gbfr-save-editor/edit";
 import { buildView, reconcileView, type SaveView } from "../view";
 import { useWatched, Watched } from "./watched";
 
@@ -59,12 +60,14 @@ export async function loadSave(file: File): Promise<LoadResult> {
   }
 }
 
-/** Runs `edit` on the session; the new view keeps every table it left unchanged. */
+/** Commits `edit` to the session; the new view keeps every table it left unchanged. */
 export function applyEdit(
   save: LoadedSave,
-  edit: (session: SaveSession) => void,
+  edit: (draft: Draft, save: Save) => void,
 ): LoadedSave {
-  edit(save.session);
+  const pending = draft(save.session.save.slotData.units);
+  edit(pending, save.session.save);
+  save.session.commit(pending);
   return {
     ...save,
     view: reconcileView(save.view, buildView(save.session.save)),

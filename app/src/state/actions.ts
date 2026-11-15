@@ -1,4 +1,5 @@
-import type { SaveSession } from "gbfr-save-editor/edit";
+import type { Save } from "gbfr-save-editor";
+import type { Draft } from "gbfr-save-editor/edit";
 import type { SaveView } from "../view";
 import { startAt } from "./navigation";
 import { applyEdit, downloadSave, loaded, loadError, loadSave } from "./save";
@@ -32,7 +33,7 @@ export function pickFile() {
 
 /** Runs an edit, then selects the row `selectAfter` picks in the new view, or none. */
 export function edit(
-  run: (session: SaveSession) => void,
+  run: (draft: Draft, save: Save) => void,
   selectAfter?: (view: SaveView) => RowRef | undefined,
 ) {
   const save = loaded.get();

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { apply } from "../helpers";
 import {
   SAVE_ENTITY,
   SAVE_FEATURE_VERSION,
@@ -85,17 +86,21 @@ describe("maxRupies and maxMasteryPoints", () => {
 
   it("sets each to the game's cap, leaving the other", () => {
     const session = open(5, 7);
-    maxRupies(session);
+    apply(session, (draft) => maxRupies(draft));
     const at = session.save.slotData.units.of(SAVE_ENTITY);
     expect([at.get(USER_RUPIES), at.get(USER_MASTERY_POINTS)]).toEqual([
       999999999, 7,
     ]);
-    maxMasteryPoints(session);
+    apply(session, (draft) => maxMasteryPoints(draft));
     expect(at.get(USER_MASTERY_POINTS)).toBe(9999999);
   });
 
   it("refuses a value already at the cap", () => {
-    expect(() => maxRupies(open(999999999, 0))).toThrow("already");
-    expect(() => maxMasteryPoints(open(0, 9999999))).toThrow("already");
+    expect(() =>
+      apply(open(999999999, 0), (draft) => maxRupies(draft)),
+    ).toThrow("already");
+    expect(() =>
+      apply(open(0, 9999999), (draft) => maxMasteryPoints(draft)),
+    ).toThrow("already");
   });
 });

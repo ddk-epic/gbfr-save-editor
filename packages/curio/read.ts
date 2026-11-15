@@ -1,4 +1,4 @@
-import { keyOf, type UnitEntity, type UnitStore } from "@gbfr/core";
+import { keyOf, type UnitEntity, type Units } from "@gbfr/core";
 import { GEM_ROWS, GEMS, ITEMS } from "@gbfr/tables";
 import {
   CURIO_KEY,
@@ -35,7 +35,7 @@ export interface Curio {
 }
 
 function readCurioReward(
-  units: UnitStore,
+  units: Units,
   curioEntity: UnitEntity,
 ): CurioReward | undefined {
   for (let entry = 0; entry < CURIO_REWARD_ENTRIES; entry++) {
@@ -63,7 +63,7 @@ function readCurioReward(
 }
 
 /** Curios held, oldest first, the order the game appraises them in. */
-export function readCurios(units: UnitStore): Curio[] {
+export function readCurios(units: Units): Curio[] {
   const curios: Curio[] = [];
   for (const entity of units.entitiesWith(CURIO_KEY)) {
     const at = units.of(entity);

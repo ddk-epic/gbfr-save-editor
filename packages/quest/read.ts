@@ -1,5 +1,5 @@
 import { QUEST_COUNTER } from "./data.gen";
-import { type UnitStore, SAVE_ENTITY } from "@gbfr/core";
+import { type Units, SAVE_ENTITY } from "@gbfr/core";
 import {
   COUNTER_QUEST_CLEARS,
   COUNTER_QUEST_FLAGS,
@@ -67,7 +67,7 @@ export const questId = (id: number) =>
   id.toString(16).toUpperCase().padStart(8, "0");
 
 /** Side quests in save order, accepted or not. */
-export function readSideQuests(units: UnitStore): SideQuest[] {
+export function readSideQuests(units: Units): SideQuest[] {
   const at = units.of(SAVE_ENTITY);
   const ids = at.get(SIDE_QUEST_IDS);
   const states = at.get(SIDE_QUEST_STATE);
@@ -85,7 +85,7 @@ export function readSideQuests(units: UnitStore): SideQuest[] {
 }
 
 /** Quest counter quests in save order, including ids never cleared. */
-export function readCounterQuests(units: UnitStore): CounterQuest[] {
+export function readCounterQuests(units: Units): CounterQuest[] {
   const at = units.of(SAVE_ENTITY);
   const ids = at.get(COUNTER_QUEST_IDS);
   const clears = at.get(COUNTER_QUEST_CLEARS);

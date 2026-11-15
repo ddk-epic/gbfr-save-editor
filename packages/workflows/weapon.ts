@@ -1,42 +1,33 @@
-import type { Save, UnitEntity, UnitStore } from "@gbfr/core";
-import type { SaveSession } from "@gbfr/core/session";
+import type { Save, UnitEntity, Units } from "@gbfr/core";
+import type { Draft } from "@gbfr/core/draft";
 import { WEAPON_ROWS, raisableWeapons, unlockableWeapons } from "@gbfr/weapon";
 import { CHARACTER_KEY } from "@gbfr/character";
 import { registerFieldNoteWeapon } from "@gbfr/journal/edit";
-import { forgedWeaponTrophies, raisedWeaponTrophies } from "@gbfr/trophy/edit";
+import {
+  forgedWeaponTrophies,
+  raisedWeaponTrophies,
+  writeLedger,
+} from "@gbfr/trophy/edit";
 import { forgeWeapon, raiseWeapons } from "@gbfr/weapon/edit";
 
-export const canUnlockWeaponSeries = (
-  units: UnitStore,
-  character: UnitEntity,
-) => unlockableWeapons(units, character).length > 0;
+export const canUnlockWeaponSeries = (units: Units, character: UnitEntity) =>
+  unlockableWeapons(units, character).length > 0;
 
 /** Adds one weapon as a forge does, at no cost. */
-export function unlockWeapon(
-  session: SaveSession,
-  character: UnitEntity,
-  key: string,
-) {
-  const units = session.save.slotData.units;
-  session.patch([
-    ...forgeWeapon(units, character, key),
-    ...registerFieldNoteWeapon(units, key),
-  ]);
+export function unlockWeapon(draft: Draft, character: UnitEntity, key: string) {
+  forgeWeapon(draft, character, key);
+  registerFieldNoteWeapon(draft, key);
   const { character: owner, series } = WEAPON_ROWS[key]!;
-  session.patch(forgedWeaponTrophies(units, owner, series));
+  forgedWeaponTrophies(draft, owner, series);
 }
 
-export function unlockWeaponSeries(
-  session: SaveSession,
-  character: UnitEntity,
-) {
-  const units = session.save.slotData.units;
-  for (const { key } of unlockableWeapons(units, character))
-    unlockWeapon(session, character, key);
+export function unlockWeaponSeries(draft: Draft, character: UnitEntity) {
+  for (const { key } of unlockableWeapons(draft, character))
+    unlockWeapon(draft, character, key);
 }
 
 /** The writes `maxWeaponSeries` makes on a character's held weapons. */
-function planWeaponSeries(units: UnitStore, character: UnitEntity) {
+function planWeaponSeries(units: Units, character: UnitEntity) {
   const key = units.of(character).get(CHARACTER_KEY);
   if (key === undefined) return undefined;
   const weapons = raisableWeapons(units, key);
@@ -49,27 +40,27 @@ function planWeaponSeries(units: UnitStore, character: UnitEntity) {
   );
   return {
     raised: weapons.raised,
-    patches: trophies.patches,
+    ledger: trophies.ledger,
     changed: weapons.raised.length > 0 || trophies.changed,
   };
 }
 
 /** True while `maxWeaponSeries` would change the save. */
-export const canMaxWeaponSeries = (units: UnitStore, character: UnitEntity) =>
+export const canMaxWeaponSeries = (units: Units, character: UnitEntity) =>
   canUnlockWeaponSeries(units, character) ||
   (planWeaponSeries(units, character)?.changed ?? false);
 
 /** Unlocks missing weapons, raises the series and earns the trophies met. */
-export function maxWeaponSeries(session: SaveSession, character: UnitEntity) {
-  unlockWeaponSeries(session, character);
-  const units = session.save.slotData.units;
-  const plan = planWeaponSeries(units, character);
+export function maxWeaponSeries(draft: Draft, character: UnitEntity) {
+  unlockWeaponSeries(draft, character);
+  const plan = planWeaponSeries(draft, character);
   if (!plan?.changed)
     throw new Error(`character ${character} has no weapon series to raise`);
-  session.patch([...raiseWeapons(units, plan.raised), ...plan.patches]);
+  raiseWeapons(draft, plan.raised);
+  writeLedger(draft, plan.ledger);
 }
 
-const characters = (units: UnitStore) => units.entitiesWith(CHARACTER_KEY);
+const characters = (units: Units) => units.entitiesWith(CHARACTER_KEY);
 
 export const canUnlockAllWeaponSeries = (save: Save) =>
   characters(save.slotData.units).some((entity) =>
@@ -77,9 +68,8 @@ export const canUnlockAllWeaponSeries = (save: Save) =>
   );
 
 /** `unlockWeaponSeries` on every character. */
-export function unlockAllWeaponSeries(session: SaveSession) {
-  for (const entity of characters(session.save.slotData.units))
-    unlockWeaponSeries(session, entity);
+export function unlockAllWeaponSeries(draft: Draft) {
+  for (const entity of characters(draft)) unlockWeaponSeries(draft, entity);
 }
 
 export const canMaxAllWeaponSeries = (save: Save) =>
@@ -88,8 +78,7 @@ export const canMaxAllWeaponSeries = (save: Save) =>
   );
 
 /** `maxWeaponSeries` on every character it would change. */
-export function maxAllWeaponSeries(session: SaveSession) {
-  for (const entity of characters(session.save.slotData.units))
-    if (canMaxWeaponSeries(session.save.slotData.units, entity))
-      maxWeaponSeries(session, entity);
+export function maxAllWeaponSeries(draft: Draft) {
+  for (const entity of characters(draft))
+    if (canMaxWeaponSeries(draft, entity)) maxWeaponSeries(draft, entity);
 }

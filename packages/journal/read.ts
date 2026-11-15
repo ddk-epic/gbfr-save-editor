@@ -3,7 +3,7 @@ import {
   FIELD_NOTE_WEAPONS,
   STORY_ORDER,
 } from "./data.gen";
-import type { Attribute, UnitStore } from "@gbfr/core";
+import type { Attribute, Units } from "@gbfr/core";
 import { ITEM_FLAGS, ITEM_KEY } from "@gbfr/item";
 import {
   ARCHIVE_FLAGS,
@@ -38,7 +38,7 @@ type JournalFlags = { unlocked: boolean; seen: boolean };
 
 /** A list keyed by a hash unit with a flags unit beside it. */
 function section(
-  units: UnitStore,
+  units: Units,
   key: Attribute<string | undefined>,
   flags: Attribute<JournalFlags>,
 ): JournalEntry[] {
@@ -53,20 +53,19 @@ function section(
 }
 
 /** Archives, every `story_note_archive` row. */
-export const readArchives = (units: UnitStore) =>
+export const readArchives = (units: Units) =>
   section(units, ARCHIVE_KEY, ARCHIVE_FLAGS);
 
 /** Glossary, every `story_note_wordlist` row, hashed as WORDLIST_ and its last 4 digits. */
-export const readGlossary = (units: UnitStore) =>
+export const readGlossary = (units: Units) =>
   section(units, GLOSSARY_KEY, GLOSSARY_FLAGS);
 
 /** Tips, every `story_note_tips` row. The table hides some that are unlocked:
  * other platforms' versions and `QuestId` 1. */
-export const readTips = (units: UnitStore) =>
-  section(units, TIP_KEY, TIP_FLAGS);
+export const readTips = (units: Units) => section(units, TIP_KEY, TIP_FLAGS);
 
 /** Music Collection, every `story_note_bgm` row. */
-export const readMusic = (units: UnitStore) =>
+export const readMusic = (units: Units) =>
   section(units, MUSIC_KEY, MUSIC_FLAGS);
 
 export interface StoryEntry extends JournalEntry {
@@ -75,7 +74,7 @@ export interface StoryEntry extends JournalEntry {
 }
 
 /** Main Story in `STORY_ORDER`, the order the game lists, not save order. */
-export function readMainStory(units: UnitStore): StoryEntry[] {
+export function readMainStory(units: Units): StoryEntry[] {
   const held = new Map(
     section(units, STORY_KEY, STORY_FLAGS).map((e) => [e.key, e]),
   );
@@ -102,7 +101,7 @@ export interface FieldNoteEntry extends Omit<JournalEntry, "seen"> {
 
 /** key -> flags, for the categories that ride on a list kept for something else. */
 function flagsByKey<F>(
-  units: UnitStore,
+  units: Units,
   key: Attribute<string | undefined>,
   flags: Attribute<F>,
 ): Map<string, F> {
@@ -117,7 +116,7 @@ function flagsByKey<F>(
 
 /** Field Notes, all five categories. Weapons rides on the weapon list and
  * Treasure on the item inventory, so both are cut to the rows they draw from. */
-export function readFieldNotes(units: UnitStore): FieldNoteEntry[] {
+export function readFieldNotes(units: Units): FieldNoteEntry[] {
   const own = (
     category: FieldNoteCategory,
     key: Attribute<string | undefined>,

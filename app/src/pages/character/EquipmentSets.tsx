@@ -77,8 +77,8 @@ export function EquipmentSets({ sets }: { sets: EquipmentSetView[] }) {
                         {
                           label: t("edit.unlockWeaponSeries"),
                           run: () =>
-                            edit((session) =>
-                              unlockWeaponSeries(session, set.characterEntity!),
+                            edit((draft) =>
+                              unlockWeaponSeries(draft, set.characterEntity!),
                             ),
                         },
                       ]
@@ -88,8 +88,8 @@ export function EquipmentSets({ sets }: { sets: EquipmentSetView[] }) {
                         {
                           label: t("edit.maxWeaponSeries"),
                           run: () =>
-                            edit((session) =>
-                              maxWeaponSeries(session, set.characterEntity!),
+                            edit((draft) =>
+                              maxWeaponSeries(draft, set.characterEntity!),
                             ),
                         },
                       ]
@@ -103,8 +103,8 @@ export function EquipmentSets({ sets }: { sets: EquipmentSetView[] }) {
                         weapon.key,
                     }),
                     run: () =>
-                      edit((session) =>
-                        equipWeapon(session, set.characterEntity!, weapon.id),
+                      edit((draft) =>
+                        equipWeapon(draft, set.characterEntity!, weapon.id),
                       ),
                   })),
                 ]}
@@ -123,9 +123,9 @@ export function EquipmentSets({ sets }: { sets: EquipmentSetView[] }) {
                         {
                           label: t("edit.removeWrightstone"),
                           run: () =>
-                            edit((session) =>
+                            edit((draft) =>
                               removeWrightstone(
-                                session,
+                                draft,
                                 set.wrightstoneWeaponId!,
                               ),
                             ),

@@ -6,7 +6,7 @@ import {
   FATE_EPISODE_STATE,
   FATE_EPISODES,
 } from "@gbfr/fate-episode";
-import type { Patch, SaveSession } from "@gbfr/core/session";
+import type { Draft } from "@gbfr/core/draft";
 import { completeEpisode } from "@gbfr/fate-episode/edit";
 import { ITEM_KEY } from "@gbfr/item";
 import { acquisitions, rewardItem } from "@gbfr/item/edit";
@@ -15,11 +15,9 @@ import { FATE_QUEST_IDS } from "@gbfr/quest";
 import { clearFateQuests } from "@gbfr/quest/edit";
 
 /** Completes every episode of a character with its rewards, trophies excluded. */
-export function completeFateEpisodes(session: SaveSession, character: string) {
-  const units = session.save.slotData.units;
-
-  const open = units.entitiesWith(FATE_EPISODE_KEY).filter((entity) => {
-    const at = units.of(entity);
+export function completeFateEpisodes(draft: Draft, character: string) {
+  const open = draft.entitiesWith(FATE_EPISODE_KEY).filter((entity) => {
+    const at = draft.of(entity);
     const hash = at.get(FATE_EPISODE_KEY);
     return (
       hash !== undefined &&
@@ -30,16 +28,16 @@ export function completeFateEpisodes(session: SaveSession, character: string) {
   if (open.length === 0)
     throw new Error(`${character} has no fate episode left to complete`);
 
-  const patches: Patch[] = [];
-  const questIds = units.of(SAVE_ENTITY).get(FATE_QUEST_IDS);
+  const questIds = draft.of(SAVE_ENTITY).get(FATE_QUEST_IDS);
   const questRows: number[] = [];
-  const stamps = acquisitions(units);
+  const stamps = acquisitions(draft);
 
   for (const entity of open) {
-    const at = units.of(entity);
-    patches.push(completeEpisode(units, entity));
+    const at = draft.of(entity);
+    const episode = at.get(FATE_EPISODE_KEY);
+    completeEpisode(draft, entity);
 
-    const key = keyOf(FATE_EPISODES, at.get(FATE_EPISODE_KEY));
+    const key = keyOf(FATE_EPISODES, episode);
     const reward = key === undefined ? undefined : FATE_EPISODE_REWARDS[key];
     if (reward?.quest !== undefined) {
       const row = questIds.indexOf(reward.quest);
@@ -48,14 +46,12 @@ export function completeFateEpisodes(session: SaveSession, character: string) {
       questRows.push(row);
     }
     if (reward?.item !== undefined) {
-      const item = units.onlyEntityWhere(ITEM_KEY, hashId(reward.item));
-      patches.push(...rewardItem(units, stamps, item, !!reward.keyItem));
+      const item = draft.onlyEntityWhere(ITEM_KEY, hashId(reward.item));
+      rewardItem(draft, stamps, item, !!reward.keyItem);
     }
-    for (const archive of reward?.archives ?? [])
-      patches.push(unlockArchive(units, archive));
+    for (const archive of reward?.archives ?? []) unlockArchive(draft, archive);
   }
 
-  if (questRows.length > 0) patches.push(clearFateQuests(units, questRows));
-  patches.push(...stamps.done());
-  session.patch(patches);
+  if (questRows.length > 0) clearFateQuests(draft, questRows);
+  stamps.done();
 }

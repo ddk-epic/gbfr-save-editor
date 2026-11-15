@@ -7,7 +7,6 @@ import {
   keyTable,
 } from "../../packages/core/keys";
 import { hashId } from "../../packages/core/xxhash32-custom";
-import { unitStore } from "../../packages/gbfr-save-editor/testing";
 
 const COUNT = Attribute.int(10);
 const IDS = Attribute.uintList(11);
@@ -64,40 +63,5 @@ describe("Attribute.write", () => {
   it("writes a hash, none as empty", () => {
     expect(HASH.write(77, undefined)).toEqual([77]);
     expect(HASH.write(undefined, undefined)).toEqual([EMPTY_HASH]);
-  });
-});
-
-describe("EntityValues patch and replace", () => {
-  const units = unitStore({
-    1: [
-      [COUNT, 3],
-      [FLAGS, 0x11],
-      [NAME, [1, 2, 3]],
-    ],
-  });
-
-  it("patches a scalar for the entity", () => {
-    expect(units.of(1).patch(COUNT, 9)).toEqual({
-      attribute: COUNT,
-      entity: 1,
-      values: [9],
-    });
-  });
-
-  it("merges flags onto the unit's bits", () => {
-    expect(units.of(1).patch(FLAGS, { second: true }).values).toEqual([0x13]);
-  });
-
-  it("replaces flags from 0", () => {
-    expect(units.of(1).replace(FLAGS, { second: true }).values).toEqual([2]);
-  });
-
-  it("sizes text from the unit", () => {
-    expect(units.of(1).patch(NAME, "A").values).toEqual([65, 0, 0]);
-  });
-
-  it("leaves the store untouched", () => {
-    units.of(1).patch(COUNT, 9);
-    expect(units.of(1).get(COUNT)).toBe(3);
   });
 });

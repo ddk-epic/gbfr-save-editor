@@ -1,4 +1,4 @@
-import { keyOf, type UnitEntity, type UnitStore } from "@gbfr/core";
+import { keyOf, type UnitEntity, type Units } from "@gbfr/core";
 import { SUMMON_BONUS_VALUES } from "./data.gen";
 import { SKILLS } from "@gbfr/tables";
 import type { Trait } from "@gbfr/trait";
@@ -35,7 +35,7 @@ export interface Summon {
 }
 
 export function readSummon(
-  units: UnitStore,
+  units: Units,
   entity: UnitEntity,
 ): Summon | undefined {
   const at = units.of(entity);
@@ -69,7 +69,7 @@ export function readSummon(
 }
 
 /** By summon id. */
-export function readSummons(units: UnitStore): Map<number, Summon> {
+export function readSummons(units: Units): Map<number, Summon> {
   const summons = new Map<number, Summon>();
   for (const entity of units.entitiesWith(SUMMON_ID)) {
     const summon = readSummon(units, entity);
@@ -79,11 +79,11 @@ export function readSummons(units: UnitStore): Map<number, Summon> {
 }
 
 export const findSummonById = (
-  units: UnitStore,
+  units: Units,
   id: number,
 ): UnitEntity | undefined => units.entitiesWhere(SUMMON_ID, id)[0];
 
-export function readEquippedSummons(units: UnitStore): (Summon | undefined)[] {
+export function readEquippedSummons(units: Units): (Summon | undefined)[] {
   const equipped = units.of(0).get(SUMMONS_EQUIPPED);
   return Array.from({ length: SUMMON_POSITIONS }, (_, i) => {
     const id = equipped[i];

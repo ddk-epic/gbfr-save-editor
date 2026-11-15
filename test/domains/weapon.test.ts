@@ -1,6 +1,7 @@
 import { SAVE_ENTITY, SAVE_HASHSEED } from "../../packages/core/save-entity";
 import { CAPTAIN } from "../../packages/character/attributes";
 import { describe, expect, it } from "vitest";
+import { apply } from "../helpers";
 import { EMPTY_HASH } from "../../packages/core/keys";
 import { hashId } from "../../packages/core/xxhash32-custom";
 import {
@@ -163,7 +164,7 @@ describe("removeWrightstone", () => {
         ...stoned(WEAPON + 1, 10),
       }),
     );
-    removeWrightstone(session, 9);
+    apply(session, (draft) => removeWrightstone(draft, 9));
     const units = session.save.slotData.units;
     expect(readWeapon(units, WEAPON)!.wrightstone).toBeUndefined();
     for (let i = 0; i < 3; i++) {
@@ -186,7 +187,11 @@ describe("removeWrightstone", () => {
         ],
       }),
     );
-    expect(() => removeWrightstone(session, 9)).toThrow("has no wrightstone");
-    expect(() => removeWrightstone(session, 10)).toThrow("no weapon with id");
+    expect(() =>
+      apply(session, (draft) => removeWrightstone(draft, 9)),
+    ).toThrow("has no wrightstone");
+    expect(() =>
+      apply(session, (draft) => removeWrightstone(draft, 10)),
+    ).toThrow("no weapon with id");
   });
 });

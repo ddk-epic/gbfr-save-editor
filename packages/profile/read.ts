@@ -1,4 +1,4 @@
-import type { UnitEntity, UnitStore } from "@gbfr/core";
+import type { UnitEntity, Units } from "@gbfr/core";
 import { questId } from "@gbfr/quest";
 import {
   CARD_CHARACTER_KEY,
@@ -57,7 +57,7 @@ export interface RecentPlayer extends CardCharacters {
 }
 
 function readCardCharacter(
-  units: UnitStore,
+  units: Units,
   entity: UnitEntity,
 ): CardCharacter | undefined {
   const at = units.of(entity);
@@ -72,10 +72,7 @@ function readCardCharacter(
   };
 }
 
-function readCardCharacters(
-  units: UnitStore,
-  card: UnitEntity,
-): CardCharacters {
+function readCardCharacters(units: Units, card: UnitEntity): CardCharacters {
   const first = card * CARD_CHARACTER_STRIDE;
   return {
     lastPlayed: readCardCharacter(units, first + CARD_CHARACTER_LAST_PLAYED),
@@ -85,7 +82,7 @@ function readCardCharacters(
   };
 }
 
-export function readProfile(units: UnitStore): Profile {
+export function readProfile(units: Units): Profile {
   return {
     questsCleared: units.of(PROFILE_FIRST).get(PROFILE_QUESTS_CLEARED),
     ...readCardCharacters(units, PROFILE_FIRST),
@@ -93,7 +90,7 @@ export function readProfile(units: UnitStore): Profile {
 }
 
 /** Newest first. A card with no player ID is empty and left out. */
-export function readRecentPlayers(units: UnitStore): RecentPlayer[] {
+export function readRecentPlayers(units: Units): RecentPlayer[] {
   const players: RecentPlayer[] = [];
   for (let i = 0; i < RECENT_PLAYER_COUNT; i++) {
     const entity = RECENT_PLAYER_FIRST + i;

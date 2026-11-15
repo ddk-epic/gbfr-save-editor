@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { advance } from "../helpers";
 import {
   CONFLUX_CYCLE_CLEARED,
   CONFLUX_RETURNED,
@@ -84,7 +85,7 @@ import {
   TROPHY_EARNED,
   TROPHY_PROGRESS,
 } from "../../packages/trophy/attributes";
-import { advanceStory, storyTargets } from "../../packages/story/edit";
+import { storyTargets } from "../../packages/story/edit";
 
 const NOW = 1794162545000;
 const SIDE_QUESTS = [0x220101, 0x220102, 0x220111];
@@ -209,7 +210,7 @@ const targets = (session: SaveSession) =>
 describe("dlcStart", () => {
   it("clears the side quests, Conflux Cycles 1-3 and 00730021, and leaves the town", () => {
     const session = save(6, 222);
-    advanceStory(session, "dlcStart", NOW);
+    advance(session, "dlcStart", NOW);
     const at = readSave(session.export()).slotData.units.of(0);
 
     expect(at.get(CURRENT_CHAPTER)).toEqual([222, -1]);
@@ -225,7 +226,7 @@ describe("dlcStart", () => {
 describe("advanceToEpilogue", () => {
   it("clears what comes before 00730201 and puts the save in Folca", () => {
     const session = save(7, 222);
-    advanceStory(session, "advanceToEpilogue", NOW);
+    advance(session, "advanceToEpilogue", NOW);
     const at = readSave(session.export()).slotData.units.of(0);
 
     expect(at.get(CURRENT_CHAPTER)).toEqual([222, -1]);
@@ -274,7 +275,7 @@ describe("advanceToEpilogue", () => {
 
   it("is not offered once done, nor once the game moves the chapter", () => {
     const session = save(7, 222);
-    advanceStory(session, "advanceToEpilogue", NOW);
+    advance(session, "advanceToEpilogue", NOW);
     expect(targets(session)).toEqual(CHAOS);
     expect(targets(save(7, 240))).toEqual(CHAOS);
   });
@@ -283,7 +284,7 @@ describe("advanceToEpilogue", () => {
 describe("unlockChaos", () => {
   it("leaves 0010B002 at its start with the first summon given", () => {
     const session = save(7, 222);
-    advanceStory(session, "unlockChaos", NOW);
+    advance(session, "unlockChaos", NOW);
     const units = readSave(session.export()).slotData.units;
     const at = units.of(0);
 
@@ -321,7 +322,7 @@ describe("unlockChaos", () => {
 
   it("follows the trace to the record of 0040A305", () => {
     const session = save(7, 240);
-    advanceStory(session, "unlockChaosPlusPlus", NOW);
+    advance(session, "unlockChaosPlusPlus", NOW);
     const at = readSave(session.export()).slotData.units.of(0);
 
     expect(at.get(QUEST_DIFFICULTY_UNLOCKED)).toBe(10);
@@ -365,7 +366,7 @@ describe("unlockChaos", () => {
 describe("unlockDefyInfinity", () => {
   it("sets 2508 to 10 with 7303 at 10 and clears Conflux Cycle 5", () => {
     const session = save(7, 240);
-    advanceStory(session, "unlockDefyInfinity", NOW);
+    advance(session, "unlockDefyInfinity", NOW);
     const at = readSave(session.export()).slotData.units.of(0);
 
     expect(at.get(QUEST_DIFFICULTY_UNLOCKED)).toBe(10);
@@ -378,10 +379,10 @@ describe("unlockDefyInfinity", () => {
 
   it("is offered at 7303 10 until 2508 reaches 10", () => {
     const session = save(7, 240);
-    advanceStory(session, "unlockChaosPlusPlus", NOW);
+    advance(session, "unlockChaosPlusPlus", NOW);
     expect(targets(session)).toEqual(["unlockDefyInfinity"]);
-    advanceStory(session, "unlockDefyInfinity", NOW);
-    expect(() => advanceStory(session, "unlockDefyInfinity", NOW)).toThrow(
+    advance(session, "unlockDefyInfinity", NOW);
+    expect(() => advance(session, "unlockDefyInfinity", NOW)).toThrow(
       "already at or past",
     );
   });

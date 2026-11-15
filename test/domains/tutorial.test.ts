@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { apply } from "../helpers";
 import { hashId } from "../../packages/core/xxhash32-custom";
 import { TIP_FLAGS, TIP_KEY } from "../../packages/journal/attributes";
 import {
@@ -52,7 +53,7 @@ const save = () =>
 describe("clearHints", () => {
   it("marks found hints as shown and leaves other rows and bits alone", () => {
     const session = save();
-    clearHints(session);
+    apply(session, (draft) => clearHints(draft));
     const units = session.save.slotData.units;
 
     expect(units.values(TUTORIAL_WINDOW_FLAGS, 1)).toEqual([1]);
@@ -67,7 +68,7 @@ describe("clearHints", () => {
   it("is offered until every found hint is marked", () => {
     const session = save();
     expect(canClearHints(session.save)).toBe(true);
-    clearHints(session);
+    apply(session, (draft) => clearHints(draft));
     expect(canClearHints(session.save)).toBe(false);
   });
 });

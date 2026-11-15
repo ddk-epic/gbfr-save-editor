@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { apply } from "../helpers";
 import { hashId } from "../../packages/core/xxhash32-custom";
 import { WEAPON_ROWS } from "../../packages/weapon/data.gen";
 import { WEAPONS_HELD_ALL_BADGES } from "../../packages/trophy/data.gen";
@@ -164,7 +165,7 @@ describe("unlockableWeapons", () => {
 describe("unlockWeapon", () => {
   it("writes the forged state in the first free entry with the next id", () => {
     const session = open("PL0000", [["WEP_PL0000_02", 790, 2]]);
-    unlockWeapon(session, CHARACTER, "WEP_PL0000_04");
+    apply(session, (draft) => unlockWeapon(draft, CHARACTER, "WEP_PL0000_04"));
     const weapon = added(session, "WEP_PL0000_04");
     expect(weapon.entity).toBe(WEAPON_FIRST + 1);
     expect(weapon.id).toBe(51);
@@ -179,13 +180,13 @@ describe("unlockWeapon", () => {
       note: "WEP_PL0000_04",
       noteFlags: 1,
     });
-    unlockWeapon(session, CHARACTER, "WEP_PL0000_04");
+    apply(session, (draft) => unlockWeapon(draft, CHARACTER, "WEP_PL0000_04"));
     expect(units(session).values(FIELD_NOTE_WEAPON_FLAGS, NOTE)).toEqual([5]);
   });
 
   it("recounts held weapons, levels and the Collection", () => {
     const session = open("PL0000", [["WEP_PL0000_02", 790, 2]]);
-    unlockWeapon(session, CHARACTER, "WEP_PL0000_04");
+    apply(session, (draft) => unlockWeapon(draft, CHARACTER, "WEP_PL0000_04"));
     expect(progress(session)[184]).toBe(2n);
     expect(progress(session)[998]).toBe(2n);
     expect(progress(session)[185]).toBe(105n);
@@ -196,7 +197,7 @@ describe("unlockWeapon", () => {
 
   it("leaves a character not yet joined out of the totals, not the Collection", () => {
     const session = open("PL0200", [], { flags: 0 });
-    unlockWeapon(session, CHARACTER, "WEP_PL0200_04");
+    apply(session, (draft) => unlockWeapon(draft, CHARACTER, "WEP_PL0200_04"));
     expect(progress(session)[184]).toBe(0n);
     expect(progress(session)[185]).toBe(0n);
     expect(progress(session)[152]).toBe(1n);
@@ -204,24 +205,32 @@ describe("unlockWeapon", () => {
 
   it("sets the Trove only on a series 0 weapon", () => {
     const session = open("PL0000", [["WEP_PL0000_02", LAST_XP, 6]]);
-    unlockWeapon(session, CHARACTER, "WEP_PL0000_04");
+    apply(session, (draft) => unlockWeapon(draft, CHARACTER, "WEP_PL0000_04"));
     expect(progress(session)[151]).toBe(0n);
-    unlockWeapon(session, CHARACTER, "WEP_PL0000_06");
+    apply(session, (draft) => unlockWeapon(draft, CHARACTER, "WEP_PL0000_06"));
     expect(progress(session)[151]).toBe(2n);
   });
 
   it("leaves a later character's late weapons out of the Collection", () => {
     const session = open("PL2100", []);
-    unlockWeapon(session, CHARACTER, "WEP_PL2100_04");
+    apply(session, (draft) => unlockWeapon(draft, CHARACTER, "WEP_PL2100_04"));
     expect(progress(session)[490]).toBe(0n);
-    unlockWeapon(session, CHARACTER, "WEP_PL2100_07");
+    apply(session, (draft) => unlockWeapon(draft, CHARACTER, "WEP_PL2100_07"));
     expect(progress(session)[490]).toBe(1n);
   });
 
   it("refuses a weapon already held or another character's", () => {
     const session = open("PL0000", [["WEP_PL0000_02", 0, 0]]);
-    expect(() => unlockWeapon(session, CHARACTER, "WEP_PL0000_02")).toThrow();
-    expect(() => unlockWeapon(session, CHARACTER, "WEP_PL0200_02")).toThrow();
+    expect(() =>
+      apply(session, (draft) =>
+        unlockWeapon(draft, CHARACTER, "WEP_PL0000_02"),
+      ),
+    ).toThrow();
+    expect(() =>
+      apply(session, (draft) =>
+        unlockWeapon(draft, CHARACTER, "WEP_PL0200_02"),
+      ),
+    ).toThrow();
   });
 
   it("fails with no free entry", () => {
@@ -229,16 +238,18 @@ describe("unlockWeapon", () => {
       "PL0000",
       Array.from({ length: ENTRIES }, () => ["WEP_PL0200_02", 0, 0] as const),
     );
-    expect(() => unlockWeapon(session, CHARACTER, "WEP_PL0000_04")).toThrow(
-      "no free weapon entry",
-    );
+    expect(() =>
+      apply(session, (draft) =>
+        unlockWeapon(draft, CHARACTER, "WEP_PL0000_04"),
+      ),
+    ).toThrow("no free weapon entry");
   });
 });
 
 describe("unlockWeaponSeries", () => {
   it("adds every series, earns the Collection and leaves the levels forged", () => {
     const session = open("PL0000", []);
-    unlockWeaponSeries(session, CHARACTER);
+    apply(session, (draft) => unlockWeaponSeries(draft, CHARACTER));
     expect(keys(session)).toEqual([]);
     expect(readOwnedWeapons(units(session)).get("PL0000")!.size).toBe(6);
     expect(progress(session)[184]).toBe(6n);
@@ -249,7 +260,7 @@ describe("unlockWeaponSeries", () => {
 
   it("gives a hash-keyed weapon its key", () => {
     const session = open("PL2900", []);
-    unlockWeaponSeries(session, CHARACTER);
+    apply(session, (draft) => unlockWeaponSeries(draft, CHARACTER));
     expect(added(session, "CDB13688").uncap).toBe(6);
     expect(readOwnedWeapons(units(session)).get("PL2900")!.size).toBe(4);
   });
@@ -259,7 +270,7 @@ describe("maxWeaponSeries with weapons missing", () => {
   it("forges what is missing and raises everything", () => {
     const session = open("PL0000", [["WEP_PL0000_02", 790, 2]]);
     expect(canMaxWeaponSeries(units(session), CHARACTER)).toBe(true);
-    maxWeaponSeries(session, CHARACTER);
+    apply(session, (draft) => maxWeaponSeries(draft, CHARACTER));
     const held = [...readOwnedWeapons(units(session)).get("PL0000")!.values()];
     expect(held).toHaveLength(6);
     expect(held.every((w) => w.uncap === 6 && w.xp === LAST_XP)).toBe(true);
@@ -273,13 +284,13 @@ describe("maxWeaponSeries with weapons missing", () => {
   it("offers it on a character holding nothing", () => {
     const session = open("PL0200", []);
     expect(canMaxWeaponSeries(units(session), CHARACTER)).toBe(true);
-    maxWeaponSeries(session, CHARACTER);
+    apply(session, (draft) => maxWeaponSeries(draft, CHARACTER));
     expect(progress(session)[153]).toBe(6n);
   });
 
   it("counts a later character's Trove without the late weapons", () => {
     const session = open("PL2100", []);
-    maxWeaponSeries(session, CHARACTER);
+    apply(session, (draft) => maxWeaponSeries(draft, CHARACTER));
     expect(progress(session)[491]).toBe(2n);
     expect(earned(session)[679]).toBe(true);
   });
@@ -293,7 +304,7 @@ describe("all weapon series", () => {
   it("unlocks every character's series", () => {
     const session = open("PL0000", [], { others: ["PL0200"] });
     expect(canUnlockAllWeaponSeries(session.save)).toBe(true);
-    unlockAllWeaponSeries(session);
+    apply(session, (draft) => unlockAllWeaponSeries(draft));
     expect(owned(session, "PL0000")).toHaveLength(6);
     expect(owned(session, "PL0200")).toHaveLength(6);
     expect(canUnlockAllWeaponSeries(session.save)).toBe(false);
@@ -304,7 +315,7 @@ describe("all weapon series", () => {
       others: ["PL0200"],
     });
     expect(canMaxAllWeaponSeries(session.save)).toBe(true);
-    maxAllWeaponSeries(session);
+    apply(session, (draft) => maxAllWeaponSeries(draft));
     for (const character of ["PL0000", "PL0200"]) {
       const held = owned(session, character);
       expect(held).toHaveLength(6);

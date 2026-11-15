@@ -2,7 +2,7 @@ import {
   SAVE_ENTITY,
   SAVE_FEATURE_VERSION,
   SAVE_SLOT_VERSION,
-  type UnitStore,
+  type Units,
 } from "@gbfr/core";
 import {
   LOCATION_PARTY_HP,
@@ -38,7 +38,7 @@ export interface System {
 const phaseId = (stage: number) =>
   stage.toString(16).toUpperCase().padStart(8, "0");
 
-export function readUser(units: UnitStore): User {
+export function readUser(units: Units): User {
   const at = units.of(SAVE_ENTITY);
   const stage = at.get(LOCATION_STAGE);
   return {
@@ -53,6 +53,6 @@ export function readUser(units: UnitStore): User {
   };
 }
 
-export function readSystem(units: UnitStore): System {
+export function readSystem(units: Units): System {
   return { playTime: Number(units.of(SAVE_ENTITY).get(SYSTEM_PLAY_TIME)) };
 }

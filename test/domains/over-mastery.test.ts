@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { apply } from "../helpers";
 import { EMPTY_HASH } from "../../packages/core/keys";
 import { hashId } from "../../packages/core/xxhash32-custom";
 import {
@@ -103,7 +104,7 @@ describe("removeOverMasteries", () => {
         ...lines(CHARACTER + 1, rolled),
       }),
     );
-    removeOverMasteries(session, CHARACTER);
+    apply(session, (draft) => removeOverMasteries(draft, CHARACTER));
     const units = session.save.slotData.units;
     expect(readOverMasteries(units, mastery)).toEqual(Array(4).fill(undefined));
     for (let i = 0; i < 4; i++)
@@ -120,11 +121,11 @@ describe("removeOverMasteries", () => {
         ...lines(CHARACTER, ["", "", "", ""]),
       }),
     );
-    expect(() => removeOverMasteries(session, CHARACTER)).toThrow(
-      "has no Over Mastery",
-    );
-    expect(() => removeOverMasteries(session, CHARACTER + 1)).toThrow(
-      "no character at",
-    );
+    expect(() =>
+      apply(session, (draft) => removeOverMasteries(draft, CHARACTER)),
+    ).toThrow("has no Over Mastery");
+    expect(() =>
+      apply(session, (draft) => removeOverMasteries(draft, CHARACTER + 1)),
+    ).toThrow("no character at");
   });
 });

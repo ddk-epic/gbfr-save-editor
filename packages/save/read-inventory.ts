@@ -1,4 +1,4 @@
-import { type UnitStore, SAVE_ENTITY } from "@gbfr/core";
+import { type Units, SAVE_ENTITY } from "@gbfr/core";
 import { readUnseenSkills } from "@gbfr/skill";
 import { readCurios, type Curio } from "@gbfr/curio";
 import { readItems, readItemsFlagged } from "@gbfr/item";
@@ -30,7 +30,7 @@ export interface Inventory {
   summons: Map<number, Summon>;
 }
 
-export function readInventory(units: UnitStore): Inventory {
+export function readInventory(units: Units): Inventory {
   const at = units.of(SAVE_ENTITY);
   return {
     rupies: at.get(USER_RUPIES),

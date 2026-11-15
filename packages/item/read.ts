@@ -1,5 +1,5 @@
 import { ITEM_SORT_ORDER } from "./data.gen";
-import { hashOfKey, type UnitStore } from "@gbfr/core";
+import { hashOfKey, type Units } from "@gbfr/core";
 import { ITEMS } from "@gbfr/tables";
 import { ITEM_COUNT, ITEM_FLAGS, ITEM_KEY } from "./attributes";
 
@@ -23,7 +23,7 @@ export function itemTab(key: string): ItemTab | undefined {
 }
 
 /** Count by item.Key. Wrightstones are listed apart. */
-export function readItems(units: UnitStore): Map<string, number> {
+export function readItems(units: Units): Map<string, number> {
   const items = new Map<string, number>();
   for (const entity of units.entitiesWith(ITEM_KEY)) {
     const at = units.of(entity);
@@ -36,7 +36,7 @@ export function readItems(units: UnitStore): Map<string, number> {
 
 /** item.Key of the items whose ITEM_FLAGS match. */
 export function readItemsFlagged(
-  units: UnitStore,
+  units: Units,
   match: (
     flags: { wishList: boolean; fieldNote: boolean; seen: boolean },
     count: number,

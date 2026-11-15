@@ -1,5 +1,5 @@
 import { TROPHIES, type TrophyTab } from "./data.gen";
-import { type UnitStore, SAVE_ENTITY } from "@gbfr/core";
+import { type Units, SAVE_ENTITY } from "@gbfr/core";
 import { TROPHY_EARNED, TROPHY_SEEN } from "./attributes";
 
 export interface Trophy {
@@ -16,7 +16,7 @@ export interface Trophy {
 }
 
 /** Every trophy in `TROPHIES`, in journal order, earned or not. */
-export function readTrophies(units: UnitStore): Trophy[] {
+export function readTrophies(units: Units): Trophy[] {
   const at = units.of(SAVE_ENTITY);
   const earned = new Set(
     at.get(TROPHY_EARNED).flatMap((flag, key) => (flag ? [key] : [])),

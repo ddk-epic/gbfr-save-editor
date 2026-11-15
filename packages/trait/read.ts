@@ -1,4 +1,4 @@
-import type { UnitEntity, UnitStore } from "@gbfr/core";
+import type { UnitEntity, Units } from "@gbfr/core";
 import { TRAIT_KEY, TRAIT_LEVEL, traitRange } from "./attributes";
 
 export interface Trait {
@@ -9,7 +9,7 @@ export interface Trait {
 }
 
 export function readTraits(
-  units: UnitStore,
+  units: Units,
   holder: number,
 ): (Trait | undefined)[] {
   return units.entitiesWith(TRAIT_KEY, traitRange(holder)).map((entity) => {
@@ -21,7 +21,7 @@ export function readTraits(
   });
 }
 
-export const readFilledTraits = (units: UnitStore, holder: number): Trait[] =>
+export const readFilledTraits = (units: Units, holder: number): Trait[] =>
   readTraits(units, holder).filter(
     (trait): trait is Trait => trait !== undefined,
   );

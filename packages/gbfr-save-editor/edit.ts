@@ -1,4 +1,5 @@
-export { SaveSession, type Patch } from "@gbfr/core/session";
+export { SaveSession } from "@gbfr/core/session";
+export { draft, type Draft } from "@gbfr/core/draft";
 export {
   canMaxAllWeaponSeries,
   canMaxWeaponSeries,

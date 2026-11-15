@@ -1,4 +1,4 @@
-import type { UnitEntity, UnitStore } from "@gbfr/core";
+import type { UnitEntity, Units } from "@gbfr/core";
 import { TRAIT_WRIGHTSTONE, readFilledTraits, type Trait } from "@gbfr/trait";
 import {
   WRIGHTSTONE_FIRST,
@@ -24,7 +24,7 @@ export interface InventoryWrightstone extends Wrightstone {
 }
 
 export function readWrightstone(
-  units: UnitStore,
+  units: Units,
   entity: UnitEntity,
 ): InventoryWrightstone | undefined {
   const at = units.of(entity);
@@ -46,7 +46,7 @@ export function readWrightstone(
 
 /** By wrightstone id. */
 export function readWrightstones(
-  units: UnitStore,
+  units: Units,
 ): Map<number, InventoryWrightstone> {
   const stones = new Map<number, InventoryWrightstone>();
   for (const entity of units.entitiesWith(WRIGHTSTONE_KEY)) {
