@@ -1,26 +1,15 @@
-import { CHAPTER_ZERO_END_KEY, storyDifficulty } from "gbfr-save-editor";
 import {
   type Draft,
   addSigil,
   addWrightstone,
-  advanceStory,
-  clearHints,
-  maxAllWeaponSeries,
-  unlockAllWeaponSeries,
-  unlockAllCharacters,
   editSigil,
   editWrightstone,
-  fillSkippedStory,
-  maxMasteryPoints,
-  maxRupies,
-  maxTreasures,
 } from "gbfr-save-editor/edit";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGameText } from "../../i18n/game-text";
 import { edit } from "../../state/actions";
 import { go } from "../../state/navigation";
-import { useSave } from "../../state/save";
 import {
   clearSelection,
   useSelectedRef,
@@ -31,19 +20,11 @@ import {
   ExpandCollapseActions,
   TableSections,
 } from "../../tables/TableSections";
-import { EditMenu } from "../../ui/EditMenu";
 import { PageTop } from "../../ui/PageTop";
 import { RowPanel } from "../../ui/RowPanel";
-import type { SaveView, Table, TableLabelId } from "../../view";
-import {
-  OPTIONS_TABLE,
-  PROFILE_TABLE,
-  SIGILS_TABLE,
-  STORY_TABLE,
-  TREASURES_TABLE,
-  WEAPONS_TABLE,
-  WRIGHTSTONES_TABLE,
-} from "../../view/shared";
+import type { SaveView, Table } from "../../view";
+import { SIGILS_TABLE, WRIGHTSTONES_TABLE } from "../../view/shared";
+import { TableMenu } from "../table-actions";
 import { SigilForm } from "./SigilForm";
 import { WrightstoneForm } from "./WrightstoneForm";
 
@@ -89,18 +70,6 @@ export function SavePage({
   const selection = useSelection();
   const ref = useSelectedRef();
   const [adding, setAdding] = useState<Editable>();
-  const belowMaxRupies = useSave((save) => save?.view.belowMaxRupies);
-  const belowMaxMasteryPoints = useSave(
-    (save) => save?.view.belowMaxMasteryPoints,
-  );
-  const canMaxItems = useSave((save) => save?.view.canMaxTreasures);
-  const storyTargets = useSave((save) => save?.view.storyTargets);
-  const canClear = useSave((save) => save?.view.canClearHints);
-  const canUnlockAll = useSave((save) => save?.view.canUnlockAllCharacters);
-  const canUnlockWeapons = useSave(
-    (save) => save?.view.canUnlockAllWeaponSeries,
-  );
-  const canMaxWeapons = useSave((save) => save?.view.canMaxAllWeaponSeries);
   // Selecting a row leaves the add form.
   const [prevRef, setPrevRef] = useState(ref);
   if (ref !== prevRef) {
@@ -186,115 +155,7 @@ export function SavePage({
       <TableSections
         tables={tables}
         menuOf={(table) =>
-          editable &&
-          (table.id === WRIGHTSTONES_TABLE ? (
-            <EditMenu
-              actions={[
-                {
-                  label: t("edit.addWrightstone"),
-                  run: () => setAdding(WRIGHTSTONES_TABLE),
-                },
-              ]}
-            />
-          ) : table.id === PROFILE_TABLE ? (
-            <EditMenu
-              actions={[
-                ...(belowMaxRupies
-                  ? [{ label: t("edit.maxRupies"), run: () => edit(maxRupies) }]
-                  : []),
-                ...(belowMaxMasteryPoints
-                  ? [
-                      {
-                        label: t("edit.maxMasteryPoints"),
-                        run: () => edit(maxMasteryPoints),
-                      },
-                    ]
-                  : []),
-                ...(canUnlockAll
-                  ? [
-                      {
-                        label: t("edit.unlockAllCharacters"),
-                        run: () => edit(unlockAllCharacters),
-                      },
-                    ]
-                  : []),
-              ]}
-            />
-          ) : table.id === STORY_TABLE ? (
-            <EditMenu
-              actions={(storyTargets ?? []).map(({ id, key, chapter }) => ({
-                label: chapter
-                  ? t("edit.advanceStory", {
-                      chapter:
-                        key === CHAPTER_ZERO_END_KEY
-                          ? t("tables.chapterZeroEnd")
-                          : gt("chapterStartChapter", String(key)),
-                    })
-                  : t(`tables.${id as TableLabelId}`),
-                run: () =>
-                  edit((draft, save) => {
-                    advanceStory(draft, id, storyDifficulty(save));
-                    fillSkippedStory(draft);
-                  }),
-              }))}
-            />
-          ) : table.id === OPTIONS_TABLE ? (
-            <EditMenu
-              actions={[
-                ...(canClear
-                  ? [
-                      {
-                        label: t("tables.clearHints"),
-                        run: () => edit(clearHints),
-                      },
-                    ]
-                  : []),
-              ]}
-            />
-          ) : table.id === TREASURES_TABLE ? (
-            <EditMenu
-              actions={
-                canMaxItems
-                  ? [
-                      {
-                        label: t("edit.maxTreasures"),
-                        run: () => edit(maxTreasures),
-                      },
-                    ]
-                  : []
-              }
-            />
-          ) : table.id === WEAPONS_TABLE ? (
-            <EditMenu
-              actions={[
-                ...(canUnlockWeapons
-                  ? [
-                      {
-                        label: t("edit.unlockAllWeapons"),
-                        run: () => edit(unlockAllWeaponSeries),
-                      },
-                    ]
-                  : []),
-                ...(canMaxWeapons
-                  ? [
-                      {
-                        label: t("edit.maxAllWeapons"),
-                        run: () => edit(maxAllWeaponSeries),
-                      },
-                    ]
-                  : []),
-              ]}
-            />
-          ) : table.id === SIGILS_TABLE ? (
-            <EditMenu
-              actions={[
-                {
-                  label: t("edit.addSigil"),
-                  run: () => setAdding(SIGILS_TABLE),
-                },
-              ]}
-            />
-          ) : undefined)
+          table.actions && <TableMenu table={table} openAddForm={setAdding} />
         }
       />
     </>

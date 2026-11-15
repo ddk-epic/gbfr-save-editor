@@ -14,7 +14,7 @@ import {
 } from "gbfr-save-editor";
 import { keyCell, trait } from "./cell";
 import { overMasteriesTable } from "./shared";
-import { table } from "./table";
+import { listed, table } from "./table";
 import type { Cell, CharacterView, EquipmentSetView } from "./types";
 
 const MASTER_TRAIT_TABS: Record<string, string> = {
@@ -74,15 +74,23 @@ export function buildCharacters(
               ["quests used", w.questsUsed],
             ]
           : [],
-        { stretch: "value" },
+        {
+          stretch: "value",
+          actions:
+            characterEntity === undefined
+              ? []
+              : listed([
+                  [
+                    canUnlockWeaponSeries(units, characterEntity),
+                    { type: "unlockWeaponSeries", entity: characterEntity },
+                  ],
+                  [
+                    canMaxWeaponSeries(units, characterEntity),
+                    { type: "maxWeaponSeries", entity: characterEntity },
+                  ],
+                ]),
+        },
       ),
-      wrightstoneWeaponId: w?.wrightstone ? w.id : undefined,
-      canMaxWeaponSeries:
-        characterEntity !== undefined &&
-        canMaxWeaponSeries(units, characterEntity),
-      canUnlockWeaponSeries:
-        characterEntity !== undefined &&
-        canUnlockWeaponSeries(units, characterEntity),
       wrightstone: table(
         `${id}:wrightstone`,
         "gear",
@@ -96,7 +104,12 @@ export function buildCharacters(
           ["sub 1", trait(w?.wrightstone?.traits[1])],
           ["sub 2", trait(w?.wrightstone?.traits[2])],
         ],
-        { stretch: "value" },
+        {
+          stretch: "value",
+          actions: w?.wrightstone
+            ? [{ type: "removeWrightstone", weaponId: w.id }]
+            : [],
+        },
       ),
       skills: table(
         `${id}:skills`,
@@ -145,13 +158,6 @@ export function buildCharacters(
     .map((c): CharacterView => ({
       key: c.character,
       entity: c.entity,
-      belowMaxLevel:
-        characterLevels(c.character) && c.level < CHARACTER_MAX_LEVEL,
-      canUnlock: canUnlockCharacter(units, c.entity),
-      belowMaxMasterLevel:
-        characterMasterLevels(c.character) && c.masterLevel < MAX_MASTER_LEVEL,
-      overMasteryRolled: c.overMasteries.some((o) => o !== undefined),
-      fateEpisodesIncomplete: c.fateEpisodes.some((f) => !f.completed),
       level: table(
         `${c.character}:level`,
         "stats",
@@ -168,7 +174,24 @@ export function buildCharacters(
           ["master level", c.masterLevel],
           ["master XP", c.masterXp],
         ],
-        { stretch: "field" },
+        {
+          stretch: "field",
+          actions: listed([
+            [
+              canUnlockCharacter(units, c.entity),
+              { type: "unlockCharacter", entity: c.entity },
+            ],
+            [
+              !!characterLevels(c.character) && c.level < CHARACTER_MAX_LEVEL,
+              { type: "maxCharacterLevel", entity: c.entity },
+            ],
+            [
+              !!characterMasterLevels(c.character) &&
+                c.masterLevel < MAX_MASTER_LEVEL,
+              { type: "maxMasterLevel", entity: c.entity },
+            ],
+          ]),
+        },
       ),
       fateEpisodes: table(
         `${c.character}:fateEpisodes`,
@@ -178,7 +201,15 @@ export function buildCharacters(
           ["completed", 10],
         ],
         c.fateEpisodes.map((f) => [keyCell("fateEpisode", f.key), f.completed]),
-        { stretch: "episode" },
+        {
+          stretch: "episode",
+          actions: listed([
+            [
+              c.fateEpisodes.some((f) => !f.completed),
+              { type: "completeFateEpisodes", character: c.character },
+            ],
+          ]),
+        },
       ),
       tables: [
         table(
@@ -209,7 +240,17 @@ export function buildCharacters(
             keyCell("mastery", o?.key),
             o?.level,
           ]),
-          { stretch: "bonus", tab: "all", label: "overMasteries" },
+          {
+            stretch: "bonus",
+            tab: "all",
+            label: "overMasteries",
+            actions: listed([
+              [
+                c.overMasteries.some((o) => o !== undefined),
+                { type: "removeOverMasteries", entity: c.entity },
+              ],
+            ]),
+          },
         ),
         ...Object.entries(c.masteries).map(([section, m]) =>
           table(

@@ -1,17 +1,4 @@
-import {
-  readCharacterData,
-  readInventory,
-  type Save,
-  USER_MAX_MASTERY_POINTS,
-  USER_MAX_RUPIES,
-  canClearHints,
-  canMaxAllWeaponSeries,
-  canUnlockAllWeaponSeries,
-  canUnlockAllCharacters,
-  canMaxTreasures,
-  isChapterCheckpoint,
-  storyTargets,
-} from "gbfr-save-editor";
+import { readCharacterData, readInventory, type Save } from "gbfr-save-editor";
 import { buildCharacters } from "./character";
 import { buildParty } from "./party";
 import { buildShared } from "./shared";
@@ -47,18 +34,6 @@ export function buildView(save: Save): SaveView {
   const inventory = readInventory(units);
   const view: SaveView = {
     shared: buildShared(save, data, inventory),
-    belowMaxRupies: inventory.rupies < USER_MAX_RUPIES,
-    belowMaxMasteryPoints: inventory.masteryPoints < USER_MAX_MASTERY_POINTS,
-    storyTargets: storyTargets(save).map((checkpoint) => ({
-      id: checkpoint.id,
-      key: checkpoint.key,
-      chapter: isChapterCheckpoint(checkpoint),
-    })),
-    canClearHints: canClearHints(save),
-    canUnlockAllCharacters: canUnlockAllCharacters(save),
-    canUnlockAllWeaponSeries: canUnlockAllWeaponSeries(save),
-    canMaxAllWeaponSeries: canMaxAllWeaponSeries(save),
-    canMaxTreasures: canMaxTreasures(save),
     party: buildParty(data),
     characters: buildCharacters(units, data),
     captain: data.captain,

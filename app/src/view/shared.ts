@@ -33,8 +33,15 @@ import {
   type Inventory,
   type Trait,
   CHAPTER_ZERO_END_KEY,
+  USER_MAX_MASTERY_POINTS,
+  USER_MAX_RUPIES,
   canClearHints,
+  canMaxAllWeaponSeries,
+  canMaxTreasures,
+  canUnlockAllCharacters,
+  canUnlockAllWeaponSeries,
   isChapterCheckpoint,
+  storyTargets,
   storyProgress,
   WRIGHTSTONE_MAINS,
   wrightstoneRoll,
@@ -47,8 +54,8 @@ import {
 } from "gbfr-save-editor";
 import type { GameTextTable } from "../i18n/game-text";
 import { keyCell, trait, unknownCell } from "./cell";
-import { table } from "./table";
-import type { Cell, RowEdit, Table, TableLabelId } from "./types";
+import { listed, table } from "./table";
+import type { Cell, RowEdit, Table, TableAction, TableLabelId } from "./types";
 
 export const STORY_TABLE = "profile:story";
 export const OPTIONS_TABLE = "profile:options";
@@ -161,6 +168,7 @@ const itemTables = (
   items: Map<string, number>,
   wished: Set<string>,
   unseen: Set<string>,
+  canMaxItems: boolean,
 ): Table[] =>
   ITEM_TABS.map((tab) =>
     table(
@@ -188,7 +196,14 @@ const itemTables = (
           ...(tab === "treasures" ? [wished.has(key)] : []),
           unseen.has(key),
         ]),
-      { stretch: "item", tab: ITEM_TAB_NAMES[tab] },
+      {
+        stretch: "item",
+        tab: ITEM_TAB_NAMES[tab],
+        actions:
+          tab === "treasures"
+            ? listed([[canMaxItems, { type: "maxTreasures" }]])
+            : undefined,
+      },
     ),
   );
 
@@ -327,7 +342,19 @@ export function buildShared(
         ["slot version", user.slotVersion],
         ["feature version", user.featureVersion],
       ],
-      { stretch: "field", tab: "profile", label: "summary" },
+      {
+        stretch: "field",
+        tab: "profile",
+        label: "summary",
+        actions: listed([
+          [inventory.rupies < USER_MAX_RUPIES, { type: "maxRupies" }],
+          [
+            inventory.masteryPoints < USER_MAX_MASTERY_POINTS,
+            { type: "maxMasteryPoints" },
+          ],
+          [canUnlockAllCharacters(save), { type: "unlockAllCharacters" }],
+        ]),
+      },
     ),
     table(
       "profile:characters",
@@ -370,7 +397,20 @@ export function buildShared(
             ]
           : [{ message: checkpoint.id as TableLabelId }, undefined, completed],
       ),
-      { stretch: "chapter", tab: "profile", uiLabel: "mainStory", wide: true },
+      {
+        stretch: "chapter",
+        tab: "profile",
+        uiLabel: "mainStory",
+        wide: true,
+        actions: storyTargets(save).map((checkpoint): TableAction => ({
+          type: "advanceStory",
+          target: {
+            id: checkpoint.id,
+            key: checkpoint.key,
+            chapter: isChapterCheckpoint(checkpoint),
+          },
+        })),
+      },
     ),
     table(
       OPTIONS_TABLE,
@@ -380,9 +420,15 @@ export function buildShared(
         ["done", 9],
       ],
       [[{ message: "clearHints" }, !canClearHints(save)]],
-      { stretch: "option", tab: "profile", label: "options", wide: true },
+      {
+        stretch: "option",
+        tab: "profile",
+        label: "options",
+        wide: true,
+        actions: listed([[canClearHints(save), { type: "clearHints" }]]),
+      },
     ),
-    ...itemTables(inventory.items, wished, unseen),
+    ...itemTables(inventory.items, wished, unseen, canMaxTreasures(save)),
     table(
       SIGILS_TABLE,
       "sigils",
@@ -409,7 +455,7 @@ export function buildShared(
           ],
           edit: sigilEdit(slot, s),
         })),
-      { stretch: "sigil" },
+      { stretch: "sigil", actions: [{ type: "addSigil" }] },
     ),
     table(
       WEAPONS_TABLE,
@@ -434,7 +480,13 @@ export function buildShared(
         w.questsUsed,
         !w.seen,
       ]),
-      { stretch: "weapon" },
+      {
+        stretch: "weapon",
+        actions: listed([
+          [canUnlockAllWeaponSeries(save), { type: "unlockAllWeapons" }],
+          [canMaxAllWeaponSeries(save), { type: "maxAllWeapons" }],
+        ]),
+      },
     ),
     table(
       WRIGHTSTONES_TABLE,
@@ -460,7 +512,7 @@ export function buildShared(
         ],
         edit: wrightstoneEdit(slot, w),
       })),
-      { stretch: "wrightstone" },
+      { stretch: "wrightstone", actions: [{ type: "addWrightstone" }] },
     ),
     table(
       "summons",

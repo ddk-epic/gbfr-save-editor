@@ -57,6 +57,34 @@ export type TableLabelId = keyof typeof en.tables;
 /** A column and its width in letters. */
 export type Column = [id: ColumnId, width: number];
 
+/** One entry of a table's edit menu, with what its edit needs. */
+export type TableAction =
+  | { type: "maxRupies" }
+  | { type: "maxMasteryPoints" }
+  | { type: "unlockAllCharacters" }
+  | { type: "advanceStory"; target: StoryTarget }
+  | { type: "clearHints" }
+  | { type: "maxTreasures" }
+  | { type: "unlockAllWeapons" }
+  | { type: "maxAllWeapons" }
+  | { type: "addSigil" }
+  | { type: "addWrightstone" }
+  | { type: "removeOverMasteries"; entity: number }
+  | { type: "unlockCharacter"; entity: number }
+  | { type: "maxCharacterLevel"; entity: number }
+  | { type: "maxMasterLevel"; entity: number }
+  | { type: "completeFateEpisodes"; character: string }
+  | { type: "unlockWeaponSeries"; entity: number }
+  | { type: "maxWeaponSeries"; entity: number }
+  | { type: "removeWrightstone"; weaponId: number };
+
+/** A story checkpoint the save can advance to. */
+export interface StoryTarget {
+  id: string;
+  key?: number;
+  chapter: boolean;
+}
+
 export interface Table {
   id: string;
   section: SectionId;
@@ -73,6 +101,8 @@ export interface Table {
   /** The column that also takes the width the others leave. */
   stretch: ColumnId;
   rows: Row[];
+  /** The edit menu's available actions; undefined when the table has no menu. */
+  actions?: TableAction[];
 }
 
 /** The equipped set or one loadout: skills and sigils on the left, weapon on the right. */
@@ -88,9 +118,6 @@ export interface EquipmentSetView {
   /** The character entity the live gear sits on, undefined on a loadout or party set. */
   characterEntity: number | undefined;
   wrightstone: Table;
-  wrightstoneWeaponId: number | undefined;
-  canMaxWeaponSeries: boolean;
-  canUnlockWeaponSeries: boolean;
   skills: Table;
   sigils: Table;
 }
@@ -100,11 +127,6 @@ export interface CharacterView {
   key: string;
   /** The character's own entity. */
   entity: number;
-  belowMaxLevel: boolean;
-  canUnlock: boolean;
-  belowMaxMasterLevel: boolean;
-  overMasteryRolled: boolean;
-  fateEpisodesIncomplete: boolean;
   level: Table;
   fateEpisodes: Table;
   tables: Table[];
@@ -113,15 +135,6 @@ export interface CharacterView {
 
 export interface SaveView {
   shared: Table[];
-  belowMaxRupies: boolean;
-  belowMaxMasteryPoints: boolean;
-  /** The story checkpoints the save can advance to. */
-  storyTargets: { id: string; key?: number; chapter: boolean }[];
-  canClearHints: boolean;
-  canUnlockAllCharacters: boolean;
-  canUnlockAllWeaponSeries: boolean;
-  canMaxAllWeaponSeries: boolean;
-  canMaxTreasures: boolean;
   /** The characters landing page. */
   party: Table[];
   characters: CharacterView[];

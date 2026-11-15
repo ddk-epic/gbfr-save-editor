@@ -1,17 +1,12 @@
-import {
-  equipWeapon,
-  maxWeaponSeries,
-  removeWrightstone,
-  unlockWeaponSeries,
-} from "gbfr-save-editor/edit";
+import { equipWeapon } from "gbfr-save-editor/edit";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGameText } from "../../i18n/game-text";
 import { edit } from "../../state/actions";
 import { LabeledTable } from "../../tables/SelectableTable";
 import { TableLabel } from "../../ui/DataTable";
-import { EditMenu } from "../../ui/EditMenu";
 import type { EquipmentSetView } from "../../view";
+import { TableMenu } from "../table-actions";
 
 /** The equipped set and each loadout as tabs: skills and sigils left, weapon and wrightstone right. */
 export function EquipmentSets({ sets }: { sets: EquipmentSetView[] }) {
@@ -70,70 +65,28 @@ export function EquipmentSets({ sets }: { sets: EquipmentSetView[] }) {
             table={set.weapon}
             flush
             menu={
-              <EditMenu
-                actions={[
-                  ...(set.canUnlockWeaponSeries
-                    ? [
-                        {
-                          label: t("edit.unlockWeaponSeries"),
-                          run: () =>
-                            edit((draft) =>
-                              unlockWeaponSeries(draft, set.characterEntity!),
-                            ),
-                        },
-                      ]
-                    : []),
-                  ...(set.canMaxWeaponSeries
-                    ? [
-                        {
-                          label: t("edit.maxWeaponSeries"),
-                          run: () =>
-                            edit((draft) =>
-                              maxWeaponSeries(draft, set.characterEntity!),
-                            ),
-                        },
-                      ]
-                    : []),
-                  ...set.weaponOptions.map((weapon) => ({
-                    label: t("edit.equipWeapon", {
-                      weapon:
-                        (weapon.series !== undefined &&
-                          gt("weaponSeries", String(weapon.series))) ||
-                        gt("weapon", weapon.key) ||
-                        weapon.key,
-                    }),
-                    run: () =>
-                      edit((draft) =>
-                        equipWeapon(draft, set.characterEntity!, weapon.id),
-                      ),
-                  })),
-                ]}
+              <TableMenu
+                table={set.weapon}
+                extra={set.weaponOptions.map((weapon) => ({
+                  label: t("edit.equipWeapon", {
+                    weapon:
+                      (weapon.series !== undefined &&
+                        gt("weaponSeries", String(weapon.series))) ||
+                      gt("weapon", weapon.key) ||
+                      weapon.key,
+                  }),
+                  run: () =>
+                    edit((draft) =>
+                      equipWeapon(draft, set.characterEntity!, weapon.id),
+                    ),
+                }))}
               />
             }
           />
           <LabeledTable
             label={t("equipment.wrightstone")}
             table={set.wrightstone}
-            menu={
-              <EditMenu
-                actions={
-                  set.wrightstoneWeaponId === undefined
-                    ? []
-                    : [
-                        {
-                          label: t("edit.removeWrightstone"),
-                          run: () =>
-                            edit((draft) =>
-                              removeWrightstone(
-                                draft,
-                                set.wrightstoneWeaponId!,
-                              ),
-                            ),
-                        },
-                      ]
-                }
-              />
-            }
+            menu={<TableMenu table={set.wrightstone} />}
           />
         </div>
       </div>

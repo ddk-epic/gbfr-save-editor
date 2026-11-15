@@ -1,13 +1,5 @@
-import {
-  completeFateEpisodes,
-  maxCharacterLevel,
-  maxMasterLevel,
-  removeOverMasteries,
-  unlockCharacter,
-} from "gbfr-save-editor/edit";
 import { useTranslation } from "react-i18next";
 import { useGameText } from "../../i18n/game-text";
-import { edit } from "../../state/actions";
 import { go } from "../../state/navigation";
 import { clearSelection, useSelection } from "../../state/selection";
 import { LabeledTable } from "../../tables/SelectableTable";
@@ -16,11 +8,10 @@ import {
   ExpandCollapseActions,
   TableSections,
 } from "../../tables/TableSections";
-import { EditMenu } from "../../ui/EditMenu";
 import { PageTop } from "../../ui/PageTop";
 import { RowPanel } from "../../ui/RowPanel";
 import type { CharacterView } from "../../view";
-import { overMasteriesTable } from "../../view/shared";
+import { TableMenu } from "../table-actions";
 import { EquipmentSets } from "./EquipmentSets";
 
 export function CharacterPage({
@@ -53,25 +44,7 @@ export function CharacterPage({
       </PageTop>
       <TableSections
         tables={tables}
-        menuOf={(table) =>
-          table.id === overMasteriesTable(character.key) && (
-            <EditMenu
-              actions={
-                character.overMasteryRolled
-                  ? [
-                      {
-                        label: t("edit.removeOverMasteries"),
-                        run: () =>
-                          edit((draft) =>
-                            removeOverMasteries(draft, character.entity),
-                          ),
-                      },
-                    ]
-                  : []
-              }
-            />
-          )
-        }
+        menuOf={(table) => table.actions && <TableMenu table={table} />}
         before={
           <>
             <CollapsibleSection
@@ -84,48 +57,7 @@ export function CharacterPage({
                     label={t("stats.level")}
                     table={level}
                     flush
-                    menu={
-                      <EditMenu
-                        actions={[
-                          ...(character.canUnlock
-                            ? [
-                                {
-                                  label: gt("ui", "unlockCharacter")!,
-                                  run: () =>
-                                    edit((draft) =>
-                                      unlockCharacter(draft, character.entity),
-                                    ),
-                                },
-                              ]
-                            : []),
-                          ...(character.belowMaxLevel
-                            ? [
-                                {
-                                  label: t("edit.maxCharacterLevel"),
-                                  run: () =>
-                                    edit((draft) =>
-                                      maxCharacterLevel(
-                                        draft,
-                                        character.entity,
-                                      ),
-                                    ),
-                                },
-                              ]
-                            : []),
-                          ...(character.belowMaxMasterLevel
-                            ? [
-                                {
-                                  label: t("edit.maxMasterLevel"),
-                                  run: () =>
-                                    edit((draft) =>
-                                      maxMasterLevel(draft, character.entity),
-                                    ),
-                                },
-                              ]
-                            : []),
-                        ]}
-                      />
-                    }
+                    menu={<TableMenu table={level} />}
                   />
                 </div>
                 <div className="min-w-0">
@@ -133,26 +65,7 @@ export function CharacterPage({
                     label={t("stats.fateEpisodes")}
                     table={fateEpisodes}
                     flush
-                    menu={
-                      <EditMenu
-                        actions={
-                          character.fateEpisodesIncomplete
-                            ? [
-                                {
-                                  label: t("edit.completeFateEpisodes"),
-                                  run: () =>
-                                    edit((draft) =>
-                                      completeFateEpisodes(
-                                        draft,
-                                        character.key,
-                                      ),
-                                    ),
-                                },
-                              ]
-                            : []
-                        }
-                      />
-                    }
+                    menu={<TableMenu table={fateEpisodes} />}
                   />
                 </div>
               </div>
