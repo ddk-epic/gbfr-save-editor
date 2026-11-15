@@ -4,7 +4,7 @@ import {
   sigilPrimaries,
   sigilSecondaries,
   type SigilRoll,
-} from "gbfr-save-editor/edit";
+} from "gbfr-save-editor";
 import { Check } from "lucide-react";
 import { useState } from "react";
 import { useGameText } from "../../i18n/game-text";

@@ -43,6 +43,11 @@ const boundary = {
               message: `Import the library through ${ENTRIES.join(", ")}, not ${spec}.`,
             });
           const layer = layerOf(context.filename);
+          if (layer === "view" && spec === "gbfr-save-editor/edit")
+            context.report({
+              node: source,
+              message: "view/ reads only; import from gbfr-save-editor.",
+            });
           if (
             layer === "view" &&
             (spec === "react" || spec.startsWith("react/"))

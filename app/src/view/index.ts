@@ -1,5 +1,7 @@
-import { readCharacterData, readInventory, type Save } from "gbfr-save-editor";
 import {
+  readCharacterData,
+  readInventory,
+  type Save,
   USER_MAX_MASTERY_POINTS,
   USER_MAX_RUPIES,
   canClearHints,
@@ -9,7 +11,7 @@ import {
   canMaxTreasures,
   isChapterCheckpoint,
   storyTargets,
-} from "gbfr-save-editor/edit";
+} from "gbfr-save-editor";
 import { buildCharacters } from "./character";
 import { buildParty } from "./party";
 import { buildShared } from "./shared";

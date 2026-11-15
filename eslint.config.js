@@ -52,6 +52,32 @@ const readWrite = {
   },
 };
 
+const editEntry = {
+  rules: {
+    imports: {
+      meta: { type: "problem", schema: [] },
+      create(context) {
+        const check = (node) => {
+          const source = node.source;
+          if (source?.type !== "Literal" || typeof source.value !== "string")
+            return;
+          if (!WRITE_SPECIFIER.test(source.value))
+            context.report({
+              node: source,
+              message: `the edit entry exports only write code (${source.value}).`,
+            });
+        };
+        return {
+          ImportDeclaration: check,
+          ExportAllDeclaration: check,
+          ExportNamedDeclaration: check,
+          ImportExpression: check,
+        };
+      },
+    },
+  },
+};
+
 const BROWSER_ONLY = {
   group: ["node:*", "fs", "path", "@/*"],
   message:
@@ -116,6 +142,12 @@ export default tseslint.config(
     files: ["packages/**"],
     plugins: { "read-write": readWrite },
     rules: { "read-write/imports": "error" },
+  },
+  // The facade's edit entry exports only write code.
+  {
+    files: ["packages/gbfr-save-editor/edit.ts"],
+    plugins: { "edit-entry": editEntry },
+    rules: { "edit-entry/imports": "error" },
   },
   prettier,
 );

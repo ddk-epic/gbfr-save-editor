@@ -31,13 +31,11 @@ import {
   type Trophy,
   type TrophyTab,
   type Inventory,
-} from "gbfr-save-editor";
-import {
   CHAPTER_ZERO_END_KEY,
   canClearHints,
   isChapterCheckpoint,
   storyProgress,
-} from "gbfr-save-editor/edit";
+} from "gbfr-save-editor";
 import type { GameTextTable } from "../i18n/game-text";
 import { keyCell, trait, unknownCell } from "./cell";
 import { table } from "./table";

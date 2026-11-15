@@ -3,8 +3,6 @@ import {
   type CharacterData,
   type Equipment,
   type UnitStore,
-} from "gbfr-save-editor";
-import {
   CHARACTER_MAX_LEVEL,
   MAX_MASTER_LEVEL,
   canMaxWeaponSeries,
@@ -13,7 +11,7 @@ import {
   characterLevels,
   characterMasterLevels,
   equippableWeapons,
-} from "gbfr-save-editor/edit";
+} from "gbfr-save-editor";
 import { keyCell, trait } from "./cell";
 import { table } from "./table";
 import type { Cell, CharacterView, EquipmentSetView } from "./types";

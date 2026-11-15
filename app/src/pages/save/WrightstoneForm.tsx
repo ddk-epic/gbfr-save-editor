@@ -7,7 +7,7 @@ import {
   type WrightstoneFamily,
   type WrightstonePreset,
   type WrightstoneRoll,
-} from "gbfr-save-editor/edit";
+} from "gbfr-save-editor";
 import { Check } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";

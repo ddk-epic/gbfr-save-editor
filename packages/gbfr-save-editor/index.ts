@@ -157,3 +157,46 @@ export {
 export { readTrophies, type Trophy } from "@gbfr/trophy";
 export { TROPHY_TABS, type TrophyTab } from "@gbfr/trophy";
 export { storyDifficulty } from "@gbfr/story";
+export { equippableWeapons } from "@gbfr/equipment";
+export { canUnlockAllWeaponSeries, canUnlockWeaponSeries } from "@gbfr/weapon";
+export {
+  CHARACTER_MAX_LEVEL,
+  MAX_MASTER_LEVEL,
+  canUnlockAllCharacters,
+  canUnlockCharacter,
+  characterLevels,
+  characterMasterLevels,
+} from "@gbfr/character";
+export { canMaxTreasures } from "@gbfr/item";
+export { USER_MAX_MASTERY_POINTS, USER_MAX_RUPIES } from "@gbfr/user";
+export {
+  CHAPTER_ZERO_END_KEY,
+  isChapterCheckpoint,
+  storyPosition,
+  storyProgress,
+  storyTargets,
+  type StoryCheckpoint,
+} from "@gbfr/story";
+export {
+  canClearHints,
+  canMaxAllWeaponSeries,
+  canMaxWeaponSeries,
+} from "@gbfr/save";
+export {
+  WRIGHTSTONE_MAINS,
+  WRIGHTSTONE_PRESETS,
+  WRIGHTSTONE_SUB_GROUPS,
+  wrightstoneKey,
+  wrightstoneRoll,
+  wrightstoneSubs,
+  type WrightstoneFamily,
+  type WrightstonePreset,
+  type WrightstoneRoll,
+} from "@gbfr/wrightstone";
+export {
+  SIGIL_LEVELS,
+  sigilGem,
+  sigilPrimaries,
+  sigilSecondaries,
+  type SigilRoll,
+} from "@gbfr/sigil";

@@ -1,6 +1,15 @@
 import {
-  type Draft,
   CHAPTER_ZERO_END_KEY,
+  WRIGHTSTONE_MAINS,
+  storyDifficulty,
+  wrightstoneRoll,
+  wrightstoneSubs,
+  type SigilRoll,
+  type WrightstoneFamily,
+  type WrightstoneRoll,
+} from "gbfr-save-editor";
+import {
+  type Draft,
   addSigil,
   addWrightstone,
   advanceStory,
@@ -14,14 +23,7 @@ import {
   maxMasteryPoints,
   maxRupies,
   maxTreasures,
-  wrightstoneRoll,
-  wrightstoneSubs,
-  WRIGHTSTONE_MAINS,
-  type SigilRoll,
-  type WrightstoneFamily,
-  type WrightstoneRoll,
 } from "gbfr-save-editor/edit";
-import { storyDifficulty } from "gbfr-save-editor";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGameText } from "../../i18n/game-text";
