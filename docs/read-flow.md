@@ -53,7 +53,7 @@ Each domain is a package under `packages/` (sigil, weapon, character, journal an
 - `attributes.ts` names the attribute numbers, the entity ranges and the flag bits, and states the value type each attribute is stored as. It says where a thing lives and nothing about reading it, so reading and writing can both build on it.
 - `read.ts` holds the record type and the functions producing it.
 
-`packages/save` holds what spans several domains: the compositions `readInventory` and `readCharacterData`, and validation. The edit session, `SaveSession`, is in `packages/core/session.ts`, the `@gbfr/core/session` entry. Each domain's `data.gen.ts` and `packages/tables/data.gen.ts` map key hashes back to game table keys; `pnpm gen:data` generates these files. `packages/tables` holds the key tables several domains share, built over `packages/tables/data.gen.ts`. `packages/workflows` holds the edits writing several domains, composed from the domains' own edits. `packages/gbfr-save-editor` is the public entry over all of them.
+`packages/save` holds what spans several domains: the compositions `readInventory` and `readCharacterData`, and validation. The edit session, `SaveSession`, is in `packages/core/session.ts`, the `@gbfr/core/session` entry. Each domain's `data.gen.ts` and `packages/tables/data.gen.ts` map key hashes back to game table keys; `pnpm gen:data` generates these files. `packages/tables` holds the key tables several domains share, built over `packages/tables/data.gen.ts`. `packages/workflows` holds the edits writing several domains, composed from the domains' own edits. Every edit takes a `Draft`; only core and `packages/gbfr-save-editor` import the session. `packages/gbfr-save-editor` is the public entry over all of them.
 
 ### Typed attributes
 
@@ -74,14 +74,15 @@ at.get(SIGIL_LEVEL); // number
 at.get(SIGIL_FLAGS); // { locked: boolean, seen: boolean }
 ```
 
-An attribute also writes. `units.of(entity).patch(attribute, value)` returns a `Patch` holding the stored values, and `SaveSession.patch` applies it. Flags merge into the unit's current bits and keep the bits with no name. `replace` ignores the current bits and starts from 0.
+An attribute also writes. `draft(units)` from `@gbfr/core/draft` returns a `Draft` that holds writes until `SaveSession.commit` applies them, all or none. `draft.of(entity).set(attribute, value)` stores the values, and reads through the draft return them. Flags merge into the unit's current bits and keep the bits with no name. `replace` ignores the current bits and starts from 0. A list set to a longer length moves to the end of the slot data.
 
 ```ts
-session.patch([
-  at.patch(SIGIL_LEVEL, 15),
-  at.patch(SIGIL_FLAGS, { seen: true }), // other bits stay
-  at.replace(SIGIL_FLAGS, { locked: true }), // every other bit becomes 0
-]);
+const pending = draft(session.save.slotData.units);
+const at = pending.of(entity);
+at.set(SIGIL_LEVEL, 15);
+at.set(SIGIL_FLAGS, { seen: true }); // other bits stay
+at.replace(SIGIL_FLAGS, { locked: true }); // every other bit becomes 0
+session.commit(pending);
 ```
 
 `keyAttribute` resolves a hash to its archive key. `keyOf` in `packages/core/keys.ts` does the lookup and takes the table as a parameter, so it holds no table of its own. It returns undefined for the hash of an empty string, which marks an empty slot. A hash missing from the table comes back as `#` plus 8 hex digits, with one console warning per hash.

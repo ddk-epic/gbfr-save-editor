@@ -6,16 +6,13 @@ import {
   readContainer,
   SLOT_DATA_SIZE_AT,
 } from "./container";
-import type { Draft } from "./draft";
+import type { Draft, PendingWrite } from "./draft";
 import { readSave, type Save } from "./read-save";
-import type { Patch } from "./unit-store";
 import { ELEMENTS, type SaveUnit, type UnitEntity } from "./save-data-binary";
 import { SAVE_ENTITY, SAVE_HASHSEED } from "./save-entity";
 
 const VTABLE_SIZE = 12;
 const UNIT_VALUES_FIELD = 12;
-
-export type { Patch };
 
 /** A save file open for editing, values overwritten in place. */
 export class SaveSession {
@@ -64,7 +61,7 @@ export class SaveSession {
   }
 
   /** Applies every patch, or none on a missing unit or length change. */
-  patch(patches: readonly Patch[]): void {
+  private patch(patches: readonly PendingWrite[]): void {
     const units = this.save.slotData.units;
     const targets = patches.map(({ attribute, entity, values }) => {
       const unit = units.get(attribute, entity);
@@ -92,7 +89,7 @@ export class SaveSession {
   }
 
   /** Replaces a list's values, moving a longer list past the end of the slot data. */
-  setList(
+  private setList(
     attribute: Attribute<unknown>,
     entity: UnitEntity,
     values: readonly unknown[],

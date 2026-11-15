@@ -8,13 +8,6 @@ import type { Attribute } from "./attribute";
 import { SaveFormatError } from "./errors";
 import type { EntityRange, Units } from "./units";
 
-/** Raw values to store in one unit. */
-export interface Patch {
-  attribute: Attribute<unknown>;
-  entity: UnitEntity;
-  values: readonly unknown[];
-}
-
 export type { EntityRange };
 
 const within = (range: EntityRange, entity: UnitEntity) =>

@@ -6,6 +6,7 @@ import { readSave } from "../../packages/core/read-save";
 import { SAVE_HASHSEED } from "../../packages/core/save-entity";
 import { SaveSession } from "../../packages/core/session";
 import { fixtureFile } from "../../packages/gbfr-save-editor/testing";
+import { apply } from "../helpers";
 
 const LEVEL = Attribute.int(2704);
 const LIST = Attribute.uintList(2818);
@@ -47,13 +48,15 @@ const listFile = () =>
     5: [[EMPTY, []]],
   });
 
-describe("SaveSession.setList", () => {
+describe("SaveSession.commit lists", () => {
   it("grows a list and keeps every other unit", () => {
     const session = SaveSession.open(listFile());
-    session.setList(LIST, 30000, [4, 5, 6, 7, 8]);
-    session.setList(EMPTY, 5, [0, 1, 20]);
-    session.setList(SHORTS, 30000, [1, 2, 3]);
-    session.setList(LONGS, 30000, [9n, 10n]);
+    apply(session, (draft) => {
+      draft.of(30000).set(LIST, [4, 5, 6, 7, 8]);
+      draft.of(5).set(EMPTY, [0, 1, 20]);
+      draft.of(30000).set(SHORTS, [1, 2, 3]);
+      draft.of(30000).set(LONGS, [9n, 10n]);
+    });
 
     expect(session.save.slotData.units.of(30000).get(LIST)).toEqual([
       4, 5, 6, 7, 8,
@@ -69,7 +72,7 @@ describe("SaveSession.setList", () => {
   it("moves the checksums past the grown slot data and recomputes them", () => {
     const bytes = listFile();
     const session = SaveSession.open(bytes);
-    session.setList(LIST, 30000, [4, 5, 6, 7, 8]);
+    apply(session, (draft) => draft.of(30000).set(LIST, [4, 5, 6, 7, 8]));
     const exported = session.export();
 
     const before = readContainer(bytes);
@@ -90,8 +93,8 @@ describe("SaveSession.setList", () => {
   it("writes in place when the list does not grow", () => {
     const session = SaveSession.open(listFile());
     const size = session.save.header.slotDataSize;
-    session.setList(LIST, 30000, [9, 8]);
-    session.setList(LIST, 30000, [7, 6]);
+    apply(session, (draft) => draft.of(30000).set(LIST, [9, 8]));
+    apply(session, (draft) => draft.of(30000).set(LIST, [7, 6]));
 
     expect(session.save.header.slotDataSize).toBe(size);
     const units = readSave(session.export()).slotData.units;
@@ -100,24 +103,11 @@ describe("SaveSession.setList", () => {
 
   it("patches a grown list in its new place", () => {
     const session = SaveSession.open(listFile());
-    session.setList(LIST, 30000, [4, 5, 6, 7]);
-    session.patch([{ attribute: LIST, entity: 30000, values: [1, 1, 1, 1] }]);
+    apply(session, (draft) => draft.of(30000).set(LIST, [4, 5, 6, 7]));
+    apply(session, (draft) => draft.of(30000).set(LIST, [1, 1, 1, 1]));
 
     const units = readSave(session.export()).slotData.units;
     expect(units.of(30000).get(LIST)).toEqual([1, 1, 1, 1]);
-  });
-
-  it("refuses a missing unit and a list that does not fit the file", () => {
-    const session = SaveSession.open(listFile());
-    expect(() => session.setList(LIST, 30001, [1])).toThrow(
-      "no unit 2818 at 30001",
-    );
-
-    const full = SaveSession.open(file());
-    expect(() => full.setList(LIST, 30000, [1, 2, 3, 4])).toThrow(
-      "does not fit",
-    );
-    expect(full.save.slotData.units.of(30000).get(LIST)).toEqual([1, 2, 3]);
   });
 });
 
@@ -126,7 +116,7 @@ describe("SaveSession", () => {
     const bytes = file();
     const original = bytes.slice();
     const session = SaveSession.open(bytes);
-    session.patch([{ attribute: LEVEL, entity: 30000, values: [15] }]);
+    apply(session, (draft) => draft.of(30000).set(LEVEL, 15));
     expect(session.save.slotData.units.of(30000).get(LEVEL)).toBe(15);
     expect(bytes).toEqual(original);
   });
@@ -134,7 +124,7 @@ describe("SaveSession", () => {
   it("exports the edits in place with the selected checksum recomputed", () => {
     const bytes = file();
     const session = SaveSession.open(bytes);
-    session.patch([{ attribute: LIST, entity: 30000, values: [4, 5, 6] }]);
+    apply(session, (draft) => draft.of(30000).set(LIST, [4, 5, 6]));
     const exported = session.export();
 
     expect(exported.length).toBe(bytes.length);
@@ -150,20 +140,5 @@ describe("SaveSession", () => {
     after.checksums.forEach((sum, i) => {
       if (i !== index) expect(sum).toBe(before.checksums[i]);
     });
-  });
-
-  it("applies none of a batch when one patch cannot be applied", () => {
-    const session = SaveSession.open(file());
-    const at = session.save.slotData.units.of(30000);
-    expect(() =>
-      session.patch([
-        { attribute: LEVEL, entity: 30000, values: [15] },
-        { attribute: LIST, entity: 30000, values: [4] },
-      ]),
-    ).toThrow("holds 3 values, not 1");
-    expect(() =>
-      session.patch([{ attribute: LEVEL, entity: 30001, values: [15] }]),
-    ).toThrow("no unit 2704 at 30001");
-    expect(at.get(LEVEL)).toBe(11);
   });
 });

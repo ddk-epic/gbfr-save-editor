@@ -52,6 +52,18 @@ const readWrite = {
   },
 };
 
+const BROWSER_ONLY = {
+  group: ["node:*", "fs", "path", "@/*"],
+  message:
+    "packages run in the browser and import only relative paths or @gbfr/* packages; file access belongs in scripts or test.",
+};
+
+const SESSION_ONLY = {
+  group: ["@gbfr/core/session", "**/core/session"],
+  message:
+    "only core and gbfr-save-editor use SaveSession; domain code takes a Draft.",
+};
+
 export default tseslint.config(
   // Unlinted: .gitignore entries and app.
   { ignores: ["node_modules", "tmp", "app"] },
@@ -88,16 +100,15 @@ export default tseslint.config(
     rules: {
       "no-restricted-imports": [
         "error",
-        {
-          patterns: [
-            {
-              group: ["node:*", "fs", "path", "@/*"],
-              message:
-                "packages run in the browser and import only relative paths or @gbfr/* packages; file access belongs in scripts or test.",
-            },
-          ],
-        },
+        { patterns: [BROWSER_ONLY, SESSION_ONLY] },
       ],
+    },
+  },
+  // Only core and the facade open sessions.
+  {
+    files: ["packages/core/**", "packages/gbfr-save-editor/**"],
+    rules: {
+      "no-restricted-imports": ["error", { patterns: [BROWSER_ONLY] }],
     },
   },
   // Read code never imports write code.

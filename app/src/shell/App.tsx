@@ -1,6 +1,7 @@
 import { FolderOpen } from "lucide-react";
 import { useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { EditErrorNotice } from "../issues/EditErrorNotice";
 import { CharacterPage } from "../pages/character/CharacterPage";
 import { SavePage } from "../pages/save/SavePage";
 import { WelcomePage } from "../pages/WelcomePage";
@@ -36,6 +37,7 @@ export function App() {
         </ToolbarButton>
         <ThemeToggle />
       </TitleBar>
+      <EditErrorNotice />
 
       <div
         ref={scrollRef}

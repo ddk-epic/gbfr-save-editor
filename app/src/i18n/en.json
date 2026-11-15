@@ -228,6 +228,10 @@
     "mostUsed": "most used",
     "lastSeen": "last seen"
   },
+  "editErrors": {
+    "failed": "The edit failed and nothing was changed:",
+    "dismiss": "Dismiss"
+  },
   "loadErrors": {
     "rejected": "Rejected: {{reason}}",
     "outOfBounds": "{{what}} at {{at}} ({{size}} B) is outside {{length}} B",

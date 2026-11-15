@@ -2,7 +2,15 @@ import type { Save } from "gbfr-save-editor";
 import type { Draft } from "gbfr-save-editor/edit";
 import type { SaveView } from "../view";
 import { startAt } from "./navigation";
-import { applyEdit, downloadSave, loaded, loadError, loadSave } from "./save";
+import {
+  applyEdit,
+  downloadSave,
+  editError,
+  loaded,
+  loadError,
+  loadSave,
+  type LoadedSave,
+} from "./save";
 import { resetSections } from "./sections";
 import { clearSelection, select, type RowRef } from "./selection";
 
@@ -16,6 +24,7 @@ export async function openFile(file: File) {
   clearSelection();
   loaded.set(result.save);
   loadError.set(undefined);
+  editError.set(undefined);
   startAt("save");
 }
 
@@ -38,7 +47,18 @@ export function edit(
 ) {
   const save = loaded.get();
   if (!save) return;
-  const next = applyEdit(save, run);
+  let next: LoadedSave;
+  try {
+    next = applyEdit(save, run);
+  } catch (error) {
+    console.error(error);
+    editError.set({
+      code: "unexpected",
+      message: error instanceof Error ? error.message : String(error),
+    });
+    return;
+  }
+  editError.set(undefined);
   loaded.set(next);
   select(selectAfter?.(next.view));
 }

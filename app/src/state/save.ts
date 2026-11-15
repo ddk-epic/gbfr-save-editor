@@ -21,6 +21,12 @@ export interface LoadedSave {
 /** A rejected save's issue, or `unexpected` for anything other than a format error. */
 export type LoadError = SaveFormatIssue | { code: "unexpected" };
 
+/** Why the last edit failed. */
+export interface EditError {
+  code: "unexpected";
+  message: string;
+}
+
 export type LoadResult =
   { ok: true; save: LoadedSave } | { ok: false; error: LoadError };
 
@@ -28,11 +34,14 @@ export type LoadResult =
 export const loaded = new Watched<LoadedSave | undefined>(undefined);
 /** Why the last file failed to load. */
 export const loadError = new Watched<LoadError | undefined>(undefined);
+/** Why the last edit failed. */
+export const editError = new Watched<EditError | undefined>(undefined);
 
 export const useSave = <S>(select: (save: LoadedSave | undefined) => S) =>
   useWatched(loaded, select);
 export const useView = () => useWatched(loaded, (save) => save?.view);
 export const useLoadError = () => useWatched(loadError);
+export const useEditError = () => useWatched(editError);
 
 const validate = (session: SaveSession) =>
   validateSave(session.save).sort((a, b) =>
