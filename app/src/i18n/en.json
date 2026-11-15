@@ -248,7 +248,7 @@
   },
   "validationIssues": {
     "headerLayout": "header {{field}} is {{actual}}, not {{expected}}",
-    "slotDataPastFileSize": "SlotData ends at {{end}} B, past the {{size}} B file",
+    "slotDataPastFileSize": "SlotData ends at {{end}} B, past the {{fileSize}} B file",
     "unexpectedVersion": "{{what}} is {{actual}}, not {{expected}}",
     "zeroChecksum": "SlotData checksum {{index}} is 0",
     "tableCount": "{{table}}: the save holds {{held}} rows, the table {{expected}}",
