@@ -24,6 +24,7 @@ type DataFile =
   | "sigil"
   | "skill"
   | "summon"
+  | "trait"
   | "trophy"
   | "weapon";
 
@@ -41,6 +42,7 @@ const OUTPUT: Record<DataFile, string> = {
   sigil: "packages/sigil/data.gen.ts",
   skill: "packages/skill/data.gen.ts",
   summon: "packages/summon/data.gen.ts",
+  trait: "packages/trait/data.gen.ts",
   trophy: "packages/trophy/data.gen.ts",
   weapon: "packages/weapon/data.gen.ts",
 };
@@ -395,7 +397,7 @@ ${uiOrder.sort().join("\n")}
 // Inventory order: items by item.SortOrder, sigils by trait's skill.InventorySortOrder.
 for (const [file, name, table, column] of [
   ["item", "ITEM_SORT_ORDER", "item", "SortOrder"],
-  ["sigil", "TRAIT_INVENTORY_SORT_ORDER", "skill", "InventorySortOrder"],
+  ["trait", "TRAIT_INVENTORY_SORT_ORDER", "skill", "InventorySortOrder"],
 ] as const) {
   const rows = (
     db

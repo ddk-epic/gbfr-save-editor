@@ -85,7 +85,7 @@ at.replace(SIGIL_FLAGS, { locked: true }); // every other bit becomes 0
 session.commit(pending);
 ```
 
-`keyAttribute` resolves a hash to its archive key. `keyOf` in `packages/core/keys.ts` does the lookup and takes the table as a parameter, so it holds no table of its own. It returns undefined for the hash of an empty string, which marks an empty slot. A hash missing from the table comes back as `#` plus 8 hex digits, with one console warning per hash.
+`keyAttribute` resolves a hash to its archive key. `keyOf` in `packages/core/keys.ts` does the lookup and takes the table as a parameter, so it holds no table of its own. It returns undefined for the hash of an empty string, which marks an empty slot. A hash missing from the table comes back as `#` plus 8 hex digits.
 
 ### Record coordinates
 

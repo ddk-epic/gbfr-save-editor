@@ -176,3 +176,16 @@ export const canUnlockAllCharacters = (save: Save) =>
 /** False for characters with no master level badges. */
 export const characterMasterLevels = (character: string) =>
   MASTER_LEVEL_CHARACTERS.includes(character);
+
+/** Open sigil slots, as FUN_1402b5990 counts them. */
+export const sigilSlots = (
+  character: string,
+  level: number,
+  completedFateEpisodes: number,
+  masterySlots: number,
+) =>
+  Number(level >= 1) +
+  (character === "PL2900"
+    ? 0
+    : Number(completedFateEpisodes >= 5) + Number(completedFateEpisodes >= 9)) +
+  masterySlots;

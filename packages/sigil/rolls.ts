@@ -1,9 +1,6 @@
 import { GEM_ROWS, type Gem } from "@gbfr/tables";
-import {
-  SIGIL_RARITY_LEVELS,
-  SIGIL_SECONDARIES,
-  TRAIT_INVENTORY_SORT_ORDER,
-} from "./data.gen";
+import { traitOrder } from "@gbfr/trait";
+import { SIGIL_RARITY_LEVELS, SIGIL_SECONDARIES } from "./data.gen";
 
 export interface SigilRoll {
   level: number;
@@ -13,7 +10,6 @@ export interface SigilRoll {
   secondary: string;
 }
 
-const traitOrder = (key: string) => TRAIT_INVENTORY_SORT_ORDER[key] ?? Infinity;
 const byTraitOrder = (a: string, b: string) => traitOrder(a) - traitOrder(b);
 
 /** Every sigil level with its rarity. */

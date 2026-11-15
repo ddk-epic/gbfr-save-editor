@@ -1,5 +1,10 @@
 import type { UnitEntity, Units } from "@gbfr/core";
 import { TRAIT_KEY, TRAIT_LEVEL, traitRange } from "./attributes";
+import { TRAIT_INVENTORY_SORT_ORDER } from "./data.gen";
+
+/** skill.InventorySortOrder of a trait, last when it has none. */
+export const traitOrder = (key: string) =>
+  TRAIT_INVENTORY_SORT_ORDER[key] ?? Infinity;
 
 export interface Trait {
   entity: UnitEntity;

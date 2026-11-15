@@ -4,6 +4,7 @@ import {
   MASTERY_PARAM_VALUES,
   MASTERY_SECTIONS,
   REPLACED_TRANSCENDENCE,
+  SIGIL_SLOT_PARAMS,
 } from "./data.gen";
 import {
   SaveFormatError,
@@ -145,3 +146,14 @@ export function readMasteries(
     sectionProgress.nodes.sort((a, b) => a.grid - b.grid);
   return progress;
 }
+
+/** Sigil slots the taken mastery nodes add. */
+export const masterySigilSlots = (
+  masteries: Record<MasterySection, MasteryProgress>,
+) =>
+  Object.values(masteries)
+    .flatMap((section) => section.nodes)
+    .filter((node) => node.taken)
+    .flatMap((node) => node.params)
+    .filter((param) => SIGIL_SLOT_PARAMS.includes(param.key))
+    .reduce((sum, param) => sum + param.value, 0);

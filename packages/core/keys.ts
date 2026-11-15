@@ -16,26 +16,13 @@ export const keyTable = (
   keys: Readonly<Record<number, string>>,
 ): KeyTable => ({ name, keys });
 
-const warned = new Set<string>();
-
 /** Archive key for a hash, "#" + 8 hex digits when the table has none. */
 export function keyOf(
   table: KeyTable,
   hash: number | undefined,
 ): string | undefined {
   if (hash === undefined || hash === EMPTY_HASH) return undefined;
-  const key = table.keys[hash];
-  if (key !== undefined) return key;
-
-  const unresolved = `#${hash.toString(16).padStart(8, "0")}`;
-  // Warns once per table and hash.
-  if (!warned.has(`${table.name}${unresolved}`)) {
-    warned.add(`${table.name}${unresolved}`);
-    console.warn(
-      `gbfr-save-editor: hash ${unresolved} not in the ${table.name} table, run pnpm gen:data or check the extract`,
-    );
-  }
-  return unresolved;
+  return table.keys[hash] ?? `#${hash.toString(16).padStart(8, "0")}`;
 }
 
 export function hashAttribute(

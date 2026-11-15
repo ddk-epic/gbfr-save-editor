@@ -8,9 +8,6 @@ import type {
   ValueType,
 } from "../packages/gbfr-save-editor/index";
 
-/** Silences missing key warnings. */
-console.warn = () => {};
-
 type Section = "systemData" | "slotData";
 
 const load = async (file: string) =>

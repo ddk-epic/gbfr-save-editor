@@ -1,6 +1,5 @@
-import { TRAIT_INVENTORY_SORT_ORDER } from "./data.gen";
 import type { UnitEntity, Units } from "@gbfr/core";
-import { TRAIT_SIGIL, readTraits, type Trait } from "@gbfr/trait";
+import { TRAIT_SIGIL, readTraits, traitOrder, type Trait } from "@gbfr/trait";
 import {
   SIGIL_FIRST,
   SIGIL_FLAGS,
@@ -22,13 +21,13 @@ export interface Sigil {
   seen: boolean;
 }
 
-const traitOrder = (trait: Trait | undefined) =>
-  (trait && TRAIT_INVENTORY_SORT_ORDER[trait.key]) ?? Infinity;
+const orderOf = (trait: Trait | undefined) =>
+  trait ? traitOrder(trait.key) : Infinity;
 
 /** Inventory order: skill.InventorySortOrder of the first trait, then of the second. */
 export const compareSigils = (a: Sigil, b: Sigil) =>
-  traitOrder(a.primaryTrait) - traitOrder(b.primaryTrait) ||
-  traitOrder(a.secondaryTrait) - traitOrder(b.secondaryTrait);
+  orderOf(a.primaryTrait) - orderOf(b.primaryTrait) ||
+  orderOf(a.secondaryTrait) - orderOf(b.secondaryTrait);
 
 export function readSigil(units: Units, entity: UnitEntity): Sigil | undefined {
   const at = units.of(entity);

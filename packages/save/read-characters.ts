@@ -10,6 +10,7 @@ import {
   characterEntities,
   masterLevelOf,
   readCaptain,
+  sigilSlots,
   type Captain,
 } from "@gbfr/character";
 import {
@@ -23,6 +24,7 @@ import {
 } from "@gbfr/equipment";
 import { readFateEpisodes, type FateEpisode } from "@gbfr/fate-episode";
 import {
+  masterySigilSlots,
   readMasteries,
   type MasteryProgress,
   type MasterySection,
@@ -30,7 +32,6 @@ import {
 import { readMasterTraits, type MasterTrait } from "@gbfr/master-trait";
 import { readOverMasteries, type OverMastery } from "@gbfr/over-mastery";
 import { readParty, readPartySets, type PartyMember } from "@gbfr/party";
-import { sigilSlots } from "./sigil-slots";
 import { readEquippedSkills } from "@gbfr/skill";
 import { readEquippedSummons, type Summon } from "@gbfr/summon";
 import { readOwnedWeapons, type Weapon } from "@gbfr/weapon";
@@ -113,7 +114,12 @@ export function readCharacterData(units: Units): CharacterData {
       masterTraits: readMasterTraits(units, where.mastery),
       masteries,
       fateEpisodes: episodes,
-      sigilSlots: sigilSlots(equipment.character, level, episodes, masteries),
+      sigilSlots: sigilSlots(
+        equipment.character,
+        level,
+        episodes.filter((episode) => episode.completed).length,
+        masterySigilSlots(masteries),
+      ),
       weapons: ownedWeapons.get(equipment.character) ?? new Map(),
     });
   }
