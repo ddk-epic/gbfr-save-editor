@@ -20,6 +20,7 @@ import { EditMenu } from "../../ui/EditMenu";
 import { PageTop } from "../../ui/PageTop";
 import { RowPanel } from "../../ui/RowPanel";
 import type { CharacterView } from "../../view";
+import { overMasteriesTable } from "../../view/shared";
 import { EquipmentSets } from "./EquipmentSets";
 
 export function CharacterPage({
@@ -33,10 +34,7 @@ export function CharacterPage({
   const gt = useGameText();
   const selection = useSelection();
   const name = gt("character", character.key) ?? character.key;
-  const [level, fateEpisodes] = character.tables.filter(
-    (table) => table.section === "stats",
-  );
-  const tables = character.tables.filter((table) => table.section !== "stats");
+  const { level, fateEpisodes, tables } = character;
   const sections: string[] = [
     "stats",
     "gear",
@@ -56,7 +54,7 @@ export function CharacterPage({
       <TableSections
         tables={tables}
         menuOf={(table) =>
-          table.id === `${character.key}:overMasteries` && (
+          table.id === overMasteriesTable(character.key) && (
             <EditMenu
               actions={
                 character.overMasteryRolled
@@ -78,13 +76,13 @@ export function CharacterPage({
           <>
             <CollapsibleSection
               section="stats"
-              count={level!.rows.length + fateEpisodes!.rows.length}
+              count={level.rows.length + fateEpisodes.rows.length}
             >
               <div className="grid gap-4 pb-1 sm:grid-cols-2">
                 <div className="min-w-0">
                   <LabeledTable
                     label={t("stats.level")}
-                    table={level!}
+                    table={level}
                     flush
                     menu={
                       <EditMenu
@@ -133,7 +131,7 @@ export function CharacterPage({
                 <div className="min-w-0">
                   <LabeledTable
                     label={t("stats.fateEpisodes")}
-                    table={fateEpisodes!}
+                    table={fateEpisodes}
                     flush
                     menu={
                       <EditMenu

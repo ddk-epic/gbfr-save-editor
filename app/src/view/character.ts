@@ -13,6 +13,7 @@ import {
   equippableWeapons,
 } from "gbfr-save-editor";
 import { keyCell, trait } from "./cell";
+import { overMasteriesTable } from "./shared";
 import { table } from "./table";
 import type { Cell, CharacterView, EquipmentSetView } from "./types";
 
@@ -144,7 +145,6 @@ export function buildCharacters(
     .map((c): CharacterView => ({
       key: c.character,
       entity: c.entity,
-      level: c.level,
       belowMaxLevel:
         characterLevels(c.character) && c.level < CHARACTER_MAX_LEVEL,
       canUnlock: canUnlockCharacter(units, c.entity),
@@ -152,38 +152,35 @@ export function buildCharacters(
         characterMasterLevels(c.character) && c.masterLevel < MAX_MASTER_LEVEL,
       overMasteryRolled: c.overMasteries.some((o) => o !== undefined),
       fateEpisodesIncomplete: c.fateEpisodes.some((f) => !f.completed),
+      level: table(
+        `${c.character}:level`,
+        "stats",
+        [
+          ["field", 32],
+          ["value", 14],
+        ],
+        [
+          ["level", c.level],
+          ["xp", c.xp],
+          ["base HP", c.baseHp],
+          ["base ATK", c.baseAttack],
+          ["quests used", c.questsUsed],
+          ["master level", c.masterLevel],
+          ["master XP", c.masterXp],
+        ],
+        { stretch: "field" },
+      ),
+      fateEpisodes: table(
+        `${c.character}:fateEpisodes`,
+        "stats",
+        [
+          ["episode", 40],
+          ["completed", 10],
+        ],
+        c.fateEpisodes.map((f) => [keyCell("fateEpisode", f.key), f.completed]),
+        { stretch: "episode" },
+      ),
       tables: [
-        table(
-          `${c.character}:level`,
-          "stats",
-          [
-            ["field", 32],
-            ["value", 14],
-          ],
-          [
-            ["level", c.level],
-            ["xp", c.xp],
-            ["base HP", c.baseHp],
-            ["base ATK", c.baseAttack],
-            ["quests used", c.questsUsed],
-            ["master level", c.masterLevel],
-            ["master XP", c.masterXp],
-          ],
-          { stretch: "field" },
-        ),
-        table(
-          `${c.character}:fateEpisodes`,
-          "stats",
-          [
-            ["episode", 40],
-            ["completed", 10],
-          ],
-          c.fateEpisodes.map((f) => [
-            keyCell("fateEpisode", f.key),
-            f.completed,
-          ]),
-          { stretch: "episode" },
-        ),
         table(
           `${c.character}:masteries`,
           "masteries",
@@ -200,7 +197,7 @@ export function buildCharacters(
           { stretch: "tree", tab: "all", label: "summary" },
         ),
         table(
-          `${c.character}:overMasteries`,
+          overMasteriesTable(c.character),
           "masteries",
           [
             ["index", 2],

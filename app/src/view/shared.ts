@@ -31,18 +31,67 @@ import {
   type Trophy,
   type TrophyTab,
   type Inventory,
+  type Trait,
   CHAPTER_ZERO_END_KEY,
   canClearHints,
   isChapterCheckpoint,
   storyProgress,
+  WRIGHTSTONE_MAINS,
+  wrightstoneRoll,
+  wrightstoneSubs,
+  type InventoryWrightstone,
+  type Sigil,
+  type SigilRoll,
+  type WrightstoneFamily,
+  type WrightstoneRoll,
 } from "gbfr-save-editor";
 import type { GameTextTable } from "../i18n/game-text";
 import { keyCell, trait, unknownCell } from "./cell";
 import { table } from "./table";
-import type { Cell, Table, TableLabelId } from "./types";
+import type { Cell, RowEdit, Table, TableLabelId } from "./types";
 
 export const STORY_TABLE = "profile:story";
 export const OPTIONS_TABLE = "profile:options";
+export const PROFILE_TABLE = "profile";
+export const TREASURES_TABLE = "items:treasures";
+export const WEAPONS_TABLE = "weapons";
+export const SIGILS_TABLE = "sigils";
+export const WRIGHTSTONES_TABLE = "wrightstones";
+export const overMasteriesTable = (key: string) => `${key}:overMasteries`;
+
+/** The wrightstone form's starting values. */
+function wrightstoneEdit(slot: number, w: InventoryWrightstone): RowEdit {
+  const traits = [w.traits[0], w.traits[1], w.traits[2]];
+  const roll = wrightstoneRoll(
+    w.key,
+    traits.flatMap((t) =>
+      t ? [{ entity: 0, key: t.key, level: t.level }] : [],
+    ),
+  );
+  const edit = (roll: Partial<WrightstoneRoll>): RowEdit => ({
+    kind: "wrightstone",
+    id: slot,
+    roll,
+  });
+  if (roll) return edit(roll);
+  const family = Number(/^ITEM_(\d+)_/.exec(w.key)?.[1]) as WrightstoneFamily;
+  if (!(family in WRIGHTSTONE_MAINS)) return edit({});
+  const allowed = wrightstoneSubs(family);
+  const sub = (t: Trait | undefined) =>
+    t && allowed.includes(t.key) ? t.key : "";
+  return edit({ family, subs: [sub(traits[1]), sub(traits[2])] });
+}
+
+/** The sigil form's starting values. */
+const sigilEdit = (slot: number, s: Sigil): RowEdit => ({
+  kind: "sigil",
+  id: slot,
+  roll: {
+    level: s.level,
+    primary: s.primaryTrait?.key ?? "",
+    secondary: s.secondaryTrait?.key ?? "",
+  } satisfies SigilRoll,
+});
 
 /** profile 4706, from 1. */
 const SKYFARER_GRADES = [
@@ -115,7 +164,7 @@ const itemTables = (
 ): Table[] =>
   ITEM_TABS.map((tab) =>
     table(
-      `items:${tab}`,
+      tab === "treasures" ? TREASURES_TABLE : `items:${tab}`,
       "items",
       // The wish list takes materials only.
       tab === "treasures"
@@ -256,7 +305,7 @@ export function buildShared(
 
   return [
     table(
-      "profile",
+      PROFILE_TABLE,
       "profile",
       [
         ["field", 36],
@@ -335,7 +384,7 @@ export function buildShared(
     ),
     ...itemTables(inventory.items, wished, unseen),
     table(
-      "sigils",
+      SIGILS_TABLE,
       "sigils",
       [
         ["slot", 7],
@@ -348,19 +397,22 @@ export function buildShared(
       ],
       [...inventory.sigils]
         .sort(([slotA, a], [slotB, b]) => compareSigils(a, b) || slotA - slotB)
-        .map(([slot, s]) => [
-          slot,
-          keyCell("sigil", s.key),
-          s.level,
-          keyCell("trait", s.primaryTrait?.key),
-          keyCell("trait", s.secondaryTrait?.key),
-          s.locked,
-          !s.seen,
-        ]),
+        .map(([slot, s]) => ({
+          cells: [
+            slot,
+            keyCell("sigil", s.key),
+            s.level,
+            keyCell("trait", s.primaryTrait?.key),
+            keyCell("trait", s.secondaryTrait?.key),
+            s.locked,
+            !s.seen,
+          ],
+          edit: sigilEdit(slot, s),
+        })),
       { stretch: "sigil" },
     ),
     table(
-      "weapons",
+      WEAPONS_TABLE,
       "weapons",
       [
         ["slot", 4],
@@ -385,7 +437,7 @@ export function buildShared(
       { stretch: "weapon" },
     ),
     table(
-      "wrightstones",
+      WRIGHTSTONES_TABLE,
       "wrightstones",
       [
         ["slot", 7],
@@ -396,15 +448,18 @@ export function buildShared(
         ["locked", 6],
         ["new", 5],
       ],
-      [...inventory.wrightstones].map(([slot, w]) => [
-        slot,
-        keyCell("item", w.key),
-        trait(w.traits[0]),
-        trait(w.traits[1]),
-        trait(w.traits[2]),
-        w.locked,
-        !w.seen,
-      ]),
+      [...inventory.wrightstones].map(([slot, w]) => ({
+        cells: [
+          slot,
+          keyCell("item", w.key),
+          trait(w.traits[0]),
+          trait(w.traits[1]),
+          trait(w.traits[2]),
+          w.locked,
+          !w.seen,
+        ],
+        edit: wrightstoneEdit(slot, w),
+      })),
       { stretch: "wrightstone" },
     ),
     table(

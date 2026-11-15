@@ -1,10 +1,10 @@
-import type { Cell, Column, SectionId, Table } from "./types";
+import type { Cell, Column, RowEdit, SectionId, Table } from "./types";
 
 export const table = (
   id: string,
   section: SectionId,
   columns: Column[],
-  rows: Cell[][],
+  rows: (Cell[] | { cells: Cell[]; edit: RowEdit })[],
   {
     stretch,
     tab,
@@ -24,6 +24,9 @@ export const table = (
     wide,
     columns,
     stretch,
-    rows: rows.map((cells, i) => ({ id: `${id}:${i}`, cells })),
+    rows: rows.map((row, i) => ({
+      id: `${id}:${i}`,
+      ...(Array.isArray(row) ? { cells: row } : row),
+    })),
   };
 };

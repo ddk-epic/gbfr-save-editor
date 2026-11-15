@@ -33,6 +33,8 @@ export const allTables = (view: SaveView): Table[] => [
   ...view.shared,
   ...view.party,
   ...view.characters.flatMap((c) => [
+    c.level,
+    c.fateEpisodes,
     ...c.tables,
     ...c.equipment.flatMap(equipmentSetTables),
   ]),

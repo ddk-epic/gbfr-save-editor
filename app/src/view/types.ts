@@ -1,4 +1,4 @@
-import type { Captain } from "gbfr-save-editor";
+import type { Captain, SigilRoll, WrightstoneRoll } from "gbfr-save-editor";
 import type { GameTextTable } from "../i18n/game-text";
 import type en from "../i18n/en.json";
 
@@ -37,10 +37,16 @@ export type Cell =
   | UnknownCell
   | MessageCell;
 
+/** What a row edits: the slot id and the form's starting roll. */
+export type RowEdit =
+  | { kind: "wrightstone"; id: number; roll: Partial<WrightstoneRoll> }
+  | { kind: "sigil"; id: number; roll: SigilRoll };
+
 export interface Row {
   id: string;
   /** One cell per table column. */
   cells: Cell[];
+  edit?: RowEdit;
 }
 
 /** Message keys under `sections` and `columns`. */
@@ -94,12 +100,13 @@ export interface CharacterView {
   key: string;
   /** The character's own entity. */
   entity: number;
-  level: number;
   belowMaxLevel: boolean;
   canUnlock: boolean;
   belowMaxMasterLevel: boolean;
   overMasteryRolled: boolean;
   fateEpisodesIncomplete: boolean;
+  level: Table;
+  fateEpisodes: Table;
   tables: Table[];
   equipment: EquipmentSetView[];
 }

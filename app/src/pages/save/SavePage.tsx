@@ -1,13 +1,4 @@
-import {
-  CHAPTER_ZERO_END_KEY,
-  WRIGHTSTONE_MAINS,
-  storyDifficulty,
-  wrightstoneRoll,
-  wrightstoneSubs,
-  type SigilRoll,
-  type WrightstoneFamily,
-  type WrightstoneRoll,
-} from "gbfr-save-editor";
+import { CHAPTER_ZERO_END_KEY, storyDifficulty } from "gbfr-save-editor";
 import {
   type Draft,
   addSigil,
@@ -43,60 +34,26 @@ import {
 import { EditMenu } from "../../ui/EditMenu";
 import { PageTop } from "../../ui/PageTop";
 import { RowPanel } from "../../ui/RowPanel";
-import type { KeyCell, Row, SaveView, Table, TableLabelId } from "../../view";
-import { OPTIONS_TABLE, STORY_TABLE } from "../../view/shared";
+import type { SaveView, Table, TableLabelId } from "../../view";
+import {
+  OPTIONS_TABLE,
+  PROFILE_TABLE,
+  SIGILS_TABLE,
+  STORY_TABLE,
+  TREASURES_TABLE,
+  WEAPONS_TABLE,
+  WRIGHTSTONES_TABLE,
+} from "../../view/shared";
 import { SigilForm } from "./SigilForm";
 import { WrightstoneForm } from "./WrightstoneForm";
 
-/** The form's starting values for a stone row. */
-function rollOf(row: Row): Partial<WrightstoneRoll> {
-  const [, stone, ...traits] = row.cells as [
-    unknown,
-    KeyCell,
-    ...(KeyCell | undefined)[],
-  ];
-  const roll = wrightstoneRoll(
-    stone.key,
-    traits
-      .slice(0, 3)
-      .flatMap((t) =>
-        t ? [{ entity: 0, key: t.key, level: t.level ?? 0 }] : [],
-      ),
-  );
-  if (roll) return roll;
-  const family = Number(
-    /^ITEM_(\d+)_/.exec(stone.key)?.[1],
-  ) as WrightstoneFamily;
-  if (!(family in WRIGHTSTONE_MAINS)) return {};
-  const allowed = wrightstoneSubs(family);
-  const sub = (t: KeyCell | undefined) =>
-    t && allowed.includes(t.key) ? t.key : "";
-  return { family, subs: [sub(traits[1]), sub(traits[2])] };
-}
-
-/** The form's starting values for a sigil row. */
-function sigilRollOf(row: Row): SigilRoll {
-  const [, , level, primary, secondary] = row.cells as [
-    unknown,
-    unknown,
-    number,
-    KeyCell | undefined,
-    KeyCell | undefined,
-  ];
-  return {
-    level,
-    primary: primary?.key ?? "",
-    secondary: secondary?.key ?? "",
-  };
-}
-
-type Editable = "wrightstones" | "sigils";
+type Editable = typeof WRIGHTSTONES_TABLE | typeof SIGILS_TABLE;
 
 /** The row of `table` whose slot is `id`. */
 const rowOf = (view: SaveView, table: Editable, id: number) => {
   const row = view.shared
     .find((t) => t.id === table)
-    ?.rows.find((r) => r.cells[0] === id);
+    ?.rows.find((r) => r.edit?.id === id);
   return row && ({ tableId: table, rowId: row.id } satisfies RowRef);
 };
 
@@ -152,44 +109,46 @@ export function SavePage({
   }
 
   const row = editable ? selection?.row : undefined;
-  const id = row?.cells[0] as number;
+  const rowEdit = row?.edit;
   const editor =
-    adding === "wrightstones" ? (
+    adding === WRIGHTSTONES_TABLE ? (
       <WrightstoneForm
         key="add"
         applyLabel={t("edit.addWrightstone")}
         onApply={(roll) => {
           setAdding(undefined);
-          add("wrightstones", (draft) => addWrightstone(draft, roll));
+          add(WRIGHTSTONES_TABLE, (draft) => addWrightstone(draft, roll));
         }}
       />
-    ) : adding === "sigils" ? (
+    ) : adding === SIGILS_TABLE ? (
       <SigilForm
         key="add"
         applyLabel={t("edit.addSigil")}
         onApply={(roll) => {
           setAdding(undefined);
-          add("sigils", (draft) => addSigil(draft, roll));
+          add(SIGILS_TABLE, (draft) => addSigil(draft, roll));
         }}
       />
-    ) : row && selection?.table.id === "wrightstones" ? (
+    ) : row && rowEdit?.kind === "wrightstone" ? (
       <WrightstoneForm
         key={row.id}
-        initial={rollOf(row)}
+        initial={rowEdit.roll}
         applyLabel={gt("ui", "apply")}
         onApply={(roll) =>
-          editRow("wrightstones", id, (draft) =>
-            editWrightstone(draft, id, roll),
+          editRow(WRIGHTSTONES_TABLE, rowEdit.id, (draft) =>
+            editWrightstone(draft, rowEdit.id, roll),
           )
         }
       />
-    ) : row && selection?.table.id === "sigils" ? (
+    ) : row && rowEdit?.kind === "sigil" ? (
       <SigilForm
         key={row.id}
-        initial={sigilRollOf(row)}
+        initial={rowEdit.roll}
         applyLabel={gt("ui", "apply")}
         onApply={(roll) =>
-          editRow("sigils", id, (draft) => editSigil(draft, id, roll))
+          editRow(SIGILS_TABLE, rowEdit.id, (draft) =>
+            editSigil(draft, rowEdit.id, roll),
+          )
         }
       />
     ) : undefined;
@@ -214,7 +173,7 @@ export function SavePage({
               ? {
                   label: t("rowPanel.new"),
                   title:
-                    adding === "sigils"
+                    adding === SIGILS_TABLE
                       ? t("equipment.sigil")
                       : t("equipment.wrightstone"),
                   section: adding,
@@ -228,16 +187,16 @@ export function SavePage({
         tables={tables}
         menuOf={(table) =>
           editable &&
-          (table.id === "wrightstones" ? (
+          (table.id === WRIGHTSTONES_TABLE ? (
             <EditMenu
               actions={[
                 {
                   label: t("edit.addWrightstone"),
-                  run: () => setAdding("wrightstones"),
+                  run: () => setAdding(WRIGHTSTONES_TABLE),
                 },
               ]}
             />
-          ) : table.id === "profile" ? (
+          ) : table.id === PROFILE_TABLE ? (
             <EditMenu
               actions={[
                 ...(belowMaxRupies
@@ -292,7 +251,7 @@ export function SavePage({
                   : []),
               ]}
             />
-          ) : table.id === "items:treasures" ? (
+          ) : table.id === TREASURES_TABLE ? (
             <EditMenu
               actions={
                 canMaxItems
@@ -305,7 +264,7 @@ export function SavePage({
                   : []
               }
             />
-          ) : table.id === "weapons" ? (
+          ) : table.id === WEAPONS_TABLE ? (
             <EditMenu
               actions={[
                 ...(canUnlockWeapons
@@ -326,10 +285,13 @@ export function SavePage({
                   : []),
               ]}
             />
-          ) : table.id === "sigils" ? (
+          ) : table.id === SIGILS_TABLE ? (
             <EditMenu
               actions={[
-                { label: t("edit.addSigil"), run: () => setAdding("sigils") },
+                {
+                  label: t("edit.addSigil"),
+                  run: () => setAdding(SIGILS_TABLE),
+                },
               ]}
             />
           ) : undefined)
