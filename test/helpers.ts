@@ -1,7 +1,7 @@
 import { draft, type Draft } from "../packages/core/draft";
 import type { SaveSession } from "../packages/core/session";
 import { storyDifficulty } from "../packages/story";
-import { advanceStory } from "../packages/story/edit";
+import { advanceStory } from "../packages/workflows";
 
 /** Commits what `build` drafts and returns its result. */
 export function apply<T>(session: SaveSession, build: (draft: Draft) => T): T {

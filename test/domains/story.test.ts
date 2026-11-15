@@ -22,7 +22,7 @@ import {
   STORY_QUEST_THIRD_CLEARED,
   SYSTEM_STORY_DIFFICULTY,
 } from "../../packages/story/attributes";
-import { storyTargets } from "../../packages/story/edit";
+import { storyTargets } from "../../packages/story";
 import {
   QUEST_RANK_REWARDED,
   QUEST_DIFFICULTY_UNLOCKED,

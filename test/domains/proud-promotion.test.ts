@@ -38,7 +38,7 @@ import {
   SYSTEM_STORY_DIFFICULTY,
   UI_FEATURE_UNLOCKED,
 } from "../../packages/story/attributes";
-import { storyTargets } from "../../packages/story/edit";
+import { storyTargets } from "../../packages/story";
 import {
   TROPHY_EARNED,
   TROPHY_PROGRESS,

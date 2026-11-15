@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@gbfr/character": "workspace:*",
+    "@gbfr/conflux": "workspace:*",
     "@gbfr/core": "workspace:*",
     "@gbfr/equipment": "workspace:*",
     "@gbfr/fate-episode": "workspace:*",
@@ -18,6 +19,7 @@
     "@gbfr/quest": "workspace:*",
     "@gbfr/skill": "workspace:*",
     "@gbfr/story": "workspace:*",
+    "@gbfr/summon": "workspace:*",
     "@gbfr/trophy": "workspace:*",
     "@gbfr/tutorial": "workspace:*",
     "@gbfr/user": "workspace:*",

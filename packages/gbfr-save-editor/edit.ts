@@ -31,13 +31,8 @@ export { maxMasteryPoints, maxRupies } from "@gbfr/user/edit";
 export { canMaxTreasures, maxTreasures } from "@gbfr/item/edit";
 export { USER_MAX_MASTERY_POINTS, USER_MAX_RUPIES } from "@gbfr/user";
 export { completeFateEpisodes } from "@gbfr/workflows";
-export {
-  advanceStory,
-  storyPosition,
-  storyProgress,
-  storyTargets,
-} from "@gbfr/story/edit";
-export { fillSkippedStory } from "@gbfr/workflows";
+export { advanceStory, fillSkippedStory } from "@gbfr/workflows";
+export { storyPosition, storyProgress, storyTargets } from "@gbfr/story";
 export {
   isChapterCheckpoint,
   CHAPTER_ZERO_END_KEY,

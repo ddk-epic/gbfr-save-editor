@@ -85,7 +85,7 @@ import {
   TROPHY_EARNED,
   TROPHY_PROGRESS,
 } from "../../packages/trophy/attributes";
-import { storyTargets } from "../../packages/story/edit";
+import { storyTargets } from "../../packages/story";
 
 const NOW = 1794162545000;
 const SIDE_QUESTS = [0x220101, 0x220102, 0x220111];

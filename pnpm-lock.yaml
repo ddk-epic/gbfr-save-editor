@@ -410,21 +410,12 @@ importers:
       '@gbfr/core':
         specifier: workspace:*
         version: link:../core
-      '@gbfr/profile':
-        specifier: workspace:*
-        version: link:../profile
       '@gbfr/quest':
         specifier: workspace:*
         version: link:../quest
       '@gbfr/summon':
         specifier: workspace:*
         version: link:../summon
-      '@gbfr/trophy':
-        specifier: workspace:*
-        version: link:../trophy
-      '@gbfr/user':
-        specifier: workspace:*
-        version: link:../user
 
   packages/summon:
     dependencies:
@@ -461,6 +452,9 @@ importers:
       '@gbfr/core':
         specifier: workspace:*
         version: link:../core
+      '@gbfr/quest':
+        specifier: workspace:*
+        version: link:../quest
       '@gbfr/weapon':
         specifier: workspace:*
         version: link:../weapon
@@ -500,6 +494,9 @@ importers:
       '@gbfr/character':
         specifier: workspace:*
         version: link:../character
+      '@gbfr/conflux':
+        specifier: workspace:*
+        version: link:../conflux
       '@gbfr/core':
         specifier: workspace:*
         version: link:../core
@@ -530,6 +527,9 @@ importers:
       '@gbfr/story':
         specifier: workspace:*
         version: link:../story
+      '@gbfr/summon':
+        specifier: workspace:*
+        version: link:../summon
       '@gbfr/trophy':
         specifier: workspace:*
         version: link:../trophy

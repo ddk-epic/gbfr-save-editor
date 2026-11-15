@@ -4,16 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "exports": {
-    ".": "./index.ts",
-    "./edit": "./edit.ts"
+    ".": "./index.ts"
   },
   "dependencies": {
     "@gbfr/conflux": "workspace:*",
     "@gbfr/core": "workspace:*",
-    "@gbfr/profile": "workspace:*",
     "@gbfr/quest": "workspace:*",
-    "@gbfr/trophy": "workspace:*",
-    "@gbfr/user": "workspace:*",
     "@gbfr/summon": "workspace:*"
   }
 }

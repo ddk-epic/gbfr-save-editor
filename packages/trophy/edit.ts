@@ -31,8 +31,12 @@ import {
   isCrewMember,
 } from "@gbfr/character";
 import {
+  CHAOS_QUEST_CLEARS,
   CREW_LEVEL_TOTAL,
   LAST_RAISED_LEVEL,
+  PROUD_QUEST_CLEARS,
+  QUEST_CLEARS_BEFORE_DIFFICULTY,
+  QUESTS_CLEARED,
   TROPHY_CHARACTER_LEVEL,
   TROPHY_EARNED,
   TROPHY_PROGRESS,
@@ -41,6 +45,7 @@ import {
   WEAPONS_HELD,
   WEAPONS_HELD_ALL,
 } from "./attributes";
+import { difficultyDigit } from "@gbfr/quest";
 import { trophyLedger, type TrophyLedger } from "./ledger";
 
 const BONUS_SERIES = 7;
@@ -220,4 +225,23 @@ export function raisedWeaponTrophies(
       progress.some((value, index) => value !== before[index]) ||
       earned.some((value, index) => value !== beforeEarned[index]),
   };
+}
+
+/** Raises the per-difficulty and total quest clear counters for each cleared quest. */
+export function countQuestClears(draft: Draft, quests: readonly number[]) {
+  if (quests.length === 0) return;
+  const at = draft.of(SAVE_ENTITY);
+  const progress = [...at.get(TROPHY_PROGRESS)];
+  for (const quest of quests) {
+    const digit = (quest >> 12) & 0xf;
+    const counter =
+      digit === difficultyDigit("proud")
+        ? PROUD_QUEST_CLEARS
+        : digit >= difficultyDigit("chaos")
+          ? CHAOS_QUEST_CLEARS + digit - difficultyDigit("chaos")
+          : QUEST_CLEARS_BEFORE_DIFFICULTY + digit;
+    progress[counter] = progress[counter]! + 1n;
+    progress[QUESTS_CLEARED] = progress[QUESTS_CLEARED]! + 1n;
+  }
+  at.set(TROPHY_PROGRESS, progress);
 }

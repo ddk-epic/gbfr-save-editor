@@ -58,13 +58,10 @@ import {
   TOWN_EVENT_PLAYED,
   isChapterCheckpoint,
   STORY_CHECKPOINTS,
+  storyPosition,
   UI_FEATURE_UNLOCKED,
 } from "@gbfr/story";
-import {
-  clearCounterQuests,
-  clearStoryCutscenes,
-  storyPosition,
-} from "@gbfr/story/edit";
+import { clearCounterQuests, clearStoryCutscenes } from "./story";
 
 type ItemFlags = Parameters<typeof ITEM_FLAGS.write>[0];
 type ArchiveFlags = Parameters<typeof ARCHIVE_FLAGS.write>[0];
