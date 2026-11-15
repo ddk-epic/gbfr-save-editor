@@ -19,14 +19,16 @@ export function trophyLedger(units: Units) {
   const progress = [...at.get(TROPHY_PROGRESS)];
   const earned = [...at.get(TROPHY_EARNED)];
   const earn = (badge: number) => {
-    if (earned[badge]) return;
+    if (earned[badge]) return false;
     earned[badge] = true;
     const counter = earnedCounter(badge);
     if (counter !== undefined) progress[counter] = progress[counter]! + 1n;
+    return true;
   };
   return {
     progress,
     earned,
+    earn,
     setTiers(
       index: number,
       count: number,

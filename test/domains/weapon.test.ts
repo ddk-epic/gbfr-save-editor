@@ -17,11 +17,19 @@ import {
   WEAPON_FLAGS,
   WEAPON_ID,
   WEAPON_KEY,
+  WEAPON_LAST_ID,
   WEAPON_TRAITS,
   WEAPON_TRAIT_POSITIONS,
+  WEAPON_UNCAP,
   WEAPON_WRIGHTSTONE,
+  WEAPON_XP,
 } from "../../packages/weapon/attributes";
-import { removeWrightstone } from "../../packages/weapon/edit";
+import {
+  addWeapon,
+  removeWeapon,
+  removeWrightstone,
+  setWeaponLevel,
+} from "../../packages/weapon/edit";
 import {
   findWeaponById,
   readOwnedWeapons,
@@ -193,5 +201,118 @@ describe("removeWrightstone", () => {
     expect(() =>
       apply(session, (draft) => removeWrightstone(draft, 10)),
     ).toThrow("no weapon with id");
+  });
+});
+
+describe("addWeapon", () => {
+  const open = () =>
+    SaveSession.open(
+      fixtureFile({
+        0: [
+          [SAVE_HASHSEED, 7],
+          [WEAPON_LAST_ID, 5],
+        ],
+        ...Object.fromEntries(
+          [4, 0, 0].map((id, i): [number, EntityUnits] => [
+            WEAPON_FIRST + i,
+            [
+              [WEAPON_ID, id],
+              [WEAPON_KEY, hashId(id ? "WEP_PL0000_01" : "")],
+              [WEAPON_XP, id ? 90 : 0],
+              [WEAPON_UNCAP, id ? 1 : 0],
+              [WEAPON_FLAGS, id ? 129 : 0],
+            ],
+          ]),
+        ),
+      }),
+    );
+
+  it("fills the first free entry under the next id", () => {
+    const session = open();
+    const added = apply(session, (draft) =>
+      addWeapon(draft, "WEP_PL0100_03", {
+        xp: 90,
+        uncap: 2,
+        flags: { forged: true },
+      }),
+    );
+    expect(added).toEqual({ entity: WEAPON_FIRST + 1, id: 6 });
+    const units = session.save.slotData.units;
+    expect(units.of(0).get(WEAPON_LAST_ID)).toBe(6);
+    const weapon = units.of(WEAPON_FIRST + 1);
+    expect(weapon.get(WEAPON_ID)).toBe(6);
+    expect(weapon.get(WEAPON_KEY)).toBe("WEP_PL0100_03");
+    expect(weapon.get(WEAPON_XP)).toBe(90);
+    expect(weapon.get(WEAPON_UNCAP)).toBe(2);
+    expect(weapon.get(WEAPON_FLAGS)).toEqual(
+      expect.objectContaining({ forged: true }),
+    );
+  });
+
+  it("gives a second weapon in one draft the next entry and id", () => {
+    const session = open();
+    const [first, second] = apply(session, (draft) =>
+      ["WEP_PL0100_03", "WEP_PL0200_03"].map((key) =>
+        addWeapon(draft, key, { xp: 0, uncap: 0, flags: {} }),
+      ),
+    );
+    expect(first).toEqual({ entity: WEAPON_FIRST + 1, id: 6 });
+    expect(second).toEqual({ entity: WEAPON_FIRST + 2, id: 7 });
+  });
+
+  it("reuses an entry emptied in the same draft, and refuses a full list", () => {
+    const session = open();
+    apply(session, (draft) => {
+      removeWeapon(draft, WEAPON_FIRST);
+      expect(
+        addWeapon(draft, "WEP_PL0100_03", { xp: 0, uncap: 0, flags: {} })
+          .entity,
+      ).toBe(WEAPON_FIRST);
+    });
+    expect(() =>
+      apply(session, (draft) => {
+        addWeapon(draft, "WEP_PL0200_03", { xp: 0, uncap: 0, flags: {} });
+        addWeapon(draft, "WEP_PL0300_03", { xp: 0, uncap: 0, flags: {} });
+        addWeapon(draft, "WEP_PL0400_03", { xp: 0, uncap: 0, flags: {} });
+      }),
+    ).toThrow("no free weapon entry");
+  });
+});
+
+describe("removeWeapon and setWeaponLevel", () => {
+  const open = () =>
+    SaveSession.open(
+      fixtureFile({
+        [WEAPON]: [
+          [WEAPON_ID, 9],
+          [WEAPON_KEY, hashId("WEP_PL0000_01")],
+          [WEAPON_XP, 90],
+          [WEAPON_UNCAP, 1],
+          [WEAPON_FLAGS, 129],
+        ],
+      }),
+    );
+
+  it("sets XP and uncap only", () => {
+    const session = open();
+    apply(session, (draft) => setWeaponLevel(draft, WEAPON, 1740, 3));
+    const weapon = session.save.slotData.units.of(WEAPON);
+    expect(weapon.get(WEAPON_XP)).toBe(1740);
+    expect(weapon.get(WEAPON_UNCAP)).toBe(3);
+    expect(weapon.get(WEAPON_ID)).toBe(9);
+    expect(weapon.get(WEAPON_KEY)).toBe("WEP_PL0000_01");
+  });
+
+  it("empties the entry", () => {
+    const session = open();
+    apply(session, (draft) => removeWeapon(draft, WEAPON));
+    const weapon = session.save.slotData.units.of(WEAPON);
+    expect(weapon.get(WEAPON_ID)).toBe(0);
+    expect(weapon.get(WEAPON_KEY)).toBeUndefined();
+    expect(weapon.get(WEAPON_XP)).toBe(0);
+    expect(weapon.get(WEAPON_UNCAP)).toBe(0);
+    expect(session.save.slotData.units.values(WEAPON_FLAGS, WEAPON)).toEqual([
+      0,
+    ]);
   });
 });

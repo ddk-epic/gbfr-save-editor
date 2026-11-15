@@ -17,6 +17,7 @@ import {
 import {
   canUnlockAllCharacters,
   canUnlockCharacter,
+  joinCharacterAt,
   maxCharacterLevel,
 } from "../../packages/character/edit";
 import {
@@ -298,5 +299,52 @@ describe("unlockCharacter", () => {
     expect(() =>
       apply(session, (draft) => unlockCharacter(draft, CHARACTER_FIRST + 3)),
     ).toThrow("cannot be unlocked");
+  });
+});
+
+describe("joinCharacterAt", () => {
+  const open = () =>
+    SaveSession.open(
+      fixtureFile({
+        [CHARACTER_FIRST]: [
+          [CHARACTER_KEY, hashId("PL1900")],
+          [CHARACTER_FLAGS, 0],
+          [CHARACTER_XP, 100],
+          [CHARACTER_LEVEL, 1],
+          [CHARACTER_BASE_HP, 10],
+          [CHARACTER_BASE_ATTACK, 5],
+        ],
+      }),
+    );
+
+  it("sets the flags and the level row", () => {
+    const session = open();
+    apply(session, (draft) =>
+      joinCharacterAt(
+        draft,
+        CHARACTER_FIRST,
+        { joined: true, storyPlayed: true },
+        { level: 37, xp: 184474, hp: 1107, attack: 145 },
+      ),
+    );
+    const at = session.save.slotData.units.of(CHARACTER_FIRST);
+    expect(at.get(CHARACTER_FLAGS)).toEqual(
+      expect.objectContaining({ joined: true, storyPlayed: true }),
+    );
+    expect(at.get(CHARACTER_LEVEL)).toBe(37);
+    expect(at.get(CHARACTER_XP)).toBe(184474);
+    expect(at.get(CHARACTER_BASE_HP)).toBe(1107);
+    expect(at.get(CHARACTER_BASE_ATTACK)).toBe(145);
+  });
+
+  it("leaves the level alone without a row", () => {
+    const session = open();
+    apply(session, (draft) =>
+      joinCharacterAt(draft, CHARACTER_FIRST, { joined: true }),
+    );
+    const at = session.save.slotData.units.of(CHARACTER_FIRST);
+    expect(at.get(CHARACTER_FLAGS).joined).toBe(true);
+    expect(at.get(CHARACTER_LEVEL)).toBe(1);
+    expect(at.get(CHARACTER_XP)).toBe(100);
   });
 });

@@ -3,7 +3,7 @@ import {
   FIELD_NOTE_WEAPONS,
   STORY_ORDER,
 } from "./data.gen";
-import type { Attribute, Units } from "@gbfr/core";
+import { hashId, type Attribute, type Units } from "@gbfr/core";
 import { ITEM_FLAGS, ITEM_KEY } from "@gbfr/item";
 import {
   ARCHIVE_FLAGS,
@@ -161,3 +161,12 @@ export function readFieldNotes(units: Units): FieldNoteEntry[] {
     ),
   ];
 }
+
+/** True when the weapon's field note holds any flag. */
+export const fieldNoteWeaponMarked = (units: Units, key: string) =>
+  Number(
+    units.values(
+      FIELD_NOTE_WEAPON_FLAGS,
+      units.onlyEntityWhere(FIELD_NOTE_WEAPON_KEY, hashId(key)),
+    )![0],
+  ) !== 0;

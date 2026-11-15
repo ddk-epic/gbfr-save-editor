@@ -36,7 +36,17 @@ import {
   readTips,
 } from "../../packages/journal/read";
 import { validateJournalList } from "../../packages/journal/validate";
-import { unitStore } from "../../packages/gbfr-save-editor/testing";
+import {
+  registerFieldNoteWeapon,
+  unlockArchive,
+} from "../../packages/journal/edit";
+import { fieldNoteWeaponMarked } from "../../packages/journal/read";
+import { apply } from "../helpers";
+import { SaveSession } from "../../packages/core/session";
+import {
+  fixtureFile,
+  unitStore,
+} from "../../packages/gbfr-save-editor/testing";
 
 describe("readMainStory", () => {
   afterEach(() => vi.restoreAllMocks());
@@ -184,5 +194,79 @@ describe("validateJournalList", () => {
         expected: 3,
       },
     ]);
+  });
+});
+
+describe("unlockArchive", () => {
+  const open = (flags: number) =>
+    SaveSession.open(
+      fixtureFile({
+        1: [
+          [ARCHIVE_KEY, hashId("ARC_OTHER_011")],
+          [ARCHIVE_FLAGS, flags],
+        ],
+      }),
+    );
+
+  it("writes the flags and reports a locked entry", () => {
+    const session = open(0);
+    const unlocked = apply(session, (draft) =>
+      unlockArchive(draft, "ARC_OTHER_011", { unlocked: true, seen: true }),
+    );
+    expect(unlocked).toBe(true);
+    expect(session.save.slotData.units.of(1).get(ARCHIVE_FLAGS)).toEqual({
+      unlocked: true,
+      seen: true,
+    });
+  });
+
+  it("unlocks with only the unlocked flag by default", () => {
+    const session = open(0);
+    apply(session, (draft) => unlockArchive(draft, "ARC_OTHER_011"));
+    expect(session.save.slotData.units.of(1).get(ARCHIVE_FLAGS)).toEqual({
+      unlocked: true,
+      seen: false,
+    });
+  });
+
+  it("leaves an unlocked entry alone", () => {
+    const session = open(1);
+    const unlocked = apply(session, (draft) =>
+      unlockArchive(draft, "ARC_OTHER_011", { unlocked: true, seen: true }),
+    );
+    expect(unlocked).toBe(false);
+    expect(session.save.slotData.units.of(1).get(ARCHIVE_FLAGS)).toEqual({
+      unlocked: true,
+      seen: false,
+    });
+  });
+});
+
+describe("fieldNoteWeaponMarked", () => {
+  const open = (flags: number) =>
+    SaveSession.open(
+      fixtureFile({
+        1: [
+          [FIELD_NOTE_WEAPON_KEY, hashId("WEP_PL0000_03")],
+          [FIELD_NOTE_WEAPON_FLAGS, flags],
+        ],
+      }),
+    );
+
+  it("reads any flag on the weapon's note", () => {
+    expect(
+      fieldNoteWeaponMarked(open(0).save.slotData.units, "WEP_PL0000_03"),
+    ).toBe(false);
+    expect(
+      fieldNoteWeaponMarked(open(4).save.slotData.units, "WEP_PL0000_03"),
+    ).toBe(true);
+  });
+
+  it("follows a pending unlock", () => {
+    const session = open(0);
+    apply(session, (draft) => {
+      registerFieldNoteWeapon(draft, "WEP_PL0000_03");
+      expect(fieldNoteWeaponMarked(draft, "WEP_PL0000_03")).toBe(true);
+    });
   });
 });

@@ -109,6 +109,33 @@ export function writeLedger(draft: Draft, ledger: TrophyLedger) {
   save.set(TROPHY_EARNED, ledger.earned);
 }
 
+/** Earns a trophy, and returns whether it was not earned. */
+export function earnTrophy(draft: Draft, badge: number) {
+  const ledger = trophyLedger(draft);
+  if (!ledger.earn(badge)) return false;
+  writeLedger(draft, ledger);
+  return true;
+}
+
+/** Raises a progress count by `amount`. */
+export function addProgress(draft: Draft, index: number, amount: number) {
+  const progress = [...draft.of(SAVE_ENTITY).get(TROPHY_PROGRESS)];
+  progress[index] = progress[index]! + BigInt(amount);
+  draft.of(SAVE_ENTITY).set(TROPHY_PROGRESS, progress);
+}
+
+export function setProgress(draft: Draft, index: number, value: bigint) {
+  const progress = [...draft.of(SAVE_ENTITY).get(TROPHY_PROGRESS)];
+  progress[index] = value;
+  draft.of(SAVE_ENTITY).set(TROPHY_PROGRESS, progress);
+}
+
+/** Raises a progress count to `value` when it is lower. */
+export function raiseProgress(draft: Draft, index: number, value: bigint) {
+  if (draft.of(SAVE_ENTITY).get(TROPHY_PROGRESS)[index]! < value)
+    setProgress(draft, index, value);
+}
+
 /** Earns the trophies of a character joined at the last level. */
 export function characterLevelTrophies(draft: Draft, character: string) {
   const { index, progress, badges } = CHARACTER_LEVEL_BADGES[character]!;

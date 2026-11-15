@@ -57,17 +57,48 @@ export function canUnlockCharacter(units: Units, character: UnitEntity) {
   );
 }
 
+type CharacterFlags = Parameters<typeof CHARACTER_FLAGS.write>[0];
+
+/** A level with its XP and base stats. */
+export interface CharacterLevelRow {
+  level: number;
+  xp: number;
+  hp: number;
+  attack: number;
+}
+
+/** Sets `flags` on a character joining, and its level when `row` is given. */
+export function joinCharacterAt(
+  draft: Draft,
+  character: UnitEntity,
+  flags: CharacterFlags,
+  row?: CharacterLevelRow,
+) {
+  const at = draft.of(character);
+  at.set(CHARACTER_FLAGS, flags);
+  if (row === undefined) return;
+  at.set(CHARACTER_XP, row.xp);
+  at.set(CHARACTER_LEVEL, row.level);
+  at.set(CHARACTER_BASE_HP, row.hp);
+  at.set(CHARACTER_BASE_ATTACK, row.attack);
+}
+
 /** Joins a Crewmate menu character at level 100. */
 export function joinCharacter(draft: Draft, character: UnitEntity) {
   if (!canUnlockCharacter(draft, character))
     throw new Error(`character ${character} cannot be unlocked`);
-  const at = draft.of(character);
-  const stats = CHARACTER_MAX_STATS[at.get(CHARACTER_KEY)!]!;
-  at.set(CHARACTER_FLAGS, { joined: true });
-  at.set(CHARACTER_XP, CHARACTER_MAX_XP);
-  at.set(CHARACTER_LEVEL, CHARACTER_MAX_LEVEL);
-  at.set(CHARACTER_BASE_HP, stats.hp);
-  at.set(CHARACTER_BASE_ATTACK, stats.attack);
+  const stats = CHARACTER_MAX_STATS[draft.of(character).get(CHARACTER_KEY)!]!;
+  joinCharacterAt(
+    draft,
+    character,
+    { joined: true },
+    {
+      level: CHARACTER_MAX_LEVEL,
+      xp: CHARACTER_MAX_XP,
+      hp: stats.hp,
+      attack: stats.attack,
+    },
+  );
 }
 
 /** Crewmate menu characters not in the crew. */

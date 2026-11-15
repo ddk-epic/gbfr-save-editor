@@ -12,7 +12,13 @@ import {
   type MasteryProgress,
 } from "../../packages/mastery/read";
 import { validateMasteries } from "../../packages/mastery/validate";
-import { unitStore } from "../../packages/gbfr-save-editor/testing";
+import { setMasteryNodeBits } from "../../packages/mastery/edit";
+import { apply } from "../helpers";
+import { SaveSession } from "../../packages/core/session";
+import {
+  fixtureFile,
+  unitStore,
+} from "../../packages/gbfr-save-editor/testing";
 
 const MASTERY = { first: MASTERY_FIRST, count: MASTERY_ENTRIES };
 
@@ -124,5 +130,24 @@ describe("validateMasteries", () => {
         total: 4,
       },
     ]);
+  });
+});
+
+describe("setMasteryNodeBits", () => {
+  it("sets the bits at each offset into the block", () => {
+    const session = SaveSession.open(
+      fixtureFile({
+        [MASTERY_FIRST]: [[MASTERY_NODE_BITS, 0]],
+        [MASTERY_FIRST + 1]: [[MASTERY_NODE_BITS, 0]],
+        [MASTERY_FIRST + 5]: [[MASTERY_NODE_BITS, 0]],
+      }),
+    );
+    apply(session, (draft) =>
+      setMasteryNodeBits(draft, MASTERY_FIRST, { 0: 257, 5: 3855 }),
+    );
+    const units = session.save.slotData.units;
+    expect(units.of(MASTERY_FIRST).get(MASTERY_NODE_BITS)).toBe(257);
+    expect(units.of(MASTERY_FIRST + 1).get(MASTERY_NODE_BITS)).toBe(0);
+    expect(units.of(MASTERY_FIRST + 5).get(MASTERY_NODE_BITS)).toBe(3855);
   });
 });

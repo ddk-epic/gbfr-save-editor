@@ -10,11 +10,19 @@ import {
   TIP_KEY,
 } from "./attributes";
 
-/** Unlocks one archive entry. */
-export const unlockArchive = (draft: Draft, archive: string) =>
-  draft
-    .of(draft.onlyEntityWhere(ARCHIVE_KEY, hashId(archive)))
-    .set(ARCHIVE_FLAGS, { unlocked: true });
+type ArchiveFlags = Parameters<typeof ARCHIVE_FLAGS.write>[0];
+
+/** Unlocks one archive entry with `flags`, and returns whether it was locked. */
+export function unlockArchive(
+  draft: Draft,
+  archive: string,
+  flags: ArchiveFlags = { unlocked: true },
+) {
+  const entry = draft.of(draft.onlyEntityWhere(ARCHIVE_KEY, hashId(archive)));
+  if (entry.get(ARCHIVE_FLAGS).unlocked) return false;
+  entry.set(ARCHIVE_FLAGS, flags);
+  return true;
+}
 
 /** Unlocks the weapon's field note, none when it has no entry. */
 export function registerFieldNoteWeapon(draft: Draft, key: string) {

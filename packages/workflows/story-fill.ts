@@ -2,17 +2,15 @@ import { hashId, SAVE_ENTITY } from "@gbfr/core";
 import type { Draft } from "@gbfr/core/draft";
 import {
   CAPTAIN,
-  CHARACTER_BASE_ATTACK,
-  CHARACTER_BASE_HP,
   CHARACTER_FLAGS,
   CHARACTER_KEY,
   CHARACTER_LEVEL,
   CHARACTER_OUTFIT,
   CHARACTER_OUTFITS_OWNED,
-  CHARACTER_XP,
   masteryRange,
   joinedCharacters,
 } from "@gbfr/character";
+import { joinCharacterAt } from "@gbfr/character/edit";
 import { acquisitions, TREASURE_CAP } from "@gbfr/item/edit";
 import { FATE_EPISODE_KEY, FATE_EPISODE_STATE } from "@gbfr/fate-episode";
 import { EQUIP_WEAPON } from "@gbfr/equipment";
@@ -23,13 +21,9 @@ import {
   ITEM_KEY,
   itemHash,
 } from "@gbfr/item";
-import {
-  ARCHIVE_FLAGS,
-  ARCHIVE_KEY,
-  FIELD_NOTE_WEAPON_FLAGS,
-  FIELD_NOTE_WEAPON_KEY,
-} from "@gbfr/journal";
-import { MASTERY_NODE_BITS } from "@gbfr/mastery";
+import { ARCHIVE_FLAGS, fieldNoteWeaponMarked } from "@gbfr/journal";
+import { registerFieldNoteWeapon, unlockArchive } from "@gbfr/journal/edit";
+import { setMasteryNodeBits } from "@gbfr/mastery/edit";
 import { COUNTER_QUEST_IDS, COUNTER_QUEST_OPENED } from "@gbfr/quest";
 import { EQUIP_SKILLS, SKILL_FLAGS, SKILL_KEY } from "@gbfr/skill";
 import {
@@ -38,20 +32,16 @@ import {
   RUPIES_EARNED,
   SIDE_QUESTS_COMPLETED,
   STORY_MASTERY_FILLED,
-  TROPHY_EARNED,
-  TROPHY_PROGRESS,
-  earnedCounter,
 } from "@gbfr/trophy";
-import { USER_MAX_RUPIES, USER_RUPIES } from "@gbfr/user";
 import {
-  WEAPON_FIRST,
-  WEAPON_FLAGS,
-  WEAPON_ID,
-  WEAPON_KEY,
-  WEAPON_LAST_ID,
-  WEAPON_UNCAP,
-  WEAPON_XP,
-} from "@gbfr/weapon";
+  addProgress,
+  earnTrophy,
+  raiseProgress,
+  setProgress,
+} from "@gbfr/trophy/edit";
+import { USER_MAX_RUPIES, USER_RUPIES } from "@gbfr/user";
+import { WEAPON_ID, WEAPON_KEY, WEAPON_XP } from "@gbfr/weapon";
+import { addWeapon, removeWeapon, setWeaponLevel } from "@gbfr/weapon/edit";
 import {
   CURRENT_CHAPTER,
   TOWN_EVENT_KEY,
@@ -65,14 +55,12 @@ import { clearCounterQuests, clearStoryCutscenes } from "./story";
 
 type ItemFlags = Parameters<typeof ITEM_FLAGS.write>[0];
 type ArchiveFlags = Parameters<typeof ARCHIVE_FLAGS.write>[0];
-type WeaponFlags = Parameters<typeof WEAPON_FLAGS.write>[0];
 
 const START_WEAPON_XP = 90;
 const RAISED_WEAPON_XP = 1740;
 const RAISED_WEAPON_UNCAP = 3;
 const FIGHT_WEAPON_XP = 162540;
 const FIGHT_WEAPON_UNCAP = 6;
-const WEAPON_ENTRIES = 256;
 const OUTFIT_MAIN = 0;
 const OUTFIT_STARTING = 1;
 
@@ -542,8 +530,6 @@ function applyFill(draft: Draft, due: readonly StoryFillEntry[]): string[] {
     ),
   ];
 
-  const earned = [...at.get(TROPHY_EARNED)];
-  const progress = [...at.get(TROPHY_PROGRESS)];
   const uiFeatures = [...at.get(UI_FEATURE_UNLOCKED)];
   const counterQuestIds = at.get(COUNTER_QUEST_IDS);
   const counterQuestOpened = [...at.get(COUNTER_QUEST_OPENED)];
@@ -551,73 +537,40 @@ function applyFill(draft: Draft, due: readonly StoryFillEntry[]): string[] {
   const givenItems = new Set<string>();
   const stamps = acquisitions(draft);
   let rupies = at.get(USER_RUPIES);
-  let weaponId = at.get(WEAPON_LAST_ID);
-  const writtenWeaponIds = new Map<number, number>();
   const captainInPlay = at.get(CAPTAIN) === 2 ? 10001 : 10000;
   const startWeaponEntities = new Map<number, number>();
   const standInEntities = new Map<string, number>();
-  const fieldNoted = (key: string) =>
-    Number(
-      draft.values(
-        FIELD_NOTE_WEAPON_FLAGS,
-        draft.onlyEntityWhere(FIELD_NOTE_WEAPON_KEY, hashId(key)),
-      )![0],
-    ) !== 0;
-  const addWeapon = (
+  const addNotedWeapon = (
     key: string,
     xp: number,
     uncap: number,
-    flags: WeaponFlags,
+    flags: Parameters<typeof addWeapon>[2]["flags"],
   ) => {
-    let entity = WEAPON_FIRST;
-    while (
-      (writtenWeaponIds.get(entity) ?? draft.of(entity).get(WEAPON_ID)) !== 0
-    ) {
-      entity++;
-      if (entity >= WEAPON_FIRST + WEAPON_ENTRIES)
-        throw new Error("no free weapon entry");
-    }
-    weaponId++;
-    writtenWeaponIds.set(entity, weaponId);
-    const hash = hashId(key);
-    const weapon = draft.of(entity);
-    weapon.set(WEAPON_ID, weaponId);
-    weapon.set(WEAPON_KEY, key);
-    weapon.set(WEAPON_XP, xp);
-    weapon.set(WEAPON_UNCAP, uncap);
-    weapon.replace(WEAPON_FLAGS, flags);
-    draft
-      .of(draft.onlyEntityWhere(FIELD_NOTE_WEAPON_KEY, hash))
-      .replace(FIELD_NOTE_WEAPON_FLAGS, { unlocked: true });
-    return { entity, id: weaponId };
+    const weapon = addWeapon(draft, key, { xp, uncap, flags });
+    registerFieldNoteWeapon(draft, key);
+    return weapon;
   };
 
   for (const entry of due) {
     let earnedHere = false;
     for (const trophy of entry.trophies) {
-      if (earned[trophy]) continue;
+      if (!earnTrophy(draft, trophy)) continue;
       earnedHere = true;
-      earned[trophy] = true;
-      const counter = earnedCounter(trophy);
-      if (counter !== undefined) progress[counter] = progress[counter]! + 1n;
       added.push(`trophy ${trophy}`);
 
       const reward = QUEST_RANK_REWARDS[trophy];
       if (!reward) continue;
       rupies = Math.min(rupies + reward.rupies, USER_MAX_RUPIES);
-      progress[RUPIES_EARNED] =
-        progress[RUPIES_EARNED]! + BigInt(reward.rupies);
+      addProgress(draft, RUPIES_EARNED, reward.rupies);
       for (const [item, count] of reward.items)
         rewardItems.set(item, (rewardItems.get(item) ?? 0) + count);
     }
     for (const [index, amount] of earnedHere ? (entry.counts ?? []) : [])
-      progress[index] = progress[index]! + BigInt(amount);
+      addProgress(draft, index, amount);
     for (const [item, count] of earnedHere ? (entry.rewards ?? []) : []) {
       rewardItems.set(item, (rewardItems.get(item) ?? 0) + count);
       added.push(item);
     }
-    if (entry.chapterKeysCleared > progress[CHAPTER_KEYS_CLEARED]!)
-      progress[CHAPTER_KEYS_CLEARED] = entry.chapterKeysCleared;
 
     for (const { item, flags } of entry.items ?? []) {
       const entity = draft.onlyEntityWhere(ITEM_KEY, itemHash(item));
@@ -663,12 +616,10 @@ function applyFill(draft: Draft, due: readonly StoryFillEntry[]): string[] {
       added.push(`${item} new mark`);
     }
 
-    for (const { archive, flags: written } of entry.archives ?? []) {
-      const entity = draft.onlyEntityWhere(ARCHIVE_KEY, hashId(archive));
-      if (draft.of(entity).get(ARCHIVE_FLAGS).unlocked) continue;
-      draft.of(entity).set(ARCHIVE_FLAGS, written);
+    for (const { archive, flags } of entry.archives ?? []) {
+      if (!unlockArchive(draft, archive, flags)) continue;
       for (const counter of ARCHIVES_UNLOCKED_COUNTERS)
-        progress[counter] = progress[counter]! + 1n;
+        addProgress(draft, counter, 1);
       added.push(archive);
     }
 
@@ -687,9 +638,9 @@ function applyFill(draft: Draft, due: readonly StoryFillEntry[]): string[] {
 
     const replaced: number[] = [];
     for (const { key, captain, replaces } of entry.startWeapons ?? []) {
-      if (fieldNoted(key)) continue;
+      if (fieldNoteWeaponMarked(draft, key)) continue;
       const inPlay = captain === captainInPlay;
-      const { entity, id } = addWeapon(key, START_WEAPON_XP, 0, {
+      const { entity, id } = addNotedWeapon(key, START_WEAPON_XP, 0, {
         forged: true,
         listOpened: inPlay,
       });
@@ -710,36 +661,27 @@ function applyFill(draft: Draft, due: readonly StoryFillEntry[]): string[] {
       }
       added.push(key);
     }
-    for (const entity of replaced) {
-      const oldWeapon = draft.of(entity);
-      oldWeapon.set(WEAPON_ID, 0);
-      oldWeapon.set(WEAPON_KEY, undefined);
-      oldWeapon.set(WEAPON_XP, 0);
-      oldWeapon.set(WEAPON_UNCAP, 0);
-      oldWeapon.replace(WEAPON_FLAGS, {});
-      writtenWeaponIds.set(entity, 0);
-    }
+    for (const entity of replaced) removeWeapon(draft, entity);
 
     for (const { key, xp, uncap } of entry.standInWeapons ?? []) {
       const held =
         standInEntities.get(key) ??
         draft.entitiesWhere(WEAPON_KEY, hashId(key))[0];
       if (held === undefined) {
-        if (fieldNoted(key)) continue;
-        const { entity } = addWeapon(key, xp, uncap, { forged: true });
+        if (fieldNoteWeaponMarked(draft, key)) continue;
+        const { entity } = addNotedWeapon(key, xp, uncap, { forged: true });
         standInEntities.set(key, entity);
       } else {
         if (!standInEntities.has(key) && draft.of(held).get(WEAPON_XP) >= xp)
           continue;
-        draft.of(held).set(WEAPON_XP, xp);
-        draft.of(held).set(WEAPON_UNCAP, uncap);
+        setWeaponLevel(draft, held, xp, uncap);
       }
       added.push(key);
     }
 
     for (const { key, captain, startWeapon } of entry.fightWeapons ?? []) {
-      if (fieldNoted(key)) continue;
-      const { id } = addWeapon(key, FIGHT_WEAPON_XP, FIGHT_WEAPON_UNCAP, {
+      if (fieldNoteWeaponMarked(draft, key)) continue;
+      const { id } = addNotedWeapon(key, FIGHT_WEAPON_XP, FIGHT_WEAPON_UNCAP, {
         forged: true,
       });
       if (captain === captainInPlay) {
@@ -747,8 +689,7 @@ function applyFill(draft: Draft, due: readonly StoryFillEntry[]): string[] {
           startWeaponEntities.get(captain) ??
           draft.entitiesWhere(WEAPON_KEY, hashId(startWeapon))[0];
         if (raised !== undefined) {
-          draft.of(raised).set(WEAPON_XP, RAISED_WEAPON_XP);
-          draft.of(raised).set(WEAPON_UNCAP, RAISED_WEAPON_UNCAP);
+          setWeaponLevel(draft, raised, RAISED_WEAPON_XP, RAISED_WEAPON_UNCAP);
         }
       } else {
         draft.of(captain).set(EQUIP_WEAPON, id);
@@ -767,16 +708,17 @@ function applyFill(draft: Draft, due: readonly StoryFillEntry[]): string[] {
           draft.of(gear).get(CHARACTER_LEVEL),
         ),
       );
-      id.set(CHARACTER_FLAGS, { joined: true, storyPlayed: true });
 
       const level = Math.min(crewLevel, ID_MAX_JOIN_LEVEL);
       const row = ID_LEVELS[level];
-      if (level > id.get(CHARACTER_LEVEL) && row) {
-        id.set(CHARACTER_XP, row[0]);
-        id.set(CHARACTER_LEVEL, level);
-        id.set(CHARACTER_BASE_HP, row[1]);
-        id.set(CHARACTER_BASE_ATTACK, row[2]);
-      }
+      joinCharacterAt(
+        draft,
+        entity,
+        { joined: true, storyPlayed: true },
+        level > id.get(CHARACTER_LEVEL) && row
+          ? { level, xp: row[0], hp: row[1], attack: row[2] }
+          : undefined,
+      );
 
       if (!flags.storyPlayed) {
         const skill = (n: string) => hashId(`AB_PL1900_${n}`);
@@ -785,16 +727,16 @@ function applyFill(draft: Draft, due: readonly StoryFillEntry[]): string[] {
           const skillEntity = draft.onlyEntityWhere(SKILL_KEY, skill(n));
           draft.of(skillEntity).set(SKILL_FLAGS, { acquired: true });
         }
-        const block = masteryRange(entity).first;
-        for (const [offset, bits] of Object.entries(ID_MASTERY_BITS))
-          draft.of(block + Number(offset)).set(MASTERY_NODE_BITS, bits);
-        progress[STORY_MASTERY_FILLED] = 1n;
+        setMasteryNodeBits(draft, masteryRange(entity).first, ID_MASTERY_BITS);
+        setProgress(draft, STORY_MASTERY_FILLED, 1n);
       }
       added.push("PL1900");
     }
   }
 
   if (added.length === 0) return added;
+  for (const { chapterKeysCleared } of due)
+    raiseProgress(draft, CHAPTER_KEYS_CLEARED, chapterKeysCleared);
   for (const [item, count] of rewardItems) {
     const entity = draft.onlyEntityWhere(ITEM_KEY, itemHash(item));
     const held = draft.of(entity);
@@ -802,12 +744,9 @@ function applyFill(draft: Draft, due: readonly StoryFillEntry[]): string[] {
     held.replace(ITEM_FLAGS, { fieldNote: true });
     if (held.get(ITEM_ACQUIRED) === 0) stamps.stamp(entity);
   }
-  at.set(TROPHY_EARNED, earned);
-  at.set(TROPHY_PROGRESS, progress);
   at.set(UI_FEATURE_UNLOCKED, uiFeatures);
   at.set(COUNTER_QUEST_OPENED, counterQuestOpened);
   at.set(USER_RUPIES, rupies);
   stamps.done();
-  at.set(WEAPON_LAST_ID, weaponId);
   return added;
 }

@@ -1,10 +1,26 @@
 import { describe, expect, it } from "vitest";
 import { TROPHIES } from "../../packages/trophy/data.gen";
-import { TROPHY_EARNED, TROPHY_SEEN } from "../../packages/trophy/attributes";
+import {
+  TROPHIES_EARNED_IN_RANGE,
+  TROPHY_EARNED,
+  TROPHY_PROGRESS,
+  TROPHY_SEEN,
+} from "../../packages/trophy/attributes";
+import {
+  addProgress,
+  earnTrophy,
+  raiseProgress,
+  setProgress,
+} from "../../packages/trophy/edit";
+import { apply } from "../helpers";
+import { SaveSession } from "../../packages/core/session";
 import { readTrophies, type Trophy } from "../../packages/trophy/read";
 import { validateTrophies } from "../../packages/trophy/validate";
 import { SAVE_ENTITY } from "../../packages/core/save-entity";
-import { unitStore } from "../../packages/gbfr-save-editor/testing";
+import {
+  fixtureFile,
+  unitStore,
+} from "../../packages/gbfr-save-editor/testing";
 
 describe("readTrophies", () => {
   const [first, second] = TROPHIES.map(([key]) => key);
@@ -67,5 +83,50 @@ describe("validateTrophies", () => {
     expect(validateTrophies([trophy({ dlc: undefined })])).toEqual([
       { severity: "warning", code: "trophyNotInTable", key: 10 },
     ]);
+  });
+});
+
+describe("trophy edits", () => {
+  const open = () =>
+    SaveSession.open(
+      fixtureFile({
+        [SAVE_ENTITY]: [
+          [TROPHY_EARNED, Array<boolean>(1500).fill(false)],
+          [TROPHY_PROGRESS, Array<bigint>(1200).fill(0n)],
+        ],
+      }),
+    );
+  const at = (session: SaveSession) =>
+    session.save.slotData.units.of(SAVE_ENTITY);
+
+  it("earns a trophy once and reports whether it was new", () => {
+    const session = open();
+    expect(apply(session, (draft) => earnTrophy(draft, 5))).toBe(true);
+    expect(apply(session, (draft) => earnTrophy(draft, 5))).toBe(false);
+    expect(at(session).get(TROPHY_EARNED)[5]).toBe(true);
+    expect(at(session).get(TROPHY_PROGRESS)[TROPHIES_EARNED_IN_RANGE]).toBe(0n);
+  });
+
+  it("counts a trophy in the counted range once", () => {
+    const session = open();
+    apply(session, (draft) => {
+      earnTrophy(draft, 1400);
+      earnTrophy(draft, 1400);
+      earnTrophy(draft, 1401);
+    });
+    expect(at(session).get(TROPHY_PROGRESS)[TROPHIES_EARNED_IN_RANGE]).toBe(2n);
+  });
+
+  it("adds, sets and raises a count, each seeing the one before", () => {
+    const session = open();
+    apply(session, (draft) => {
+      addProgress(draft, 30, 2);
+      addProgress(draft, 30, 3);
+      setProgress(draft, 31, 7n);
+      raiseProgress(draft, 31, 4n);
+      raiseProgress(draft, 32, 4n);
+    });
+    const progress = at(session).get(TROPHY_PROGRESS);
+    expect([progress[30], progress[31], progress[32]]).toEqual([5n, 7n, 4n]);
   });
 });
