@@ -6,6 +6,7 @@ import {
   readContainer,
   SLOT_DATA_SIZE_AT,
 } from "./container";
+import type { Draft } from "./draft";
 import { readSave, type Save } from "./read-save";
 import type { Patch } from "./unit-store";
 import { ELEMENTS, type SaveUnit, type UnitEntity } from "./save-data-binary";
@@ -20,13 +21,46 @@ export type { Patch };
 export class SaveSession {
   private constructor(
     private readonly bytes: Uint8Array,
-    readonly save: Save,
+    private current: Save,
   ) {}
+
+  get save(): Save {
+    return this.current;
+  }
 
   /** Opens a copy of `bytes`. */
   static open(bytes: Uint8Array): SaveSession {
     const copy = new Uint8Array(bytes);
     return new SaveSession(copy, readSave(copy));
+  }
+
+  /** Writes the draft's pending values, all or none; returns whether anything changed. */
+  commit(draft: Draft): boolean {
+    if (draft.units !== this.save.slotData.units)
+      throw new Error("draft was made over other units");
+    const snapshot = new Uint8Array(this.bytes);
+    try {
+      let written = false;
+      for (const { attribute, entity, values } of draft.pending()) {
+        const unit = this.save.slotData.units.get(attribute, entity);
+        if (unit === undefined)
+          throw new Error(`no unit ${attribute.id} at ${entity} to write`);
+        if (
+          unit.values.length === values.length &&
+          values.every((value, i) => value === unit.values[i])
+        )
+          continue;
+        if (unit.valuesAt !== undefined && unit.values.length === values.length)
+          this.patch([{ attribute, entity, values }]);
+        else this.setList(attribute, entity, values);
+        written = true;
+      }
+      return written;
+    } catch (error) {
+      this.bytes.set(snapshot);
+      this.current = readSave(this.bytes);
+      throw error;
+    }
   }
 
   /** Applies every patch, or none on a missing unit or length change. */

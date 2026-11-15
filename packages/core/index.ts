@@ -9,6 +9,7 @@ export * from "./read-save";
 export * from "./save-data-binary";
 export * from "./save-entity";
 export * from "./unit-store";
+export * from "./units";
 export * from "./validate-container";
 export * from "./validation";
 export * from "./xxhash32-custom";

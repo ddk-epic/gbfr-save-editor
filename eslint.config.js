@@ -7,10 +7,10 @@ const PACKAGES = path.resolve(import.meta.dirname, "packages");
 
 // Package specifiers that resolve to write code.
 const WRITE_SPECIFIER =
-  /^(@gbfr\/[^/]+\/edit|@gbfr\/core\/session|@gbfr\/workflows|gbfr-save-editor\/edit)$/;
+  /^(@gbfr\/[^/]+\/edit|@gbfr\/core\/session|@gbfr\/core\/draft|@gbfr\/workflows|gbfr-save-editor\/edit)$/;
 
 const isWriteFile = (rel) =>
-  /(^|\/)(edit|session)$/.test(rel) || rel.startsWith("workflows/");
+  /(^|\/)(edit|session|draft)$/.test(rel) || rel.startsWith("workflows/");
 
 const readWrite = {
   rules: {

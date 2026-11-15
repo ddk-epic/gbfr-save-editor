@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./index.ts",
-    "./session": "./session.ts"
+    "./session": "./session.ts",
+    "./draft": "./draft.ts"
   }
 }

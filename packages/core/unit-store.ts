@@ -6,6 +6,7 @@ import type {
 } from "./save-data-binary";
 import type { Attribute } from "./attribute";
 import { SaveFormatError } from "./errors";
+import type { EntityRange, Units } from "./units";
 
 /** Raw values to store in one unit. */
 export interface Patch {
@@ -14,11 +15,7 @@ export interface Patch {
   values: readonly unknown[];
 }
 
-/** A span of entity numbers, `count` wide, starting at `first`. */
-export interface EntityRange {
-  first: UnitEntity;
-  count: number;
-}
+export type { EntityRange };
 
 const within = (range: EntityRange, entity: UnitEntity) =>
   entity >= range.first && entity < range.first + range.count;
@@ -39,7 +36,7 @@ function firstIndexAtOrAbove(
 }
 
 /** Units of one SaveDataBinary, looked up by attribute and entity. */
-export class UnitStore {
+export class UnitStore implements Units {
   private readonly byAttribute = new Map<
     UnitAttribute,
     { valueType: ValueType; units: Map<UnitEntity, SaveUnit> }
