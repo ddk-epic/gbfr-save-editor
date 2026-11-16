@@ -1,26 +1,28 @@
 import { existsSync, readdirSync } from "node:fs";
-import { readContainer } from "../packages/core/container";
-import { EMPTY_HASH } from "../packages/core/keys";
-import { decodeSaveDataBinary } from "../packages/core/save-data-binary";
+import { readContainer } from "../../packages/core/container";
+import { EMPTY_HASH } from "../../packages/core/keys";
+import { decodeSaveDataBinary } from "../../packages/core/save-data-binary";
 import type {
   SaveHeader,
   SaveUnit,
   ValueType,
-} from "../packages/gbfr-save-editor/index";
+} from "../../packages/gbfr-save-editor/index";
 
 type Section = "systemData" | "slotData";
 
 const load = async (file: string) =>
   Promise.all(
-    readdirSync(new URL("../packages", import.meta.url), {
+    readdirSync(new URL("../../packages", import.meta.url), {
       withFileTypes: true,
     })
       .filter(
         (d) =>
           d.isDirectory() &&
-          existsSync(new URL(`../packages/${d.name}/${file}`, import.meta.url)),
+          existsSync(
+            new URL(`../../packages/${d.name}/${file}`, import.meta.url),
+          ),
       )
-      .map((d) => import(`../packages/${d.name}/${file}`)),
+      .map((d) => import(`../../packages/${d.name}/${file}`)),
   );
 
 /** Attribute id to the domain export names declaring it. */

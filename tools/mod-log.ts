@@ -4,7 +4,7 @@
 
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { unitLine, type LiveUnit } from "./save-diff";
+import { unitLine, type LiveUnit } from "./lib/save-diff";
 
 const args = process.argv.slice(2);
 const option = (name: string) => {

@@ -6,7 +6,7 @@ import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { readContainer } from "../packages/core/container";
 import { decodeSaveDataBinary } from "../packages/core/save-data-binary";
-import type { LiveUnit } from "./save-diff";
+import type { LiveUnit } from "./lib/save-diff";
 
 const savePath = process.argv[2];
 const dir = join(process.env.RELOADEDIIMODS!, "gbfr.dev.savewatch");

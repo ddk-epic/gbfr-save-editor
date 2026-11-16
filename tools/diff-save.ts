@@ -1,7 +1,7 @@
 // Usage: pnpm diff:save [--all] before.dat after.dat
 
 import { readFileSync } from "node:fs";
-import { diffSaves } from "./save-diff";
+import { diffSaves } from "./lib/save-diff";
 
 const args = process.argv.slice(2);
 const all = args.includes("--all");
