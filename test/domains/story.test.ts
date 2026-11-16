@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { advance } from "../helpers";
-import { readSave } from "../../packages/core/read-save";
-import { hashId } from "../../packages/core/xxhash32-custom";
+import { readSave, hashId, SAVE_HASHSEED } from "@gbfr/core";
 import {
   CHAPTER_BEST_DIFFICULTY,
   CHAPTER_GROUP_FLAGS,
@@ -21,15 +20,11 @@ import {
   STORY_QUEST_LIVE_CLEARED,
   STORY_QUEST_THIRD_CLEARED,
   SYSTEM_STORY_DIFFICULTY,
-} from "../../packages/story/attributes";
-import { storyTargets } from "../../packages/story";
-import {
-  QUEST_RANK_REWARDED,
-  QUEST_DIFFICULTY_UNLOCKED,
-} from "../../packages/quest/attributes";
-import { SAVE_HASHSEED } from "../../packages/core/save-entity";
-import { SaveSession } from "../../packages/core/session";
-import { fixtureFile } from "../../packages/gbfr-save-editor/testing";
+  storyTargets,
+} from "@gbfr/story";
+import { QUEST_RANK_REWARDED, QUEST_DIFFICULTY_UNLOCKED } from "@gbfr/quest";
+import { SaveSession } from "@gbfr/core/session";
+import { fixtureFile } from "gbfr-save-editor/testing";
 
 const QUESTS = [
   0x101f00, 0x101000, 0x100006, 0x100005, 0x100003, 0x100002, 0x100001,

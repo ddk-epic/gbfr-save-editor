@@ -1,10 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { Attribute } from "../../packages/core/attribute";
-import {
-  SaveFormatError,
-  readSave,
-} from "../../packages/gbfr-save-editor/index";
-import { fixtureFile } from "../../packages/gbfr-save-editor/testing";
+import { Attribute } from "@gbfr/core";
+import { SaveFormatError, readSave } from "gbfr-save-editor";
+import { fixtureFile } from "gbfr-save-editor/testing";
 
 describe("readSave", () => {
   it("reads back the units a fixture file holds, each value type included", () => {

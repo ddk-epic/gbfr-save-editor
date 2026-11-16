@@ -1,25 +1,23 @@
 import { describe, expect, it } from "vitest";
 import { CHARACTER_KEYS } from "../../packages/tables/data.gen";
-import { MASTERY_SECTIONS } from "../../packages/mastery/data.gen";
-import type {
-  MasteryProgress,
-  MasterySection,
-} from "../../packages/mastery/read";
-import type { CounterQuest } from "../../packages/quest/read";
-import type { Sigil } from "../../packages/sigil/read";
-import type { Weapon } from "../../packages/weapon/read";
-import type { Wrightstone } from "../../packages/wrightstone/read";
-import type {
-  Character,
-  CharacterData,
-  Loadout,
-} from "../../packages/save/read-characters";
-import type { Inventory } from "../../packages/save/read-inventory";
 import {
+  MASTERY_SECTIONS,
+  type MasteryProgress,
+  type MasterySection,
+} from "@gbfr/mastery";
+import type { CounterQuest } from "@gbfr/quest";
+import type { Sigil } from "@gbfr/sigil";
+import type { Weapon } from "@gbfr/weapon";
+import type { Wrightstone } from "@gbfr/wrightstone";
+import {
+  type Character,
+  type CharacterData,
+  type Loadout,
+  type Inventory,
   validateCharacterData,
   validateInventory,
   validateQuestClears,
-} from "../../packages/save/cross-validate";
+} from "@gbfr/save";
 
 const CHARACTER_COUNT = Object.keys(CHARACTER_KEYS).length;
 

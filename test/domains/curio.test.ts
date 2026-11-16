@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Curio } from "../../packages/curio/read";
-import { validateCurios } from "../../packages/curio/validate";
+import { type Curio, validateCurios } from "@gbfr/curio";
 
 const curio = (entity: number, serial: number): Curio => ({
   entity,

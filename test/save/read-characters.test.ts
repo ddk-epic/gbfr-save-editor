@@ -1,26 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { hashId } from "../../packages/core/xxhash32-custom";
+import { hashId, SAVE_ENTITY } from "@gbfr/core";
 import {
   CHARACTER_FIRST,
   CHARACTER_KEY,
   CHARACTER_LEVEL,
   masteryRange,
   CAPTAIN,
-} from "../../packages/character/attributes";
-import {
-  EQUIP_CHARACTER,
-  LOADOUT_FIRST,
-  LOADOUT_NAME,
-} from "../../packages/equipment/attributes";
-import {
-  MASTER_TRAIT_CHOSEN,
-  MASTER_TRAIT_KEY,
-} from "../../packages/master-trait/attributes";
+} from "@gbfr/character";
+import { EQUIP_CHARACTER, LOADOUT_FIRST, LOADOUT_NAME } from "@gbfr/equipment";
+import { MASTER_TRAIT_CHOSEN, MASTER_TRAIT_KEY } from "@gbfr/master-trait";
 import {
   OVER_MASTERY_KEY,
   OVER_MASTERY_LEVEL,
   OVER_MASTERY_LINES,
-} from "../../packages/over-mastery/attributes";
+} from "@gbfr/over-mastery";
 import {
   PARTY_CHARACTER,
   PARTY_FIRST,
@@ -28,16 +21,15 @@ import {
   PARTY_SET_COUNT,
   PARTY_SET_FIRST,
   PARTY_SET_STRIDE,
-} from "../../packages/party/attributes";
+} from "@gbfr/party";
 import {
   SUMMON_ID,
   SUMMON_KEY,
   SUMMON_POSITIONS,
   SUMMONS_EQUIPPED,
-} from "../../packages/summon/attributes";
-import { SAVE_ENTITY } from "../../packages/core/save-entity";
-import { readCharacterData } from "../../packages/save/read-characters";
-import { unitStore } from "../../packages/gbfr-save-editor/testing";
+} from "@gbfr/summon";
+import { readCharacterData } from "@gbfr/save";
+import { unitStore } from "gbfr-save-editor/testing";
 
 const GRAN = CHARACTER_FIRST;
 const KATALINA = CHARACTER_FIRST + 1;

@@ -4,7 +4,7 @@ import {
   SAVE_ENTITY,
   SAVE_FEATURE_VERSION,
   SAVE_SLOT_VERSION,
-} from "../../packages/core/save-entity";
+} from "@gbfr/core";
 import {
   LOCATION_PARTY_HP,
   LOCATION_SPOT,
@@ -15,14 +15,12 @@ import {
   USER_ONLINE_STATUS_FLAGS,
   USER_PLAYER_NAME,
   USER_RUPIES,
-} from "../../packages/user/attributes";
-import { maxMasteryPoints, maxRupies } from "../../packages/user/edit";
-import { readSystem, readUser } from "../../packages/user/read";
-import { SaveSession } from "../../packages/core/session";
-import {
-  fixtureFile,
-  unitStore,
-} from "../../packages/gbfr-save-editor/testing";
+  readSystem,
+  readUser,
+} from "@gbfr/user";
+import { maxMasteryPoints, maxRupies } from "@gbfr/user/edit";
+import { SaveSession } from "@gbfr/core/session";
+import { fixtureFile, unitStore } from "gbfr-save-editor/testing";
 
 /** Text is stored as char codes, terminated by a zero. */
 const text = (value: string) =>

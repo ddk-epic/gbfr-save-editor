@@ -1,31 +1,28 @@
 import { describe, expect, it } from "vitest";
 import { apply } from "../helpers";
-import { hashId } from "../../packages/core/xxhash32-custom";
+import { hashId } from "@gbfr/core";
 import {
   FATE_EPISODE_KEY,
   FATE_EPISODE_STATE,
-} from "../../packages/fate-episode/attributes";
-import { completeFateEpisodes } from "../../packages/workflows/fate-episode";
-import { readFateEpisodes } from "../../packages/fate-episode/read";
-import { validateFateEpisodes } from "../../packages/fate-episode/validate";
+  readFateEpisodes,
+  validateFateEpisodes,
+} from "@gbfr/fate-episode";
+import { completeFateEpisodes } from "@gbfr/workflows";
 import {
   ITEM_ACQUIRED,
   ITEM_ACQUIRED_LAST,
   ITEM_COUNT,
   ITEM_FLAGS,
   ITEM_KEY,
-} from "../../packages/item/attributes";
-import { ARCHIVE_FLAGS, ARCHIVE_KEY } from "../../packages/journal/attributes";
-import {
-  FATE_QUEST_CLEARED,
-  FATE_QUEST_IDS,
-} from "../../packages/quest/attributes";
-import { SaveSession } from "../../packages/core/session";
+} from "@gbfr/item";
+import { ARCHIVE_FLAGS, ARCHIVE_KEY } from "@gbfr/journal";
+import { FATE_QUEST_CLEARED, FATE_QUEST_IDS } from "@gbfr/quest";
+import { SaveSession } from "@gbfr/core/session";
 import {
   fixtureFile,
   unitStore,
   type EntityUnits,
-} from "../../packages/gbfr-save-editor/testing";
+} from "gbfr-save-editor/testing";
 
 describe("readFateEpisodes", () => {
   it("groups episodes by character in save order, leaving out untitled ones", () => {

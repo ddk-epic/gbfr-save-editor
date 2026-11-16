@@ -137,6 +137,23 @@ export default tseslint.config(
       "no-restricted-imports": ["error", { patterns: [BROWSER_ONLY] }],
     },
   },
+  // Tests import packages through their entries; internals are listed here.
+  {
+    files: ["test/**"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              regex: "(^|/)packages/(?!tables/data[.]gen$)",
+              message: "tests import packages through their entries.",
+            },
+          ],
+        },
+      ],
+    },
+  },
   // Read code never imports write code.
   {
     files: ["packages/**"],

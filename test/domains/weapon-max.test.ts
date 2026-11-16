@@ -1,16 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { apply } from "../helpers";
-import { hashId } from "../../packages/core/xxhash32-custom";
-import { WEAPON_TROVES } from "../../packages/trophy/data.gen";
+import { hashId, SAVE_ENTITY } from "@gbfr/core";
+import { WEAPON_TROVES, TROPHY_EARNED, TROPHY_PROGRESS } from "@gbfr/trophy";
+import { CHARACTER_FLAGS, CHARACTER_KEY, CAPTAIN } from "@gbfr/character";
+import { canMaxWeaponSeries } from "@gbfr/save";
+import { maxWeaponSeries } from "@gbfr/workflows";
 import {
-  CHARACTER_FLAGS,
-  CHARACTER_KEY,
-  CAPTAIN,
-} from "../../packages/character/attributes";
-import { canMaxWeaponSeries } from "../../packages/save/weapon-series";
-import { maxWeaponSeries } from "../../packages/workflows/weapon";
-import { readWeapon, weaponLevelOf } from "../../packages/weapon/read";
-import {
+  readWeapon,
+  weaponLevelOf,
   WEAPON_FIRST,
   WEAPON_FLAGS,
   WEAPON_ID,
@@ -18,14 +15,9 @@ import {
   WEAPON_LAST_ID,
   WEAPON_UNCAP,
   WEAPON_XP,
-} from "../../packages/weapon/attributes";
-import {
-  TROPHY_EARNED,
-  TROPHY_PROGRESS,
-} from "../../packages/trophy/attributes";
-import { SAVE_ENTITY } from "../../packages/core/save-entity";
-import { SaveSession } from "../../packages/core/session";
-import { fixtureFile } from "../../packages/gbfr-save-editor/testing";
+} from "@gbfr/weapon";
+import { SaveSession } from "@gbfr/core/session";
+import { fixtureFile } from "gbfr-save-editor/testing";
 
 const CHARACTER = 10000;
 const LAST_XP = 162540;

@@ -1,24 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { Attribute } from "../../packages/core/attribute";
-import { FILE_SIZE } from "../../packages/core/container";
+import { Attribute, FILE_SIZE, SAVE_ENTITY, containerModule } from "@gbfr/core";
 import { CHARACTER_KEYS, ITEM_KEYS } from "../../packages/tables/data.gen";
 import {
   COUNTER_QUEST_CLEARS,
   COUNTER_QUEST_IDS,
   COUNTER_QUEST_LAST_CLEARED,
-} from "../../packages/quest/attributes";
-import {
-  SIGIL_FIRST,
-  SIGIL_ID,
-  SIGIL_KEY,
-} from "../../packages/sigil/attributes";
-import { SAVE_ENTITY } from "../../packages/core/save-entity";
-import {
-  fixtureSave,
-  unitStore,
-} from "../../packages/gbfr-save-editor/testing";
-import { containerModule } from "../../packages/core/validate-container";
-import { SAVE_MODULES, validateSave } from "../../packages/save/validate";
+} from "@gbfr/quest";
+import { SIGIL_FIRST, SIGIL_ID, SIGIL_KEY } from "@gbfr/sigil";
+import { fixtureSave, unitStore } from "gbfr-save-editor/testing";
+import { SAVE_MODULES, validateSave } from "@gbfr/save";
 
 /** Issues of an empty save. */
 const EMPTY_TABLES = [

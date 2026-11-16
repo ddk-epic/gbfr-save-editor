@@ -1,50 +1,31 @@
 import { describe, expect, it } from "vitest";
-import { hashId } from "../../packages/core/xxhash32-custom";
-import { CURIO_KEY, CURIO_SERIAL } from "../../packages/curio/attributes";
-import {
-  ITEM_COUNT,
-  ITEM_FLAGS,
-  ITEM_KEY,
-} from "../../packages/item/attributes";
-import {
-  SIGIL_FIRST,
-  SIGIL_ID,
-  SIGIL_KEY,
-} from "../../packages/sigil/attributes";
-import { SKILL_FLAGS, SKILL_KEY } from "../../packages/skill/attributes";
-import {
-  SUMMON_FLAGS,
-  SUMMON_ID,
-  SUMMON_KEY,
-} from "../../packages/summon/attributes";
+import { hashId, SAVE_ENTITY } from "@gbfr/core";
+import { CURIO_KEY, CURIO_SERIAL } from "@gbfr/curio";
+import { ITEM_COUNT, ITEM_FLAGS, ITEM_KEY } from "@gbfr/item";
+import { SIGIL_FIRST, SIGIL_ID, SIGIL_KEY } from "@gbfr/sigil";
+import { SKILL_FLAGS, SKILL_KEY } from "@gbfr/skill";
+import { SUMMON_FLAGS, SUMMON_ID, SUMMON_KEY } from "@gbfr/summon";
 import {
   TRAIT_FIRST,
   TRAIT_KEY,
   TRAIT_LEVEL,
   TRAIT_STRIDE,
   TRAIT_WRIGHTSTONE,
-} from "../../packages/trait/attributes";
-import { SAVE_ENTITY } from "../../packages/core/save-entity";
-import {
-  USER_MASTERY_POINTS,
-  USER_RUPIES,
-} from "../../packages/user/attributes";
+} from "@gbfr/trait";
+import { USER_MASTERY_POINTS, USER_RUPIES } from "@gbfr/user";
 import {
   WEAPON_FIRST,
   WEAPON_ID,
   WEAPON_KEY,
   WEAPON_UNCAP,
-} from "../../packages/weapon/attributes";
+} from "@gbfr/weapon";
 import {
   WRIGHTSTONE_FIRST,
   WRIGHTSTONE_ID,
   WRIGHTSTONE_KEY,
-} from "../../packages/wrightstone/attributes";
-import { readInventory } from "../../packages/save/read-inventory";
-import {
-  unitStore,
-  type EntityUnits,
-} from "../../packages/gbfr-save-editor/testing";
+} from "@gbfr/wrightstone";
+import { readInventory } from "@gbfr/save";
+import { unitStore, type EntityUnits } from "gbfr-save-editor/testing";
 
 const POTION = "ITEM_10_0000";
 const MATERIAL = "ITEM_11_0000";

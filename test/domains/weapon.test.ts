@@ -1,16 +1,14 @@
-import { SAVE_ENTITY, SAVE_HASHSEED } from "../../packages/core/save-entity";
-import { CAPTAIN } from "../../packages/character/attributes";
+import { SAVE_ENTITY, SAVE_HASHSEED, EMPTY_HASH, hashId } from "@gbfr/core";
+import { CAPTAIN } from "@gbfr/character";
 import { describe, expect, it } from "vitest";
 import { apply } from "../helpers";
-import { EMPTY_HASH } from "../../packages/core/keys";
-import { hashId } from "../../packages/core/xxhash32-custom";
 import {
   TRAIT_FIRST,
   TRAIT_KEY,
   TRAIT_LEVEL,
   TRAIT_STRIDE,
   TRAIT_WEAPON,
-} from "../../packages/trait/attributes";
+} from "@gbfr/trait";
 import {
   WEAPON_APPEARANCE,
   WEAPON_FIRST,
@@ -23,24 +21,22 @@ import {
   WEAPON_UNCAP,
   WEAPON_WRIGHTSTONE,
   WEAPON_XP,
-} from "../../packages/weapon/attributes";
+  findWeaponById,
+  readOwnedWeapons,
+  readWeapon,
+} from "@gbfr/weapon";
 import {
   addWeapon,
   removeWeapon,
   removeWrightstone,
   setWeaponLevel,
-} from "../../packages/weapon/edit";
-import {
-  findWeaponById,
-  readOwnedWeapons,
-  readWeapon,
-} from "../../packages/weapon/read";
-import { SaveSession } from "../../packages/core/session";
+} from "@gbfr/weapon/edit";
+import { SaveSession } from "@gbfr/core/session";
 import {
   fixtureFile,
   unitStore,
   type EntityUnits,
-} from "../../packages/gbfr-save-editor/testing";
+} from "gbfr-save-editor/testing";
 
 const WEAPON = WEAPON_FIRST + 3;
 

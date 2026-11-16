@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { Attribute } from "../../packages/core/attribute";
 import {
+  Attribute,
   EMPTY_HASH,
   hashAttribute,
   keyAttribute,
   keyTable,
-} from "../../packages/core/keys";
-import { hashId } from "../../packages/core/xxhash32-custom";
+  hashId,
+} from "@gbfr/core";
 
 const COUNT = Attribute.int(10);
 const IDS = Attribute.uintList(11);

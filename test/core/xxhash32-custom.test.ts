@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hashId } from "../../packages/core/xxhash32-custom";
+import { hashId } from "@gbfr/core";
 
 // Expected values from GBFRDataTools.exe hash-string, and GEEN/ISLAND from SaveIDType.cs.
 const CASES: [string, number][] = [

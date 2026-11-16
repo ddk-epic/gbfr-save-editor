@@ -1,9 +1,9 @@
 // Completeness of the generated tables in the data.gen.ts files.
 
 import { describe, expect, it } from "vitest";
-import { STORY_KEYS, STORY_ORDER } from "../packages/journal/data.gen";
-import { QUEST_COUNTER } from "../packages/quest/data.gen";
-import { TROPHIES, TROPHY_TABS } from "../packages/trophy/data.gen";
+import { STORY_KEYS, STORY_ORDER } from "@gbfr/journal";
+import { QUEST_COUNTER } from "@gbfr/quest";
+import { TROPHIES, TROPHY_TABS } from "@gbfr/trophy";
 
 describe("STORY_ORDER", () => {
   it("places every story row", () => {

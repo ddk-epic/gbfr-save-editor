@@ -1,25 +1,20 @@
 import { describe, expect, it } from "vitest";
 import { apply } from "../helpers";
-import { EMPTY_HASH } from "../../packages/core/keys";
-import { hashId } from "../../packages/core/xxhash32-custom";
-import {
-  CHARACTER_FIRST,
-  CHARACTER_KEY,
-  masteryRange,
-} from "../../packages/character/attributes";
+import { EMPTY_HASH, hashId } from "@gbfr/core";
+import { CHARACTER_FIRST, CHARACTER_KEY, masteryRange } from "@gbfr/character";
 import {
   OVER_MASTERY_KEY,
   OVER_MASTERY_LEVEL,
-} from "../../packages/over-mastery/attributes";
-import { removeOverMasteries } from "../../packages/over-mastery/edit";
-import { readOverMasteries } from "../../packages/over-mastery/read";
-import { validateOverMasteries } from "../../packages/over-mastery/validate";
-import { SaveSession } from "../../packages/core/session";
+  readOverMasteries,
+  validateOverMasteries,
+} from "@gbfr/over-mastery";
+import { removeOverMasteries } from "@gbfr/over-mastery/edit";
+import { SaveSession } from "@gbfr/core/session";
 import {
   fixtureFile,
   unitStore,
   type EntityUnits,
-} from "../../packages/gbfr-save-editor/testing";
+} from "gbfr-save-editor/testing";
 
 describe("readOverMasteries", () => {
   it("gives each line's value at its roll level", () => {

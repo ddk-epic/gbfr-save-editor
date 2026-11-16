@@ -1,42 +1,32 @@
 import { describe, expect, it } from "vitest";
 import { apply } from "../helpers";
-import { EMPTY_HASH } from "../../packages/core/keys";
-import { hashId } from "../../packages/core/xxhash32-custom";
+import { EMPTY_HASH, hashId, SAVE_HASHSEED } from "@gbfr/core";
 import {
   ITEM_ACQUIRED,
   ITEM_ACQUIRED_LAST,
   ITEM_COUNT,
   ITEM_KEY,
-} from "../../packages/item/attributes";
+} from "@gbfr/item";
 import {
   TRAIT_FIRST,
   TRAIT_KEY,
   TRAIT_LEVEL,
   TRAIT_STRIDE,
   TRAIT_WRIGHTSTONE,
-} from "../../packages/trait/attributes";
-import { SAVE_HASHSEED } from "../../packages/core/save-entity";
+} from "@gbfr/trait";
 import {
   WRIGHTSTONE_FIRST,
   WRIGHTSTONE_ID,
   WRIGHTSTONE_KEY,
   WRIGHTSTONE_LAST_ID,
-} from "../../packages/wrightstone/attributes";
-import {
-  addWrightstone,
-  editWrightstone,
-} from "../../packages/workflows/wrightstone";
-import { readWrightstones } from "../../packages/wrightstone/read";
-import {
+  readWrightstones,
   wrightstoneRoll,
   type WrightstoneRoll,
-} from "../../packages/wrightstone/rolls";
-import { validateWrightstone } from "../../packages/wrightstone/validate";
-import { SaveSession } from "../../packages/core/session";
-import {
-  fixtureFile,
-  type EntityUnits,
-} from "../../packages/gbfr-save-editor/testing";
+  validateWrightstone,
+} from "@gbfr/wrightstone";
+import { addWrightstone, editWrightstone } from "@gbfr/workflows";
+import { SaveSession } from "@gbfr/core/session";
+import { fixtureFile, type EntityUnits } from "gbfr-save-editor/testing";
 
 const stone = (...levels: number[]) => ({
   key: "ITEM_28_0000",

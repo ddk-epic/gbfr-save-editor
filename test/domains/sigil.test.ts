@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { apply } from "../helpers";
-import { EMPTY_HASH } from "../../packages/core/keys";
-import { hashId } from "../../packages/core/xxhash32-custom";
+import { EMPTY_HASH, hashId, SAVE_HASHSEED } from "@gbfr/core";
 import {
   SIGIL_FIRST,
   SIGIL_FLAGS,
@@ -10,31 +9,21 @@ import {
   SIGIL_LAST_ID,
   SIGIL_LEVEL,
   SIGIL_LIST_FLAGS,
-} from "../../packages/sigil/attributes";
-import { addSigil, editSigil } from "../../packages/sigil/edit";
-import {
   sigilGem,
   sigilPrimaries,
   sigilSecondaries,
-} from "../../packages/sigil/rolls";
-import {
   findSigilById,
   readSigil,
   readSigils,
-} from "../../packages/sigil/read";
-import {
-  TRAIT_KEY,
-  TRAIT_LEVEL,
-  TRAIT_SIGIL,
-  traitRange,
-} from "../../packages/trait/attributes";
-import { SAVE_HASHSEED } from "../../packages/core/save-entity";
-import { SaveSession } from "../../packages/core/session";
+} from "@gbfr/sigil";
+import { addSigil, editSigil } from "@gbfr/sigil/edit";
+import { TRAIT_KEY, TRAIT_LEVEL, TRAIT_SIGIL, traitRange } from "@gbfr/trait";
+import { SaveSession } from "@gbfr/core/session";
 import {
   fixtureFile,
   unitStore,
   type EntityUnits,
-} from "../../packages/gbfr-save-editor/testing";
+} from "gbfr-save-editor/testing";
 
 /** The entity of a sigil's trait at one index. */
 const traitAt = (sigil: number, index: number) =>

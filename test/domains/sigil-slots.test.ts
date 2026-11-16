@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { MASTERY_SECTIONS } from "../../packages/mastery/data.gen";
-import { sigilSlots } from "../../packages/character/read";
 import {
+  MASTERY_SECTIONS,
   masterySigilSlots,
   type MasteryNode,
   type MasteryProgress,
   type MasterySection,
-} from "../../packages/mastery/read";
+} from "@gbfr/mastery";
+import { sigilSlots } from "@gbfr/character";
 
 const masteries = (
   nodes: Partial<MasteryNode>[] = [],

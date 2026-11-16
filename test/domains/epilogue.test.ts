@@ -4,24 +4,19 @@ import {
   CONFLUX_CYCLE_CLEARED,
   CONFLUX_RETURNED,
   CONFLUX_RETURNED_AT,
-} from "../../packages/conflux/attributes";
-import { CAPTAIN } from "../../packages/character/attributes";
-import { hashId } from "../../packages/core";
-import { readSave } from "../../packages/core/read-save";
+} from "@gbfr/conflux";
+import { CAPTAIN } from "@gbfr/character";
+import { hashId, readSave, SAVE_HASHSEED, Attribute } from "@gbfr/core";
 import {
   ITEM_ACQUIRED,
   ITEM_ACQUIRED_LAST,
   ITEM_COUNT,
   ITEM_FLAGS,
   ITEM_KEY,
-} from "../../packages/item/attributes";
-import { SAVE_HASHSEED } from "../../packages/core/save-entity";
-import { SaveSession } from "../../packages/core/session";
-import { fixtureFile } from "../../packages/gbfr-save-editor/testing";
-import {
-  PROFILE_FIRST,
-  PROFILE_QUESTS_CLEARED,
-} from "../../packages/profile/attributes";
+} from "@gbfr/item";
+import { SaveSession } from "@gbfr/core/session";
+import { fixtureFile } from "gbfr-save-editor/testing";
+import { PROFILE_FIRST, PROFILE_QUESTS_CLEARED } from "@gbfr/profile";
 import {
   COUNTER_QUEST_CLEARED,
   COUNTER_QUEST_CLEARS,
@@ -39,7 +34,7 @@ import {
   SIDE_QUEST_PROGRESS,
   SIDE_QUEST_STATE,
   SIDE_QUESTS_TAKEN,
-} from "../../packages/quest/attributes";
+} from "@gbfr/quest";
 import {
   CURRENT_CHAPTER,
   CURRENT_TOWN,
@@ -60,13 +55,10 @@ import {
   STORY_QUEST_THIRD_CLEARED,
   SYSTEM_STORY_DIFFICULTY,
   UI_FEATURE_UNLOCKED,
-} from "../../packages/story/attributes";
-import {
-  LOCATION_SPOT,
-  LOCATION_STAGE,
-  USER_RUPIES,
-} from "../../packages/user/attributes";
-import { WEAPON_LAST_ID } from "../../packages/weapon/attributes";
+  storyTargets,
+} from "@gbfr/story";
+import { LOCATION_SPOT, LOCATION_STAGE, USER_RUPIES } from "@gbfr/user";
+import { WEAPON_LAST_ID } from "@gbfr/weapon";
 import {
   SUMMON_ID,
   SUMMON_LAST_ID,
@@ -76,16 +68,11 @@ import {
   SUMMONS_KEY,
   SUMMONS_OBTAINED,
   SUMMONS_UNLOCKED,
-} from "../../packages/summon/attributes";
-import { Attribute } from "../../packages/core";
+} from "@gbfr/summon";
 
 const SUMMON_KEY_HASH = Attribute.uint(1457);
 const SUMMON_FLAGS_RAW = Attribute.uint(1460);
-import {
-  TROPHY_EARNED,
-  TROPHY_PROGRESS,
-} from "../../packages/trophy/attributes";
-import { storyTargets } from "../../packages/story";
+import { TROPHY_EARNED, TROPHY_PROGRESS } from "@gbfr/trophy";
 
 const NOW = 1794162545000;
 const SIDE_QUESTS = [0x220101, 0x220102, 0x220111];

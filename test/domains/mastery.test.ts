@@ -1,24 +1,16 @@
 import { describe, expect, it } from "vitest";
-import {
-  MASTERY_FIRST,
-  MASTERY_ENTRIES,
-} from "../../packages/character/attributes";
+import { MASTERY_FIRST, MASTERY_ENTRIES } from "@gbfr/character";
 import {
   MASTERY_NODE_BITS,
   MASTERY_NODE_KEY,
-} from "../../packages/mastery/attributes";
-import {
   readMasteries,
   type MasteryProgress,
-} from "../../packages/mastery/read";
-import { validateMasteries } from "../../packages/mastery/validate";
-import { setMasteryNodeBits } from "../../packages/mastery/edit";
+  validateMasteries,
+} from "@gbfr/mastery";
+import { setMasteryNodeBits } from "@gbfr/mastery/edit";
 import { apply } from "../helpers";
-import { SaveSession } from "../../packages/core/session";
-import {
-  fixtureFile,
-  unitStore,
-} from "../../packages/gbfr-save-editor/testing";
+import { SaveSession } from "@gbfr/core/session";
+import { fixtureFile, unitStore } from "gbfr-save-editor/testing";
 
 const MASTERY = { first: MASTERY_FIRST, count: MASTERY_ENTRIES };
 

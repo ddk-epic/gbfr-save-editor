@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { apply } from "../helpers";
-import { hashId } from "../../packages/core/xxhash32-custom";
-import { TIP_FLAGS, TIP_KEY } from "../../packages/journal/attributes";
+import { hashId, SAVE_HASHSEED } from "@gbfr/core";
+import { TIP_FLAGS, TIP_KEY } from "@gbfr/journal";
 import {
   INFORMATION_DIALOG_KEY,
   INFORMATION_DIALOG_SHOWN,
@@ -9,13 +9,12 @@ import {
   TUTORIAL_MENU_KEY,
   TUTORIAL_WINDOW_FLAGS,
   TUTORIAL_WINDOW_KEY,
-} from "../../packages/tutorial/attributes";
-import { canClearHints } from "../../packages/save/hints";
-import { clearHints } from "../../packages/workflows/tutorial";
-import { draft } from "../../packages/core/draft";
-import { SAVE_HASHSEED } from "../../packages/core/save-entity";
-import { SaveSession } from "../../packages/core/session";
-import { fixtureFile } from "../../packages/gbfr-save-editor/testing";
+} from "@gbfr/tutorial";
+import { canClearHints } from "@gbfr/save";
+import { clearHints } from "@gbfr/workflows";
+import { draft } from "@gbfr/core/draft";
+import { SaveSession } from "@gbfr/core/session";
+import { fixtureFile } from "gbfr-save-editor/testing";
 
 const save = () =>
   SaveSession.open(

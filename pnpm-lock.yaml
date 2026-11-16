@@ -11,6 +11,84 @@ importers:
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.10.0(jiti@2.7.0))
+      '@gbfr/character':
+        specifier: workspace:*
+        version: link:packages/character
+      '@gbfr/conflux':
+        specifier: workspace:*
+        version: link:packages/conflux
+      '@gbfr/core':
+        specifier: workspace:*
+        version: link:packages/core
+      '@gbfr/curio':
+        specifier: workspace:*
+        version: link:packages/curio
+      '@gbfr/equipment':
+        specifier: workspace:*
+        version: link:packages/equipment
+      '@gbfr/fate-episode':
+        specifier: workspace:*
+        version: link:packages/fate-episode
+      '@gbfr/item':
+        specifier: workspace:*
+        version: link:packages/item
+      '@gbfr/journal':
+        specifier: workspace:*
+        version: link:packages/journal
+      '@gbfr/master-trait':
+        specifier: workspace:*
+        version: link:packages/master-trait
+      '@gbfr/mastery':
+        specifier: workspace:*
+        version: link:packages/mastery
+      '@gbfr/over-mastery':
+        specifier: workspace:*
+        version: link:packages/over-mastery
+      '@gbfr/party':
+        specifier: workspace:*
+        version: link:packages/party
+      '@gbfr/profile':
+        specifier: workspace:*
+        version: link:packages/profile
+      '@gbfr/quest':
+        specifier: workspace:*
+        version: link:packages/quest
+      '@gbfr/save':
+        specifier: workspace:*
+        version: link:packages/save
+      '@gbfr/sigil':
+        specifier: workspace:*
+        version: link:packages/sigil
+      '@gbfr/skill':
+        specifier: workspace:*
+        version: link:packages/skill
+      '@gbfr/story':
+        specifier: workspace:*
+        version: link:packages/story
+      '@gbfr/summon':
+        specifier: workspace:*
+        version: link:packages/summon
+      '@gbfr/trait':
+        specifier: workspace:*
+        version: link:packages/trait
+      '@gbfr/trophy':
+        specifier: workspace:*
+        version: link:packages/trophy
+      '@gbfr/tutorial':
+        specifier: workspace:*
+        version: link:packages/tutorial
+      '@gbfr/user':
+        specifier: workspace:*
+        version: link:packages/user
+      '@gbfr/weapon':
+        specifier: workspace:*
+        version: link:packages/weapon
+      '@gbfr/workflows':
+        specifier: workspace:*
+        version: link:packages/workflows
+      '@gbfr/wrightstone':
+        specifier: workspace:*
+        version: link:packages/wrightstone
       '@types/node':
         specifier: ^22.20.1
         version: 22.20.1
@@ -20,6 +98,9 @@ importers:
       eslint-config-prettier:
         specifier: ^10.1.8
         version: 10.1.8(eslint@10.10.0(jiti@2.7.0))
+      gbfr-save-editor:
+        specifier: workspace:*
+        version: link:packages/gbfr-save-editor
       husky:
         specifier: ^9.1.7
         version: 9.1.7

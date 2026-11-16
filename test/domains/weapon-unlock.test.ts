@@ -1,40 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { apply } from "../helpers";
-import { hashId } from "../../packages/core/xxhash32-custom";
-import { WEAPON_ROWS } from "../../packages/weapon/data.gen";
-import { WEAPONS_HELD_ALL_BADGES } from "../../packages/trophy/data.gen";
+import { hashId, SAVE_ENTITY } from "@gbfr/core";
 import {
-  CHARACTER_FLAGS,
-  CHARACTER_KEY,
-  CAPTAIN,
-} from "../../packages/character/attributes";
-import {
-  FIELD_NOTE_WEAPON_FLAGS,
-  FIELD_NOTE_WEAPON_KEY,
-} from "../../packages/journal/attributes";
-import {
-  TROPHY_EARNED,
-  TROPHY_PROGRESS,
-} from "../../packages/trophy/attributes";
-import { SAVE_ENTITY } from "../../packages/core/save-entity";
-import {
-  canMaxAllWeaponSeries,
-  canMaxWeaponSeries,
-} from "../../packages/save/weapon-series";
-import {
-  maxAllWeaponSeries,
-  maxWeaponSeries,
-  unlockAllWeaponSeries,
-  unlockWeapon,
-  unlockWeaponSeries,
-} from "../../packages/workflows/weapon";
-import {
+  WEAPON_ROWS,
   canUnlockAllWeaponSeries,
   unlockableWeapons,
   readOwnedWeapons,
   readWeapons,
-} from "../../packages/weapon/read";
-import {
   WEAPON_FIRST,
   WEAPON_FLAGS,
   WEAPON_ID,
@@ -42,9 +14,24 @@ import {
   WEAPON_LAST_ID,
   WEAPON_UNCAP,
   WEAPON_XP,
-} from "../../packages/weapon/attributes";
-import { SaveSession } from "../../packages/core/session";
-import { fixtureFile } from "../../packages/gbfr-save-editor/testing";
+} from "@gbfr/weapon";
+import {
+  WEAPONS_HELD_ALL_BADGES,
+  TROPHY_EARNED,
+  TROPHY_PROGRESS,
+} from "@gbfr/trophy";
+import { CHARACTER_FLAGS, CHARACTER_KEY, CAPTAIN } from "@gbfr/character";
+import { FIELD_NOTE_WEAPON_FLAGS, FIELD_NOTE_WEAPON_KEY } from "@gbfr/journal";
+import { canMaxAllWeaponSeries, canMaxWeaponSeries } from "@gbfr/save";
+import {
+  maxAllWeaponSeries,
+  maxWeaponSeries,
+  unlockAllWeaponSeries,
+  unlockWeapon,
+  unlockWeaponSeries,
+} from "@gbfr/workflows";
+import { SaveSession } from "@gbfr/core/session";
+import { fixtureFile } from "gbfr-save-editor/testing";
 
 const CHARACTER = 10000;
 const NOTE = 700;

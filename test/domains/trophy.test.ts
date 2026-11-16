@@ -1,26 +1,24 @@
 import { describe, expect, it } from "vitest";
-import { TROPHIES } from "../../packages/trophy/data.gen";
 import {
+  TROPHIES,
   TROPHIES_EARNED_IN_RANGE,
   TROPHY_EARNED,
   TROPHY_PROGRESS,
   TROPHY_SEEN,
-} from "../../packages/trophy/attributes";
+  readTrophies,
+  type Trophy,
+  validateTrophies,
+} from "@gbfr/trophy";
 import {
   addProgress,
   earnTrophy,
   raiseProgress,
   setProgress,
-} from "../../packages/trophy/edit";
+} from "@gbfr/trophy/edit";
 import { apply } from "../helpers";
-import { SaveSession } from "../../packages/core/session";
-import { readTrophies, type Trophy } from "../../packages/trophy/read";
-import { validateTrophies } from "../../packages/trophy/validate";
-import { SAVE_ENTITY } from "../../packages/core/save-entity";
-import {
-  fixtureFile,
-  unitStore,
-} from "../../packages/gbfr-save-editor/testing";
+import { SaveSession } from "@gbfr/core/session";
+import { SAVE_ENTITY } from "@gbfr/core";
+import { fixtureFile, unitStore } from "gbfr-save-editor/testing";
 
 describe("readTrophies", () => {
   const [first, second] = TROPHIES.map(([key]) => key);

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { hashId } from "../../packages/core/xxhash32-custom";
+import { hashId } from "@gbfr/core";
 import {
   ARCHIVE_KEYS,
   FIELD_NOTE_TREASURE,
@@ -7,9 +7,6 @@ import {
   GLOSSARY_KEYS,
   MUSIC_KEYS,
   TIP_KEYS,
-} from "../../packages/journal/data.gen";
-import { ITEM_FLAGS, ITEM_KEY } from "../../packages/item/attributes";
-import {
   ARCHIVE_FLAGS,
   ARCHIVE_KEY,
   FIELD_NOTE_CHARACTER_FLAGS,
@@ -26,27 +23,20 @@ import {
   STORY_KEY,
   TIP_FLAGS,
   TIP_KEY,
-} from "../../packages/journal/attributes";
-import {
   readArchives,
   readFieldNotes,
   readGlossary,
   readMainStory,
   readMusic,
   readTips,
-} from "../../packages/journal/read";
-import { validateJournalList } from "../../packages/journal/validate";
-import {
-  registerFieldNoteWeapon,
-  unlockArchive,
-} from "../../packages/journal/edit";
-import { fieldNoteWeaponMarked } from "../../packages/journal/read";
+  validateJournalList,
+  fieldNoteWeaponMarked,
+} from "@gbfr/journal";
+import { ITEM_FLAGS, ITEM_KEY } from "@gbfr/item";
+import { registerFieldNoteWeapon, unlockArchive } from "@gbfr/journal/edit";
 import { apply } from "../helpers";
-import { SaveSession } from "../../packages/core/session";
-import {
-  fixtureFile,
-  unitStore,
-} from "../../packages/gbfr-save-editor/testing";
+import { SaveSession } from "@gbfr/core/session";
+import { fixtureFile, unitStore } from "gbfr-save-editor/testing";
 
 describe("readMainStory", () => {
   afterEach(() => vi.restoreAllMocks());

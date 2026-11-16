@@ -1,15 +1,12 @@
 import { describe, expect, it } from "vitest";
+import { masteryRange, CHARACTER_FIRST } from "@gbfr/character";
 import {
-  masteryRange,
-  CHARACTER_FIRST,
-} from "../../packages/character/attributes";
-import { MASTER_TRAIT_KEY } from "../../packages/master-trait/attributes";
-import {
+  MASTER_TRAIT_KEY,
   readMasterTraits,
   type MasterTrait,
-} from "../../packages/master-trait/read";
-import { validateMasterTraits } from "../../packages/master-trait/validate";
-import { unitStore } from "../../packages/gbfr-save-editor/testing";
+  validateMasterTraits,
+} from "@gbfr/master-trait";
+import { unitStore } from "gbfr-save-editor/testing";
 
 const cell = (
   rank: MasterTrait["rank"],

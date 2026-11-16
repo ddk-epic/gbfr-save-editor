@@ -8,6 +8,10 @@ A fixture is not mock data. Its keys are real game keys and its tables are the g
 pnpm test
 ```
 
+## Imports
+
+Tests import packages through their entries (`@gbfr/core`, `@gbfr/core/session`, `gbfr-save-editor/testing`), declared as `workspace:*` devDependencies of the root package. The `no-restricted-imports` rule for `test/**` in `eslint.config.js` forbids relative imports into `packages/`, except `packages/tables/data.gen`, whose key tables no entry exports.
+
 ## Fixtures
 
 `packages/gbfr-save-editor/testing.ts` builds units from typed attributes. A value that is not an array stands for a unit holding that one value.

@@ -1,12 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { Attribute } from "../../packages/core/attribute";
-import { draft } from "../../packages/core/draft";
-import { SAVE_HASHSEED } from "../../packages/core/save-entity";
-import { SaveSession } from "../../packages/core/session";
-import {
-  fixtureFile,
-  unitStore,
-} from "../../packages/gbfr-save-editor/testing";
+import { Attribute, SAVE_HASHSEED } from "@gbfr/core";
+import { draft } from "@gbfr/core/draft";
+import { SaveSession } from "@gbfr/core/session";
+import { fixtureFile, unitStore } from "gbfr-save-editor/testing";
 
 const LEVEL = Attribute.int(2704);
 const KIND = Attribute.int(2705);

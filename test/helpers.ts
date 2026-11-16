@@ -1,7 +1,7 @@
-import { draft, type Draft } from "../packages/core/draft";
-import type { SaveSession } from "../packages/core/session";
-import { storyDifficulty } from "../packages/story";
-import { advanceStory } from "../packages/workflows";
+import { draft, type Draft } from "@gbfr/core/draft";
+import type { SaveSession } from "@gbfr/core/session";
+import { storyDifficulty } from "@gbfr/story";
+import { advanceStory } from "@gbfr/workflows";
 
 /** Commits what `build` drafts and returns its result. */
 export function apply<T>(session: SaveSession, build: (draft: Draft) => T): T {

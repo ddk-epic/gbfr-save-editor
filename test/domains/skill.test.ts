@@ -1,9 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { hashId } from "../../packages/core/xxhash32-custom";
-import { LOADOUT_FIRST } from "../../packages/equipment/attributes";
-import { EQUIP_SKILLS, SKILL_POSITIONS } from "../../packages/skill/attributes";
-import { readEquippedSkills } from "../../packages/skill/read";
-import { unitStore } from "../../packages/gbfr-save-editor/testing";
+import { hashId } from "@gbfr/core";
+import { LOADOUT_FIRST } from "@gbfr/equipment";
+import { EQUIP_SKILLS, SKILL_POSITIONS, readEquippedSkills } from "@gbfr/skill";
+import { unitStore } from "gbfr-save-editor/testing";
 
 const LOADOUT = LOADOUT_FIRST + 2;
 

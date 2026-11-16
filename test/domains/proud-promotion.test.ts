@@ -1,13 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { advance, apply } from "../helpers";
-import { CAPTAIN } from "../../packages/character/attributes";
-import type { Attribute } from "../../packages/core";
-import { readSave } from "../../packages/core/read-save";
-import { ITEM_ACQUIRED_LAST } from "../../packages/item/attributes";
-import {
-  PROFILE_FIRST,
-  PROFILE_QUESTS_CLEARED,
-} from "../../packages/profile/attributes";
+import { CAPTAIN } from "@gbfr/character";
+import { type Attribute, readSave, SAVE_HASHSEED } from "@gbfr/core";
+import { ITEM_ACQUIRED_LAST } from "@gbfr/item";
+import { PROFILE_FIRST, PROFILE_QUESTS_CLEARED } from "@gbfr/profile";
 import {
   COUNTER_QUEST_CLEARED,
   COUNTER_QUEST_CLEARS,
@@ -19,7 +15,7 @@ import {
   STORY_CUTSCENE_CHECKPOINTS,
   STORY_CUTSCENE_CLEARS,
   STORY_CUTSCENE_IDS,
-} from "../../packages/quest/attributes";
+} from "@gbfr/quest";
 import {
   BETWEEN_STORY_QUESTS,
   CHAPTER_BEST_DIFFICULTY,
@@ -37,17 +33,13 @@ import {
   STORY_QUEST_THIRD_CLEARED,
   SYSTEM_STORY_DIFFICULTY,
   UI_FEATURE_UNLOCKED,
-} from "../../packages/story/attributes";
-import { storyTargets } from "../../packages/story";
-import {
-  TROPHY_EARNED,
-  TROPHY_PROGRESS,
-} from "../../packages/trophy/attributes";
-import { SAVE_HASHSEED } from "../../packages/core/save-entity";
-import { USER_RUPIES } from "../../packages/user/attributes";
-import { WEAPON_LAST_ID } from "../../packages/weapon/attributes";
-import { SaveSession } from "../../packages/core/session";
-import { fixtureFile } from "../../packages/gbfr-save-editor/testing";
+  storyTargets,
+} from "@gbfr/story";
+import { TROPHY_EARNED, TROPHY_PROGRESS } from "@gbfr/trophy";
+import { USER_RUPIES } from "@gbfr/user";
+import { WEAPON_LAST_ID } from "@gbfr/weapon";
+import { SaveSession } from "@gbfr/core/session";
+import { fixtureFile } from "gbfr-save-editor/testing";
 
 const MANIAC_QUESTS = [
   0x406325, 0x406330, 0x406331, 0x406332, 0x406333, 0x406334, 0x406335,
